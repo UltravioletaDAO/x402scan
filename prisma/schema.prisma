@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ResourceType {
+  http
+}
+
+model Resources {
+  id          String       @id @default(uuid())
+  resource    String       @unique
+  type        ResourceType
+  x402Version Int
+  lastUpdated DateTime
+  metadata    Json?
+
+  accepts      Accepts[]
+}
+
+enum AcceptsScheme {
+  exact
+}
+
+enum AcceptsNetwork {
+  base_sepolia
+  avalanche_fuji
+  base
+  sei
+  sei_testnet
+  avalanche
+  iotex
+  solana_devnet
+  solana
+}
+
+model Accepts {
+  id                String         @id @default(uuid())
+  resourceId        String
+  scheme            AcceptsScheme
+  description       String
+  network           AcceptsNetwork
+  maxAmountRequired BigInt
+  resource          String
+  mimeType          String
+  payTo             String
+  maxTimeoutSeconds Int
+  asset             String
+  outputSchema      Json?
+  extra             Json?
+
+  resourceRel Resources      @relation(fields: [resourceId], references: [id])
+
+  @@unique([resourceId, scheme, network])
+}
+
+model Transactions {
+  id              String   @id @default(uuid())
+  transactionHash String
+  logIndex        Int
+  amount          BigInt
+  sender          String
+  recipient       String
+  blockTimestamp  DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([transactionHash, logIndex])
+}
