@@ -15,6 +15,7 @@ export const listTopSellersInputSchema = z.object({
       })
     )
     .default([{ id: "total_amount", desc: true }]),
+  addresses: z.array(ethereumAddressSchema).optional(),
 });
 
 export const listTopSellers = async (
@@ -25,9 +26,8 @@ export const listTopSellers = async (
   if (!parseResult.success) {
     throw new Error("Invalid input: " + parseResult.error.message);
   }
-  const { sorting } = parseResult.data;
+  const { sorting, addresses } = parseResult.data;
   const { limit } = pagination;
-  console.log("sorting", sorting);
   const outputSchema = z.array(
     z.object({
       recipient: ethereumAddressSchema,
@@ -48,13 +48,17 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
     AND transaction_from IN (
         '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', 
         '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6'
-    ) 
+    )
+    ${
+      addresses
+        ? `AND recipient IN (${addresses.map((a) => `'${a}'`).join(", ")})`
+        : ""
+    }
 GROUP BY recipient 
 ORDER BY ${sorting.map((s) => `${s.id} ${s.desc ? "DESC" : "ASC"}`).join(", ")} 
 LIMIT ${limit + 1};
   `;
 
-  console.log("sql", sql);
   const items = await runBaseSqlQuery(sql, outputSchema);
   if (!items) {
     return toPaginatedResponse({

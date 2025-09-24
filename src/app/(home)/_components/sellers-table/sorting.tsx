@@ -29,6 +29,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { SortType } from "./types";
+import { defaultSorting } from "../lib/defaults";
+import { useContext, useState } from "react";
 
 const sortingOptions = [
   { id: "tx_count", label: "Tx Count" },
@@ -36,82 +39,35 @@ const sortingOptions = [
   { id: "latest_block_timestamp", label: "Latest Transaction" },
 ];
 
-interface SortType {
-  id: "tx_count" | "total_amount" | "latest_block_timestamp";
-  desc: boolean;
-}
-
-interface Props {
+interface SortingContext {
   sorting: SortType[];
   setSorting: (sorting: SortType[]) => void;
 }
 
-function DragHandle({ id }: { id: string }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useSortable({
-    id,
-  });
+export const SortingContext = React.createContext<SortingContext>({
+  sorting: defaultSorting,
+  setSorting: () => {},
+});
 
+export const useSorting = () => {
+  return useContext(SortingContext);
+};
+
+export const SortingProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const [sorting, setSorting] = useState<SortType[]>(defaultSorting);
   return (
-    <Button
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
-      variant="ghost"
-      size="icon"
-      className="text-muted-foreground size-fit md:size-fit p-2 hover:bg-transparent cursor-grab active:cursor-grabbing"
-      style={{
-        opacity: isDragging ? 0.5 : 1,
-      }}
-    >
-      <GripVertical className="text-muted-foreground size-3" />
-      <span className="sr-only">Drag to reorder</span>
-    </Button>
-  );
-}
-
-interface SortableItemProps {
-  sort: SortType;
-  onToggle: () => void;
-}
-
-const SortableItem: React.FC<SortableItemProps> = ({ sort, onToggle }) => {
-  const { setNodeRef, transform, transition, isDragging } = useSortable({
-    id: sort.id,
-  });
-
-  return (
-    <div
-      ref={setNodeRef}
-      className="flex items-center gap-2 border-b p-2"
-      style={{
-        transform: CSS.Transform.toString(transform),
-        transition: transition,
-        opacity: isDragging ? 0.5 : 1,
-      }}
-    >
-      <DragHandle id={sort.id} />
-      <p className="flex-1 text-sm font-medium">
-        {sortingOptions.find((option) => option.id === sort.id)?.label ||
-          sort.id}
-      </p>
-      <Button
-        variant="outline"
-        onClick={onToggle}
-        size="icon"
-        className="size-fit md:size-fit p-2"
-      >
-        <ArrowDown
-          className={cn(
-            "size-3 transition-transform duration-200",
-            sort.desc ? "rotate-0" : "rotate-180"
-          )}
-        />
-      </Button>
-    </div>
+    <SortingContext.Provider value={{ sorting, setSorting }}>
+      {children}
+    </SortingContext.Provider>
   );
 };
 
-export const Sorting = ({ sorting, setSorting }: Props) => {
+export const Sorting = () => {
+  const { sorting, setSorting } = useSorting();
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
@@ -179,5 +135,70 @@ export const Sorting = ({ sorting, setSorting }: Props) => {
         </div>
       </PopoverContent>
     </Popover>
+  );
+};
+
+function DragHandle({ id }: { id: string }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useSortable({
+    id,
+  });
+
+  return (
+    <Button
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+      variant="ghost"
+      size="icon"
+      className="text-muted-foreground size-fit md:size-fit p-2 hover:bg-transparent cursor-grab active:cursor-grabbing"
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+      }}
+    >
+      <GripVertical className="text-muted-foreground size-3" />
+      <span className="sr-only">Drag to reorder</span>
+    </Button>
+  );
+}
+
+interface SortableItemProps {
+  sort: SortType;
+  onToggle: () => void;
+}
+
+const SortableItem: React.FC<SortableItemProps> = ({ sort, onToggle }) => {
+  const { setNodeRef, transform, transition, isDragging } = useSortable({
+    id: sort.id,
+  });
+
+  return (
+    <div
+      ref={setNodeRef}
+      className="flex items-center gap-2 border-b p-2"
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition: transition,
+        opacity: isDragging ? 0.5 : 1,
+      }}
+    >
+      <DragHandle id={sort.id} />
+      <p className="flex-1 text-sm font-medium">
+        {sortingOptions.find((option) => option.id === sort.id)?.label ||
+          sort.id}
+      </p>
+      <Button
+        variant="outline"
+        onClick={onToggle}
+        size="icon"
+        className="size-fit md:size-fit p-2"
+      >
+        <ArrowDown
+          className={cn(
+            "size-3 transition-transform duration-200",
+            sort.desc ? "rotate-0" : "rotate-180"
+          )}
+        />
+      </Button>
+    </div>
   );
 };

@@ -30,7 +30,7 @@ export const Seller: React.FC<Props> = ({ address }) => {
   return (
     <div className="px-1 border border-border rounded-md w-fit flex items-center gap-1">
       <Favicon url={resource.resource} size={12} />
-      <p className="font-mono text-xs">{resource.resource}</p>
+      <p className="font-mono text-xs">{new URL(resource.resource).hostname}</p>
     </div>
   );
 };

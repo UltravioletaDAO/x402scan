@@ -1,8 +1,8 @@
 "use client";
 
-import { ArrowDown, ArrowUp, DollarSign, Hash, Store } from "lucide-react";
+import { DollarSign, Hash, Store } from "lucide-react";
 
-import { format, formatDistanceToNow, formatRelative } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 
 import { formatTokenAmount } from "@/lib/token";
 
@@ -10,7 +10,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import type { RouterOutputs } from "@/trpc/client";
 import { Seller } from "./seller";
 
-type ColumnType = RouterOutputs["sellers"]["list"]["items"][number];
+type ColumnType = RouterOutputs["sellers"]["list"]["all"]["items"][number];
 
 export const columns: ColumnDef<ColumnType>[] = [
   {
