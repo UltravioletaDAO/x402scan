@@ -9,6 +9,7 @@ import Link from "next/link";
 
 import { Logo } from "@/components/logo";
 import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggler";
+import { Toaster } from "@/components/ui/sonner";
 
 import { LogoContainer } from "./_components/layout/logo";
 
@@ -65,6 +66,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Toaster />
         <SpeedInsights />
         <Analytics />
         <TRPCReactProvider>

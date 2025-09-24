@@ -28,15 +28,15 @@ export const listTopSellers = async (
       recipient: ethereumAddressSchema,
       tx_count: z.coerce.bigint(),
       total_amount: z.coerce.bigint(),
+      latest_block_timestamp: z.coerce.date(),
     })
   );
-
-  console.log(cursor?.toString());
 
   const sql = `SELECT 
     parameters['to']::String AS recipient, 
     COUNT(*) AS tx_count, 
-    SUM(parameters['value']::UInt256) AS total_amount 
+    SUM(parameters['value']::UInt256) AS total_amount,
+    max(block_timestamp) AS latest_block_timestamp
 FROM base.events 
 WHERE event_signature = 'Transfer(address,address,uint256)'
     AND address = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'

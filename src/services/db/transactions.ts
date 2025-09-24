@@ -1,6 +1,5 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { FacilitatorTransaction } from "../cdp/sql/list-facilitator-transactions";
-import { prisma } from "./client";
 
 interface UpsertTransactionInput {
   resourceId: string;
@@ -28,8 +27,6 @@ export const upsertTransaction = async (
         amount: transaction.amount,
         sender: transaction.sender,
         recipient: transaction.recipient,
-        resourceId: resourceId,
-        acceptsId: acceptsId,
         blockTimestamp: transaction.block_timestamp,
       },
       update: {
