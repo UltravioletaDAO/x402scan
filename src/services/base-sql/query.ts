@@ -1,16 +1,10 @@
 import { env } from "@/env";
 import z from "zod";
 
-/**
- * Runs a SQL query against the Coinbase Data Platform API.
- *
- * @param {string} sql - The SQL query to run.
- * @returns {Promise<any>} - The result of the query.
- */
-export async function runBaseSqlQueryInternal<T>(
+const runBaseSqlQueryInternal = async <T>(
   sql: string,
   resultSchema: z.ZodSchema<T>
-): Promise<T | null> {
+): Promise<T | null> => {
   const response = await fetch(
     "https://api.cdp.coinbase.com/platform/v2/data/query/run",
     {
@@ -42,7 +36,7 @@ export async function runBaseSqlQueryInternal<T>(
     console.error("error parsing data", data);
     throw error;
   }
-}
+};
 
 export async function runBaseSqlQuery<T>(
   sql: string,
