@@ -4,12 +4,17 @@ import { runBaseSqlQuery } from "./query";
 import { ethereumAddressSchema } from "@/lib/schemas";
 import { infiniteQuerySchema, toPaginatedResponse } from "@/lib/pagination";
 
-const sortType = z.enum(["tx_count", "total_amount"]);
-
 const paginationSchema = infiniteQuerySchema(z.bigint());
 
 export const listTopSellersInputSchema = z.object({
-  sortType: sortType.default("total_amount"),
+  sorting: z
+    .array(
+      z.object({
+        id: z.enum(["tx_count", "total_amount", "latest_block_timestamp"]),
+        desc: z.boolean(),
+      })
+    )
+    .default([{ id: "total_amount", desc: true }]),
 });
 
 export const listTopSellers = async (
@@ -18,11 +23,11 @@ export const listTopSellers = async (
 ) => {
   const parseResult = listTopSellersInputSchema.safeParse(input);
   if (!parseResult.success) {
-    console.error("invalid input", input);
     throw new Error("Invalid input: " + parseResult.error.message);
   }
-  const { sortType } = parseResult.data;
-  const { cursor, limit } = pagination;
+  const { sorting } = parseResult.data;
+  const { limit } = pagination;
+  console.log("sorting", sorting);
   const outputSchema = z.array(
     z.object({
       recipient: ethereumAddressSchema,
@@ -44,11 +49,12 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
         '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', 
         '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6'
     ) 
-    ${cursor ? `AND ${sortType} < toUInt256('${cursor.toString()}')` : ""}
 GROUP BY recipient 
-ORDER BY ${sortType} DESC 
+ORDER BY ${sorting.map((s) => `${s.id} ${s.desc ? "DESC" : "ASC"}`).join(", ")} 
 LIMIT ${limit + 1};
   `;
+
+  console.log("sql", sql);
   const items = await runBaseSqlQuery(sql, outputSchema);
   if (!items) {
     return toPaginatedResponse({

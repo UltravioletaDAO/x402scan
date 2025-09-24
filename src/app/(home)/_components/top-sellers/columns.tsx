@@ -1,6 +1,6 @@
 "use client";
 
-import { Hash, Store } from "lucide-react";
+import { ArrowDown, ArrowUp, DollarSign, Hash, Store } from "lucide-react";
 
 import { format, formatDistanceToNow, formatRelative } from "date-fns";
 
@@ -11,12 +11,9 @@ import { formatTokenAmount } from "@/lib/token";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { RouterOutputs } from "@/trpc/client";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
+type ColumnType = RouterOutputs["sellers"]["list"]["items"][number];
 
-export const columns: ColumnDef<
-  RouterOutputs["sellers"]["list"]["items"][number]
->[] = [
+export const columns: ColumnDef<ColumnType>[] = [
   {
     accessorKey: "recipient",
     header: () => (
@@ -29,7 +26,7 @@ export const columns: ColumnDef<
   },
   {
     accessorKey: "tx_count",
-    header: () => (
+    header: ({ column }) => (
       <div className="flex items-center justify-center gap-2 text-sm">
         <Hash className="size-4" />
         Tx Count
@@ -47,7 +44,12 @@ export const columns: ColumnDef<
   },
   {
     accessorKey: "latest_block_timestamp",
-    header: () => <div className="text-center text-sm">Latest Transaction</div>,
+    header: ({ column }) => (
+      <div className="flex items-center justify-center gap-2 text-sm">
+        <Hash className="size-4" />
+        Latest Transaction
+      </div>
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {formatDistanceToNow(row.original.latest_block_timestamp, {
@@ -58,7 +60,12 @@ export const columns: ColumnDef<
   },
   {
     accessorKey: "total_amount",
-    header: () => <div className="text-right text-sm">Total Amount</div>,
+    header: ({ column }) => (
+      <div className="flex items-center justify-end gap-2 text-sm">
+        <DollarSign className="size-4" />
+        Total Amount
+      </div>
+    ),
     cell: ({ row }) => (
       <div className="text-right font-mono font-semibold text-xs">
         {formatTokenAmount(row.original.total_amount)}

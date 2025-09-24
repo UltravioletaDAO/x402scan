@@ -4,28 +4,43 @@ import { DataTable } from "@/components/ui/data-table";
 import { api } from "@/trpc/client";
 import { columns } from "./columns";
 import { useState } from "react";
-import { CursorPagePagination } from "@/components/ui/pagination";
-import { Card } from "@/components/ui/card";
+import { SortingState, OnChangeFn } from "@tanstack/react-table";
+import { Sorting } from "./sorting";
 
-export const TopSellers = () => {
-  const [sortType, setSortType] = useState<"tx_count" | "total_amount">();
-  const [page, setPage] = useState(0);
+interface SortType {
+  id: "tx_count" | "total_amount" | "latest_block_timestamp";
+  desc: boolean;
+}
+
+interface Props {
+  defaultSorting: SortType[];
+  limit: number;
+}
+
+export const TopSellers = ({ defaultSorting, limit }: Props) => {
+  const [sorting, setSorting] = useState<SortType[]>(defaultSorting);
 
   const [topSellers, { hasNextPage, fetchNextPage }] =
     api.sellers.list.useSuspenseInfiniteQuery(
       {
-        sortType,
-        limit: 100,
+        sorting,
+        limit,
       },
       {
         getNextPageParam: (lastPage, pages) =>
           lastPage.hasNextPage && lastPage.items.length > 0
-            ? lastPage.items[lastPage.items.length - 1][
-                sortType ?? "total_amount"
-              ]
+            ? lastPage.items[lastPage.items.length - 1][sorting[0].id]
             : undefined,
       }
     );
 
-  return <DataTable columns={columns} data={topSellers.pages[page].items} />;
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold">Top Sellers</h2>
+        <Sorting sorting={sorting} setSorting={setSorting} />
+      </div>
+      <DataTable columns={columns} data={topSellers.pages[0].items} />
+    </div>
+  );
 };

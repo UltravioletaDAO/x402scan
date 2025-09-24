@@ -6,6 +6,9 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  SortingState,
+  getSortedRowModel,
+  OnChangeFn,
 } from "@tanstack/react-table";
 
 import {
@@ -16,8 +19,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card } from "./card";
-import { Button } from "./button";
+import { Card } from "../card";
+import { Button } from "../button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -90,11 +94,11 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-between gap-2">
         <Button
           variant="outline"
-          size="sm"
+          size="icon"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
-          Previous
+          <ChevronLeft className="size-4" />
         </Button>
         <p className="text-xs text-muted-foreground">
           {`Page ${
@@ -103,11 +107,11 @@ export function DataTable<TData, TValue>({
         </p>
         <Button
           variant="outline"
-          size="sm"
+          size="icon"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >
-          Next
+          <ChevronRight className="size-4" />
         </Button>
       </div>
     </div>
