@@ -16,7 +16,10 @@ export default async function Home() {
   });
   return (
     <HydrateClient>
-      <Heading title="Top Sellers" />
+      <Heading
+        title="x402scan"
+        description="See what's happening in the x402 ecosystem"
+      />
       <Body>
         <TopSellers defaultSorting={defaultSorting} limit={limit} />
       </Body>

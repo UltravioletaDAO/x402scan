@@ -14,6 +14,7 @@
     "db:generate": "prisma generate",
     "db:reset": "prisma migrate reset",
     "db:format": "prisma format",
+    "db:studio": "prisma studio",
     "check:types": "tsc --noEmit",
     "check:knip": "knip"
   },

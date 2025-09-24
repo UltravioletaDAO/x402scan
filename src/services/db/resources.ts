@@ -36,7 +36,7 @@ export const upsertResource = async (
           scheme: baseAccepts.scheme,
           network: "base",
         },
-        payTo: baseAccepts.payTo,
+        payTo: baseAccepts.payTo.toLowerCase(),
       },
       create: {
         resourceId: resource.id,
@@ -46,7 +46,7 @@ export const upsertResource = async (
         maxAmountRequired: BigInt(baseAccepts.maxAmountRequired),
         resource: resource.resource,
         mimeType: baseAccepts.mimeType,
-        payTo: baseAccepts.payTo,
+        payTo: baseAccepts.payTo.toLowerCase(),
         maxTimeoutSeconds: baseAccepts.maxTimeoutSeconds,
         asset: baseAccepts.asset,
         outputSchema: baseAccepts.outputSchema,
@@ -56,7 +56,7 @@ export const upsertResource = async (
         description: baseAccepts.description,
         maxAmountRequired: BigInt(baseAccepts.maxAmountRequired),
         mimeType: baseAccepts.mimeType,
-        payTo: baseAccepts.payTo,
+        payTo: baseAccepts.payTo.toLowerCase(),
         maxTimeoutSeconds: baseAccepts.maxTimeoutSeconds,
         asset: baseAccepts.asset,
         outputSchema: baseAccepts.outputSchema,
@@ -68,5 +68,17 @@ export const upsertResource = async (
       resource,
       accepts,
     };
+  });
+};
+
+export const getResourceByAddress = async (address: string) => {
+  return await prisma.resources.findFirst({
+    where: {
+      accepts: {
+        some: {
+          payTo: address.toLowerCase(),
+        },
+      },
+    },
   });
 };

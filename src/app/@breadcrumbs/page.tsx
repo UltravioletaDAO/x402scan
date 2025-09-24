@@ -1,3 +1,3 @@
 export default function HomeBreadcrumb() {
-  return <div>HomeBreadcrumbs</div>;
+  return <div className="font-bold">x402scan</div>;
 }

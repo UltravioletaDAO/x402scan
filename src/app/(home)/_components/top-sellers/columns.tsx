@@ -4,12 +4,11 @@ import { ArrowDown, ArrowUp, DollarSign, Hash, Store } from "lucide-react";
 
 import { format, formatDistanceToNow, formatRelative } from "date-fns";
 
-import { Address } from "@/components/address";
-
 import { formatTokenAmount } from "@/lib/token";
 
 import type { ColumnDef } from "@tanstack/react-table";
 import type { RouterOutputs } from "@/trpc/client";
+import { Seller } from "./seller";
 
 type ColumnType = RouterOutputs["sellers"]["list"]["items"][number];
 
@@ -22,7 +21,7 @@ export const columns: ColumnDef<ColumnType>[] = [
         Seller
       </div>
     ),
-    cell: ({ row }) => <Address address={row.original.recipient} />,
+    cell: ({ row }) => <Seller address={row.original.recipient} />,
   },
   {
     accessorKey: "tx_count",
