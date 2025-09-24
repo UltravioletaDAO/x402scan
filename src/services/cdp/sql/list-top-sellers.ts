@@ -2,7 +2,7 @@ import z from "zod";
 
 import { runBaseSqlQuery } from "./query";
 import { ethereumAddressSchema } from "@/lib/schemas";
-import { infiniteQuerySchema } from "@/lib/pagination";
+import { infiniteQuerySchema, toPaginatedResponse } from "@/lib/pagination";
 
 const sortType = z.enum(["tx_count", "total_amount"]);
 
@@ -31,20 +31,33 @@ export const listTopSellers = async (
     })
   );
 
+  console.log(cursor?.toString());
+
   const sql = `SELECT 
     parameters['to']::String AS recipient, 
     COUNT(*) AS tx_count, 
     SUM(parameters['value']::UInt256) AS total_amount 
 FROM base.events 
-WHERE event_signature = 'Transfer(address,address,uint256)' 
+WHERE event_signature = 'Transfer(address,address,uint256)'
+    AND address = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
     AND transaction_from IN (
         '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', 
         '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6'
     ) 
-    ${cursor ? `AND ${sortType} > '${cursor.toString()}'` : ""}
+    ${cursor ? `AND ${sortType} < toUInt256('${cursor.toString()}')` : ""}
 GROUP BY recipient 
 ORDER BY ${sortType} DESC 
-LIMIT ${limit};
+LIMIT ${limit + 1};
   `;
-  return await runBaseSqlQuery(sql, outputSchema);
+  const items = await runBaseSqlQuery(sql, outputSchema);
+  if (!items) {
+    return toPaginatedResponse({
+      items: [],
+      limit,
+    });
+  }
+  return toPaginatedResponse({
+    items,
+    limit,
+  });
 };

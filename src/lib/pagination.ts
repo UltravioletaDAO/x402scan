@@ -7,3 +7,18 @@ export const infiniteQuerySchema = <T>(cursorType: z.ZodType<T>) =>
   });
 
 export const timeInfiniteQuerySchema = infiniteQuerySchema(z.date());
+
+interface ToPaginatedResponseParams<T> {
+  items: T[];
+  limit: number;
+}
+
+export const toPaginatedResponse = <T>({
+  items,
+  limit,
+}: ToPaginatedResponseParams<T>) => {
+  return {
+    items: items.slice(0, limit),
+    hasNextPage: items.length > limit,
+  };
+};

@@ -1,17 +1,14 @@
 import { api, HydrateClient } from "@/trpc/server";
 import { Body, Heading } from "../_components/layout/page-utils";
+import { TopSellers } from "./_components/top-sellers";
 
 export default async function Home() {
-  const topRecipients = await api.sellers.list({
-    limit: 10,
-    sortType: "total_amount",
-  });
-  console.log(topRecipients);
+  void api.sellers.list.prefetchInfinite({});
   return (
     <HydrateClient>
       <Heading title="Top Sellers" />
       <Body>
-        <p>Test</p>
+        <TopSellers />
       </Body>
     </HydrateClient>
   );
