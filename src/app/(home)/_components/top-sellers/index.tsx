@@ -15,6 +15,7 @@ export const TopSellers = () => {
     api.sellers.list.useSuspenseInfiniteQuery(
       {
         sortType,
+        limit: 100,
       },
       {
         getNextPageParam: (lastPage, pages) =>
@@ -26,24 +27,5 @@ export const TopSellers = () => {
       }
     );
 
-  console.log(hasNextPage);
-
-  return (
-    <div className="flex flex-col gap-4">
-      <Card className="overflow-hidden">
-        <DataTable columns={columns} data={topSellers.pages[page].items} />
-      </Card>
-      <CursorPagePagination
-        page={page + 1}
-        onPrevious={page > 0 ? () => setPage(page - 1) : undefined}
-        onNext={
-          page < topSellers.pages.length - 1
-            ? () => setPage(page + 1)
-            : hasNextPage
-            ? fetchNextPage
-            : undefined
-        }
-      />
-    </div>
-  );
+  return <DataTable columns={columns} data={topSellers.pages[page].items} />;
 };

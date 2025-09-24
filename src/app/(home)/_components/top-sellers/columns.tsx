@@ -20,7 +20,7 @@ export const columns: ColumnDef<
   {
     accessorKey: "recipient",
     header: () => (
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 text-sm">
         <Store className="size-4" />
         Seller
       </div>
@@ -30,7 +30,7 @@ export const columns: ColumnDef<
   {
     accessorKey: "tx_count",
     header: () => (
-      <div className="flex items-center justify-center gap-2">
+      <div className="flex items-center justify-center gap-2 text-sm">
         <Hash className="size-4" />
         Tx Count
       </div>
@@ -47,9 +47,7 @@ export const columns: ColumnDef<
   },
   {
     accessorKey: "latest_block_timestamp",
-    header: () => (
-      <div className="text-center font-mono text-xs">Latest Transaction</div>
-    ),
+    header: () => <div className="text-center text-sm">Latest Transaction</div>,
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {formatDistanceToNow(row.original.latest_block_timestamp, {
@@ -60,9 +58,7 @@ export const columns: ColumnDef<
   },
   {
     accessorKey: "total_amount",
-    header: () => (
-      <div className="text-right font-mono text-xs">Total Amount</div>
-    ),
+    header: () => <div className="text-right text-sm">Total Amount</div>,
     cell: ({ row }) => (
       <div className="text-right font-mono font-semibold text-xs">
         {formatTokenAmount(row.original.total_amount)}
