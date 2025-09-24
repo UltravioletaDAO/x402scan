@@ -4,7 +4,9 @@ import { z } from "zod";
 export const env = createEnv({
   server: {
     DATABASE_URL: z.url(),
-    CDP_CLIENT_API_KEY: z.string(),
+    CDP_API_KEY_NAME: z.string(),
+    CDP_API_KEY_ID: z.string(),
+    CDP_API_KEY_SECRET: z.string(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),

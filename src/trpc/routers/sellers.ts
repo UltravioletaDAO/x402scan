@@ -3,7 +3,7 @@ import z from "zod";
 import {
   listTopSellers,
   listTopSellersInputSchema,
-} from "@/services/base-sql/list-top-sellers";
+} from "@/services/cdp/sql/list-top-sellers";
 
 export const sellersRouter = createTRPCRouter({
   list: infiniteQueryProcedure(z.bigint())

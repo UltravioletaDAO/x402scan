@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 import { upsertResource } from "@/services/db/resources";
 
-import { listFacilitatorResources } from "@/services/facilitator/list-resources";
+import { listFacilitatorResources } from "@/services/cdp/facilitator/list-resources";
 
 export const POST = async () => {
   const resources = await listFacilitatorResources();

@@ -1,16 +1,21 @@
 import { env } from "@/env";
 import z from "zod";
+import { generateCdpJwt } from "../generate-jwt";
 
 const runBaseSqlQueryInternal = async <T>(
   sql: string,
   resultSchema: z.ZodSchema<T>
 ): Promise<T | null> => {
+  const jwt = await generateCdpJwt({
+    requestMethod: "POST",
+    requestPath: "/platform/v2/data/query/run",
+  });
   const response = await fetch(
     "https://api.cdp.coinbase.com/platform/v2/data/query/run",
     {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${env.CDP_CLIENT_API_KEY}`,
+        Authorization: `Bearer ${jwt}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ sql }),
@@ -49,6 +54,7 @@ export async function runBaseSqlQuery<T>(
     try {
       return await runBaseSqlQueryInternal(sql, resultSchema);
     } catch (error: any) {
+      console.error("error", error);
       // Check for rate limit error (HTTP 429 or message includes "rate limit")
       const isRateLimit =
         (error?.message &&

@@ -1,11 +1,24 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
+
 import { ThemeProvider } from "next-themes";
-import { LogoContainer } from "./_components/layout/logo";
+
 import Link from "next/link";
+
 import { Logo } from "@/components/logo";
 import { AnimatedThemeToggler } from "@/components/magicui/animated-theme-toggler";
+
+import { LogoContainer } from "./_components/layout/logo";
+
+import { TRPCReactProvider } from "@/trpc/client";
+
+import { env } from "@/env";
+
+import type { Metadata, Viewport } from "next";
+
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,8 +31,29 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "x402scan",
+  title: {
+    default: "x402scan",
+    template: "%s | x402scan",
+  },
   description: "See what's happening in the x402 ecosystem",
+  appleWebApp: {
+    title: "x402scan",
+    statusBarStyle: "black-translucent",
+  },
+  metadataBase: new URL(env.NEXT_PUBLIC_APP_URL),
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  height: "device-height",
+  initialScale: 1,
+  minimumScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#090909" },
+    { media: "(prefers-color-scheme: light)", color: "white" },
+  ],
 };
 
 export default function RootLayout({
@@ -31,31 +65,37 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          storageKey="x402scan-theme"
-          enableSystem={true}
-        >
-          <div className="min-h-screen flex flex-col relative">
-            <LogoContainer>
-              <Link href="/">
-                <Logo className="size-auto h-full aspect-square" />
-              </Link>
-            </LogoContainer>
-            <header className="w-full flex flex-col pt-4 justify-center bg-card">
-              <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
-                <div className="pl-10 md:pl-12 flex items-center gap-2 md:gap-3">
-                  {breadcrumbs}
+        <SpeedInsights />
+        <Analytics />
+        <TRPCReactProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            storageKey="x402scan-theme"
+            enableSystem={true}
+          >
+            <div className="min-h-screen flex flex-col relative">
+              <LogoContainer>
+                <Link href="/">
+                  <Logo className="size-auto h-full aspect-square" />
+                </Link>
+              </LogoContainer>
+              <header className="w-full flex flex-col pt-4 justify-center bg-card">
+                <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
+                  <div className="pl-10 md:pl-12 flex items-center gap-2 md:gap-3">
+                    {breadcrumbs}
+                  </div>
+                  <div className="flex items-center gap-1 md:gap-2">
+                    <AnimatedThemeToggler />
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 md:gap-2">
-                  <AnimatedThemeToggler />
-                </div>
+              </header>
+              <div className="bg-background flex-1 flex flex-col">
+                {children}
               </div>
-            </header>
-            <div className="bg-background flex-1 flex flex-col">{children}</div>
-          </div>
-        </ThemeProvider>
+            </div>
+          </ThemeProvider>
+        </TRPCReactProvider>
       </body>
     </html>
   );
