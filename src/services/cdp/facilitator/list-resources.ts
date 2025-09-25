@@ -1,12 +1,11 @@
 import { facilitator as baseFacilitator } from "@coinbase/x402";
 import type { FacilitatorConfig } from "x402/types";
-import { useFacilitator } from "x402/verify";
+import { useFacilitator as facilitatorUtils } from "x402/verify";
 
 export const listFacilitatorResources = async (
   facilitator: FacilitatorConfig = baseFacilitator
 ) => {
-  const { list } = useFacilitator(facilitator);
-  return await list();
+  return await facilitatorUtils(facilitator).list();
 };
 
 export type FacilitatorResource = Awaited<

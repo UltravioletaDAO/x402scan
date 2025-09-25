@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
-
 import { DataTable } from "@/components/ui/data-table";
-import { api } from "@/trpc/client";
+
 import { columns } from "../lib/columns";
 import { limit } from "../lib/defaults";
 import { useSorting } from "../lib/sorting";
+
+import { api } from "@/trpc/client";
 
 export const TopSellersTable = () => {
   const { sorting } = useSorting();

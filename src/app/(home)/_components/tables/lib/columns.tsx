@@ -25,7 +25,7 @@ export const columns: ColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: "tx_count",
-    header: ({ column }) => (
+    header: () => (
       <div className="flex items-center justify-center gap-2 text-sm">
         <Hash className="size-4" />
         Tx Count
@@ -43,7 +43,7 @@ export const columns: ColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: "latest_block_timestamp",
-    header: ({ column }) => (
+    header: () => (
       <div className="flex items-center justify-center gap-2 text-sm">
         <Hash className="size-4" />
         Latest Transaction
@@ -59,7 +59,7 @@ export const columns: ColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: "total_amount",
-    header: ({ column }) => (
+    header: () => (
       <div className="flex items-center justify-end gap-2 text-sm">
         <DollarSign className="size-4" />
         Total Amount

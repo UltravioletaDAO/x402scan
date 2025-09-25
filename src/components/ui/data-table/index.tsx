@@ -1,15 +1,11 @@
 "use client";
 
-import type {
-  ColumnDef} from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-  SortingState,
-  getSortedRowModel,
-  OnChangeFn,
 } from "@tanstack/react-table";
 
 import {

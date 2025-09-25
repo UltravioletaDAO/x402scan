@@ -47,7 +47,7 @@ export const Favicon: React.FC<FaviconProps> = ({
         for (const faviconSrc of faviconSources) {
           try {
             // Test if the favicon exists by trying to load it
-            const response = await fetch(faviconSrc, {
+            await fetch(faviconSrc, {
               method: "HEAD",
               mode: "no-cors", // Allow cross-origin requests
             });
@@ -88,7 +88,7 @@ export const Favicon: React.FC<FaviconProps> = ({
       setIsLoading(false);
     };
 
-    getFaviconUrl();
+    void getFaviconUrl();
   }, [url, size]);
 
   if (isLoading) {
@@ -124,6 +124,7 @@ export const Favicon: React.FC<FaviconProps> = ({
   }
 
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={faviconUrl}
       width={size}

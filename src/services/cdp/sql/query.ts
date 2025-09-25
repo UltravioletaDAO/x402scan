@@ -1,5 +1,5 @@
-import { env } from "@/env";
 import z from "zod";
+
 import { generateCdpJwt } from "../generate-jwt";
 
 const runBaseSqlQueryInternal = async <T>(
@@ -29,11 +29,11 @@ const runBaseSqlQueryInternal = async <T>(
     );
   }
 
-  const data = await response.json();
-
   const schema = z.object({
     result: resultSchema.nullable(),
   });
+
+  const data = (await response.json()) as z.input<typeof schema>;
 
   try {
     return schema.parse(data).result;
@@ -53,17 +53,21 @@ export async function runBaseSqlQuery<T>(
   while (attempt < maxRetries) {
     try {
       return await runBaseSqlQueryInternal(sql, resultSchema);
-    } catch (error: any) {
+    } catch (error) {
       console.error("error", error);
       // Check for rate limit error (HTTP 429 or message includes "rate limit")
       const isRateLimit =
-        (error?.message &&
+        (error instanceof Error &&
           typeof error.message === "string" &&
-          error.message.toLowerCase().includes("rate limit")) ||
-        (error?.message &&
-          typeof error.message === "string" &&
-          error.message.includes("429")) ||
-        (error?.response && error.response.status === 429);
+          (error.message.toLowerCase().includes("rate limit") ||
+            error.message.includes("429"))) ||
+        (typeof error === "object" &&
+          error !== null &&
+          "response" in error &&
+          typeof (error as { response: { status: number } }).response ===
+            "object" &&
+          (error as { response: { status: number } }).response !== null &&
+          (error as { response: { status: number } }).response.status === 429);
       if (isRateLimit && attempt < maxRetries - 1) {
         const delay = Math.pow(2, attempt) * 500 + Math.random() * 200;
         console.warn(

@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import * as React from "react";
@@ -16,13 +17,16 @@ import { cn } from "@/lib/utils";
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
 
-export type ChartConfig = Record<string, {
+export type ChartConfig = Record<
+  string,
+  {
     label?: React.ReactNode;
     icon?: React.ComponentType;
   } & (
     | { color?: string; theme?: never }
     | { color?: never; theme: Record<keyof typeof THEMES, string> }
-  )>;
+  )
+>;
 
 type ChartContextProps = {
   config: ChartConfig;
@@ -83,7 +87,7 @@ function ChartContainer({
   >["children"];
 }) {
   const uniqueId = React.useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+  const chartId = `chart-${id ?? uniqueId.replace(/:/g, "")}`;
 
   return (
     <ChartContext.Provider value={{ config }}>
@@ -107,7 +111,7 @@ function ChartContainer({
 
 const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(
-    ([, config]) => config.theme || config.color
+    ([, config]) => config.theme ?? config.color
   );
 
   if (!colorConfig.length) {
@@ -124,7 +128,7 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
             ${colorConfig
               .map(([key, itemConfig]) => {
                 const color =
-                  itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ||
+                  itemConfig.theme?.[theme as keyof typeof itemConfig.theme] ??
                   itemConfig.color;
                 return color ? `  --color-${key}: ${color};` : null;
               })
@@ -155,6 +159,8 @@ function ChartTooltipContent({
   nameKey,
   labelKey,
 }: CustomTooltipProps) {
+  const typedPayload = payload as Payload<number | string, string>[];
+
   const { config } = useChart();
 
   const tooltipLabel = React.useMemo(() => {
@@ -162,8 +168,10 @@ function ChartTooltipContent({
       return null;
     }
 
-    const [item] = payload;
-    const key = `${labelKey || item?.dataKey || item?.name || "value"}`;
+    const [item] = typedPayload;
+    const key = `${
+      labelKey ?? String(item?.dataKey) ?? String(item?.name) ?? "value"
+    }`;
     const itemConfig = getPayloadConfigFromPayload(config, item, key);
     const value = (() => {
       const v =
@@ -212,14 +220,16 @@ function ChartTooltipContent({
     >
       {!nestLabel ? tooltipLabel : null}
       <div className="grid gap-1.5">
-        {payload.map((item, index) => {
-          const key = `${nameKey || item.name || item.dataKey || "value"}`;
+        {typedPayload.map((item, index) => {
+          const key = `${
+            nameKey ?? String(item.name) ?? String(item.dataKey) ?? "value"
+          }`;
           const itemConfig = getPayloadConfigFromPayload(config, item, key);
-          const indicatorColor = color || item.payload.fill || item.color;
+          const indicatorColor = color ?? item.payload.fill ?? item.color;
 
           return (
             <div
-              key={item.dataKey}
+              key={String(item.dataKey) ?? String(index)}
               className={cn(
                 "[&>svg]:text-muted-foreground flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5",
                 indicator === "dot" && "items-center"
@@ -305,7 +315,7 @@ function ChartLegendContent({
       )}
     >
       {payload.map((item) => {
-        const key = `${nameKey || item.dataKey || "value"}`;
+        const key = `${nameKey ?? String(item.dataKey) ?? "value"}`;
         const itemConfig = getPayloadConfigFromPayload(config, item, key);
 
         return (
@@ -367,9 +377,7 @@ function getPayloadConfigFromPayload(
     ] as string;
   }
 
-  return configLabelKey in config
-    ? config[configLabelKey]
-    : config[key];
+  return configLabelKey in config ? config[configLabelKey] : config[key];
 }
 
 export {

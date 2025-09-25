@@ -21,7 +21,7 @@ export const Copyable: React.FC<CopyableProps> = ({
     try {
       await navigator.clipboard.writeText(value);
       toast.success(toastMessage);
-    } catch (err) {
+    } catch {
       toast.error("Failed to copy to clipboard");
     }
   };

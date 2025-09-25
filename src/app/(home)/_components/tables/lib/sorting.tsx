@@ -20,7 +20,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { ArrowDown, ArrowUp, ArrowUpDown, GripVertical } from "lucide-react";
+import { ArrowDown, ArrowUpDown, GripVertical } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -46,7 +46,9 @@ interface SortingContext {
 
 export const SortingContext = React.createContext<SortingContext>({
   sorting: defaultSorting,
-  setSorting: () => {},
+  setSorting: () => {
+    // do nothing
+  },
 });
 
 export const useSorting = () => {
@@ -183,7 +185,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ sort, onToggle }) => {
     >
       <DragHandle id={sort.id} />
       <p className="flex-1 text-sm font-medium">
-        {sortingOptions.find((option) => option.id === sort.id)?.label ||
+        {sortingOptions.find((option) => option.id === sort.id)?.label ??
           sort.id}
       </p>
       <Button

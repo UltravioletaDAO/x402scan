@@ -2,9 +2,9 @@ import z from "zod";
 
 import { runBaseSqlQuery } from "./query";
 import { ethereumAddressSchema } from "@/lib/schemas";
-import { infiniteQuerySchema, toPaginatedResponse } from "@/lib/pagination";
+import { toPaginatedResponse } from "@/lib/pagination";
 
-const paginationSchema = infiniteQuerySchema(z.bigint());
+import type { infiniteQuerySchema } from "@/lib/pagination";
 
 export const listTopSellersInputSchema = z.object({
   sorting: z
@@ -20,7 +20,7 @@ export const listTopSellersInputSchema = z.object({
 
 export const listTopSellers = async (
   input: z.input<typeof listTopSellersInputSchema>,
-  pagination: z.infer<typeof paginationSchema>
+  pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
 ) => {
   const parseResult = listTopSellersInputSchema.safeParse(input);
   if (!parseResult.success) {
