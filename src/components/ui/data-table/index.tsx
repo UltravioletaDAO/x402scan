@@ -7,6 +7,7 @@ import {
   useReactTable,
   getPaginationRowModel,
 } from "@tanstack/react-table";
+import { Skeleton } from "../skeleton";
 
 import {
   Table,
@@ -20,17 +21,28 @@ import { Card } from "../card";
 import { Button } from "../button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
+export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
+  TData,
+  TValue
+> & {
+  loading?: React.ComponentType;
+};
+
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+  columns: ExtendedColumnDef<TData, TValue>[];
   data: TData[];
+  isLoading?: boolean;
+  loadingRowCount?: number;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  isLoading = false,
+  loadingRowCount = 5,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
-    data,
+    data: isLoading ? (Array(loadingRowCount).fill(null) as TData[]) : data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -63,7 +75,25 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              // Render loading skeleton rows
+              Array.from({ length: loadingRowCount }).map((_, index) => (
+                <TableRow key={`loading-${index}`}>
+                  {columns.map((column, columnIndex) => (
+                    <TableCell
+                      key={`loading-${index}-${columnIndex}`}
+                      style={{ width: column.size }}
+                    >
+                      {column.loading ? (
+                        <column.loading />
+                      ) : (
+                        <Skeleton className="h-4 w-full" />
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -105,11 +135,15 @@ export function DataTable<TData, TValue>({
         >
           <ChevronLeft className="size-4" />
         </Button>
-        <p className="text-xs text-muted-foreground">
-          {`Page ${
-            table.getState().pagination.pageIndex + 1
-          } of ${table.getPageCount()}`}
-        </p>
+        {isLoading ? (
+          <Skeleton className="h-4 w-20" />
+        ) : (
+          <p className="text-xs text-muted-foreground">
+            {`Page ${
+              table.getState().pagination.pageIndex + 1
+            } of ${table.getPageCount()}`}
+          </p>
+        )}
         <Button
           variant="ghost"
           size="icon"

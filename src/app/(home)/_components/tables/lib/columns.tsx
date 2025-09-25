@@ -5,14 +5,16 @@ import { Calendar, DollarSign, Hash, Store } from "lucide-react";
 
 import { formatTokenAmount } from "@/lib/token";
 
-import type { ColumnDef } from "@tanstack/react-table";
 import type { RouterOutputs } from "@/trpc/client";
-import { Seller } from "./seller";
+import { Seller, SellerSkeleton } from "./seller";
 import { cn, formatCompactAgo } from "@/lib/utils";
+
+import type { ExtendedColumnDef } from "@/components/ui/data-table";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type ColumnType = RouterOutputs["sellers"]["list"]["all"]["items"][number];
 
-export const columns: ColumnDef<ColumnType>[] = [
+export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: "recipient",
     header: () => (
@@ -20,6 +22,7 @@ export const columns: ColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => <Seller address={row.original.recipient} />,
     size: 300, // Fixed width for seller column (widest for address display)
+    loading: () => <SellerSkeleton />,
   },
   {
     accessorKey: "tx_count",
@@ -34,6 +37,7 @@ export const columns: ColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 100, // Fixed width for transaction count
+    loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
     accessorKey: "unique_buyers",
@@ -48,6 +52,7 @@ export const columns: ColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 100, // Fixed width for buyers count
+    loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
     accessorKey: "latest_block_timestamp",
@@ -58,6 +63,7 @@ export const columns: ColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 120, // Fixed width for timestamp
+    loading: () => <Skeleton className="h-4 w-full" />,
   },
   {
     accessorKey: "total_amount",
@@ -70,6 +76,7 @@ export const columns: ColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150, // Fixed width for volume column
+    loading: () => <Skeleton className="h-4 w-full" />,
   },
 ];
 

@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 
 import { Sorting, SortingProvider } from "./sorting";
+import { columns } from "./columns";
+import { DataTable } from "@/components/ui/data-table";
 
 interface Props {
   title: string;
@@ -23,7 +25,18 @@ export const SellersTable: React.FC<Props> = ({
           </div>
           <p className="text-muted-foreground">{description}</p>
         </div>
-        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
+        <Suspense
+          fallback={
+            <DataTable
+              columns={columns}
+              data={[]}
+              loadingRowCount={10}
+              isLoading
+            />
+          }
+        >
+          {children}
+        </Suspense>
       </div>
     </SortingProvider>
   );

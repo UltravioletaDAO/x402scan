@@ -16,11 +16,7 @@ export const Seller: React.FC<Props> = ({ address }) => {
     });
 
   if (isLoading) {
-    return (
-      <div className="px-1 border border-border rounded-md w-fit">
-        <Skeleton className="h-3 w-20 my-[2.75px]" />
-      </div>
-    );
+    return <SellerSkeleton />;
   }
 
   if (!resource) {
@@ -31,6 +27,14 @@ export const Seller: React.FC<Props> = ({ address }) => {
     <div className="px-1 border border-border rounded-md w-fit flex items-center gap-1">
       <Favicon url={resource.resource} size={12} />
       <p className="font-mono text-xs">{new URL(resource.resource).hostname}</p>
+    </div>
+  );
+};
+
+export const SellerSkeleton = () => {
+  return (
+    <div className="px-1 border border-border rounded-md w-fit">
+      <Skeleton className="h-3 w-20 my-[2.75px]" />
     </div>
   );
 };
