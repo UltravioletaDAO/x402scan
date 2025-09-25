@@ -1,4 +1,4 @@
-import { Body, Heading } from "../_components/layout/page-utils";
+import { Body, Heading } from "../../_components/layout/page-utils";
 import { TopSellers } from "./_components/tables/top-sellers";
 import { TopResources } from "./_components/tables/top-resources";
 import { OverallStats } from "./_components/stats";

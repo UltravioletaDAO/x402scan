@@ -13,6 +13,10 @@ export default function HomeLayout({
             label: "Overview",
             href: "/",
           },
+          {
+            label: "News",
+            href: "/news",
+          },
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>
