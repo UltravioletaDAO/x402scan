@@ -1,30 +1,32 @@
 import { api } from "@/trpc/server";
-import { CardContainer } from "./card";
-import { VolumeChart } from "./charts/volume";
-import { ChartLineIcon, DollarSign } from "lucide-react";
 import { TransactionsChart } from "./charts/transactions";
+import { VolumeChart } from "./charts/volume";
 import { convertTokenAmount } from "@/lib/token";
+import { BuyersSellersChart } from "./charts/buyers-sellers";
 
 export const OverallStats = async () => {
   const stats = await api.stats.getBucketedStatistics();
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <CardContainer title="Volume" Icon={DollarSign}>
-        <VolumeChart
-          values={stats.map((stat) => ({
-            value: convertTokenAmount(stat.total_amount),
-            date: stat.week_start,
-          }))}
-        />
-      </CardContainer>
-      <CardContainer title="Requests" Icon={ChartLineIcon}>
-        <TransactionsChart
-          values={stats.map((stat) => ({
-            value: stat.total_transactions,
-            date: stat.week_start,
-          }))}
-        />
-      </CardContainer>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <TransactionsChart
+        data={stats.map((stat) => ({
+          transactions: Number(stat.total_transactions),
+          timestamp: stat.week_start.toISOString(),
+        }))}
+      />
+      <VolumeChart
+        data={stats.map((stat) => ({
+          volume: Number(convertTokenAmount(stat.total_amount)),
+          timestamp: stat.week_start.toISOString(),
+        }))}
+      />
+      <BuyersSellersChart
+        data={stats.map((stat) => ({
+          buyers: Number(stat.unique_buyers),
+          sellers: Number(stat.unique_sellers),
+          timestamp: stat.week_start.toISOString(),
+        }))}
+      />
       {/* <OverallStatsCard
         title="Unique Buyers"
         values={stats.map((stat) => ({

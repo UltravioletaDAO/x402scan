@@ -1,45 +1,45 @@
 "use client";
 
-import { StatChartContent } from "./base";
-import { BaseBarChart } from "@/components/ui/charts/bar-chart";
+import { DollarSign } from "lucide-react";
+
+import { BaseAreaChart } from "@/components/ui/charts/area-chart";
+
+import { StatCard } from "../card";
 
 import type { ChartData } from "@/components/ui/charts/bar-chart";
-import type { Value, StatChart } from "../types";
 
-export const VolumeChart = ({ values }: { values: Value[] }) => {
+interface Props {
+  data: ChartData<{ volume: number }>[];
+}
+
+export const VolumeChart = ({ data }: Props) => {
+  const format = (value: number) => {
+    return value.toLocaleString(undefined, {
+      notation: "compact",
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 0,
+      style: "currency",
+      currency: "USD",
+    });
+  };
   return (
-    <StatChartContent
-      values={values}
-      Chart={VolumeChartContent}
-      formatOptions={{
-        notation: "compact",
-        maximumFractionDigits: 2,
-        minimumFractionDigits: 0,
-        style: "currency",
-        currency: "USD",
-      }}
-    />
-  );
-};
-
-export const VolumeChartContent: StatChart = ({ values, format }) => {
-  const data: ChartData<{ volume: number }>[] = values.map((value) => ({
-    timestamp: value.date.toISOString(),
-    volume: Number(value.value),
-  }));
-
-  return (
-    <BaseBarChart
-      data={data}
-      bars={[{ dataKey: "volume", color: "var(--primary)" }]}
-      tooltipRows={[
-        {
-          key: "volume",
-          label: "Value",
-          getValue: (value) => format(BigInt(value)),
-        },
-      ]}
-      height={"100%"}
-    />
+    <StatCard
+      label="Volume"
+      Icon={DollarSign}
+      value={format(data.reduce((acc, curr) => acc + curr.volume, 0))}
+    >
+      <BaseAreaChart
+        data={data}
+        areas={[{ dataKey: "volume", color: "var(--primary)" }]}
+        tooltipRows={[
+          {
+            key: "volume",
+            label: "Value",
+            getValue: (value) => format(value),
+          },
+        ]}
+        height={"100%"}
+      />
+    </StatCard>
   );
 };

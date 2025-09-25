@@ -7,10 +7,10 @@ import { BaseBarChart, type ChartData } from "@/components/ui/charts/bar-chart";
 import { StatCard } from "../card";
 
 interface Props {
-  data: ChartData<{ transactions: number }>[];
+  data: ChartData<{ buyers: number; sellers: number }>[];
 }
 
-export const TransactionsChart: React.FC<Props> = ({ data }) => {
+export const BuyersSellersChart: React.FC<Props> = ({ data }) => {
   const format = (value: number) => {
     return value.toLocaleString(undefined, {
       notation: "compact",
@@ -21,21 +21,32 @@ export const TransactionsChart: React.FC<Props> = ({ data }) => {
 
   return (
     <StatCard
-      label="Transactions"
+      label="Buyers / Sellers"
       Icon={ChartLineIcon}
-      value={format(data.reduce((acc, curr) => acc + curr.transactions, 0))}
+      value={`${format(
+        data.reduce((acc, curr) => acc + curr.buyers, 0)
+      )} / ${format(data.reduce((acc, curr) => acc + curr.sellers, 0))}`}
     >
       <BaseBarChart
         data={data}
-        bars={[{ dataKey: "transactions", color: "var(--primary)" }]}
+        bars={[
+          { dataKey: "buyers", color: "var(--primary)" },
+          { dataKey: "sellers", color: "var(--primary)" },
+        ]}
         tooltipRows={[
           {
-            key: "transactions",
+            key: "buyers",
             label: "Transactions",
+            getValue: (value) => format(value),
+          },
+          {
+            key: "sellers",
+            label: "Sellers",
             getValue: (value) => format(value),
           },
         ]}
         height={"100%"}
+        stacked={false}
       />
     </StatCard>
   );

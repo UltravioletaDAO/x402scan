@@ -27,6 +27,7 @@ export interface ChartProps<T extends Record<string, number>> {
   children?: React.ReactNode;
   tooltipRows?: Array<TooltipRowProps<T>>;
   height?: number | string;
+  stacked?: boolean;
 }
 
 export const BaseBarChart = <
@@ -37,10 +38,15 @@ export const BaseBarChart = <
   tooltipRows,
   bars,
   height = 350,
+  stacked = true,
 }: ChartProps<T>) => {
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <BarChart data={data} margin={{ top: 4, right: 6, left: 6, bottom: 0 }}>
+      <BarChart
+        data={data}
+        margin={{ top: 4, right: 6, left: 6, bottom: 0 }}
+        style={{ cursor: "pointer" }}
+      >
         <defs>
           {bars.map(({ dataKey, color }) => (
             <linearGradient
@@ -71,7 +77,7 @@ export const BaseBarChart = <
               key={dataKey as string}
               isAnimationActive={index === bars.length - 1}
               dataKey={dataKey as string}
-              stackId="1"
+              stackId={stacked ? "1" : index.toString()}
               fill={`color-mix(in oklab, ${color} 40%, transparent)`}
               stroke={color}
               radius={index === bars.length - 1 ? [4, 4, 0, 0] : undefined}
@@ -94,8 +100,8 @@ export const BaseBarChart = <
               return null;
             }}
             cursor={{
-              fill: "var(--color-neutral-500)",
-              opacity: 0.5,
+              fill: "var(--color-primary)",
+              opacity: 0.2,
               radius: 4,
             }}
           />

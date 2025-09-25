@@ -30,13 +30,15 @@ export const TooltipContent = <T extends Record<string, number>>({
     <Card className="min-w-32 overflow-hidden">
       <TooltipDate date={new Date(data.timestamp)} />
       <Separator />
-      {rows.map((row) => (
-        <TooltipRow
-          {...row}
-          key={row.key as string}
-          value={row.getValue(data[row.key])}
-        />
-      ))}
+      <div className="py-2">
+        {rows.map((row) => (
+          <TooltipRow
+            {...row}
+            key={row.key as string}
+            value={row.getValue(data[row.key])}
+          />
+        ))}
+      </div>
     </Card>
   );
 };
@@ -50,7 +52,7 @@ const TooltipRow = <T extends Record<string, number>, K extends keyof T>({
   value: string;
 }) => {
   return (
-    <div className="flex justify-between w-full gap-4 p-2">
+    <div className="flex justify-between w-full gap-4 px-2">
       <p className={cn("text-xs text-muted-foreground", labelClassName)}>
         {label}
       </p>
@@ -69,7 +71,7 @@ const TooltipRow = <T extends Record<string, number>, K extends keyof T>({
 const TooltipDate = ({ date }: { date: Date }) => {
   return (
     <div className="flex justify-between items-center w-full gap-4 bg-muted p-2">
-      <p className="font-medium">{format(date, "MMMM d, yyyy")}</p>
+      <p className="font-medium text-sm">{format(date, "MMMM d, yyyy")}</p>
     </div>
   );
 };
