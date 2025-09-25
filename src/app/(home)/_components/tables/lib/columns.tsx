@@ -37,7 +37,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 100, // Fixed width for transaction count
-    loading: () => <Skeleton className="h-4 w-full" />,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
     accessorKey: "unique_buyers",
@@ -52,7 +52,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 100, // Fixed width for buyers count
-    loading: () => <Skeleton className="h-4 w-full" />,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
     accessorKey: "latest_block_timestamp",
@@ -63,7 +63,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 120, // Fixed width for timestamp
-    loading: () => <Skeleton className="h-4 w-full" />,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
     accessorKey: "total_amount",
@@ -76,7 +76,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 150, // Fixed width for volume column
-    loading: () => <Skeleton className="h-4 w-full" />,
+    loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];
 

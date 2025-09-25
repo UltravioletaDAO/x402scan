@@ -1,15 +1,23 @@
+import React from "react";
+
 import { Card } from "@/components/ui/card";
+
+import type { LucideIcon } from "lucide-react";
 
 interface Props {
   title: string;
-  value: string;
+  Icon: LucideIcon;
+  children: React.ReactNode;
 }
 
-export const OverallStatsCard: React.FC<Props> = ({ title, value }) => {
+export const CardContainer: React.FC<Props> = ({ children, title, Icon }) => {
   return (
-    <Card className="p-4">
-      <h2 className="text-muted-foreground">{title}</h2>
-      <h1 className="text-3xl font-bold">{value}</h1>
+    <Card className="">
+      <div className="flex items-center gap-2 p-4 pb-0">
+        <Icon className="size-3 text-muted-foreground" />
+        <h2 className="text-muted-foreground text-xs">{title}</h2>
+      </div>
+      {children}
     </Card>
   );
 };

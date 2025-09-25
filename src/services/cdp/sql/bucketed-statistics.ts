@@ -25,7 +25,7 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
         '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6'
     )
 GROUP BY week_start
-ORDER BY week_start DESC;
+ORDER BY week_start ASC;
   `;
 
   const result = await runBaseSqlQuery(sql, z.array(outputSchema));
