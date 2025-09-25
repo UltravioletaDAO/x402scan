@@ -29,8 +29,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { SortType } from "./types";
-import { defaultSorting } from "../lib/defaults";
+import type { SortType } from "./types";
+import { defaultSorting } from "./defaults";
 import { useContext, useState } from "react";
 
 const sortingOptions = [

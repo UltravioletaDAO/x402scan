@@ -1,4 +1,4 @@
-import { SortType } from "../sellers-table/types";
+import type { SortType } from "./types";
 
 export const defaultSorting: SortType[] = [
   { id: "tx_count" as const, desc: true },

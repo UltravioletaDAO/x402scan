@@ -1,5 +1,5 @@
-import { Prisma } from "@prisma/client";
-import { FacilitatorTransaction } from "../cdp/sql/list-facilitator-transactions";
+import type { Prisma } from "@prisma/client";
+import type { FacilitatorTransaction } from "../cdp/sql/list-facilitator-transactions";
 
 interface UpsertTransactionInput {
   resourceId: string;

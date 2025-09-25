@@ -1,6 +1,7 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
-import z, { ZodError } from "zod";
+import type z from "zod";
+import { ZodError } from "zod";
 import { timeInfiniteQuerySchema, infiniteQuerySchema } from "@/lib/pagination";
 
 /**

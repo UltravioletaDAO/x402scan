@@ -1,12 +1,13 @@
 import { api, HydrateClient } from "@/trpc/server";
 
-import { SellersTable } from "../sellers-table";
+import { SellersTable } from "../lib";
 
 import { TopSellersTable } from "./table";
+
 import { defaultSorting, limit } from "../lib/defaults";
 
-export const TopResources = () => {
-  void api.sellers.list.bazaar.prefetchInfinite({
+export const TopSellers = () => {
+  void api.sellers.list.all.prefetchInfinite({
     sorting: defaultSorting,
     limit,
   });
@@ -14,8 +15,8 @@ export const TopResources = () => {
   return (
     <HydrateClient>
       <SellersTable
-        title="Top Bazaar Resources"
-        description="Top resources listed in the bazaar by tx count, total amount, and latest transaction"
+        title="Top Sellers"
+        description="Top sellers by tx count, total amount, and latest transaction"
       >
         <TopSellersTable />
       </SellersTable>

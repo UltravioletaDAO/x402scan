@@ -1,17 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { api } from "@/trpc/client";
 
 import { DataTable } from "@/components/ui/data-table";
-import { api } from "@/trpc/client";
-import { columns } from "../sellers-table/columns";
+
+import { columns } from "../lib/columns";
+import { useSorting } from "../lib/sorting";
 import { limit } from "../lib/defaults";
-import { useSorting } from "../sellers-table/sorting";
 
 export const TopSellersTable = () => {
   const { sorting } = useSorting();
 
-  const [topSellers] = api.sellers.list.bazaar.useSuspenseInfiniteQuery(
+  const [topSellers] = api.sellers.list.all.useSuspenseInfiniteQuery(
     {
       sorting,
       limit,

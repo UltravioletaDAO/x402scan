@@ -1,7 +1,8 @@
 "use client";
 
+import type {
+  ColumnDef} from "@tanstack/react-table";
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -93,10 +94,11 @@ export function DataTable<TData, TValue>({
       </Card>
       <div className="flex items-center justify-between gap-2">
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
+          className="size-fit md:size-fit p-1"
         >
           <ChevronLeft className="size-4" />
         </Button>
@@ -106,10 +108,11 @@ export function DataTable<TData, TValue>({
           } of ${table.getPageCount()}`}
         </p>
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
+          className="size-fit md:size-fit p-1"
         >
           <ChevronRight className="size-4" />
         </Button>

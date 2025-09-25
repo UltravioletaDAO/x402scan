@@ -4,14 +4,14 @@ import { useState } from "react";
 
 import { DataTable } from "@/components/ui/data-table";
 import { api } from "@/trpc/client";
-import { columns } from "../sellers-table/columns";
-import { SortType } from "../sellers-table/types";
-import { defaultSorting, limit } from "../lib/defaults";
+import { columns } from "../lib/columns";
+import { limit } from "../lib/defaults";
+import { useSorting } from "../lib/sorting";
 
 export const TopSellersTable = () => {
-  const [sorting, setSorting] = useState<SortType[]>(defaultSorting);
+  const { sorting } = useSorting();
 
-  const [topSellers] = api.sellers.list.all.useSuspenseInfiniteQuery(
+  const [topSellers] = api.sellers.list.bazaar.useSuspenseInfiniteQuery(
     {
       sorting,
       limit,

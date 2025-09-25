@@ -1,6 +1,7 @@
 import { Body, Heading } from "../_components/layout/page-utils";
-import { TopSellers } from "./_components/top-sellers";
-import { TopResources } from "./_components/top-resources";
+import { TopSellers } from "./_components/tables/top-sellers";
+import { TopResources } from "./_components/tables/top-resources";
+import { OverallStats } from "./_components/stats";
 
 export default async function Home() {
   return (
@@ -10,6 +11,7 @@ export default async function Home() {
         description="See what's happening in the x402 ecosystem"
       />
       <Body>
+        <OverallStats />
         <TopSellers />
         <TopResources />
       </Body>

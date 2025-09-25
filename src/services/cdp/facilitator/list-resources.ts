@@ -1,5 +1,5 @@
 import { facilitator as baseFacilitator } from "@coinbase/x402";
-import { FacilitatorConfig } from "x402/types";
+import type { FacilitatorConfig } from "x402/types";
 import { useFacilitator } from "x402/verify";
 
 export const listFacilitatorResources = async (

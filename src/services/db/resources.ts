@@ -1,6 +1,6 @@
 import { prisma } from "./client";
 
-import { FacilitatorResource } from "../cdp/facilitator/list-resources";
+import type { FacilitatorResource } from "../cdp/facilitator/list-resources";
 
 export const upsertResource = async (
   facilitatorResource: FacilitatorResource
