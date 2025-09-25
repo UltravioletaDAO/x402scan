@@ -35,8 +35,9 @@ import { useContext, useState } from "react";
 
 const sortingOptions = [
   { id: "tx_count", label: "Tx Count" },
-  { id: "total_amount", label: "Total Amount" },
+  { id: "total_amount", label: "Volume" },
   { id: "latest_block_timestamp", label: "Latest Transaction" },
+  { id: "unique_buyers", label: "Unique Buyers" },
 ];
 
 interface SortingContext {

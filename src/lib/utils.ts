@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
+import { formatDistanceToNow } from "date-fns";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -21,4 +22,18 @@ export const formatCurrency = (
     maximumFractionDigits: 2,
     ...options,
   });
+};
+
+export const formatCompactAgo = (date: Date) => {
+  const str = formatDistanceToNow(date, {
+    addSuffix: true,
+  });
+  return str
+    .replace("about ", "~")
+    .replace(" hours", "h")
+    .replace(" hour", "h")
+    .replace(" minutes", "m")
+    .replace(" minute", "m")
+    .replace(" seconds", "s")
+    .replace(" second", "s");
 };

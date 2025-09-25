@@ -10,7 +10,12 @@ export const listTopSellersInputSchema = z.object({
   sorting: z
     .array(
       z.object({
-        id: z.enum(["tx_count", "total_amount", "latest_block_timestamp"]),
+        id: z.enum([
+          "tx_count",
+          "total_amount",
+          "latest_block_timestamp",
+          "unique_buyers",
+        ]),
         desc: z.boolean(),
       })
     )
@@ -34,6 +39,7 @@ export const listTopSellers = async (
       tx_count: z.coerce.bigint(),
       total_amount: z.coerce.bigint(),
       latest_block_timestamp: z.coerce.date(),
+      unique_buyers: z.coerce.bigint(),
     })
   );
 
@@ -41,7 +47,8 @@ export const listTopSellers = async (
     parameters['to']::String AS recipient, 
     COUNT(*) AS tx_count, 
     SUM(parameters['value']::UInt256) AS total_amount,
-    max(block_timestamp) AS latest_block_timestamp
+    max(block_timestamp) AS latest_block_timestamp,
+    COUNT(DISTINCT parameters['from']::String) AS unique_buyers
 FROM base.events 
 WHERE event_signature = 'Transfer(address,address,uint256)'
     AND address = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
