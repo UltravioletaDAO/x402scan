@@ -2,7 +2,7 @@ import { api, HydrateClient } from "@/trpc/server";
 
 import { SellersTable } from "../lib";
 
-import { TopSellersTable } from "./table";
+import { TopResourcesTable } from "./table";
 import { defaultSorting, limit } from "../lib/defaults";
 
 export const TopResources = () => {
@@ -14,10 +14,10 @@ export const TopResources = () => {
   return (
     <HydrateClient>
       <SellersTable
-        title="Top Bazaar Resources"
-        description="Top resources listed in the bazaar by tx count, total amount, and latest transaction"
+        title="Top Known Sellers"
+        description="Top seller origins grouped by address"
       >
-        <TopSellersTable />
+        <TopResourcesTable />
       </SellersTable>
     </HydrateClient>
   );

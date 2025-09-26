@@ -1,6 +1,7 @@
 import { prisma } from "./client";
 
 import type { FacilitatorResource } from "../cdp/facilitator/list-resources";
+import { getOriginFromUrl } from "@/lib/url";
 
 export const upsertResource = async (
   facilitatorResource: FacilitatorResource
@@ -8,6 +9,7 @@ export const upsertResource = async (
   const baseAccepts = facilitatorResource.accepts.find(
     (accept) => accept.network === "base"
   );
+  const origin = getOriginFromUrl(facilitatorResource.resource);
   if (!baseAccepts) return;
   return await prisma.$transaction(async (tx) => {
     const resource = await tx.resources.upsert({
@@ -20,12 +22,22 @@ export const upsertResource = async (
         x402Version: facilitatorResource.x402Version,
         lastUpdated: facilitatorResource.lastUpdated,
         metadata: facilitatorResource.metadata,
+        origin: {
+          connect: {
+            origin,
+          },
+        },
       },
       update: {
         type: facilitatorResource.type,
         x402Version: facilitatorResource.x402Version,
         lastUpdated: facilitatorResource.lastUpdated,
         metadata: facilitatorResource.metadata,
+        origin: {
+          connect: {
+            origin,
+          },
+        },
       },
     });
 

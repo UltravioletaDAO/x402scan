@@ -8,7 +8,7 @@ import { useSorting } from "../lib/sorting";
 
 import { api } from "@/trpc/client";
 
-export const TopSellersTable = () => {
+export const TopResourcesTable = () => {
   const { sorting } = useSorting();
 
   const [topSellers] = api.sellers.list.bazaar.useSuspenseInfiniteQuery(

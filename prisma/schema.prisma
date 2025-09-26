@@ -19,19 +19,19 @@ enum Role {
 }
 
 model User {
-  id            String          @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String?
-  email         String          @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String?
-  role          Role            @default(user)
+  role          Role      @default(user)
   accounts      Account[]
   sessions      Session[]
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
- 
+
 model Account {
   userId            String
   type              String
@@ -44,30 +44,30 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([provider, providerAccountId])
 }
- 
+
 model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@id([identifier, token])
 }
 
@@ -83,7 +83,11 @@ model Resources {
   lastUpdated DateTime
   metadata    Json?
 
-  accepts      Accepts[]
+  originId String
+
+  accepts Accepts[]
+
+  origin ResourceOrigin @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
 }
 
 enum AcceptsScheme {
@@ -117,18 +121,47 @@ model Accepts {
   outputSchema      Json?
   extra             Json?
 
-  resourceRel Resources      @relation(fields: [resourceId], references: [id])
+  resourceRel Resources @relation(fields: [resourceId], references: [id])
 
   @@unique([resourceId, scheme, network])
 }
 
 model News {
-  id String @id @default(uuid())
-  title String
+  id          String   @id @default(uuid())
+  title       String
   description String
-  image String
-  link String
-  favicon String
+  image       String
+  link        String
+  favicon     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ResourceOrigin {
+  id     String @id @default(uuid())
+  origin String @unique
+
+  title       String?
+  description String?
+  favicon     String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  resources Resources[]
+  ogImages OgImage[]
+}
+
+model OgImage {
+  id String @id @default(uuid())
+  originId String
+  url String @unique
+  height Int?
+  width Int?
+  title String?
+  description String?
+
+  origin ResourceOrigin @relation(fields: [originId], references: [id], map: "OgImage_origin_fkey")
+
+  @@unique([originId, url])
 }

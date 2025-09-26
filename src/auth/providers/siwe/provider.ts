@@ -33,7 +33,6 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
     },
     async authorize(credentials) {
       const parseResult = siweCredentialsSchema.safeParse(credentials);
-      console.log("parseResult", parseResult);
       if (!parseResult.success) {
         throw new Error("Invalid credentials");
       }

@@ -41,7 +41,6 @@ const {
   adapter: PrismaAdapter(prisma),
   callbacks: {
     session: async ({ session, user }) => {
-      console.log(user);
       if (!user.id) {
         return session;
       }

@@ -15,8 +15,8 @@ export default async function Home() {
         <Suspense fallback={<div>Loading...</div>}>
           <OverallStats />
         </Suspense>
-        <TopSellers />
         <TopResources />
+        <TopSellers />
       </Body>
     </div>
   );
