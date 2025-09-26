@@ -2,7 +2,20 @@ import z from "zod";
 
 import { runBaseSqlQuery } from "./query";
 
-export const getOverallStatistics = async () => {
+import { ethereumAddressSchema } from "@/lib/schemas";
+
+export const overallStatisticsInputSchema = z.object({
+  addresses: z.array(ethereumAddressSchema).optional(),
+});
+
+export const getOverallStatistics = async (
+  input: z.input<typeof overallStatisticsInputSchema>
+) => {
+  const parseResult = overallStatisticsInputSchema.safeParse(input);
+  if (!parseResult.success) {
+    throw new Error("Invalid input: " + parseResult.error.message);
+  }
+  const { addresses } = parseResult.data;
   const outputSchema = z.object({
     total_transactions: z.coerce.bigint(),
     total_amount: z.coerce.bigint(),
@@ -21,7 +34,14 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
     AND transaction_from IN (
         '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', 
         '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6'
-    );
+    )
+    ${
+      addresses
+        ? `AND parameters['to']::String IN (${addresses
+            .map((a) => `'${a}'`)
+            .join(", ")})`
+        : ""
+    }
   `;
 
   const result = await runBaseSqlQuery(sql, z.array(outputSchema));

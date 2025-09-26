@@ -2,20 +2,9 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
-import { Card } from "../card";
+import { Card } from "../../card";
 
-import type { ChartData } from "./bar-chart";
-
-export interface TooltipRowProps<
-  T extends Record<string, number>,
-  K extends keyof T = keyof T
-> {
-  key: K;
-  label: string;
-  getValue: (data: T[K]) => string;
-  labelClassName?: string;
-  valueClassName?: string;
-}
+import type { ChartData, TooltipRowProps } from "./types";
 
 interface Props<T extends Record<string, number>> {
   data: ChartData<T>;

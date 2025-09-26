@@ -3,6 +3,7 @@ import { TopSellers } from "./_components/tables/top-sellers";
 import { TopResources } from "./_components/tables/top-resources";
 import { OverallStats } from "./_components/stats";
 import { Suspense } from "react";
+import { TopServers } from "./_components/known-sellers";
 
 export default async function Home() {
   return (
@@ -15,6 +16,7 @@ export default async function Home() {
         <Suspense fallback={<div>Loading...</div>}>
           <OverallStats />
         </Suspense>
+        <TopServers />
         <TopResources />
         <TopSellers />
       </Body>

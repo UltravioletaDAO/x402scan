@@ -1,8 +1,20 @@
 import z from "zod";
 
 import { runBaseSqlQuery } from "./query";
+import { ethereumAddressSchema } from "@/lib/schemas";
 
-export const getBucketedStatistics = async () => {
+export const bucketedStatisticsInputSchema = z.object({
+  addresses: z.array(ethereumAddressSchema).optional(),
+});
+
+export const getBucketedStatistics = async (
+  input: z.input<typeof bucketedStatisticsInputSchema>
+) => {
+  const parseResult = bucketedStatisticsInputSchema.safeParse(input);
+  if (!parseResult.success) {
+    throw new Error("Invalid input: " + parseResult.error.message);
+  }
+  const { addresses } = parseResult.data;
   const outputSchema = z.object({
     week_start: z.coerce.date(),
     total_transactions: z.coerce.bigint(),
@@ -24,6 +36,13 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
         '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', 
         '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6'
     )
+    ${
+      addresses
+        ? `AND parameters['to']::String IN (${addresses
+            .map((a) => `'${a}'`)
+            .join(", ")})`
+        : ""
+    }
 GROUP BY week_start
 ORDER BY week_start ASC;
   `;

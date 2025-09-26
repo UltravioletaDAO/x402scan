@@ -1,56 +1,48 @@
-import { api } from "@/trpc/server";
-import { TransactionsChart } from "./charts/transactions";
-import { VolumeChart } from "./charts/volume";
-import { convertTokenAmount } from "@/lib/token";
-import { BuyersSellersChart } from "./charts/buyers-sellers";
+import React, { Suspense } from "react";
+
+import { ErrorBoundary } from "react-error-boundary";
+
+import { Card } from "@/components/ui/card";
+
+import { api, HydrateClient } from "@/trpc/server";
+
+import { OverallCharts, LoadingOverallCharts } from "./charts";
+import { Section } from "../utils";
 
 export const OverallStats = async () => {
-  const stats = await api.stats.getBucketedStatistics();
+  void api.stats.getOverallStatistics.prefetch({});
+  void api.stats.getBucketedStatistics.prefetch({});
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <TransactionsChart
-        data={stats.map((stat) => ({
-          transactions: Number(stat.total_transactions),
-          timestamp: stat.week_start.toISOString(),
-        }))}
-      />
-      <VolumeChart
-        data={stats.map((stat) => ({
-          volume: Number(convertTokenAmount(stat.total_amount)),
-          timestamp: stat.week_start.toISOString(),
-        }))}
-      />
-      <BuyersSellersChart
-        data={stats.map((stat) => ({
-          buyers: Number(stat.unique_buyers),
-          sellers: Number(stat.unique_sellers),
-          timestamp: stat.week_start.toISOString(),
-        }))}
-      />
-      {/* <OverallStatsCard
-        title="Unique Buyers"
-        values={stats.map((stat) => ({
-          value: stat.unique_buyers,
-          date: stat.week_start,
-        }))}
-        formatOptions={{
-          notation: "compact",
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 0,
-        }}
-      />
-      <OverallStatsCard
-        title="Unique Sellers"
-        values={stats.map((stat) => ({
-          value: stat.unique_sellers,
-          date: stat.week_start,
-        }))}
-        formatOptions={{
-          notation: "compact",
-          maximumFractionDigits: 2,
-          minimumFractionDigits: 0,
-        }}
-      /> */}
-    </div>
+    <HydrateClient>
+      <ActivityContainer>
+        <ErrorBoundary
+          fallback={<p>There was an error loading the activity data</p>}
+        >
+          <Suspense fallback={<LoadingOverallCharts />}>
+            <OverallCharts />
+          </Suspense>
+        </ErrorBoundary>
+      </ActivityContainer>
+    </HydrateClient>
+  );
+};
+
+export const LoadingEarnings = () => {
+  return (
+    <ActivityContainer>
+      <LoadingOverallCharts />
+    </ActivityContainer>
+  );
+};
+
+const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <Section
+      title="Overall Stats"
+      description="Global statistics for the x402 ecosystem"
+    >
+      <Card className="p-0 overflow-hidden relative flex-1">{children}</Card>
+    </Section>
   );
 };

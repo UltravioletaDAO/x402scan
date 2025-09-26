@@ -1,8 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+
 import { Copyable } from "./copyable";
+
+import { cn, formatAddress } from "@/lib/utils";
 
 interface Props {
   address: string;
@@ -17,7 +19,7 @@ export const Address: React.FC<Props> = ({ address, className }) => {
           value={address}
           className={cn("font-mono text-xs border rounded-md px-1", className)}
         >
-          {address.slice(0, 6)}...{address.slice(-6)}
+          {formatAddress(address)}
         </Copyable>
       </TooltipTrigger>
       <TooltipContent>
