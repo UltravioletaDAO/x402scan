@@ -19,6 +19,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
   tooltipRows,
   height = 350,
   margin = { top: 0, right: 0, left: 0, bottom: 0 },
+  yAxes,
 }: ChartProps<T> & { type: "bar" | "area" | "line" | "composed" }) => {
   const getContainer = () => {
     switch (type) {
@@ -47,7 +48,13 @@ export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
           interval="preserveEnd"
           height={0}
         />
-        <YAxis domain={["0", "dataMax"]} hide={true} />
+        {yAxes != undefined ? (
+          yAxes.map(({ domain, hide }, index) => (
+            <YAxis key={index} domain={domain} hide={hide} yAxisId={index} />
+          ))
+        ) : (
+          <YAxis domain={["0", "dataMax"]} hide={true} />
+        )}
         {children}
         {tooltipRows && (
           <Tooltip

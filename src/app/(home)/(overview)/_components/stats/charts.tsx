@@ -31,36 +31,6 @@ export const OverallCharts = () => {
         tabs={[
           {
             trigger: {
-              value: "volume",
-              label: "Volume",
-              amount: formatTokenAmount(overallStats.total_amount),
-            },
-            items: {
-              type: "area",
-              areas: [
-                {
-                  dataKey: "volume",
-                  color: "var(--color-primary)",
-                },
-              ],
-            },
-            tooltipRows: [
-              {
-                key: "volume",
-                label: "Volume",
-                getValue: (data) =>
-                  data.toLocaleString(undefined, {
-                    notation: "compact",
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 2,
-                    style: "currency",
-                    currency: "USD",
-                  }),
-              },
-            ],
-          },
-          {
-            trigger: {
               value: "transactions",
               label: "Transactions",
               amount: overallStats.total_transactions.toLocaleString(
@@ -90,6 +60,36 @@ export const OverallCharts = () => {
                     notation: "compact",
                     minimumFractionDigits: 0,
                     maximumFractionDigits: 2,
+                  }),
+              },
+            ],
+          },
+          {
+            trigger: {
+              value: "volume",
+              label: "Volume",
+              amount: formatTokenAmount(overallStats.total_amount),
+            },
+            items: {
+              type: "area",
+              areas: [
+                {
+                  dataKey: "volume",
+                  color: "var(--color-primary)",
+                },
+              ],
+            },
+            tooltipRows: [
+              {
+                key: "volume",
+                label: "Volume",
+                getValue: (data) =>
+                  data.toLocaleString(undefined, {
+                    notation: "compact",
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 2,
+                    style: "currency",
+                    currency: "USD",
                   }),
               },
             ],

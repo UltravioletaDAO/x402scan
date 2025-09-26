@@ -1,3 +1,5 @@
+"use client";
+
 import { useMemo } from "react";
 
 import { Area, Bar, Line } from "recharts";
@@ -18,6 +20,7 @@ export const BaseComposedChart = <
   lines,
   height = 350,
   margin = { top: 4, right: 6, left: 6, bottom: 0 },
+  yAxes,
 }: ComposedChartProps<T>) => {
   return (
     <BaseChart
@@ -26,6 +29,7 @@ export const BaseComposedChart = <
       height={height}
       tooltipRows={tooltipRows}
       margin={margin}
+      yAxes={yAxes}
     >
       <defs>
         {bars.map(({ dataKey, color }) => (

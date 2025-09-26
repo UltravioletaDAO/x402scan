@@ -1,6 +1,5 @@
 import { Body, Heading } from "../../_components/layout/page-utils";
 import { TopSellers } from "./_components/tables/top-sellers";
-import { TopResources } from "./_components/tables/top-resources";
 import { OverallStats } from "./_components/stats";
 import { Suspense } from "react";
 import { TopServers } from "./_components/known-sellers";
@@ -17,7 +16,6 @@ export default async function Home() {
           <OverallStats />
         </Suspense>
         <TopServers />
-        <TopResources />
         <TopSellers />
       </Body>
     </div>

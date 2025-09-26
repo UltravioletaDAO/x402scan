@@ -1,3 +1,5 @@
+import type { AxisDomain } from "recharts/types/util/types";
+
 export interface TooltipRowProps<
   T extends Record<string, number>,
   K extends keyof T = keyof T
@@ -19,9 +21,14 @@ export interface ChartProps<T extends Record<string, number>> {
   tooltipRows?: Array<TooltipRowProps<T>>;
   height?: number | string;
   margin?: { top: number; right: number; left: number; bottom: number };
+  yAxes?: Array<{
+    domain: AxisDomain;
+    hide: boolean;
+  }>;
 }
 
 export type Series<T extends Record<string, number>, S> = S & {
+  yAxisId?: number;
   dataKey: keyof T;
   color: string;
 };
