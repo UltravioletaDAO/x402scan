@@ -1,0 +1,336 @@
+import { z } from 'zod';
+import { x402ResponseSchema, type x402Response, schemes } from 'x402/types';
+
+// ==================== MAIN EXPORTS ====================
+
+/**
+ * Parse and validate x402 response data with lenient error field handling
+ * Returns enhanced response with normalized, strongly-typed outputSchema
+ */
+export function parseX402Response(data: unknown): Result<ParsedX402Response> {
+  const errors: string[] = [];
+
+  // Layer 1: Unwrap response body if needed
+  const unwrapped = unwrapResponseBody(data, errors);
+  if (errors.length > 0) {
+    return { success: false, data: null, errors };
+  }
+
+  // Layer 2: Parse x402 response with lenient error handling
+  const parseResult = parseRawX402Response(unwrapped);
+  if (!parseResult.success) {
+    const issues = parseResult.error?.issues ?? [];
+    issues.forEach((issue: any) => {
+      const path = issue.path.length > 0 ? issue.path.join('.') : '(root)';
+      errors.push(`${path}: ${issue.message}`);
+    });
+    return { success: false, data: null, errors };
+  }
+
+  // Layer 3: Enhance response by normalizing all outputSchemas
+  const enhanced = enhanceX402Response(parseResult.data);
+
+  return { success: true, data: enhanced, errors };
+}
+
+
+// ==================== TYPES ====================
+
+export type NormalizedInputSchema = {
+  queryParams: Record<string, FieldDef>;
+  bodyFields: Record<string, FieldDef>;
+  bodyType?: string;
+  headerFields?: Record<string, FieldDef>;
+};
+
+export type FieldDef = {
+  type?: string;
+  required?: boolean;
+  description?: string;
+  enum?: string[];
+  properties?: Record<string, unknown>;
+};
+
+type Result<T> = { success: true; data: T; errors: string[] } | { success: false; data: null; errors: string[] };
+
+// Enhanced x402Response with normalized, strongly-typed outputSchema
+export interface ParsedX402Response extends Omit<x402Response, 'accepts'> {
+  accepts?: Array<ParsedAccept>;
+}
+
+interface ParsedAccept {
+  scheme: (typeof schemes)[number];
+  network: string;
+  maxAmountRequired: string;
+  resource: string;
+  description: string;
+  mimeType: string;
+  payTo: string;
+  maxTimeoutSeconds: number;
+  asset: string;
+  extra?: Record<string, any>;
+  outputSchema?: {
+    input: NormalizedInputSchema;
+    output?: Record<string, unknown>;
+  };
+}
+
+// ==================== LAYER 1: RAW DATA HANDLING ====================
+
+/**
+ * Extract data from potential wrapper object (e.g., { body: "..." })
+ */
+function unwrapResponseBody(raw: unknown, errors: string[]): unknown {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return raw;
+  }
+
+  const wrapper = raw as Record<string, unknown>;
+  if (!('body' in wrapper)) {
+    return raw;
+  }
+
+  const body = wrapper.body;
+  if (typeof body !== 'string') {
+    return raw;
+  }
+
+  try {
+    return JSON.parse(body);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Unknown JSON parse error';
+    errors.push(`Proxy body was not valid JSON: ${message}`);
+    return raw;
+  }
+}
+
+// ==================== LAYER 2: RESPONSE PARSING ====================
+
+/**
+ * Parse raw x402 response with lenient error field handling
+ */
+function parseRawX402Response(data: unknown): { success: true; data: x402Response } | { success: false; error: any } {
+  const strictResult = x402ResponseSchema.safeParse(data);
+  if (strictResult.success) {
+    return { success: true, data: strictResult.data };
+  }
+
+  // Try lenient parsing for responses with error fields
+  return parseWithLenientError(data, strictResult.error);
+}
+
+/**
+ * Handle x402 response with lenient error field parsing
+ */
+function parseWithLenientError(data: unknown, originalError: any): { success: true; data: x402Response } | { success: false; error: any } {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return { success: false, error: originalError };
+  }
+
+  // Check if all errors are just about the error field
+  const errorFieldIssues = originalError.issues.filter((err: any) =>
+    err.path.length === 1 && err.path[0] === 'error'
+  );
+
+  if (errorFieldIssues.length > 0 && originalError.issues.length === errorFieldIssues.length) {
+    // Try parsing without the error field, then add it back
+    const { error, ...dataWithoutError } = data as Record<string, unknown> & { error?: unknown };
+    const lenientResult = x402ResponseSchema.safeParse(dataWithoutError);
+
+    if (lenientResult.success) {
+      return { success: true, data: { ...lenientResult.data, error } as x402Response };
+    }
+  }
+
+  return { success: false, error: originalError };
+}
+
+/**
+ * Enhance x402Response by normalizing all outputSchemas
+ */
+function enhanceX402Response(response: x402Response): ParsedX402Response {
+  const enhanced: ParsedX402Response = {
+    ...response,
+    accepts: response.accepts?.map(accept => enhanceAccept(accept))
+  };
+
+  return enhanced;
+}
+
+/**
+ * Enhance a single accept entry by normalizing its outputSchema
+ */
+function enhanceAccept(accept: any): ParsedAccept {
+  const base: ParsedAccept = {
+    scheme: accept.scheme,
+    network: accept.network,
+    maxAmountRequired: accept.maxAmountRequired,
+    resource: accept.resource,
+    description: accept.description,
+    mimeType: accept.mimeType,
+    payTo: accept.payTo,
+    maxTimeoutSeconds: accept.maxTimeoutSeconds,
+    asset: accept.asset,
+    extra: accept.extra
+  };
+
+  // Extract and normalize outputSchema if present
+  const rawOutputSchema = accept.outputSchema ?? accept.output_schema;
+  if (rawOutputSchema && typeof rawOutputSchema === 'object') {
+    const inputData = extractInputData(rawOutputSchema);
+    const normalizedInput = normalizeInputSchema(inputData);
+
+    // Validate the normalized input
+    const validation = inputSchema.safeParse(normalizedInput);
+    if (validation.success) {
+      base.outputSchema = {
+        input: validation.data,
+        output: (rawOutputSchema as any).output
+      };
+    }
+  }
+
+  return base;
+}
+
+// ==================== LAYER 3: SCHEMA EXTRACTION ====================
+
+/**
+ * Extract input data from outputSchema, handling nested structure
+ */
+function extractInputData(outputSchema: Record<string, unknown>): Record<string, unknown> {
+  const input = outputSchema.input;
+  return input && typeof input === 'object' && !Array.isArray(input)
+    ? input as Record<string, unknown>
+    : {};
+}
+
+// ==================== LAYER 4: NORMALIZATION ====================
+
+/**
+ * Normalize input schema by converting snake_case to camelCase and cleaning field definitions
+ */
+function normalizeInputSchema(input: Record<string, unknown>): NormalizedInputSchema {
+  const normalized = normalizeFieldNames(input);
+
+  return {
+    queryParams: normalizeFieldRecord(normalized.queryParams ?? {}),
+    bodyFields: normalizeFieldRecord(normalized.bodyFields ?? {}),
+    bodyType: typeof normalized.bodyType === 'string' ? normalized.bodyType : undefined,
+    headerFields: normalized.headerFields ? normalizeFieldRecord(normalized.headerFields) : undefined,
+  };
+}
+
+/**
+ * Convert snake_case fields to camelCase
+ */
+function normalizeFieldNames(obj: Record<string, any>): {
+  queryParams?: unknown;
+  bodyFields?: unknown;
+  bodyType?: unknown;
+  headerFields?: unknown;
+} & Record<string, any> {
+  const result = { ...obj };
+
+  // Handle snake_case to camelCase conversion
+  if ('query_params' in obj) {
+    result.queryParams = obj.query_params;
+    delete result.query_params;
+  }
+  if ('body_fields' in obj) {
+    result.bodyFields = obj.body_fields;
+    delete result.body_fields;
+  }
+  if ('body_type' in obj) {
+    result.bodyType = obj.body_type;
+    delete result.body_type;
+  }
+  if ('header_fields' in obj) {
+    result.headerFields = obj.header_fields;
+    delete result.header_fields;
+  }
+
+  return result;
+}
+
+/**
+ * Normalize a record of field definitions
+ */
+function normalizeFieldRecord(record: unknown): Record<string, FieldDef> {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) {
+    return {};
+  }
+
+  const result: Record<string, FieldDef> = {};
+
+  for (const [key, value] of Object.entries(record as Record<string, unknown>)) {
+    const normalized = normalizeFieldDef(value);
+    if (normalized) {
+      result[key] = normalized;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Normalize a single field definition, handling various formats
+ */
+function normalizeFieldDef(field: unknown): FieldDef | null {
+  if (!field) return null;
+
+  // Handle string shorthand
+  if (typeof field === 'string') {
+    return { type: field };
+  }
+
+  // Handle object format
+  if (typeof field === 'object' && !Array.isArray(field)) {
+    const obj = field as Record<string, unknown>;
+    return {
+      type: typeof obj.type === 'string' ? obj.type : undefined,
+      required: typeof obj.required === 'boolean' ? obj.required : undefined,
+      description: typeof obj.description === 'string' ? obj.description : undefined,
+      enum: Array.isArray(obj.enum) && obj.enum.every(x => typeof x === 'string')
+        ? obj.enum as string[]
+        : undefined,
+      properties: obj.properties && typeof obj.properties === 'object' && !Array.isArray(obj.properties)
+        ? obj.properties as Record<string, unknown>
+        : undefined,
+    };
+  }
+
+  return null;
+}
+
+// ==================== SCHEMAS (Implementation Details) ====================
+
+const fieldDefSchema = z.object({
+  type: z.string().optional(),
+  required: z.boolean().optional(),
+  description: z.string().optional(),
+  enum: z.array(z.string()).optional(),
+  properties: z.record(z.string(), z.unknown()).optional(),
+});
+
+const inputSchema = z.object({
+  queryParams: z.record(z.string(), fieldDefSchema),
+  bodyFields: z.record(z.string(), fieldDefSchema),
+  bodyType: z.string().optional(),
+  headerFields: z.record(z.string(), fieldDefSchema).optional(),
+});
+
+export const outputSchema = z.object({
+  input: z.object({
+    type: z.literal('http'),
+    method: z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']),
+    discoverable: z.boolean().optional(),
+    queryParams: z.record(z.string(), fieldDefSchema).optional(),
+    bodyFields: z.record(z.string(), fieldDefSchema).optional(),
+    bodyType: z.enum(['json', 'form-data', 'text']).optional(),
+    headerFields: z.record(z.string(), fieldDefSchema).optional(),
+  }),
+  output: z.record(z.string(), z.unknown()).optional(),
+});
+
+export type OutputSchema = z.infer<typeof outputSchema>;
