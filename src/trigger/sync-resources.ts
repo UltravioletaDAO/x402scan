@@ -27,8 +27,6 @@ export const syncResourcesTask = schedules.task({
       scheduleId: payload.scheduleId,
     });
 
-    logger.
-
     try {
       // Step 1: Fetch facilitator resources
       logger.info("Fetching facilitator resources from CDP");
