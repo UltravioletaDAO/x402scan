@@ -24,12 +24,12 @@ export const OverallCharts = () => {
 
   const chartData: ChartData<{
     transactions: number;
-    volume: number;
+    totalAmount: number;
     buyers: number;
     sellers: number;
   }>[] = bucketedStats.map((stat) => ({
     transactions: Number(stat.total_transactions),
-    volume: Number(convertTokenAmount(stat.total_amount)),
+    totalAmount: parseFloat(convertTokenAmount(stat.total_amount).toString()),
     buyers: Number(stat.unique_buyers),
     sellers: Number(stat.unique_sellers),
     timestamp: stat.bucket_start.toISOString(),
@@ -84,19 +84,19 @@ export const OverallCharts = () => {
               type: "area",
               areas: [
                 {
-                  dataKey: "volume",
+                  dataKey: "totalAmount",
                   color: "var(--color-primary)",
                 },
               ],
             },
             tooltipRows: [
               {
-                key: "volume",
+                key: "totalAmount",
                 label: "Volume",
                 getValue: (data) =>
                   data.toLocaleString(undefined, {
                     notation: "compact",
-                    minimumFractionDigits: 0,
+                    minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                     style: "currency",
                     currency: "USD",
