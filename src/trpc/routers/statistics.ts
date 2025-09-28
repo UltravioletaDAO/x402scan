@@ -1,4 +1,5 @@
 import {
+  getFirstTransferTimestamp,
   getOverallStatistics,
   overallStatisticsInputSchema,
 } from "@/services/cdp/sql/overall-statistics";
@@ -8,6 +9,7 @@ import {
 } from "@/services/cdp/sql/bucketed-statistics";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
+import { firstTransferInputSchema } from "@/services/cdp/sql/first-transfer";
 
 export const statisticsRouter = createTRPCRouter({
   getOverallStatistics: publicProcedure
@@ -19,5 +21,11 @@ export const statisticsRouter = createTRPCRouter({
     .input(bucketedStatisticsInputSchema)
     .query(async ({ input }) => {
       return await getBucketedStatistics(input);
+    }),
+
+  getFirstTransferTimestamp: publicProcedure
+    .input(firstTransferInputSchema)
+    .query(async ({ input }) => {
+      return await getFirstTransferTimestamp(input);
     }),
 });

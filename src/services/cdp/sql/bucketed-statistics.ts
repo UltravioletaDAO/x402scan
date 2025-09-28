@@ -2,9 +2,20 @@ import z from "zod";
 
 import { runBaseSqlQuery } from "./query";
 import { ethereumAddressSchema } from "@/lib/schemas";
+import { subMonths } from "date-fns";
+import { formatDateForSql } from "./lib";
 
 export const bucketedStatisticsInputSchema = z.object({
   addresses: z.array(ethereumAddressSchema).optional(),
+  startDate: z
+    .date()
+    .optional()
+    .default(() => subMonths(new Date(), 1)),
+  endDate: z
+    .date()
+    .optional()
+    .default(() => new Date()),
+  numBuckets: z.number().optional().default(48),
 });
 
 export const getBucketedStatistics = async (
@@ -14,17 +25,22 @@ export const getBucketedStatistics = async (
   if (!parseResult.success) {
     throw new Error("Invalid input: " + parseResult.error.message);
   }
-  const { addresses } = parseResult.data;
+  const { addresses, startDate, endDate, numBuckets } = parseResult.data;
   const outputSchema = z.object({
-    week_start: z.coerce.date(),
+    bucket_start: z.coerce.date(),
     total_transactions: z.coerce.bigint(),
     total_amount: z.coerce.bigint(),
     unique_buyers: z.coerce.bigint(),
     unique_sellers: z.coerce.bigint(),
   });
 
+  const timeRangeMs = endDate.getTime() - startDate.getTime();
+  const bucketSizeMs = Math.floor(timeRangeMs / numBuckets);
+  const bucketSizeSeconds = Math.max(1, Math.floor(bucketSizeMs / 1000)); // Ensure at least 1 second
+
+  // Use mathematical bucketing approach
   const sql = `SELECT 
-    toMonday(block_timestamp) AS week_start,
+    toDateTime(toUInt32(toUnixTimestamp(block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}) AS bucket_start,
     COUNT(*) AS total_transactions,
     SUM(parameters['value']::UInt256) AS total_amount,
     COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
@@ -43,8 +59,12 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
             .join(", ")})`
         : ""
     }
-GROUP BY week_start
-ORDER BY week_start ASC;
+    ${
+      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ""
+    }
+    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ""}
+GROUP BY bucket_start
+ORDER BY bucket_start ASC;
   `;
 
   const result = await runBaseSqlQuery(sql, z.array(outputSchema));

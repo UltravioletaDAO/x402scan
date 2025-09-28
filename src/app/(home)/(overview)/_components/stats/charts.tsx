@@ -7,10 +7,20 @@ import { api } from "@/trpc/client";
 import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 
 import type { ChartData } from "@/components/ui/charts/chart/types";
+import { useActivityContext } from "@/app/_components/time-range-selector/context";
 
 export const OverallCharts = () => {
-  const [overallStats] = api.stats.getOverallStatistics.useSuspenseQuery({});
-  const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery({});
+  const { startDate, endDate } = useActivityContext();
+
+  const [overallStats] = api.stats.getOverallStatistics.useSuspenseQuery({
+    startDate,
+    endDate,
+  });
+  const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery({
+    numBuckets: 16,
+    startDate,
+    endDate,
+  });
 
   const chartData: ChartData<{
     transactions: number;
@@ -22,7 +32,7 @@ export const OverallCharts = () => {
     volume: Number(convertTokenAmount(stat.total_amount)),
     buyers: Number(stat.unique_buyers),
     sellers: Number(stat.unique_sellers),
-    timestamp: stat.week_start.toISOString(),
+    timestamp: stat.bucket_start.toISOString(),
   }));
 
   return (

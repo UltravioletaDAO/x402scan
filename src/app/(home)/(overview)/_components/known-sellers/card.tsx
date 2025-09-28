@@ -28,7 +28,7 @@ export const KnownSellerCard: React.FC<Props> = async ({ item }) => {
         tx_count: Number(stat.total_transactions),
         total_amount: Number(convertTokenAmount(stat.total_amount)),
         unique_buyers: Number(stat.unique_buyers),
-        timestamp: stat.week_start.toISOString(),
+        timestamp: stat.bucket_start.toISOString(),
       }))
     );
 
