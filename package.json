@@ -17,7 +17,9 @@
     "db:format": "prisma format",
     "db:studio": "prisma studio",
     "check:types": "tsc --noEmit",
-    "check:knip": "knip"
+    "check:knip": "knip",
+    "trigger:dev": "pnpm dlx trigger.dev@latest dev",
+    "trigger:deploy": "pnpm dlx trigger.dev@latest deploy"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
