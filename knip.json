@@ -2,20 +2,22 @@
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "entry": [
     "src/app/**/{error,layout,loading,not-found,page,template,default,forbidden,global-not-found,global-error}.{js,jsx,ts,tsx}",
-    "src/app/**/route.{js,jsx,ts,tsx}"
+    "src/app/**/route.{js,jsx,ts,tsx}",
+    "src/trigger/**/*.ts"
   ],
   "ignoreDependencies": [
     "eslint-config-next",
     "tw-animate-css",
-    "@next/eslint-plugin-next",
-    "eslint-plugin-react-hooks",
-    "@next/eslint-plugin-next",
-    "eslint-plugin-react-hooks"
+    "@trigger.dev/build",
+    "tailwindcss",
+    "tsx",
+    "postcss"
   ],
   "ignore": [
     "/scripts/**",
     "/source.config.ts",
-    "src/app/api/v1/(auth)/middleware.ts"
+    "src/app/api/v1/(auth)/middleware.ts",
+    "trigger.config.ts"
   ],
   "ignoreWorkspaces": []
 }
