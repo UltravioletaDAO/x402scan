@@ -42,6 +42,7 @@
     "@t3-oss/env-nextjs": "^0.13.8",
     "@tanstack/react-query": "^5.90.2",
     "@tanstack/react-table": "^8.21.3",
+    "@trigger.dev/sdk": "^4.0.4",
     "@trpc/client": "^11.5.1",
     "@trpc/react-query": "^11.5.1",
     "@trpc/server": "^11.5.1",
@@ -75,6 +76,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@trigger.dev/build": "^4.0.4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
