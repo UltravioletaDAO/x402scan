@@ -8,7 +8,7 @@ import { ActivityTimeframe } from "@/types/timeframes";
 
 interface ActivityContextType {
   startDate: Date;
-  endDate: Date | undefined;
+  endDate: Date;
   timeframe: ActivityTimeframe;
   setTimeframe: (timeframe: ActivityTimeframe) => void;
   setDateRange: (startDate: Date, endDate: Date) => void;
@@ -44,7 +44,7 @@ export const ActivityContextProvider = ({
   const [timeframe, setTimeframe] = useState<ActivityTimeframe>(
     initialTimeframe ?? ActivityTimeframe.AllTime
   );
-  const [endDate, setEndDate] = useState<Date | undefined>(initialEndDate);
+  const [endDate, setEndDate] = useState<Date>(initialEndDate ?? new Date());
   const [startDate, setStartDate] = useState<Date>(
     initialStartDate ?? creationDate
   );

@@ -41,3 +41,7 @@ export const formatCompactAgo = (date: Date) => {
 export const formatAddress = (address: string) => {
   return address.slice(0, 6) + "..." + address.slice(-6);
 };
+
+export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
+  return ((Number(current) - Number(previous)) / Number(previous)) * 100;
+};

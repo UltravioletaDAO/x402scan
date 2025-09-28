@@ -8,6 +8,8 @@ import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
 
 import type { ChartData } from "@/components/ui/charts/chart/types";
 import { useActivityContext } from "@/app/_components/time-range-selector/context";
+import { differenceInSeconds, subSeconds } from "date-fns";
+import { getPercentageFromBigInt } from "@/lib/utils";
 
 export const OverallCharts = () => {
   const { startDate, endDate } = useActivityContext();
@@ -16,6 +18,11 @@ export const OverallCharts = () => {
     startDate,
     endDate,
   });
+  const [previousOverallStats] =
+    api.stats.getOverallStatistics.useSuspenseQuery({
+      startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
+      endDate: startDate,
+    });
   const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery({
     numBuckets: 16,
     startDate,
@@ -51,6 +58,10 @@ export const OverallCharts = () => {
                   maximumFractionDigits: 2,
                 }
               ),
+              changePercentage: getPercentageFromBigInt(
+                previousOverallStats.total_transactions,
+                overallStats.total_transactions
+              ),
             },
             items: {
               type: "bar",
@@ -79,6 +90,10 @@ export const OverallCharts = () => {
               value: "volume",
               label: "Volume",
               amount: formatTokenAmount(overallStats.total_amount),
+              changePercentage: getPercentageFromBigInt(
+                previousOverallStats.total_amount,
+                overallStats.total_amount
+              ),
             },
             items: {
               type: "area",
@@ -113,6 +128,10 @@ export const OverallCharts = () => {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
               }),
+              changePercentage: getPercentageFromBigInt(
+                previousOverallStats.unique_buyers,
+                overallStats.unique_buyers
+              ),
             },
             items: {
               type: "bar",
@@ -145,6 +164,10 @@ export const OverallCharts = () => {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
               }),
+              changePercentage: getPercentageFromBigInt(
+                previousOverallStats.unique_sellers,
+                overallStats.unique_sellers
+              ),
             },
             items: {
               type: "bar",

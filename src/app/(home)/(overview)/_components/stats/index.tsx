@@ -8,7 +8,7 @@ import { api, HydrateClient } from "@/trpc/server";
 
 import { OverallCharts, LoadingOverallCharts } from "./charts";
 import { Section } from "../utils";
-import { subMonths } from "date-fns";
+import { differenceInSeconds, subMonths, subSeconds } from "date-fns";
 import { ActivityContextProvider } from "@/app/_components/time-range-selector/context";
 import { RangeSelector } from "@/app/_components/time-range-selector/range-selector";
 import { ActivityTimeframe } from "@/types/timeframes";
@@ -21,6 +21,10 @@ export const OverallStats = async () => {
   void api.stats.getOverallStatistics.prefetch({
     startDate,
     endDate,
+  });
+  void api.stats.getOverallStatistics.prefetch({
+    startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
+    endDate: startDate,
   });
   void api.stats.getBucketedStatistics.prefetch({
     startDate,
