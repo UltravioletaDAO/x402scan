@@ -1,6 +1,6 @@
 import type { OAuthConfig, OAuthUserConfig } from "next-auth/providers";
 
-export interface EchoProfile {
+interface EchoProfile {
   sub: string;
   name: string;
   email?: string;
