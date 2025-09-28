@@ -22,7 +22,7 @@ import {
 import { ActivityTimeframe } from "@/types/timeframes";
 
 export const RangeSelector = () => {
-  const { startDate, endDate, setDateRange, timeframe, setTimeframe } =
+  const { startDate, endDate, selectTimeframe, timeframe, setCustomTimeframe } =
     useActivityContext();
 
   // Get only the numeric enum values
@@ -58,7 +58,7 @@ export const RangeSelector = () => {
             <CalendarDays className="size-4 text-foreground/50" />
             {timeframe === ActivityTimeframe.Custom && (
               <span className="text-xs font-normal">
-                {formatRange(startDate, endDate!)}
+                {formatRange(startDate, endDate)}
               </span>
             )}
           </Button>
@@ -72,8 +72,7 @@ export const RangeSelector = () => {
             }}
             onSelect={(dateRange) => {
               if (dateRange?.from && dateRange?.to) {
-                setDateRange(dateRange.from, dateRange.to);
-                setTimeframe(ActivityTimeframe.Custom);
+                setCustomTimeframe(dateRange.from, dateRange.to);
               }
             }}
           />
@@ -82,7 +81,7 @@ export const RangeSelector = () => {
       <Select
         value={timeframe.toString()}
         onValueChange={(value) => {
-          setTimeframe(Number(value));
+          selectTimeframe(Number(value));
         }}
       >
         <SelectTrigger className="rounded-l-none border border-l-[0.5px] shadow-xs">

@@ -10,18 +10,18 @@ interface ActivityContextType {
   startDate: Date;
   endDate: Date;
   timeframe: ActivityTimeframe;
-  setTimeframe: (timeframe: ActivityTimeframe) => void;
-  setDateRange: (startDate: Date, endDate: Date) => void;
+  selectTimeframe: (timeframe: ActivityTimeframe) => void;
+  setCustomTimeframe: (startDate: Date, endDate: Date) => void;
 }
 
 const ActivityContext = createContext<ActivityContextType>({
   startDate: new Date(),
   endDate: new Date(),
   timeframe: ActivityTimeframe.SevenDays,
-  setTimeframe: () => {
+  selectTimeframe: () => {
     void 0;
   },
-  setDateRange: () => {
+  setCustomTimeframe: () => {
     void 0;
   },
 });
@@ -66,9 +66,21 @@ export const ActivityContextProvider = ({
     setEndDate(new Date());
   }, [timeframe, creationDate, isInitial]);
 
-  const setDateRange = (startDate: Date, endDate: Date) => {
+  const selectTimeframe = (timeframe: ActivityTimeframe) => {
+    if (timeframe === ActivityTimeframe.AllTime) {
+      setStartDate(creationDate);
+      setEndDate(new Date());
+      return;
+    }
+    setStartDate(subDays(new Date(), timeframe));
+    setEndDate(new Date());
+    setTimeframe(timeframe);
+  };
+
+  const setCustomTimeframe = (startDate: Date, endDate: Date) => {
     setStartDate(startDate);
     setEndDate(endDate);
+    setTimeframe(ActivityTimeframe.Custom);
   };
 
   return (
@@ -77,8 +89,8 @@ export const ActivityContextProvider = ({
         startDate,
         endDate,
         timeframe,
-        setTimeframe,
-        setDateRange,
+        selectTimeframe,
+        setCustomTimeframe,
       }}
     >
       {children}

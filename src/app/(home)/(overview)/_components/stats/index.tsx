@@ -2,8 +2,6 @@ import React, { Suspense } from "react";
 
 import { ErrorBoundary } from "react-error-boundary";
 
-import { Card } from "@/components/ui/card";
-
 import { api, HydrateClient } from "@/trpc/server";
 
 import { OverallCharts, LoadingOverallCharts } from "./charts";
@@ -69,7 +67,9 @@ const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
       description="Global statistics for the x402 ecosystem"
       actions={<RangeSelector />}
     >
-      <Card className="p-0 overflow-hidden relative flex-1">{children}</Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {children}
+      </div>
     </Section>
   );
 };
