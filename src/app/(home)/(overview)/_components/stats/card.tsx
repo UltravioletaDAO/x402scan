@@ -42,12 +42,12 @@ export const OverallStatsCard = <T extends Record<string, number>>({
     <OverallStatsCardContainer
       title={title}
       value={
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2">
           <CardTitle className="text-2xl font-bold">{value}</CardTitle>
           {percentageChange !== undefined && (
             <div
               className={cn(
-                "flex items-center gap-1 px-1 rounded-md",
+                "flex items-center gap-1 px-1 rounded-md text-xs font-mono",
                 percentageChange > 0
                   ? "bg-green-600/10 text-green-600"
                   : percentageChange === 0
@@ -55,7 +55,7 @@ export const OverallStatsCard = <T extends Record<string, number>>({
                   : "bg-red-600/10 text-red-500"
               )}
             >
-              <p className="text-sm">
+              <p>
                 {percentageChange >= 0 ? "+" : ""}
                 {percentageChange.toFixed(2)}%
               </p>

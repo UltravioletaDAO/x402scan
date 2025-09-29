@@ -75,10 +75,6 @@ ORDER BY bucket_start ASC;
 
   const result = await runBaseSqlQuery(sql, z.array(outputSchema));
 
-  if (!addresses) {
-    console.log(result);
-  }
-
   if (!result) {
     return [];
   }

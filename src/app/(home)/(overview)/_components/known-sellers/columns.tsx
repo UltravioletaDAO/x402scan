@@ -21,7 +21,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     header: () => (
       <HeaderCell Icon={Store} label="Server" className="justify-start" />
     ),
-    cell: ({ row }) => <Origins origins={row.original.origins} />,
+    cell: ({ row }) => (
+      <Origins
+        origins={row.original.origins}
+        address={row.original.recipient}
+      />
+    ),
     size: 300,
     loading: () => <OriginsSkeleton />,
   },

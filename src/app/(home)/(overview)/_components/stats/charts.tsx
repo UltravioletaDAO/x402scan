@@ -32,8 +32,6 @@ export const OverallCharts = () => {
     endDate,
   });
 
-  console.log(bucketedStats);
-
   const chartData: ChartData<{
     transactions: number;
     totalAmount: number;

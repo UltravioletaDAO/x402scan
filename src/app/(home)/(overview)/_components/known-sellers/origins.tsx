@@ -1,43 +1,49 @@
-import { Globe } from "lucide-react";
+import { Globe, Server } from "lucide-react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 
 import type { ResourceOrigin } from "@prisma/client";
+import { Address } from "@/components/address";
 
 interface Props {
+  address: string;
   origins: ResourceOrigin[];
 }
 
-export const Origins: React.FC<Props> = ({ origins }) => {
+export const Origins: React.FC<Props> = ({ origins, address }) => {
   if (!origins || origins.length === 0) {
     return null;
   }
 
-  const Origin = ({ origin }: { origin: ResourceOrigin }) => {
+  if (origins.length === 1) {
+    const origin = origins[0];
     return (
-      <OriginsContainer>
+      <div className="flex items-center gap-2">
         {origin.favicon ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={origin.favicon} alt="Favicon" className="size-3" />
+          <img src={origin.favicon} alt="Favicon" className="size-6" />
         ) : (
-          <Globe className="size-3" />
+          <Globe className="size-6" />
         )}
-        <p className="font-mono text-xs">
-          {origin.title ?? new URL(origin.origin).hostname}
-        </p>
-      </OriginsContainer>
+        <div>
+          <h3 className="text-sm font-mono font-semibold">
+            {new URL(origin.origin).hostname}
+          </h3>
+          <Address address={address} className="border-none p-0" />
+        </div>
+      </div>
     );
-  };
+  }
 
   return (
-    <div className="relative w-full max-w-full -mx-2">
-      <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-card to-transparent z-10" />
-      <div className="flex flex-row gap-1 w-full overflow-x-auto no-scrollbar px-2">
-        {origins.map((origin) => (
-          <Origin key={origin.id} origin={origin} />
-        ))}
+    <div className="flex items-center gap-2">
+      <Server className="size-6" />
+      <div>
+        <h3 className="text-sm font-mono font-semibold">
+          {origins.length} servers
+        </h3>
+        <Address address={address} className="border-none p-0" />
       </div>
-      <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-card to-transparent z-10" />
     </div>
   );
 };
