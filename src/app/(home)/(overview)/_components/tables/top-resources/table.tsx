@@ -3,8 +3,8 @@
 import { DataTable } from "@/components/ui/data-table";
 
 import { columns } from "../lib/columns";
-import { limit } from "../lib/defaults";
-import { useSorting } from "../lib/sorting";
+import { limit } from "../../lib/defaults";
+import { useSorting } from "../../lib/sorting";
 
 import { api } from "@/trpc/client";
 
@@ -24,5 +24,11 @@ export const TopResourcesTable = () => {
     }
   );
 
-  return <DataTable columns={columns} data={topSellers.pages[0].items} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={topSellers.pages[0].items}
+      href={(data) => `/recipient/${data.recipient}`}
+    />
+  );
 };

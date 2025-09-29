@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 
-import { Sorting, SortingProvider } from "./sorting";
+import { Sorting, SortingProvider } from "../../lib/sorting";
 import { columns } from "./columns";
 import { DataTable } from "@/components/ui/data-table";
 

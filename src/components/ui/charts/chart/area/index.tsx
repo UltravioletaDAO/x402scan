@@ -17,6 +17,7 @@ export const BaseAreaChart = <
   areas,
   height = 350,
   margin = { top: 4, right: 0, left: 0, bottom: 0 },
+  dataMax,
 }: AreaChartProps<T>) => {
   return (
     <BaseChart
@@ -25,6 +26,7 @@ export const BaseAreaChart = <
       height={height}
       tooltipRows={tooltipRows}
       margin={margin}
+      dataMax={dataMax}
     >
       <defs>
         {areas.map(({ dataKey, color }) => (
@@ -36,8 +38,8 @@ export const BaseAreaChart = <
             x2="0"
             y2="1"
           >
-            <stop offset="0%" stopColor={color} stopOpacity={0.9} />
-            <stop offset="100%" stopColor={color} stopOpacity={0.1} />
+            <stop offset="0%" stopColor={color} stopOpacity={0.4} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
           </linearGradient>
         ))}
       </defs>
@@ -49,8 +51,9 @@ export const BaseAreaChart = <
             isAnimationActive={index === areas.length - 1}
             dataKey={dataKey as string}
             stackId="1"
-            fill={`color-mix(in oklab, ${color} 40%, transparent)`}
+            fill={`url(#${dataKey as string}-gradient)`}
             stroke={color}
+            strokeWidth={1}
             type="monotone"
             {...areaProps}
           />

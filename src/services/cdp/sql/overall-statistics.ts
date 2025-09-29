@@ -3,9 +3,12 @@ import z from "zod";
 import { runBaseSqlQuery } from "./query";
 
 import { ethereumAddressSchema } from "@/lib/schemas";
+import { formatDateForSql } from "./lib";
 
 export const overallStatisticsInputSchema = z.object({
   addresses: z.array(ethereumAddressSchema).optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
 });
 
 export const getOverallStatistics = async (
@@ -15,7 +18,7 @@ export const getOverallStatistics = async (
   if (!parseResult.success) {
     throw new Error("Invalid input: " + parseResult.error.message);
   }
-  const { addresses } = parseResult.data;
+  const { addresses, startDate, endDate } = parseResult.data;
   const outputSchema = z.object({
     total_transactions: z.coerce.bigint(),
     total_amount: z.coerce.bigint(),
@@ -42,6 +45,10 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
             .join(", ")})`
         : ""
     }
+    ${
+      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ""
+    }
+    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ""}
   `;
 
   const result = await runBaseSqlQuery(sql, z.array(outputSchema));
@@ -56,4 +63,55 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
   }
 
   return result[0];
+};
+
+/**
+ * Query to get the blockTimestamp of the first transfer.
+ * Returns the earliest block_timestamp for a Transfer event matching the same filters.
+ */
+export const getFirstTransferTimestamp = async ({
+  addresses,
+  startDate,
+  endDate,
+}: {
+  addresses?: string[];
+  startDate?: Date;
+  endDate?: Date;
+}): Promise<Date | null> => {
+  const sql = `SELECT block_timestamp
+    FROM base.events
+    WHERE event_signature = 'Transfer(address,address,uint256)'
+      AND address = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
+      AND transaction_from IN (
+        '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', 
+        '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6'
+      )
+      ${
+        addresses
+          ? `AND parameters['to']::String IN (${addresses
+              .map((a) => `'${a}'`)
+              .join(", ")})`
+          : ""
+      }
+      ${
+        startDate
+          ? `AND block_timestamp >= '${formatDateForSql(startDate)}'`
+          : ""
+      }
+      ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ""}
+    ORDER BY block_timestamp ASC
+    LIMIT 1
+  `;
+
+  const result = await runBaseSqlQuery(
+    sql,
+    z.array(z.object({ block_timestamp: z.string() }))
+  );
+
+  if (!result || result.length === 0) {
+    return null;
+  }
+
+  // Assuming block_timestamp is an ISO string or compatible with Date
+  return new Date(result[0].block_timestamp);
 };

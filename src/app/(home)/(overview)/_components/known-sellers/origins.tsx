@@ -1,60 +1,92 @@
+import { Globe, Server } from "lucide-react";
+
 import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/trpc/server";
+
 import type { ResourceOrigin } from "@prisma/client";
-import { Globe } from "lucide-react";
+import { Address } from "@/components/address";
+import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Props {
   address: string;
+  origins: ResourceOrigin[];
 }
 
-export const Origins: React.FC<Props> = async ({ address }) => {
-  const origins = await api.origins.getOriginsByAddress(address);
-
+export const Origins: React.FC<Props> = ({ origins, address }) => {
   if (!origins || origins.length === 0) {
     return null;
   }
 
-  const Origin = ({ origin }: { origin: ResourceOrigin }) => {
+  if (origins.length === 1) {
+    const origin = origins[0];
     return (
-      <OriginsContainer>
-        {origin.favicon ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={origin.favicon} alt="Favicon" className="size-3" />
-        ) : (
-          <Globe className="size-3" />
-        )}
-        <p className="font-mono text-xs">
-          {origin.title ?? new URL(origin.origin).hostname}
-        </p>
-      </OriginsContainer>
+      <OriginsContainer
+        Icon={({ className }) =>
+          origin.favicon ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={origin.favicon} alt="Favicon" className={className} />
+          ) : (
+            <Globe className={className} />
+          )
+        }
+        title={new URL(origin.origin).hostname}
+        address={<Address address={address} className="border-none p-0" />}
+      />
     );
-  };
+  }
 
   return (
-    <div className="relative w-full max-w-full">
-      <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-card to-transparent z-10" />
-      <div className="flex flex-row gap-1 w-full overflow-x-auto no-scrollbar px-4">
-        {origins.map((origin) => (
-          <Origin key={origin.id} origin={origin} />
-        ))}
-      </div>
-      <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-card to-transparent z-10" />
-    </div>
+    <OriginsContainer
+      Icon={({ className }) => <Server className={className} />}
+      title={
+        <Tooltip>
+          <TooltipTrigger className="cursor-pointer hover:bg-muted hover:text-muted-foreground rounded-md transition-colors">
+            {origins.length} servers
+          </TooltipTrigger>
+          <TooltipContent>
+            {origins.map((origin) => (
+              <div key={origin.id}>
+                {origin.title ?? new URL(origin.origin).hostname}
+              </div>
+            ))}
+          </TooltipContent>
+        </Tooltip>
+      }
+      address={<Address address={address} className="border-none p-0" />}
+    />
   );
 };
 
 export const OriginsSkeleton = () => {
   return (
-    <OriginsContainer>
-      <Skeleton className="h-3 w-20 my-[2.75px]" />
-    </OriginsContainer>
+    <OriginsContainer
+      Icon={({ className }) => (
+        <Skeleton className={cn("rounded-full", className)} />
+      )}
+      title={<Skeleton className="h-[14px] w-32 my-[3px]" />}
+      address={<Skeleton className="h-3 w-20 my-[2px]" />}
+    />
   );
 };
 
-const OriginsContainer = ({ children }: { children: React.ReactNode }) => {
+interface OriginsContainerProps {
+  Icon: ({ className }: { className: string }) => React.ReactNode;
+  title: React.ReactNode;
+  address: React.ReactNode;
+}
+
+const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
   return (
-    <div className="px-1 border border-border rounded-md w-fit flex items-center gap-1 shrink-0">
-      {children}
+    <div className="flex items-center gap-2">
+      <Icon className="size-6" />
+      <div>
+        <div className="text-sm font-mono font-semibold">{title}</div>
+        <div>{address}</div>
+      </div>
     </div>
   );
 };

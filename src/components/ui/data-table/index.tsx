@@ -20,6 +20,9 @@ import {
 import { Card } from "../card";
 import { Button } from "../button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter } from "next/navigation";
+import type { Route } from "next";
+import { cn } from "@/lib/utils";
 
 export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
   TData,
@@ -28,25 +31,29 @@ export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
   loading?: React.ComponentType;
 };
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData, TValue, AppRoute extends string> {
   columns: ExtendedColumnDef<TData, TValue>[];
   data: TData[];
+  href?: (data: TData) => Route<AppRoute>;
   isLoading?: boolean;
   loadingRowCount?: number;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData, TValue, AppRoute extends string>({
   columns,
   data,
+  href,
   isLoading = false,
   loadingRowCount = 5,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TData, TValue, AppRoute>) {
   const table = useReactTable({
     data: isLoading ? (Array(loadingRowCount).fill(null) as TData[]) : data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
+  const router = useRouter();
 
   return (
     <div className="flex flex-col gap-2">
@@ -98,6 +105,14 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  onClick={
+                    href
+                      ? () => {
+                          router.push(href(row.original));
+                        }
+                      : undefined
+                  }
+                  className={cn(href && "cursor-pointer")}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell

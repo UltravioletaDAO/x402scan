@@ -1,4 +1,6 @@
 import type { AxisDomain } from "recharts/types/util/types";
+import type { BarChartProps } from "./bar/types";
+import type { AreaChartProps } from "./area/types";
 
 export interface TooltipRowProps<
   T extends Record<string, number>,
@@ -25,6 +27,7 @@ export interface ChartProps<T extends Record<string, number>> {
     domain: AxisDomain;
     hide: boolean;
   }>;
+  dataMax?: number | string;
 }
 
 export type Series<T extends Record<string, number>, S> = S & {
@@ -32,3 +35,13 @@ export type Series<T extends Record<string, number>, S> = S & {
   dataKey: keyof T;
   color: string;
 };
+
+export type ChartItems<T extends Record<string, number>> =
+  | {
+      type: "bar";
+      bars: BarChartProps<T>["bars"];
+    }
+  | {
+      type: "area";
+      areas: AreaChartProps<T>["areas"];
+    };

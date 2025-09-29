@@ -23,6 +23,7 @@ export default defineConfig(
       "**/*.d.ts",
       ".source/**",
       "src/convex/_generated/**",
+      ".trigger/**",
     ],
   },
   ...compat.extends("next/core-web-vitals"),
