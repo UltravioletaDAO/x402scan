@@ -1,6 +1,6 @@
 import { api, HydrateClient } from "@/trpc/server";
 
-import { SellersTable } from "../lib";
+import { LoadingSellersTable, SellersTable } from "../lib";
 
 import { TopSellersTable } from "./table";
 
@@ -14,12 +14,28 @@ export const TopSellers = () => {
 
   return (
     <HydrateClient>
-      <SellersTable
-        title="Top Sellers"
-        description="Top sellers by tx count, total amount, and latest transaction"
-      >
+      <TopSellersContainer>
         <TopSellersTable />
-      </SellersTable>
+      </TopSellersContainer>
     </HydrateClient>
+  );
+};
+
+export const LoadingTopSellers = () => {
+  return (
+    <TopSellersContainer>
+      <LoadingSellersTable />
+    </TopSellersContainer>
+  );
+};
+
+const TopSellersContainer = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <SellersTable
+      title="Top Sellers"
+      description="Top sellers by tx count, total amount, and latest transaction"
+    >
+      {children}
+    </SellersTable>
   );
 };

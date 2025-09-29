@@ -52,7 +52,7 @@ export const OverallStats = async () => {
   );
 };
 
-export const LoadingEarnings = () => {
+export const LoadingOverallStats = () => {
   return (
     <ActivityContainer>
       <LoadingOverallCharts />

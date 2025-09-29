@@ -35,22 +35,38 @@ export const TopServers = async () => {
           initialStartDate={startDate}
           initialTimeframe={ActivityTimeframe.ThirtyDays}
         >
-          <Section
-            title="Top Servers"
-            description="Top addresses that have received x402 transfers and are listed in the Bazaar"
-            actions={
-              <div className="flex items-center gap-2">
-                <RangeSelector />
-                <Sorting />
-              </div>
-            }
-          >
+          <TopServersContainer>
             <Suspense fallback={<LoadingKnownSellersTable />}>
               <KnownSellersTable />
             </Suspense>
-          </Section>
+          </TopServersContainer>
         </TimeRangeProvider>
       </SortingProvider>
     </HydrateClient>
+  );
+};
+
+export const LoadingTopServers = () => {
+  return (
+    <TopServersContainer>
+      <LoadingKnownSellersTable />
+    </TopServersContainer>
+  );
+};
+
+const TopServersContainer = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <Section
+      title="Top Servers"
+      description="Top addresses that have received x402 transfers and are listed in the Bazaar"
+      actions={
+        <div className="flex items-center gap-2">
+          <RangeSelector />
+          <Sorting />
+        </div>
+      }
+    >
+      {children}
+    </Section>
   );
 };

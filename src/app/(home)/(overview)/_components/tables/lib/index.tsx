@@ -25,19 +25,14 @@ export const SellersTable: React.FC<Props> = ({
           </div>
           <p className="text-muted-foreground">{description}</p>
         </div>
-        <Suspense
-          fallback={
-            <DataTable
-              columns={columns}
-              data={[]}
-              loadingRowCount={10}
-              isLoading
-            />
-          }
-        >
-          {children}
-        </Suspense>
+        <Suspense fallback={<LoadingSellersTable />}>{children}</Suspense>
       </div>
     </SortingProvider>
+  );
+};
+
+export const LoadingSellersTable = () => {
+  return (
+    <DataTable columns={columns} data={[]} loadingRowCount={10} isLoading />
   );
 };
