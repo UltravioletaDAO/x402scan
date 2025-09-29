@@ -13,7 +13,7 @@ import {
 import { formatTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
-import { Origins, OriginsSkeleton } from './origins';
+import { Origins, OriginsSkeleton } from '../../../../_components/origins';
 import { cn, formatCompactAgo } from '@/lib/utils';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';

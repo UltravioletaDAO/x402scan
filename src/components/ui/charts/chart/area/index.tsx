@@ -16,7 +16,7 @@ export const BaseAreaChart = <
   tooltipRows,
   areas,
   height = 350,
-  margin = { top: 4, right: 0, left: 0, bottom: 0 },
+  margin = { top: 4, right: 0, left: 0, bottom: 4 },
   dataMax,
 }: AreaChartProps<T>) => {
   return (

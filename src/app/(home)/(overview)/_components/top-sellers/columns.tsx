@@ -1,16 +1,18 @@
 'use client';
 
-import type { LucideIcon } from 'lucide-react';
 import { Calendar, DollarSign, Hash, Store } from 'lucide-react';
 
-import { formatTokenAmount } from '@/lib/token';
+import { HeaderCell } from '@/components/ui/data-table/header-cell';
 
-import type { RouterOutputs } from '@/trpc/client';
 import { Seller, SellerSkeleton } from './seller';
-import { cn, formatCompactAgo } from '@/lib/utils';
+
+import { formatTokenAmount } from '@/lib/token';
+import { formatCompactAgo } from '@/lib/utils';
+
+import { Skeleton } from '@/components/ui/skeleton';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import { Skeleton } from '@/components/ui/skeleton';
+import type { RouterOutputs } from '@/trpc/client';
 
 type ColumnType = RouterOutputs['sellers']['list']['all']['items'][number];
 
@@ -79,23 +81,3 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];
-
-interface HeaderCellProps {
-  Icon: LucideIcon;
-  label: string;
-  className?: string;
-}
-
-const HeaderCell: React.FC<HeaderCellProps> = ({ Icon, label, className }) => {
-  return (
-    <div
-      className={cn(
-        'flex items-center justify-center gap-2 text-sm',
-        className
-      )}
-    >
-      <Icon className="size-4" />
-      {label}
-    </div>
-  );
-};
