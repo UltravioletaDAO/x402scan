@@ -1,7 +1,6 @@
 import {
   useMutation,
   useQuery,
-  useQueryClient,
   type UseMutationOptions,
 } from "@tanstack/react-query";
 import { useMemo } from "react";

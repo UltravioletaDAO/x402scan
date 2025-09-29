@@ -19,7 +19,7 @@ export default function HomeLayout({
           },
           {
             label: "Resource List",
-            href: "/resources-list",
+            href: "/resource-list",
           },
         ]}
       />
