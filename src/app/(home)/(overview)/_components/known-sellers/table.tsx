@@ -17,7 +17,13 @@ export const KnownSellersTable = () => {
     sorting,
   });
 
-  return <DataTable columns={columns} data={topSellers.items} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={topSellers.items}
+      href={(data) => `/recipient/${data.recipient}`}
+    />
+  );
 };
 
 export const LoadingKnownSellersTable = () => {

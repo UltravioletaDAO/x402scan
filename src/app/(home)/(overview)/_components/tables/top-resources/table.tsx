@@ -24,5 +24,11 @@ export const TopResourcesTable = () => {
     }
   );
 
-  return <DataTable columns={columns} data={topSellers.pages[0].items} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={topSellers.pages[0].items}
+      href={(data) => `/recipient/${data.recipient}`}
+    />
+  );
 };
