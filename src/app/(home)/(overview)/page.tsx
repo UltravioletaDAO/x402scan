@@ -2,7 +2,7 @@ import { Body, Heading } from '../../_components/layout/page-utils';
 import { TopSellers } from './_components/top-sellers';
 import { OverallStats } from './_components/stats';
 import { TopServers } from './_components/known-sellers';
-import { LatestTransactions } from './_components/transactions';
+import { LatestTransactions } from './_components/latest-transactions';
 
 export default async function Home() {
   return (
