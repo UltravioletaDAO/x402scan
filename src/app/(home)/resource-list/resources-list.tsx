@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Stepper } from "./stepper";
+import { GenericResourceCaller } from "./generic-resource-caller";
 
 // TODO: Fix this type to use Prisma.
 interface ResourcesListProps {
@@ -54,11 +53,7 @@ export function ResourcesList({ accepts }: ResourcesListProps) {
       ) : (
         <div className="space-y-3">
           {filteredAccepts.map((accept) => (
-            <Card key={accept.id}>
-              <CardContent className="p-4">
-                <Stepper resource={accept.resource} bazaarMethod={accept.outputSchema?.input?.method} />
-              </CardContent>
-            </Card>
+            <GenericResourceCaller key={accept.id} resource={accept.resource} bazaarMethod={accept.outputSchema?.input?.method} />
           ))}
         </div>
       )}

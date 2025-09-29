@@ -10,13 +10,13 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 
-type Step1Props = {
+type HeaderProps = {
     resource: string;
     bazaarMethod?: string;
     onX402Response?: (response: ParsedX402Response | null) => void;
 };
 
-export function Step1({ resource, bazaarMethod: method, onX402Response }: Step1Props) {
+export function Header({ resource, bazaarMethod: method, onX402Response }: HeaderProps) {
     const { isLoading, response, rawResponse, error, x402Response, parseErrors } = useX402Test(
         resource,
         { method: method || "GET" },

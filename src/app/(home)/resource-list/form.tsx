@@ -41,7 +41,7 @@ type FieldDefinition = {
     required?: boolean;
 };
 
-type Step2Props = {
+type FormProps = {
     resource: string;
     x402Response: ParsedX402Response;
     bazaarMethod?: string;
@@ -74,7 +74,7 @@ function getFields(record: Record<string, unknown> | null | undefined): FieldDef
     });
 }
 
-export function Step2({ resource, x402Response }: Step2Props) {
+export function Form({ resource, x402Response }: FormProps) {
     const inputSchema = useMemo(() => {
         return x402Response.accepts?.[0]?.outputSchema?.input ?? null;
     }, [x402Response]);

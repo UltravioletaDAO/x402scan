@@ -7,7 +7,7 @@ export default async function Resources2Page() {
 
   return (
     <div>
-      <Heading title="Resources2" />
+      <Heading title="All Resources" />
       <Body>
         <ResourcesList accepts={accepts} />
       </Body>
