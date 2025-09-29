@@ -17,7 +17,7 @@
     "db:reset": "prisma migrate reset",
     "db:format": "prisma format",
     "db:studio": "prisma studio",
-    "check:types": "tsc --noEmit",
+    "check:types": "next typegen && tsc --noEmit",
     "check:knip": "knip",
     "check:format": "prettier --check .",
     "trigger:dev": "trigger dev",
