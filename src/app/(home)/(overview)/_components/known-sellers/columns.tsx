@@ -1,24 +1,26 @@
 'use client';
 
-import type { LucideIcon } from 'lucide-react';
 import {
   Activity,
   ArrowLeftRight,
   Calendar,
   DollarSign,
-  Store,
+  Server,
   Users,
 } from 'lucide-react';
 
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
+
+import { Origins, OriginsSkeleton } from '../../../../_components/origins';
+
+import { cn, formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
-import type { RouterOutputs } from '@/trpc/client';
-import { Origins, OriginsSkeleton } from '../../../../_components/origins';
-import { cn, formatCompactAgo } from '@/lib/utils';
-
+import type { LucideIcon } from 'lucide-react';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
-import { Skeleton } from '@/components/ui/skeleton';
-import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
+import type { RouterOutputs } from '@/trpc/client';
 
 type ColumnType = RouterOutputs['sellers']['list']['bazaar']['items'][number];
 
@@ -26,7 +28,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: 'recipient',
     header: () => (
-      <HeaderCell Icon={Store} label="Recipient" className="justify-start" />
+      <HeaderCell Icon={Server} label="Server" className="justify-start" />
     ),
     cell: ({ row }) => (
       <Origins

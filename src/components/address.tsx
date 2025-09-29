@@ -11,6 +11,7 @@ interface Props {
   className?: string;
   hideTooltip?: boolean;
   side?: 'top' | 'bottom' | 'left' | 'right';
+  disableCopy?: boolean;
 }
 
 export const Address: React.FC<Props> = ({
@@ -18,10 +19,20 @@ export const Address: React.FC<Props> = ({
   className,
   hideTooltip,
   side,
+  disableCopy,
 }) => {
+  const formattedAddress = formatAddress(address);
+
+  if (disableCopy) {
+    return (
+      <span className={cn('font-mono text-xs', className)}>
+        {formattedAddress}
+      </span>
+    );
+  }
   const addressComponent = (
     <Copyable value={address} className={cn('font-mono text-xs', className)}>
-      {formatAddress(address)}
+      {formattedAddress}
     </Copyable>
   );
 
@@ -31,7 +42,7 @@ export const Address: React.FC<Props> = ({
 
   return (
     <Tooltip>
-      <TooltipTrigger>{addressComponent}</TooltipTrigger>
+      <TooltipTrigger asChild>{addressComponent}</TooltipTrigger>
       <TooltipContent side={side}>
         <p className="font-mono">{address}</p>
       </TooltipContent>

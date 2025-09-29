@@ -6,12 +6,19 @@ import { Address } from '@/components/address';
 
 import { Origins } from '@/app/_components/origins';
 import { api } from '@/trpc/client';
+import { cn } from '@/lib/utils';
 
 interface Props {
   address: string;
+  disableCopy?: boolean;
+  addressClassName?: string;
 }
 
-export const Seller: React.FC<Props> = ({ address }) => {
+export const Seller: React.FC<Props> = ({
+  address,
+  addressClassName,
+  disableCopy,
+}) => {
   const { data: origins, isLoading } = api.origins.getOriginsByAddress.useQuery(
     address,
     {
@@ -24,12 +31,18 @@ export const Seller: React.FC<Props> = ({ address }) => {
   }
 
   if (!origins || origins.length === 0) {
-    return <Address address={address} className="text-sm font-medium" />;
+    return (
+      <Address
+        address={address}
+        className={cn('text-sm font-medium', addressClassName)}
+        disableCopy={disableCopy}
+      />
+    );
   }
 
   return <Origins origins={origins} address={address} />;
 };
 
 export const SellerSkeleton = () => {
-  return <Skeleton className="h-3 w-20 my-[2.75px]" />;
+  return <Skeleton className="h-4 w-32" />;
 };

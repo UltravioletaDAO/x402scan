@@ -23,7 +23,7 @@ export const HeaderCard: React.FC<Props> = async ({ address }) => {
   const origins = await api.origins.getOriginsByAddress(address);
 
   return (
-    <Card className={cn('relative mt-10 md:mt-12 mb-12')}>
+    <Card className={cn('relative mt-10 md:mt-12')}>
       <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
         <Avatar
           src={origins.length === 1 ? origins[0].favicon : null}
