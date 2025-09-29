@@ -1,9 +1,9 @@
-import z from "zod";
+import z from 'zod';
 
-import { runBaseSqlQuery } from "./query";
-import { ethereumAddressSchema } from "@/lib/schemas";
-import { subMonths } from "date-fns";
-import { formatDateForSql } from "./lib";
+import { runBaseSqlQuery } from './query';
+import { ethereumAddressSchema } from '@/lib/schemas';
+import { subMonths } from 'date-fns';
+import { formatDateForSql } from './lib';
 
 export const bucketedStatisticsInputSchema = z.object({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -19,11 +19,11 @@ export const bucketedStatisticsInputSchema = z.object({
 });
 
 export const getBucketedStatistics = async (
-  input: z.input<typeof bucketedStatisticsInputSchema>,
+  input: z.input<typeof bucketedStatisticsInputSchema>
 ) => {
   const parseResult = bucketedStatisticsInputSchema.safeParse(input);
   if (!parseResult.success) {
-    throw new Error("Invalid input: " + parseResult.error.message);
+    throw new Error('Invalid input: ' + parseResult.error.message);
   }
   const { addresses, startDate, endDate, numBuckets } = parseResult.data;
   const outputSchema = z.object({
@@ -61,14 +61,14 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
     ${
       addresses
         ? `AND parameters['to']::String IN (${addresses
-            .map((a) => `'${a}'`)
-            .join(", ")})`
-        : ""
+            .map(a => `'${a}'`)
+            .join(', ')})`
+        : ''
     }
     ${
-      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ""
+      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ''
     }
-    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ""}
+    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
 GROUP BY bucket_start
 ORDER BY bucket_start ASC;
   `;
@@ -82,7 +82,7 @@ ORDER BY bucket_start ASC;
   // Generate complete time series with zero values for missing periods
   const completeTimeSeries = [];
   const dataMap = new Map(
-    result.map((item) => [
+    result.map(item => [
       item.bucket_start.getTime(),
       {
         bucket_start: item.bucket_start,
@@ -91,7 +91,7 @@ ORDER BY bucket_start ASC;
         unique_buyers: item.unique_buyers,
         unique_sellers: item.unique_sellers,
       },
-    ]),
+    ])
   );
 
   // Generate all expected time buckets using consistent bucket alignment

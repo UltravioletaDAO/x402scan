@@ -1,18 +1,18 @@
-"use client";
+'use client';
 
-import { api } from "@/trpc/client";
+import { api } from '@/trpc/client';
 
-import { differenceInSeconds, subSeconds } from "date-fns";
+import { differenceInSeconds, subSeconds } from 'date-fns';
 
-import { useTimeRangeContext } from "@/app/_components/time-range-selector/context";
+import { useTimeRangeContext } from '@/app/_components/time-range-selector/context';
 
-import { LoadingOverallStatsCard, OverallStatsCard } from "./card";
+import { LoadingOverallStatsCard, OverallStatsCard } from './card';
 
-import { getPercentageFromBigInt } from "@/lib/utils";
-import { convertTokenAmount, formatTokenAmount } from "@/lib/token";
+import { getPercentageFromBigInt } from '@/lib/utils';
+import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 
-import type { ChartData } from "@/components/ui/charts/chart/types";
-import { ActivityTimeframe } from "@/types/timeframes";
+import type { ChartData } from '@/components/ui/charts/chart/types';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 export const OverallCharts = () => {
   const { startDate, endDate, timeframe } = useTimeRangeContext();
@@ -37,7 +37,7 @@ export const OverallCharts = () => {
     totalAmount: number;
     buyers: number;
     sellers: number;
-  }>[] = bucketedStats.map((stat) => ({
+  }>[] = bucketedStats.map(stat => ({
     transactions: Number(stat.total_transactions),
     totalAmount: parseFloat(convertTokenAmount(stat.total_amount).toString()),
     buyers: Number(stat.unique_buyers),
@@ -55,25 +55,25 @@ export const OverallCharts = () => {
             ? undefined
             : getPercentageFromBigInt(
                 previousOverallStats.total_amount,
-                overallStats.total_amount,
+                overallStats.total_amount
               )
         }
         items={{
-          type: "area",
-          areas: [{ dataKey: "totalAmount", color: "var(--color-primary)" }],
+          type: 'area',
+          areas: [{ dataKey: 'totalAmount', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: "totalAmount",
-            label: "Volume",
-            getValue: (data) =>
+            key: 'totalAmount',
+            label: 'Volume',
+            getValue: data =>
               data.toLocaleString(undefined, {
-                notation: "compact",
+                notation: 'compact',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
-                style: "currency",
-                currency: "USD",
+                style: 'currency',
+                currency: 'USD',
               }),
           },
         ]}
@@ -81,7 +81,7 @@ export const OverallCharts = () => {
       <OverallStatsCard
         title="Transactions"
         value={overallStats.total_transactions.toLocaleString(undefined, {
-          notation: "compact",
+          notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
@@ -90,21 +90,21 @@ export const OverallCharts = () => {
             ? undefined
             : getPercentageFromBigInt(
                 previousOverallStats.total_transactions,
-                overallStats.total_transactions,
+                overallStats.total_transactions
               )
         }
         items={{
-          type: "bar",
-          bars: [{ dataKey: "transactions", color: "var(--color-primary)" }],
+          type: 'bar',
+          bars: [{ dataKey: 'transactions', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: "transactions",
-            label: "Transactions",
-            getValue: (data) =>
+            key: 'transactions',
+            label: 'Transactions',
+            getValue: data =>
               data.toLocaleString(undefined, {
-                notation: "compact",
+                notation: 'compact',
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
               }),
@@ -114,7 +114,7 @@ export const OverallCharts = () => {
       <OverallStatsCard
         title="Buyers"
         value={overallStats.unique_buyers.toLocaleString(undefined, {
-          notation: "compact",
+          notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
         })}
@@ -123,21 +123,21 @@ export const OverallCharts = () => {
             ? undefined
             : getPercentageFromBigInt(
                 previousOverallStats.unique_buyers,
-                overallStats.unique_buyers,
+                overallStats.unique_buyers
               )
         }
         items={{
-          type: "bar",
-          bars: [{ dataKey: "buyers", color: "var(--color-primary)" }],
+          type: 'bar',
+          bars: [{ dataKey: 'buyers', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: "buyers",
-            label: "Buyers",
-            getValue: (data) =>
+            key: 'buyers',
+            label: 'Buyers',
+            getValue: data =>
               data.toLocaleString(undefined, {
-                notation: "compact",
+                notation: 'compact',
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               }),
@@ -147,7 +147,7 @@ export const OverallCharts = () => {
       <OverallStatsCard
         title="Sellers"
         value={overallStats.unique_sellers.toLocaleString(undefined, {
-          notation: "compact",
+          notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
         })}
@@ -156,21 +156,21 @@ export const OverallCharts = () => {
             ? undefined
             : getPercentageFromBigInt(
                 previousOverallStats.unique_sellers,
-                overallStats.unique_sellers,
+                overallStats.unique_sellers
               )
         }
         items={{
-          type: "bar",
-          bars: [{ dataKey: "sellers", color: "var(--color-primary)" }],
+          type: 'bar',
+          bars: [{ dataKey: 'sellers', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: "sellers",
-            label: "Sellers",
-            getValue: (data) =>
+            key: 'sellers',
+            label: 'Sellers',
+            getValue: data =>
               data.toLocaleString(undefined, {
-                notation: "compact",
+                notation: 'compact',
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0,
               }),

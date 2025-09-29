@@ -1,10 +1,10 @@
-import { forwardRef } from "react";
+import { forwardRef } from 'react';
 
-import * as motion from "motion/react-client";
+import * as motion from 'motion/react-client';
 
-import { usePathname } from "next/navigation";
+import { usePathname } from 'next/navigation';
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 interface Props {
   href: string;
@@ -17,15 +17,14 @@ export const MotionTab = forwardRef<HTMLLIElement, Props>(
     const pathname = usePathname();
 
     const isSelected =
-      pathname === href ||
-      subRoutes?.some((route) => pathname.startsWith(route));
+      pathname === href || subRoutes?.some(route => pathname.startsWith(route));
 
     return (
       <motion.li key={href} ref={ref}>
         <div
           className={cn(
-            "relative py-1.5 px-4 text-muted-foreground/80 hover:text-foreground font-medium",
-            isSelected && "text-foreground font-bold",
+            'relative py-1.5 px-4 text-muted-foreground/80 hover:text-foreground font-medium',
+            isSelected && 'text-foreground font-bold'
           )}
         >
           {children}
@@ -36,15 +35,15 @@ export const MotionTab = forwardRef<HTMLLIElement, Props>(
             layoutId="underline"
             id="underline"
             transition={{
-              type: "tween",
-              ease: "easeOut",
+              type: 'tween',
+              ease: 'easeOut',
               duration: 0.15,
             }}
           />
         ) : null}
       </motion.li>
     );
-  },
+  }
 );
 
-MotionTab.displayName = "MotionTab";
+MotionTab.displayName = 'MotionTab';

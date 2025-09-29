@@ -1,17 +1,17 @@
-import { prisma } from "./client";
+import { prisma } from './client';
 
-import type { FacilitatorResource } from "../cdp/facilitator/list-resources";
-import { getOriginFromUrl } from "@/lib/url";
+import type { FacilitatorResource } from '../cdp/facilitator/list-resources';
+import { getOriginFromUrl } from '@/lib/url';
 
 export const upsertResource = async (
-  facilitatorResource: FacilitatorResource,
+  facilitatorResource: FacilitatorResource
 ) => {
   const baseAccepts = facilitatorResource.accepts.find(
-    (accept) => accept.network === "base",
+    accept => accept.network === 'base'
   );
   const origin = getOriginFromUrl(facilitatorResource.resource);
   if (!baseAccepts) return;
-  return await prisma.$transaction(async (tx) => {
+  return await prisma.$transaction(async tx => {
     const resource = await tx.resources.upsert({
       where: {
         resource: facilitatorResource.resource,
@@ -46,7 +46,7 @@ export const upsertResource = async (
         resourceId_scheme_network: {
           resourceId: resource.id,
           scheme: baseAccepts.scheme,
-          network: "base",
+          network: 'base',
         },
         payTo: baseAccepts.payTo.toLowerCase(),
       },
@@ -54,7 +54,7 @@ export const upsertResource = async (
         resourceId: resource.id,
         scheme: baseAccepts.scheme,
         description: baseAccepts.description,
-        network: "base",
+        network: 'base',
         maxAmountRequired: BigInt(baseAccepts.maxAmountRequired),
         resource: resource.resource,
         mimeType: baseAccepts.mimeType,

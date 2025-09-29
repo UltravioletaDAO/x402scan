@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import * as TabsPrimitive from "@radix-ui/react-tabs";
+import * as React from 'react';
+import * as TabsPrimitive from '@radix-ui/react-tabs';
 
-import { cn } from "@/lib/utils";
-import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingDown, TrendingUp } from "lucide-react";
+import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { TrendingDown, TrendingUp } from 'lucide-react';
 
 function Tabs({
   className,
@@ -14,7 +14,7 @@ function Tabs({
   return (
     <TabsPrimitive.Root
       data-slot="tabs"
-      className={cn("flex flex-col gap-2", className)}
+      className={cn('flex flex-col gap-2', className)}
       {...props}
     />
   );
@@ -27,7 +27,7 @@ function TabsList({
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
-      className={cn("flex w-full border-b bg-muted overflow-x-auto", className)}
+      className={cn('flex w-full border-b bg-muted overflow-x-auto', className)}
       {...props}
     />
   );
@@ -62,12 +62,12 @@ function TabsTrigger({
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn(
-        "flex flex-col gap-2 p-3 md:p-4 transition-all duration-200 min-w-28 md:min-w-56 group border-b-2 border-b-transparent",
-        "border-r border-r-border",
-        "data-[state=active]:border-b-primary data-[state=active]:bg-card",
-        "cursor-pointer hover:bg-card/50",
-        "disabled:opacity-50 disabled:cursor-not-allowed",
-        className,
+        'flex flex-col gap-2 p-3 md:p-4 transition-all duration-200 min-w-28 md:min-w-56 group border-b-2 border-b-transparent',
+        'border-r border-r-border',
+        'data-[state=active]:border-b-primary data-[state=active]:bg-card',
+        'cursor-pointer hover:bg-card/50',
+        'disabled:opacity-50 disabled:cursor-not-allowed',
+        className
       )}
       disabled={isLoading}
       {...props}
@@ -84,16 +84,16 @@ function TabsTrigger({
             {changePercentage !== undefined && (
               <div
                 className={cn(
-                  "flex items-center gap-1 px-1 rounded-md",
+                  'flex items-center gap-1 px-1 rounded-md',
                   changePercentage > 0
-                    ? "bg-green-600/10 text-green-600"
+                    ? 'bg-green-600/10 text-green-600'
                     : changePercentage === 0
-                      ? "bg-neutral-600/10 text-neutral-600"
-                      : "bg-red-600/10 text-red-500",
+                      ? 'bg-neutral-600/10 text-neutral-600'
+                      : 'bg-red-600/10 text-red-500'
                 )}
               >
                 <p className="text-sm">
-                  {changePercentage >= 0 ? "+" : ""}
+                  {changePercentage >= 0 ? '+' : ''}
                   {changePercentage.toFixed(2)}%
                 </p>
 
@@ -118,7 +118,7 @@ function TabsContent({
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
-      className={cn("flex-1 outline-none", className)}
+      className={cn('flex-1 outline-none', className)}
       {...props}
     />
   );

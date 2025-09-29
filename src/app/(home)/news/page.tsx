@@ -1,4 +1,4 @@
-import { Heading } from "../../_components/layout/page-utils";
+import { Heading } from '../../_components/layout/page-utils';
 
 export default function NewsPage() {
   return (

@@ -1,8 +1,8 @@
-import z from "zod";
+import z from 'zod';
 
-import { runBaseSqlQuery } from "./query";
+import { runBaseSqlQuery } from './query';
 
-import { ethereumAddressSchema } from "@/lib/schemas";
+import { ethereumAddressSchema } from '@/lib/schemas';
 
 export const listFacilitatorTransactionsInputSchema = z.object({
   recipient: ethereumAddressSchema,
@@ -24,16 +24,16 @@ const outputSchema = z.array(
     transaction_hash: z.string(),
     block_timestamp: z.coerce.date(),
     log_index: z.number(),
-  }),
+  })
 );
 
 export const listFacilitatorTransactions = async (
-  input: z.input<typeof listFacilitatorTransactionsInputSchema>,
+  input: z.input<typeof listFacilitatorTransactionsInputSchema>
 ) => {
   const parseResult = listFacilitatorTransactionsInputSchema.safeParse(input);
   if (!parseResult.success) {
-    console.error("invalid input", input);
-    throw new Error("Invalid input: " + parseResult.error.message);
+    console.error('invalid input', input);
+    throw new Error('Invalid input: ' + parseResult.error.message);
   }
   const { recipient, after, limit } = parseResult.data;
 
@@ -49,8 +49,8 @@ export const listFacilitatorTransactions = async (
     // Format date properly for ClickHouse/Base SQL
     const formattedDate = after.timestamp
       .toISOString()
-      .replace("T", " ")
-      .replace("Z", "");
+      .replace('T', ' ')
+      .replace('Z', '');
 
     if (after.logIndex !== undefined) {
       // If we have a logIndex, use it for more precise pagination

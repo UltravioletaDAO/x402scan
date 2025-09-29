@@ -1,6 +1,6 @@
-import { SiweMessage } from "siwe";
-import { SIWE_PROVIDER_ID, SIWE_STATEMENT } from "./constants";
-import { getCsrfToken, signIn } from "next-auth/react";
+import { SiweMessage } from 'siwe';
+import { SIWE_PROVIDER_ID, SIWE_STATEMENT } from './constants';
+import { getCsrfToken, signIn } from 'next-auth/react';
 
 interface SignInWithEthereumOptions {
   address: string;
@@ -18,7 +18,7 @@ export async function signInWithEthereum({
   const message = new SiweMessage({
     domain: window.location.host,
     uri: window.location.origin,
-    version: "1",
+    version: '1',
     address,
     statement: SIWE_STATEMENT,
     nonce: await getCsrfToken(),
@@ -30,6 +30,6 @@ export async function signInWithEthereum({
     signedMessage: await signMessage(message.prepareMessage()),
     email,
     redirect: true,
-    redirectTo: "/",
+    redirectTo: '/',
   });
 }

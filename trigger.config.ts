@@ -1,12 +1,12 @@
-import { defineConfig } from "@trigger.dev/sdk/v3";
+import { defineConfig } from '@trigger.dev/sdk/v3';
 
-import { prismaExtension } from "@trigger.dev/build/extensions/prisma";
-import { syncVercelEnvVars } from "@trigger.dev/build/extensions/core";
+import { prismaExtension } from '@trigger.dev/build/extensions/prisma';
+import { syncVercelEnvVars } from '@trigger.dev/build/extensions/core';
 
 export default defineConfig({
-  project: "proj_ojxyvzmdenchzcaehohm",
-  runtime: "node",
-  logLevel: "log",
+  project: 'proj_ojxyvzmdenchzcaehohm',
+  runtime: 'node',
+  logLevel: 'log',
   // The max compute seconds a task is allowed to run. If the task run exceeds this duration, it will be stopped.
   // You can override this on an individual task.
   // See https://trigger.dev/docs/runs/max-duration
@@ -21,11 +21,11 @@ export default defineConfig({
       randomize: true,
     },
   },
-  dirs: ["./src/trigger"],
+  dirs: ['./src/trigger'],
   build: {
     extensions: [
       prismaExtension({
-        schema: "prisma/schema.prisma",
+        schema: 'prisma/schema.prisma',
       }),
       syncVercelEnvVars({
         vercelAccessToken: process.env.VERCEL_ACCESS_TOKEN,

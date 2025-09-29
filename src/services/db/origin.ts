@@ -1,6 +1,6 @@
-import { prisma } from "./client";
+import { prisma } from './client';
 
-import { z } from "zod";
+import { z } from 'zod';
 
 const ogImageSchema = z.object({
   url: z.url(),
@@ -19,7 +19,7 @@ export const originSchema = z.object({
 });
 
 export const upsertOrigin = async (
-  originInput: z.input<typeof originSchema>,
+  originInput: z.input<typeof originSchema>
 ) => {
   const origin = originSchema.parse(originInput);
   return await prisma.resourceOrigin.upsert({
@@ -47,7 +47,7 @@ export const upsertOrigin = async (
               title,
               description,
             },
-          }),
+          })
         ),
       },
     },
@@ -64,7 +64,7 @@ export const upsertOrigin = async (
             width,
             title,
             description,
-          }),
+          })
         ),
       },
     },

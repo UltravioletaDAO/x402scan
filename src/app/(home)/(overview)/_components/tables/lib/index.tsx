@@ -1,8 +1,8 @@
-import { Suspense } from "react";
+import { Suspense } from 'react';
 
-import { Sorting, SortingProvider } from "../../lib/sorting";
-import { columns } from "./columns";
-import { DataTable } from "@/components/ui/data-table";
+import { Sorting, SortingProvider } from '../../lib/sorting';
+import { columns } from './columns';
+import { DataTable } from '@/components/ui/data-table';
 
 interface Props {
   title: string;

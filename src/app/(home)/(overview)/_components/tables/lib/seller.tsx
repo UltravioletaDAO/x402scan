@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Address } from "@/components/address";
-import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/trpc/client";
-import type { ResourceOrigin } from "@prisma/client";
-import { Globe } from "lucide-react";
+import { Address } from '@/components/address';
+import { Skeleton } from '@/components/ui/skeleton';
+import { api } from '@/trpc/client';
+import type { ResourceOrigin } from '@prisma/client';
+import { Globe } from 'lucide-react';
 
 interface Props {
   address: string;
@@ -15,7 +15,7 @@ export const Seller: React.FC<Props> = ({ address }) => {
     address,
     {
       enabled: !!address,
-    },
+    }
   );
 
   if (isLoading) {
@@ -44,7 +44,7 @@ export const Seller: React.FC<Props> = ({ address }) => {
 
   return (
     <div className="flex flex-row gap-1 w-full flex-wrap">
-      {origins.map((origin) => (
+      {origins.map(origin => (
         <Origin key={origin.id} origin={origin} />
       ))}
     </div>

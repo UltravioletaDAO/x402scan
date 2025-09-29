@@ -1,6 +1,6 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import type { PaginatedResponse } from "@/types/pagination";
+import type { PaginatedResponse } from '@/types/pagination';
 
 export const infiniteQuerySchema = <T>(cursorType: z.ZodType<T>) =>
   z.object({

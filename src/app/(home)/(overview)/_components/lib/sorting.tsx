@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 import {
   closestCenter,
   DndContext,
@@ -11,33 +11,33 @@ import {
   useSensors,
   type DragEndEvent,
   type UniqueIdentifier,
-} from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
+} from '@dnd-kit/core';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import {
   arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { ArrowDown, ArrowUpDown, GripVertical } from "lucide-react";
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { ArrowDown, ArrowUpDown, GripVertical } from 'lucide-react';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import type { SortType } from "../../_types/types";
-import { defaultSorting } from "./defaults";
-import { useContext, useState } from "react";
+} from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
+import type { SortType } from '../../_types/types';
+import { defaultSorting } from './defaults';
+import { useContext, useState } from 'react';
 
 const sortingOptions = [
-  { id: "tx_count", label: "Tx Count" },
-  { id: "total_amount", label: "Volume" },
-  { id: "latest_block_timestamp", label: "Latest Transaction" },
-  { id: "unique_buyers", label: "Unique Buyers" },
+  { id: 'tx_count', label: 'Tx Count' },
+  { id: 'total_amount', label: 'Volume' },
+  { id: 'latest_block_timestamp', label: 'Latest Transaction' },
+  { id: 'unique_buyers', label: 'Unique Buyers' },
 ];
 
 interface SortingContext {
@@ -74,22 +74,22 @@ export const Sorting = () => {
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {}),
+    useSensor(KeyboardSensor, {})
   );
 
   const sortingIds = React.useMemo<UniqueIdentifier[]>(
     () => sorting.map(({ id }) => id),
-    [sorting],
+    [sorting]
   );
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (active && over && active.id !== over.id) {
       const oldIndex = sorting.findIndex(
-        (item: SortType) => item.id === active.id,
+        (item: SortType) => item.id === active.id
       );
       const newIndex = sorting.findIndex(
-        (item: SortType) => item.id === over.id,
+        (item: SortType) => item.id === over.id
       );
       setSorting(arrayMove(sorting, oldIndex, newIndex));
     }
@@ -120,15 +120,15 @@ export const Sorting = () => {
               items={sortingIds}
               strategy={verticalListSortingStrategy}
             >
-              {sorting.map((sort) => (
+              {sorting.map(sort => (
                 <SortableItem
                   key={sort.id}
                   sort={sort}
                   onToggle={() =>
                     setSorting(
-                      sorting.map((s) =>
-                        s.id === sort.id ? { ...s, desc: !s.desc } : s,
-                      ),
+                      sorting.map(s =>
+                        s.id === sort.id ? { ...s, desc: !s.desc } : s
+                      )
                     )
                   }
                 />
@@ -186,8 +186,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ sort, onToggle }) => {
     >
       <DragHandle id={sort.id} />
       <p className="flex-1 text-sm font-medium">
-        {sortingOptions.find((option) => option.id === sort.id)?.label ??
-          sort.id}
+        {sortingOptions.find(option => option.id === sort.id)?.label ?? sort.id}
       </p>
       <Button
         variant="outline"
@@ -197,8 +196,8 @@ const SortableItem: React.FC<SortableItemProps> = ({ sort, onToggle }) => {
       >
         <ArrowDown
           className={cn(
-            "size-3 transition-transform duration-200",
-            sort.desc ? "rotate-0" : "rotate-180",
+            'size-3 transition-transform duration-200',
+            sort.desc ? 'rotate-0' : 'rotate-180'
           )}
         />
       </Button>

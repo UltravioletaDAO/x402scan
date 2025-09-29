@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState } from 'react';
 
-import { subDays } from "date-fns";
+import { subDays } from 'date-fns';
 
-import { ActivityTimeframe } from "@/types/timeframes";
+import { ActivityTimeframe } from '@/types/timeframes';
 
 interface TimeRangeContextType {
   startDate: Date;
@@ -42,11 +42,11 @@ export const TimeRangeProvider = ({
   creationDate,
 }: Props) => {
   const [timeframe, setTimeframe] = useState<ActivityTimeframe>(
-    initialTimeframe ?? ActivityTimeframe.AllTime,
+    initialTimeframe ?? ActivityTimeframe.AllTime
   );
   const [endDate, setEndDate] = useState<Date>(initialEndDate ?? new Date());
   const [startDate, setStartDate] = useState<Date>(
-    initialStartDate ?? creationDate,
+    initialStartDate ?? creationDate
   );
 
   const selectTimeframe = (timeframe: ActivityTimeframe) => {

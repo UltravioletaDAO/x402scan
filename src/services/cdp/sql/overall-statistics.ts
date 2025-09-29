@@ -1,9 +1,9 @@
-import z from "zod";
+import z from 'zod';
 
-import { runBaseSqlQuery } from "./query";
+import { runBaseSqlQuery } from './query';
 
-import { ethereumAddressSchema } from "@/lib/schemas";
-import { formatDateForSql } from "./lib";
+import { ethereumAddressSchema } from '@/lib/schemas';
+import { formatDateForSql } from './lib';
 
 export const overallStatisticsInputSchema = z.object({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -12,11 +12,11 @@ export const overallStatisticsInputSchema = z.object({
 });
 
 export const getOverallStatistics = async (
-  input: z.input<typeof overallStatisticsInputSchema>,
+  input: z.input<typeof overallStatisticsInputSchema>
 ) => {
   const parseResult = overallStatisticsInputSchema.safeParse(input);
   if (!parseResult.success) {
-    throw new Error("Invalid input: " + parseResult.error.message);
+    throw new Error('Invalid input: ' + parseResult.error.message);
   }
   const { addresses, startDate, endDate } = parseResult.data;
   const outputSchema = z.object({
@@ -41,14 +41,14 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
     ${
       addresses
         ? `AND parameters['to']::String IN (${addresses
-            .map((a) => `'${a}'`)
-            .join(", ")})`
-        : ""
+            .map(a => `'${a}'`)
+            .join(', ')})`
+        : ''
     }
     ${
-      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ""
+      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ''
     }
-    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ""}
+    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
   `;
 
   const result = await runBaseSqlQuery(sql, z.array(outputSchema));
@@ -72,11 +72,11 @@ export const getFirstTransferTimestampInputSchema = z.object({
 });
 
 export const getFirstTransferTimestamp = async (
-  input: z.input<typeof getFirstTransferTimestampInputSchema>,
+  input: z.input<typeof getFirstTransferTimestampInputSchema>
 ): Promise<Date | null> => {
   const parseResult = getFirstTransferTimestampInputSchema.safeParse(input);
   if (!parseResult.success) {
-    throw new Error("Invalid input: " + parseResult.error.message);
+    throw new Error('Invalid input: ' + parseResult.error.message);
   }
   const { addresses, startDate, endDate } = parseResult.data;
 
@@ -91,23 +91,23 @@ export const getFirstTransferTimestamp = async (
       ${
         addresses
           ? `AND parameters['to']::String IN (${addresses
-              .map((a) => `'${a}'`)
-              .join(", ")})`
-          : ""
+              .map(a => `'${a}'`)
+              .join(', ')})`
+          : ''
       }
       ${
         startDate
           ? `AND block_timestamp >= '${formatDateForSql(startDate)}'`
-          : ""
+          : ''
       }
-      ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ""}
+      ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
     ORDER BY block_timestamp ASC
     LIMIT 1
   `;
 
   const result = await runBaseSqlQuery(
     sql,
-    z.array(z.object({ block_timestamp: z.string() })),
+    z.array(z.object({ block_timestamp: z.string() }))
   );
 
   if (!result || result.length === 0) {

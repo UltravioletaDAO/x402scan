@@ -1,7 +1,7 @@
-import tseslint from "typescript-eslint";
-import { FlatCompat } from "@eslint/eslintrc";
-import { defineConfig } from "eslint/config";
-import eslintConfigPrettier from "eslint-config-prettier/flat";
+import tseslint from 'typescript-eslint';
+import { FlatCompat } from '@eslint/eslintrc';
+import { defineConfig } from 'eslint/config';
+import eslintConfigPrettier from 'eslint-config-prettier/flat';
 
 const compat = new FlatCompat({
   baseDirectory: import.meta.dirname,
@@ -10,44 +10,44 @@ const compat = new FlatCompat({
 export default defineConfig(
   {
     ignores: [
-      "node_modules/**",
-      ".next/**",
-      "out/**",
-      "build/**",
-      "next-env.d.ts",
-      "dist/**",
-      "coverage/**",
-      "public/**",
-      "src/generated/**",
-      "prisma/generated/**",
-      "**/*.d.ts",
-      ".source/**",
-      "src/convex/_generated/**",
-      ".trigger/**",
+      'node_modules/**',
+      '.next/**',
+      'out/**',
+      'build/**',
+      'next-env.d.ts',
+      'dist/**',
+      'coverage/**',
+      'public/**',
+      'src/generated/**',
+      'prisma/generated/**',
+      '**/*.d.ts',
+      '.source/**',
+      'src/convex/_generated/**',
+      '.trigger/**',
     ],
   },
-  ...compat.extends("next/core-web-vitals"),
+  ...compat.extends('next/core-web-vitals'),
   {
-    files: ["**/*.ts", "**/*.tsx"],
+    files: ['**/*.ts', '**/*.tsx'],
     extends: [
       ...tseslint.configs.recommended,
       ...tseslint.configs.recommendedTypeChecked,
       ...tseslint.configs.stylisticTypeChecked,
     ],
     rules: {
-      "@typescript-eslint/array-type": "off",
-      "@typescript-eslint/consistent-type-definitions": "off",
-      "@typescript-eslint/consistent-type-imports": [
-        "warn",
-        { prefer: "type-imports", fixStyle: "separate-type-imports" },
+      '@typescript-eslint/array-type': 'off',
+      '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/consistent-type-imports': [
+        'warn',
+        { prefer: 'type-imports', fixStyle: 'separate-type-imports' },
       ],
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_" },
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
       ],
-      "@typescript-eslint/require-await": "off",
-      "@typescript-eslint/no-misused-promises": [
-        "error",
+      '@typescript-eslint/require-await': 'off',
+      '@typescript-eslint/no-misused-promises': [
+        'error',
         { checksVoidReturn: { attributes: false } },
       ],
     },
@@ -62,5 +62,5 @@ export default defineConfig(
       },
     },
   },
-  eslintConfigPrettier,
+  eslintConfigPrettier
 );

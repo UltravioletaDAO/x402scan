@@ -1,4 +1,4 @@
-import ogs from "open-graph-scraper";
+import ogs from 'open-graph-scraper';
 
 export const scrapeOg = async (url: string) => {
   try {

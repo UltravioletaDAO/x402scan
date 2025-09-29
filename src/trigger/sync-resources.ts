@@ -1,16 +1,16 @@
-import { logger, schedules } from "@trigger.dev/sdk/v3";
+import { logger, schedules } from '@trigger.dev/sdk/v3';
 
-import { upsertResource } from "@/services/db/resources";
-import { listFacilitatorResources } from "@/services/cdp/facilitator/list-resources";
-import { scrapeOg } from "@/services/scraper/og";
-import { scrapeMetadata } from "@/services/scraper/metadata";
-import { upsertOrigin } from "@/services/db/origin";
-import { getOriginFromUrl } from "@/lib/url";
+import { upsertResource } from '@/services/db/resources';
+import { listFacilitatorResources } from '@/services/cdp/facilitator/list-resources';
+import { scrapeOg } from '@/services/scraper/og';
+import { scrapeMetadata } from '@/services/scraper/metadata';
+import { upsertOrigin } from '@/services/db/origin';
+import { getOriginFromUrl } from '@/lib/url';
 
 export const syncResourcesTask = schedules.task({
-  id: "sync-resources",
+  id: 'sync-resources',
   // Every 5 minutes
-  cron: "*/5 * * * *",
+  cron: '*/5 * * * *',
   // Set maxDuration to prevent tasks from running indefinitely
   maxDuration: 600, // 10 minutes max execution time
   retry: {
@@ -19,9 +19,9 @@ export const syncResourcesTask = schedules.task({
     minTimeoutInMs: 1000,
     maxTimeoutInMs: 10000,
   },
-  run: async (payload) => {
+  run: async payload => {
     const startTime = Date.now();
-    logger.info("Starting resource sync task", {
+    logger.info('Starting resource sync task', {
       timestamp: payload.timestamp,
       lastTimestamp: payload.lastTimestamp,
       scheduleId: payload.scheduleId,
@@ -29,18 +29,18 @@ export const syncResourcesTask = schedules.task({
 
     try {
       // Step 1: Fetch facilitator resources
-      logger.info("Fetching facilitator resources from CDP");
+      logger.info('Fetching facilitator resources from CDP');
       const resources = await listFacilitatorResources();
-      logger.info("Successfully fetched facilitator resources", {
+      logger.info('Successfully fetched facilitator resources', {
         totalResources: resources.items.length,
         durationMs: Date.now() - startTime,
       });
 
       if (resources.items.length === 0) {
-        logger.warn("No resources found from facilitator");
+        logger.warn('No resources found from facilitator');
         return {
           success: true,
-          message: "No resources to sync",
+          message: 'No resources to sync',
           resourcesProcessed: 0,
           originsProcessed: 0,
           durationMs: Date.now() - startTime,
@@ -48,51 +48,51 @@ export const syncResourcesTask = schedules.task({
       }
 
       // Step 2: Extract unique origins
-      logger.info("Extracting unique origins from resources");
+      logger.info('Extracting unique origins from resources');
       const origins = new Set<string>();
       for (const resource of resources.items) {
         try {
           const origin = getOriginFromUrl(resource.resource);
           origins.add(origin);
         } catch (error) {
-          logger.warn("Failed to extract origin from resource", {
+          logger.warn('Failed to extract origin from resource', {
             resource: resource.resource,
-            error: error instanceof Error ? error.message : "Unknown error",
+            error: error instanceof Error ? error.message : 'Unknown error',
           });
         }
       }
 
       const uniqueOrigins = Array.from(origins);
-      logger.info("Extracted unique origins", {
+      logger.info('Extracted unique origins', {
         totalOrigins: uniqueOrigins.length,
         origins: uniqueOrigins.slice(0, 10), // Log first 10 for debugging
       });
 
       // Step 3: Process origins (scrape metadata and OG data)
-      logger.info("Starting origin processing with metadata scraping");
+      logger.info('Starting origin processing with metadata scraping');
       const originProcessingStart = Date.now();
 
       const originResults = await Promise.allSettled(
-        uniqueOrigins.map(async (origin) => {
+        uniqueOrigins.map(async origin => {
           const originStart = Date.now();
-          logger.debug("Processing origin", { origin });
+          logger.debug('Processing origin', { origin });
 
           try {
             // Scrape OG and metadata in parallel
             const [og, metadata] = await Promise.all([
-              scrapeOg(origin).catch((error) => {
-                logger.warn("Failed to scrape OG data", {
+              scrapeOg(origin).catch(error => {
+                logger.warn('Failed to scrape OG data', {
                   origin,
                   error:
-                    error instanceof Error ? error.message : "Unknown error",
+                    error instanceof Error ? error.message : 'Unknown error',
                 });
                 return null;
               }),
-              scrapeMetadata(origin).catch((error) => {
-                logger.warn("Failed to scrape metadata", {
+              scrapeMetadata(origin).catch(error => {
+                logger.warn('Failed to scrape metadata', {
                   origin,
                   error:
-                    error instanceof Error ? error.message : "Unknown error",
+                    error instanceof Error ? error.message : 'Unknown error',
                 });
                 return null;
               }),
@@ -105,11 +105,11 @@ export const syncResourcesTask = schedules.task({
               description: metadata?.description ?? og?.ogDescription,
               favicon:
                 og?.favicon &&
-                (og.favicon.startsWith("/")
-                  ? origin.replace(/\/$/, "") + og.favicon
+                (og.favicon.startsWith('/')
+                  ? origin.replace(/\/$/, '') + og.favicon
                   : og.favicon),
               ogImages:
-                og?.ogImage?.map((image) => ({
+                og?.ogImage?.map(image => ({
                   url: image.url,
                   height: image.height,
                   width: image.width,
@@ -121,7 +121,7 @@ export const syncResourcesTask = schedules.task({
             // Upsert origin to database
             await upsertOrigin(originData);
 
-            logger.debug("Successfully processed origin", {
+            logger.debug('Successfully processed origin', {
               origin,
               hasTitle: !!originData.title,
               hasDescription: !!originData.description,
@@ -132,29 +132,29 @@ export const syncResourcesTask = schedules.task({
 
             return { origin, success: true };
           } catch (error) {
-            logger.error("Failed to process origin", {
+            logger.error('Failed to process origin', {
               origin,
-              error: error instanceof Error ? error.message : "Unknown error",
+              error: error instanceof Error ? error.message : 'Unknown error',
               stack: error instanceof Error ? error.stack : undefined,
               durationMs: Date.now() - originStart,
             });
             return { origin, success: false, error };
           }
-        }),
+        })
       );
 
       // Analyze origin processing results
       const successfulOrigins = originResults.filter(
         (
-          result,
+          result
         ): result is PromiseFulfilledResult<{
           origin: string;
           success: true;
-        }> => result.status === "fulfilled" && result.value.success,
+        }> => result.status === 'fulfilled' && result.value.success
       ).length;
       const failedOrigins = originResults.length - successfulOrigins;
 
-      logger.info("Completed origin processing", {
+      logger.info('Completed origin processing', {
         totalOrigins: uniqueOrigins.length,
         successful: successfulOrigins,
         failed: failedOrigins,
@@ -162,51 +162,51 @@ export const syncResourcesTask = schedules.task({
       });
 
       // Step 4: Process resources (upsert to database)
-      logger.info("Starting resource processing");
+      logger.info('Starting resource processing');
       const resourceProcessingStart = Date.now();
 
       const resourceResults = await Promise.allSettled(
-        resources.items.map(async (facilitatorResource) => {
+        resources.items.map(async facilitatorResource => {
           const resourceStart = Date.now();
-          logger.debug("Processing resource", {
+          logger.debug('Processing resource', {
             resource: facilitatorResource.resource,
           });
 
           try {
             await upsertResource(facilitatorResource);
-            logger.debug("Successfully processed resource", {
+            logger.debug('Successfully processed resource', {
               resource: facilitatorResource.resource,
               durationMs: Date.now() - resourceStart,
             });
             return { resource: facilitatorResource.resource, success: true };
           } catch (error) {
-            logger.error("Failed to process resource", {
+            logger.error('Failed to process resource', {
               resource: facilitatorResource.resource,
-              error: error instanceof Error ? error.message : "Unknown error",
+              error: error instanceof Error ? error.message : 'Unknown error',
               stack: error instanceof Error ? error.stack : undefined,
               durationMs: Date.now() - resourceStart,
             });
             return {
               resource: facilitatorResource.resource,
               success: false,
-              error: error instanceof Error ? error.message : "Unknown error",
+              error: error instanceof Error ? error.message : 'Unknown error',
             };
           }
-        }),
+        })
       );
 
       // Analyze resource processing results
       const successfulResources = resourceResults.filter(
         (
-          result,
+          result
         ): result is PromiseFulfilledResult<{
           resource: string;
           success: true;
-        }> => result.status === "fulfilled" && result.value.success,
+        }> => result.status === 'fulfilled' && result.value.success
       ).length;
       const failedResources = resourceResults.length - successfulResources;
 
-      logger.info("Completed resource processing", {
+      logger.info('Completed resource processing', {
         totalResources: resources.items.length,
         successful: successfulResources,
         failed: failedResources,
@@ -226,19 +226,19 @@ export const syncResourcesTask = schedules.task({
         timestamp: payload.timestamp,
       };
 
-      logger.info("Resource sync task completed successfully", result);
+      logger.info('Resource sync task completed successfully', result);
       return result;
     } catch (error) {
       const totalDuration = Date.now() - startTime;
       const errorResult = {
         success: false,
-        message: "Sync task failed with error",
-        error: error instanceof Error ? error.message : "Unknown error",
+        message: 'Sync task failed with error',
+        error: error instanceof Error ? error.message : 'Unknown error',
         durationMs: totalDuration,
         timestamp: payload.timestamp,
       };
 
-      logger.error("Resource sync task failed", {
+      logger.error('Resource sync task failed', {
         ...errorResult,
         stack: error instanceof Error ? error.stack : undefined,
       });

@@ -1,16 +1,16 @@
-import { Nav } from "../../_components/layout/nav";
+import { Nav } from '../../_components/layout/nav';
 
 export default async function RecipientLayout({
   params,
   children,
-}: LayoutProps<"/recipient/[address]">) {
+}: LayoutProps<'/recipient/[address]'>) {
   const { address } = await params;
   return (
     <div className="flex flex-col flex-1">
       <Nav
         tabs={[
           {
-            label: "Overview",
+            label: 'Overview',
             href: `/recipient/${address}`,
           },
         ]}

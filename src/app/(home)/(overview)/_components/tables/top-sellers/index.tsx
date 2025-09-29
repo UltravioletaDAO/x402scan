@@ -1,10 +1,10 @@
-import { api, HydrateClient } from "@/trpc/server";
+import { api, HydrateClient } from '@/trpc/server';
 
-import { LoadingSellersTable, SellersTable } from "../lib";
+import { LoadingSellersTable, SellersTable } from '../lib';
 
-import { TopSellersTable } from "./table";
+import { TopSellersTable } from './table';
 
-import { defaultSorting, limit } from "../../lib/defaults";
+import { defaultSorting, limit } from '../../lib/defaults';
 
 export const TopSellers = () => {
   void api.sellers.list.all.prefetchInfinite({

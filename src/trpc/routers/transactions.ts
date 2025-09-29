@@ -1,9 +1,9 @@
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import {
   listFacilitatorTransactions,
   listFacilitatorTransactionsInputSchema,
-} from "@/services/cdp/sql/list-facilitator-transactions";
+} from '@/services/cdp/sql/list-facilitator-transactions';
 
 export const transactionsRouter = createTRPCRouter({
   listFacilitatorTransactions: publicProcedure

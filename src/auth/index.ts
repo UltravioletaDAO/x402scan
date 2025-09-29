@@ -1,28 +1,28 @@
-import { cache } from "react";
+import { cache } from 'react';
 
-import NextAuth from "next-auth";
-import { PrismaAdapter } from "@auth/prisma-adapter";
+import NextAuth from 'next-auth';
+import { PrismaAdapter } from '@auth/prisma-adapter';
 
-import { prisma } from "../services/db/client";
-import { providers } from "./providers";
+import { prisma } from '../services/db/client';
+import { providers } from './providers';
 
-import type { DefaultSession } from "next-auth";
-import type { Role } from "@prisma/client";
+import type { DefaultSession } from 'next-auth';
+import type { Role } from '@prisma/client';
 import {
   getEchoAccountByUserId,
   updateEchoAccountByUserId,
-} from "@/services/db/user";
-import { addSeconds, getUnixTime } from "date-fns";
+} from '@/services/db/user';
+import { addSeconds, getUnixTime } from 'date-fns';
 
-import { v4 as uuid } from "uuid";
-import { encode as defaultEncode } from "next-auth/jwt";
+import { v4 as uuid } from 'uuid';
+import { encode as defaultEncode } from 'next-auth/jwt';
 
-declare module "next-auth" {
+declare module 'next-auth' {
   interface Session extends DefaultSession {
     user: {
       id: string;
       role: Role;
-    } & DefaultSession["user"];
+    } & DefaultSession['user'];
   }
 
   interface User {
@@ -46,14 +46,14 @@ const { handlers, auth: uncachedAuth } = NextAuth({
         // If the access token has expired, try to refresh it
         try {
           const response = await fetch(
-            "https://staging-echo.merit.systems/api/oauth/token",
+            'https://staging-echo.merit.systems/api/oauth/token',
             {
-              method: "POST",
+              method: 'POST',
               body: new URLSearchParams({
-                grant_type: "refresh_token",
-                refresh_token: account.refresh_token ?? "",
+                grant_type: 'refresh_token',
+                refresh_token: account.refresh_token ?? '',
               }),
-            },
+            }
           );
 
           const tokensOrError = (await response.json()) as unknown;
@@ -69,12 +69,12 @@ const { handlers, auth: uncachedAuth } = NextAuth({
           await updateEchoAccountByUserId(account.providerAccountId, {
             access_token: newTokens.access_token,
             expires_at: getUnixTime(
-              addSeconds(new Date(), newTokens.expires_in),
+              addSeconds(new Date(), newTokens.expires_in)
             ),
             refresh_token: newTokens.refresh_token,
           });
         } catch (error) {
-          console.error("Error refreshing access_token", error);
+          console.error('Error refreshing access_token', error);
         }
       }
 
@@ -87,7 +87,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
       };
     },
     async jwt({ token, account }) {
-      if (account?.provider === "siwe-csrf") {
+      if (account?.provider === 'siwe-csrf') {
         token.credentials = true;
       }
       return token;
@@ -99,7 +99,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
         const sessionToken = uuid();
 
         if (!params.token.sub) {
-          throw new Error("No user ID found in token");
+          throw new Error('No user ID found in token');
         }
 
         const createdSession = await prisma.session.create({
@@ -111,7 +111,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
         });
 
         if (!createdSession) {
-          throw new Error("Failed to create session");
+          throw new Error('Failed to create session');
         }
 
         return sessionToken;

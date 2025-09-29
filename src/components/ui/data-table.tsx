@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import type { ColumnDef } from "@tanstack/react-table";
+import type { ColumnDef } from '@tanstack/react-table';
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-} from "@tanstack/react-table";
-import { Skeleton } from "./skeleton";
+} from '@tanstack/react-table';
+import { Skeleton } from './skeleton';
 
 import {
   Table,
@@ -16,13 +16,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Card } from "./card";
-import { Button } from "./button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
-import type { Route } from "next";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/table';
+import { Card } from './card';
+import { Button } from './button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import type { Route } from 'next';
+import { cn } from '@/lib/utils';
 
 export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
   TData,
@@ -60,9 +60,9 @@ export function DataTable<TData, TValue, AppRoute extends string>({
       <Card className="overflow-hidden">
         <Table>
           <TableHeader className="bg-muted">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers.map(header => {
                   return (
                     <TableHead
                       key={header.id}
@@ -73,7 +73,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </TableHead>
                   );
@@ -101,10 +101,10 @@ export function DataTable<TData, TValue, AppRoute extends string>({
                 </TableRow>
               ))
             ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map(row => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
                   onClick={
                     href
                       ? () => {
@@ -112,16 +112,16 @@ export function DataTable<TData, TValue, AppRoute extends string>({
                         }
                       : undefined
                   }
-                  className={cn(href && "cursor-pointer")}
+                  className={cn(href && 'cursor-pointer')}
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map(cell => (
                     <TableCell
                       key={cell.id}
                       style={{ width: cell.column.getSize() }}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}

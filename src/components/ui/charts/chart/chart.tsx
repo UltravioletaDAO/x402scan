@@ -7,12 +7,12 @@ import {
   Tooltip,
   ResponsiveContainer,
   AreaChart,
-} from "recharts";
+} from 'recharts';
 
-import { TooltipContent } from "./tooltip";
-import type { ChartData, ChartProps } from "./types";
+import { TooltipContent } from './tooltip';
+import type { ChartData, ChartProps } from './types';
 
-export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
+export const BaseChart = <T extends Omit<Record<string, number>, 'timestamp'>>({
   data,
   children,
   type,
@@ -20,17 +20,17 @@ export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
   height = 350,
   margin = { top: 0, right: 0, left: 0, bottom: 0 },
   yAxes,
-  dataMax = "dataMax",
-}: ChartProps<T> & { type: "bar" | "area" | "line" | "composed" }) => {
+  dataMax = 'dataMax',
+}: ChartProps<T> & { type: 'bar' | 'area' | 'line' | 'composed' }) => {
   const getContainer = () => {
     switch (type) {
-      case "bar":
+      case 'bar':
         return BarChart;
-      case "area":
+      case 'area':
         return AreaChart;
-      case "line":
+      case 'line':
         return LineChart;
-      case "composed":
+      case 'composed':
         return ComposedChart;
       default:
         return BarChart;
@@ -41,7 +41,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
 
   return (
     <ResponsiveContainer width="100%" height={height}>
-      <Container data={data} margin={margin} style={{ cursor: "pointer" }}>
+      <Container data={data} margin={margin} style={{ cursor: 'pointer' }}>
         <XAxis
           tickLine={false}
           tick={false}
@@ -54,7 +54,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
             <YAxis key={index} domain={domain} hide={hide} yAxisId={index} />
           ))
         ) : (
-          <YAxis domain={["0", dataMax]} hide={true} />
+          <YAxis domain={['0', dataMax]} hide={true} />
         )}
         {children}
         {tooltipRows && (
@@ -71,7 +71,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
               return null;
             }}
             cursor={{
-              fill: "var(--color-primary)",
+              fill: 'var(--color-primary)',
               opacity: 0.2,
               radius: 4,
             }}

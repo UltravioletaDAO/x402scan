@@ -1,15 +1,15 @@
-import { Globe, Server } from "lucide-react";
+import { Globe, Server } from 'lucide-react';
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from '@/components/ui/skeleton';
 
-import type { ResourceOrigin } from "@prisma/client";
-import { Address } from "@/components/address";
-import { cn } from "@/lib/utils";
+import type { ResourceOrigin } from '@prisma/client';
+import { Address } from '@/components/address';
+import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip';
 
 interface Props {
   address: string;
@@ -48,7 +48,7 @@ export const Origins: React.FC<Props> = ({ origins, address }) => {
             {origins.length} servers
           </TooltipTrigger>
           <TooltipContent>
-            {origins.map((origin) => (
+            {origins.map(origin => (
               <div key={origin.id}>
                 {origin.title ?? new URL(origin.origin).hostname}
               </div>
@@ -65,7 +65,7 @@ export const OriginsSkeleton = () => {
   return (
     <OriginsContainer
       Icon={({ className }) => (
-        <Skeleton className={cn("rounded-full", className)} />
+        <Skeleton className={cn('rounded-full', className)} />
       )}
       title={<Skeleton className="h-[14px] w-32 my-[3px]" />}
       address={<Skeleton className="h-3 w-20 my-[2px]" />}

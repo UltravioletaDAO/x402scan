@@ -1,6 +1,6 @@
-import { ethereumAddressSchema } from "@/lib/schemas";
-import { createTRPCRouter, publicProcedure } from "../trpc";
-import { getOriginsByAddress } from "@/services/db/origin";
+import { ethereumAddressSchema } from '@/lib/schemas';
+import { createTRPCRouter, publicProcedure } from '../trpc';
+import { getOriginsByAddress } from '@/services/db/origin';
 
 export const originsRouter = createTRPCRouter({
   getOriginsByAddress: publicProcedure

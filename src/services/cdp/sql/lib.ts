@@ -1,3 +1,3 @@
 export const formatDateForSql = (date: Date) => {
-  return date.toISOString().replace("T", " ").replace("Z", "");
+  return date.toISOString().replace('T', ' ').replace('Z', '');
 };

@@ -1,26 +1,26 @@
-import z from "zod";
+import z from 'zod';
 
-import { runBaseSqlQuery } from "./query";
-import { ethereumAddressSchema } from "@/lib/schemas";
-import { toPaginatedResponse } from "@/lib/pagination";
+import { runBaseSqlQuery } from './query';
+import { ethereumAddressSchema } from '@/lib/schemas';
+import { toPaginatedResponse } from '@/lib/pagination';
 
-import type { infiniteQuerySchema } from "@/lib/pagination";
-import { formatDateForSql } from "./lib";
+import type { infiniteQuerySchema } from '@/lib/pagination';
+import { formatDateForSql } from './lib';
 
 export const listTopSellersInputSchema = z.object({
   sorting: z
     .array(
       z.object({
         id: z.enum([
-          "tx_count",
-          "total_amount",
-          "latest_block_timestamp",
-          "unique_buyers",
+          'tx_count',
+          'total_amount',
+          'latest_block_timestamp',
+          'unique_buyers',
         ]),
         desc: z.boolean(),
-      }),
+      })
     )
-    .default([{ id: "total_amount", desc: true }]),
+    .default([{ id: 'total_amount', desc: true }]),
   addresses: z.array(ethereumAddressSchema).optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
@@ -28,11 +28,11 @@ export const listTopSellersInputSchema = z.object({
 
 export const listTopSellers = async (
   input: z.input<typeof listTopSellersInputSchema>,
-  pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>,
+  pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
 ) => {
   const parseResult = listTopSellersInputSchema.safeParse(input);
   if (!parseResult.success) {
-    throw new Error("Invalid input: " + parseResult.error.message);
+    throw new Error('Invalid input: ' + parseResult.error.message);
   }
   const { sorting, addresses, startDate, endDate } = parseResult.data;
   const { limit } = pagination;
@@ -43,7 +43,7 @@ export const listTopSellers = async (
       total_amount: z.coerce.bigint(),
       latest_block_timestamp: z.coerce.date(),
       unique_buyers: z.coerce.bigint(),
-    }),
+    })
   );
 
   const sql = `SELECT 
@@ -61,15 +61,15 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
     )
     ${
       addresses
-        ? `AND recipient IN (${addresses.map((a) => `'${a}'`).join(", ")})`
-        : ""
+        ? `AND recipient IN (${addresses.map(a => `'${a}'`).join(', ')})`
+        : ''
     }
     ${
-      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ""
+      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ''
     }
-    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ""}
+    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
 GROUP BY recipient 
-ORDER BY ${sorting.map((s) => `${s.id} ${s.desc ? "DESC" : "ASC"}`).join(", ")} 
+ORDER BY ${sorting.map(s => `${s.id} ${s.desc ? 'DESC' : 'ASC'}`).join(', ')} 
 LIMIT ${limit + 1};
   `;
 

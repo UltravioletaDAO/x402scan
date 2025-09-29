@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { createConfig, WagmiProvider, http } from "wagmi";
-import { base } from "wagmi/chains";
+import { createConfig, WagmiProvider, http } from 'wagmi';
+import { base } from 'wagmi/chains';
 
-import { CDPHooksProvider as CDPHooksProviderBase } from "@coinbase/cdp-hooks";
-import { createCDPEmbeddedWalletConnector } from "@coinbase/cdp-wagmi";
+import { CDPHooksProvider as CDPHooksProviderBase } from '@coinbase/cdp-hooks';
+import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
 
-import { env } from "@/env";
+import { env } from '@/env';
 
 interface Props {
   children: React.ReactNode;
 }
 
 const cdpConfig = {
-  projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID ?? "",
+  projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID ?? '',
   ethereum: {
-    createOnLogin: "smart" as const,
+    createOnLogin: 'smart' as const,
   },
   solana: {
     createOnLogin: true,

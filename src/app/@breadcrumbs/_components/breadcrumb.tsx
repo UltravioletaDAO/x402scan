@@ -1,15 +1,15 @@
-import React from "react";
+import React from 'react';
 
-import Link from "next/link";
+import Link from 'next/link';
 
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 
 // import { Skeleton } from "@/components/ui/skeleton";
 
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
-import type { LucideIcon } from "lucide-react";
-import type { Route } from "next";
+import type { LucideIcon } from 'lucide-react';
+import type { Route } from 'next';
 
 interface Props<T extends string> {
   href: Route<T>;
@@ -31,11 +31,11 @@ export const Breadcrumb = <T extends string>({
   return (
     <Link
       href={href}
-      className={cn(disabled && "pointer-events-none")}
+      className={cn(disabled && 'pointer-events-none')}
       aria-disabled={disabled}
     >
       <div className="flex items-center gap-2 cursor-pointer">
-        <Avatar className={cn("rounded-md overflow-hidden bg-card size-5")}>
+        <Avatar className={cn('rounded-md overflow-hidden bg-card size-5')}>
           {image ? (
             <AvatarImage src={image} className="size-full" />
           ) : (
@@ -43,8 +43,8 @@ export const Breadcrumb = <T extends string>({
           )}
           <AvatarFallback
             className={cn(
-              "size-full flex items-center justify-center border rounded-md",
-              "size-5",
+              'size-full flex items-center justify-center border rounded-md',
+              'size-5'
             )}
           >
             <Fallback className="size-3" />
@@ -52,8 +52,8 @@ export const Breadcrumb = <T extends string>({
         </Avatar>
         <p
           className={cn(
-            "font-semibold text-sm",
-            mobileHideText && "hidden md:block",
+            'font-semibold text-sm',
+            mobileHideText && 'hidden md:block'
           )}
         >
           {name}

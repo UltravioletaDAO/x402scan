@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import type { LucideIcon } from "lucide-react";
+import type { LucideIcon } from 'lucide-react';
 import {
   Activity,
   ArrowLeftRight,
@@ -8,23 +8,23 @@ import {
   DollarSign,
   Store,
   Users,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { formatTokenAmount } from "@/lib/token";
+import { formatTokenAmount } from '@/lib/token';
 
-import type { RouterOutputs } from "@/trpc/client";
-import { Origins, OriginsSkeleton } from "./origins";
-import { cn, formatCompactAgo } from "@/lib/utils";
+import type { RouterOutputs } from '@/trpc/client';
+import { Origins, OriginsSkeleton } from './origins';
+import { cn, formatCompactAgo } from '@/lib/utils';
 
-import type { ExtendedColumnDef } from "@/components/ui/data-table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { KnownSellerChart, LoadingKnownSellerChart } from "./chart";
+import type { ExtendedColumnDef } from '@/components/ui/data-table';
+import { Skeleton } from '@/components/ui/skeleton';
+import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
 
-type ColumnType = RouterOutputs["sellers"]["list"]["bazaar"]["items"][number];
+type ColumnType = RouterOutputs['sellers']['list']['bazaar']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
-    accessorKey: "recipient",
+    accessorKey: 'recipient',
     header: () => (
       <HeaderCell Icon={Store} label="Recipient" className="justify-start" />
     ),
@@ -38,19 +38,19 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <OriginsSkeleton />,
   },
   {
-    accessorKey: "chart",
+    accessorKey: 'chart',
     header: () => <HeaderCell Icon={Activity} label="Activity" />,
     cell: ({ row }) => <KnownSellerChart address={row.original.recipient} />,
     size: 100,
     loading: () => <LoadingKnownSellerChart />,
   },
   {
-    accessorKey: "tx_count",
+    accessorKey: 'tx_count',
     header: () => <HeaderCell Icon={ArrowLeftRight} label="Txns" />,
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.tx_count.toLocaleString(undefined, {
-          notation: "compact",
+          notation: 'compact',
           maximumFractionDigits: 2,
           minimumFractionDigits: 0,
         })}
@@ -60,12 +60,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
-    accessorKey: "unique_buyers",
+    accessorKey: 'unique_buyers',
     header: () => <HeaderCell Icon={Users} label="Buyers" />,
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.unique_buyers.toLocaleString(undefined, {
-          notation: "compact",
+          notation: 'compact',
           maximumFractionDigits: 2,
           minimumFractionDigits: 0,
         })}
@@ -75,7 +75,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
-    accessorKey: "latest_block_timestamp",
+    accessorKey: 'latest_block_timestamp',
     header: () => <HeaderCell Icon={Calendar} label="Last Used" />,
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -86,7 +86,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
-    accessorKey: "total_amount",
+    accessorKey: 'total_amount',
     header: () => (
       <HeaderCell Icon={DollarSign} label="Volume" className="justify-end" />
     ),
@@ -110,8 +110,8 @@ const HeaderCell: React.FC<HeaderCellProps> = ({ Icon, label, className }) => {
   return (
     <div
       className={cn(
-        "flex items-center justify-center gap-1 text-sm text-muted-foreground",
-        className,
+        'flex items-center justify-center gap-1 text-sm text-muted-foreground',
+        className
       )}
     >
       <Icon className="size-3" />

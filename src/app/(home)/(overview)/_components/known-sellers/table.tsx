@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { DataTable } from "@/components/ui/data-table";
-import { columns } from "./columns";
-import { api } from "@/trpc/client";
-import { useTimeRangeContext } from "@/app/_components/time-range-selector/context";
-import { useSorting } from "../lib/sorting";
+import { DataTable } from '@/components/ui/data-table';
+import { columns } from './columns';
+import { api } from '@/trpc/client';
+import { useTimeRangeContext } from '@/app/_components/time-range-selector/context';
+import { useSorting } from '../lib/sorting';
 
 export const KnownSellersTable = () => {
   const { sorting } = useSorting();
@@ -21,7 +21,7 @@ export const KnownSellersTable = () => {
     <DataTable
       columns={columns}
       data={topSellers.items}
-      href={(data) => `/recipient/${data.recipient}`}
+      href={data => `/recipient/${data.recipient}`}
     />
   );
 };

@@ -5,9 +5,9 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Logo } from "@/components/logo";
-import { EmbeddedWallet } from "./embedded-wallet";
+} from '@/components/ui/dialog';
+import { Logo } from '@/components/logo';
+import { EmbeddedWallet } from './embedded-wallet';
 
 interface AuthModalProps {
   children: React.ReactNode;

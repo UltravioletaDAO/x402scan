@@ -1,4 +1,4 @@
-import { Nav } from "../_components/layout/nav";
+import { Nav } from '../_components/layout/nav';
 
 export default function HomeLayout({
   children,
@@ -10,12 +10,12 @@ export default function HomeLayout({
       <Nav
         tabs={[
           {
-            label: "Overview",
-            href: "/",
+            label: 'Overview',
+            href: '/',
           },
           {
-            label: "News",
-            href: "/news",
+            label: 'News',
+            href: '/news',
           },
         ]}
       />

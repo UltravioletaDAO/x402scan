@@ -1,16 +1,16 @@
-import React, { Suspense } from "react";
+import React, { Suspense } from 'react';
 
-import { ErrorBoundary } from "react-error-boundary";
+import { ErrorBoundary } from 'react-error-boundary';
 
-import { api, HydrateClient } from "@/trpc/server";
+import { api, HydrateClient } from '@/trpc/server';
 
-import { OverallCharts, LoadingOverallCharts } from "./charts";
-import { Section } from "../utils";
-import { differenceInSeconds, subMonths, subSeconds } from "date-fns";
-import { TimeRangeProvider } from "@/app/_components/time-range-selector/context";
-import { RangeSelector } from "@/app/_components/time-range-selector/range-selector";
-import { ActivityTimeframe } from "@/types/timeframes";
-import { firstTransfer } from "@/services/cdp/facilitator/constants";
+import { OverallCharts, LoadingOverallCharts } from './charts';
+import { Section } from '../utils';
+import { differenceInSeconds, subMonths, subSeconds } from 'date-fns';
+import { TimeRangeProvider } from '@/app/_components/time-range-selector/context';
+import { RangeSelector } from '@/app/_components/time-range-selector/range-selector';
+import { ActivityTimeframe } from '@/types/timeframes';
+import { firstTransfer } from '@/services/cdp/facilitator/constants';
 
 export const OverallStats = async () => {
   const endDate = new Date();

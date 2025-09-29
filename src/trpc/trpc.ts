@@ -1,8 +1,8 @@
-import { initTRPC } from "@trpc/server";
-import superjson from "superjson";
-import type z from "zod";
-import { ZodError } from "zod";
-import { infiniteQuerySchema } from "@/lib/pagination";
+import { initTRPC } from '@trpc/server';
+import superjson from 'superjson';
+import type z from 'zod';
+import { ZodError } from 'zod';
+import { infiniteQuerySchema } from '@/lib/pagination';
 
 /**
  * Context that is passed to all TRPC procedures
@@ -54,7 +54,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
   if (t._config.isDev) {
     // artificial delay in dev
     const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
+    await new Promise(resolve => setTimeout(resolve, waitMs));
   }
 
   const result = await next();

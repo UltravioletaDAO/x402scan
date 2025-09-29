@@ -1,6 +1,6 @@
-import { clsx, type ClassValue } from "clsx";
-import { formatDistanceToNow } from "date-fns";
-import { twMerge } from "tailwind-merge";
+import { clsx, type ClassValue } from 'clsx';
+import { formatDistanceToNow } from 'date-fns';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -8,16 +8,16 @@ export function cn(...inputs: ClassValue[]) {
 
 export const formatCurrency = (
   value: number,
-  options?: Intl.NumberFormatOptions,
+  options?: Intl.NumberFormatOptions
 ): string => {
   if (value < 0.01 && value > 0) {
-    return "< $0.01";
+    return '< $0.01';
   }
 
   return value.toLocaleString(undefined, {
-    style: "currency",
-    currency: "USD",
-    notation: "compact",
+    style: 'currency',
+    currency: 'USD',
+    notation: 'compact',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
     ...options,
@@ -29,17 +29,17 @@ export const formatCompactAgo = (date: Date) => {
     addSuffix: true,
   });
   return str
-    .replace("about ", "~")
-    .replace(" hours", "h")
-    .replace(" hour", "h")
-    .replace(" minutes", "m")
-    .replace(" minute", "m")
-    .replace(" seconds", "s")
-    .replace(" second", "s");
+    .replace('about ', '~')
+    .replace(' hours', 'h')
+    .replace(' hour', 'h')
+    .replace(' minutes', 'm')
+    .replace(' minute', 'm')
+    .replace(' seconds', 's')
+    .replace(' second', 's');
 };
 
 export const formatAddress = (address: string) => {
-  return address.slice(0, 6) + "..." + address.slice(-6);
+  return address.slice(0, 6) + '...' + address.slice(-6);
 };
 
 export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {

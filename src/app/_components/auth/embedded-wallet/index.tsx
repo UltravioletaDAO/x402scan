@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-import { useAccount, useSignMessage } from "wagmi";
-import { useCurrentUser } from "@coinbase/cdp-hooks";
+import { useAccount, useSignMessage } from 'wagmi';
+import { useCurrentUser } from '@coinbase/cdp-hooks';
 
-import { signInWithEthereum } from "@/auth/providers/siwe/sign-in";
+import { signInWithEthereum } from '@/auth/providers/siwe/sign-in';
 
-import { EmbeddedWalletOTP } from "./otp";
-import { EmbeddedWalletEmail } from "./email";
+import { EmbeddedWalletOTP } from './otp';
+import { EmbeddedWalletEmail } from './email';
 
 export const EmbeddedWallet = () => {
-  const [flowId, setFlowId] = useState("");
+  const [flowId, setFlowId] = useState('');
 
   const account = useAccount();
 
@@ -24,10 +24,10 @@ export const EmbeddedWallet = () => {
       void signInWithEthereum({
         address: account.address,
         chainId: 8453,
-        signMessage: async (message) => {
+        signMessage: async message => {
           return await signMessageAsync({ message });
         },
-        email: currentUser?.authenticationMethods.email?.email ?? "",
+        email: currentUser?.authenticationMethods.email?.email ?? '',
       });
     }
   }, [account.address, currentUser, signMessageAsync]);
@@ -35,7 +35,7 @@ export const EmbeddedWallet = () => {
   if (flowId) {
     return (
       <div className="space-y-4">
-        <EmbeddedWalletOTP flowId={flowId} handleReset={() => setFlowId("")} />
+        <EmbeddedWalletOTP flowId={flowId} handleReset={() => setFlowId('')} />
       </div>
     );
   }

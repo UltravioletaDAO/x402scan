@@ -3,14 +3,14 @@ import {
   getFirstTransferTimestamp,
   getOverallStatistics,
   overallStatisticsInputSchema,
-} from "@/services/cdp/sql/overall-statistics";
+} from '@/services/cdp/sql/overall-statistics';
 import {
   getBucketedStatistics,
   bucketedStatisticsInputSchema,
-} from "@/services/cdp/sql/bucketed-statistics";
+} from '@/services/cdp/sql/bucketed-statistics';
 
-import { createTRPCRouter, publicProcedure } from "../trpc";
-import { getAcceptsAddresses } from "@/services/db/accepts";
+import { createTRPCRouter, publicProcedure } from '../trpc';
+import { getAcceptsAddresses } from '@/services/db/accepts';
 
 export const statisticsRouter = createTRPCRouter({
   getOverallStatistics: publicProcedure

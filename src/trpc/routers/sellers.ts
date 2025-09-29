@@ -1,10 +1,10 @@
-import { createTRPCRouter, infiniteQueryProcedure } from "../trpc";
-import z from "zod";
+import { createTRPCRouter, infiniteQueryProcedure } from '../trpc';
+import z from 'zod';
 import {
   listTopSellers,
   listTopSellersInputSchema,
-} from "@/services/cdp/sql/list-top-sellers";
-import { getAcceptsAddresses } from "@/services/db/accepts";
+} from '@/services/cdp/sql/list-top-sellers';
+import { getAcceptsAddresses } from '@/services/db/accepts';
 
 export const sellersRouter = createTRPCRouter({
   list: {
@@ -23,11 +23,11 @@ export const sellersRouter = createTRPCRouter({
             ...input,
             addresses: Object.keys(originsByAddress),
           },
-          pagination,
+          pagination
         );
 
         return {
-          items: result.items.map((item) => ({
+          items: result.items.map(item => ({
             ...item,
             origins: originsByAddress[item.recipient],
           })),
