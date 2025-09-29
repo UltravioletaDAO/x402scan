@@ -35,7 +35,15 @@ export const formatCompactAgo = (date: Date) => {
     .replace(' minutes', 'm')
     .replace(' minute', 'm')
     .replace(' seconds', 's')
-    .replace(' second', 's');
+    .replace(' second', 's')
+    .replace(' days', 'd')
+    .replace(' day', 'd')
+    .replace(' weeks', 'w')
+    .replace(' week', 'w')
+    .replace(' months', 'M')
+    .replace(' month', 'M')
+    .replace(' years', 'y')
+    .replace(' year', 'y');
 };
 
 export const formatAddress = (address: string) => {
