@@ -7,7 +7,7 @@ import { api, HydrateClient } from "@/trpc/server";
 import { OverallCharts, LoadingOverallCharts } from "./charts";
 import { Section } from "../utils";
 import { differenceInSeconds, subMonths, subSeconds } from "date-fns";
-import { ActivityContextProvider } from "@/app/_components/time-range-selector/context";
+import { TimeRangeProvider } from "@/app/_components/time-range-selector/context";
 import { RangeSelector } from "@/app/_components/time-range-selector/range-selector";
 import { ActivityTimeframe } from "@/types/timeframes";
 import { firstTransfer } from "@/services/cdp/facilitator/constants";
@@ -27,12 +27,12 @@ export const OverallStats = async () => {
   void api.stats.getBucketedStatistics.prefetch({
     startDate,
     endDate,
-    numBuckets: 16,
+    numBuckets: 32,
   });
 
   return (
     <HydrateClient>
-      <ActivityContextProvider
+      <TimeRangeProvider
         initialEndDate={endDate}
         initialTimeframe={ActivityTimeframe.ThirtyDays}
         initialStartDate={startDate}
@@ -47,7 +47,7 @@ export const OverallStats = async () => {
             </Suspense>
           </ErrorBoundary>
         </ActivityContainer>
-      </ActivityContextProvider>
+      </TimeRangeProvider>
     </HydrateClient>
   );
 };

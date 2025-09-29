@@ -53,7 +53,13 @@ export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
             <YAxis key={index} domain={domain} hide={hide} yAxisId={index} />
           ))
         ) : (
-          <YAxis domain={["0", "dataMax"]} hide={true} />
+          <YAxis
+            domain={[
+              "dataMin - (dataMax - dataMin) * 0.1",
+              "dataMax + (dataMax - dataMin) * 0.1",
+            ]}
+            hide={true}
+          />
         )}
         {children}
         {tooltipRows && (

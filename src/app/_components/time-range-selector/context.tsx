@@ -6,7 +6,7 @@ import { subDays } from "date-fns";
 
 import { ActivityTimeframe } from "@/types/timeframes";
 
-interface ActivityContextType {
+interface TimeRangeContextType {
   startDate: Date;
   endDate: Date;
   timeframe: ActivityTimeframe;
@@ -14,7 +14,7 @@ interface ActivityContextType {
   setCustomTimeframe: (startDate: Date, endDate: Date) => void;
 }
 
-const ActivityContext = createContext<ActivityContextType>({
+const TimeRangeContext = createContext<TimeRangeContextType>({
   startDate: new Date(),
   endDate: new Date(),
   timeframe: ActivityTimeframe.SevenDays,
@@ -34,7 +34,7 @@ interface Props {
   creationDate: Date;
 }
 
-export const ActivityContextProvider = ({
+export const TimeRangeProvider = ({
   children,
   initialTimeframe,
   initialStartDate,
@@ -69,10 +69,9 @@ export const ActivityContextProvider = ({
   const selectTimeframe = (timeframe: ActivityTimeframe) => {
     if (timeframe === ActivityTimeframe.AllTime) {
       setStartDate(creationDate);
-      setEndDate(new Date());
-      return;
+    } else {
+      setStartDate(subDays(new Date(), timeframe));
     }
-    setStartDate(subDays(new Date(), timeframe));
     setEndDate(new Date());
     setTimeframe(timeframe);
   };
@@ -84,7 +83,7 @@ export const ActivityContextProvider = ({
   };
 
   return (
-    <ActivityContext.Provider
+    <TimeRangeContext.Provider
       value={{
         startDate,
         endDate,
@@ -94,10 +93,10 @@ export const ActivityContextProvider = ({
       }}
     >
       {children}
-    </ActivityContext.Provider>
+    </TimeRangeContext.Provider>
   );
 };
 
-export const useActivityContext = () => {
-  return useContext(ActivityContext);
+export const useTimeRangeContext = () => {
+  return useContext(TimeRangeContext);
 };

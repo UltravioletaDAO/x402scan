@@ -1,4 +1,4 @@
-import type { SortType } from "./types";
+import type { SortType } from "../../_types/types";
 
 export const defaultSorting: SortType[] = [
   { id: "tx_count" as const, desc: true },

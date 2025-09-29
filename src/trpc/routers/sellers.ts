@@ -16,15 +16,23 @@ export const sellersRouter = createTRPCRouter({
     bazaar: infiniteQueryProcedure(z.bigint())
       .input(listTopSellersInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
-        const addresses = await getAcceptsAddresses();
+        const originsByAddress = await getAcceptsAddresses();
 
-        return await listTopSellers(
+        const result = await listTopSellers(
           {
             ...input,
-            addresses,
+            addresses: Object.keys(originsByAddress),
           },
           pagination
         );
+
+        return {
+          items: result.items.map((item) => ({
+            ...item,
+            origins: originsByAddress[item.recipient],
+          })),
+          hasNextPage: result.hasNextPage,
+        };
       }),
   },
 });

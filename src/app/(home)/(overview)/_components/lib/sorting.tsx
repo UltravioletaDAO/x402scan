@@ -29,7 +29,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import type { SortType } from "./types";
+import type { SortType } from "../../_types/types";
 import { defaultSorting } from "./defaults";
 import { useContext, useState } from "react";
 

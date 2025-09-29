@@ -5,6 +5,7 @@ import { ethereumAddressSchema } from "@/lib/schemas";
 import { toPaginatedResponse } from "@/lib/pagination";
 
 import type { infiniteQuerySchema } from "@/lib/pagination";
+import { formatDateForSql } from "./lib";
 
 export const listTopSellersInputSchema = z.object({
   sorting: z
@@ -21,6 +22,8 @@ export const listTopSellersInputSchema = z.object({
     )
     .default([{ id: "total_amount", desc: true }]),
   addresses: z.array(ethereumAddressSchema).optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
 });
 
 export const listTopSellers = async (
@@ -31,7 +34,7 @@ export const listTopSellers = async (
   if (!parseResult.success) {
     throw new Error("Invalid input: " + parseResult.error.message);
   }
-  const { sorting, addresses } = parseResult.data;
+  const { sorting, addresses, startDate, endDate } = parseResult.data;
   const { limit } = pagination;
   const outputSchema = z.array(
     z.object({
@@ -61,6 +64,10 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
         ? `AND recipient IN (${addresses.map((a) => `'${a}'`).join(", ")})`
         : ""
     }
+    ${
+      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ""
+    }
+    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ""}
 GROUP BY recipient 
 ORDER BY ${sorting.map((s) => `${s.id} ${s.desc ? "DESC" : "ASC"}`).join(", ")} 
 LIMIT ${limit + 1};

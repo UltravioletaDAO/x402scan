@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useActivityContext } from "./context";
+import { useTimeRangeContext } from "./context";
 import {
   Select,
   SelectContent,
@@ -23,7 +23,7 @@ import { ActivityTimeframe } from "@/types/timeframes";
 
 export const RangeSelector = () => {
   const { startDate, endDate, selectTimeframe, timeframe, setCustomTimeframe } =
-    useActivityContext();
+    useTimeRangeContext();
 
   // Get only the numeric enum values
   const timeframeValues = Object.values(ActivityTimeframe).filter(

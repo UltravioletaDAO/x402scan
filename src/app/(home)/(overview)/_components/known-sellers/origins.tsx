@@ -1,15 +1,14 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { api } from "@/trpc/server";
-import type { ResourceOrigin } from "@prisma/client";
 import { Globe } from "lucide-react";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
+import type { ResourceOrigin } from "@prisma/client";
+
 interface Props {
-  address: string;
+  origins: ResourceOrigin[];
 }
 
-export const Origins: React.FC<Props> = async ({ address }) => {
-  const origins = await api.origins.getOriginsByAddress(address);
-
+export const Origins: React.FC<Props> = ({ origins }) => {
   if (!origins || origins.length === 0) {
     return null;
   }
@@ -31,9 +30,9 @@ export const Origins: React.FC<Props> = async ({ address }) => {
   };
 
   return (
-    <div className="relative w-full max-w-full">
+    <div className="relative w-full max-w-full -mx-2">
       <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-card to-transparent z-10" />
-      <div className="flex flex-row gap-1 w-full overflow-x-auto no-scrollbar px-4">
+      <div className="flex flex-row gap-1 w-full overflow-x-auto no-scrollbar px-2">
         {origins.map((origin) => (
           <Origin key={origin.id} origin={origin} />
         ))}
