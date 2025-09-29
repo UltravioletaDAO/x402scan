@@ -46,12 +46,23 @@ export const HeaderCard: React.FC<Props> = async ({ address }) => {
                   ? new URL(origins[0].origin).hostname
                   : `${origins.length} servers`}
             </h1>
-            <p className={cn('break-words line-clamp-2 text-muted-foreground')}>
-              <Address
-                address={address}
-                className="border-none p-0 text-sm"
-                side="bottom"
-              />
+            <p
+              className={cn(
+                'break-words line-clamp-2',
+                origins.length === 0
+                  ? 'text-muted-foreground/60'
+                  : 'text-muted-foreground'
+              )}
+            >
+              {origins.length === 0 ? (
+                'This address is not associated with any known servers'
+              ) : (
+                <Address
+                  address={address}
+                  className="border-none p-0 text-sm"
+                  side="bottom"
+                />
+              )}
             </p>
           </div>
           {/* <Suspense fallback={<LoadingHeaderButtons />}>
