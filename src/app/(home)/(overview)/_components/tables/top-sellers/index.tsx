@@ -7,7 +7,7 @@ import { TopSellersTable } from './table';
 import { defaultSorting, limit } from '../../lib/defaults';
 
 export const TopSellers = () => {
-  void api.sellers.list.all.prefetchInfinite({
+  void api.sellers.list.all.prefetch({
     sorting: defaultSorting,
     limit,
   });

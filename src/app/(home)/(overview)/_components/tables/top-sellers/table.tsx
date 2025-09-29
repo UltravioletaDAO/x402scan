@@ -11,18 +11,10 @@ import { limit } from '../../lib/defaults';
 export const TopSellersTable = () => {
   const { sorting } = useSorting();
 
-  const [topSellers] = api.sellers.list.all.useSuspenseInfiniteQuery(
-    {
-      sorting,
-      limit,
-    },
-    {
-      getNextPageParam: lastPage =>
-        lastPage.hasNextPage && lastPage.items.length > 0
-          ? lastPage.items[lastPage.items.length - 1][sorting[0].id]
-          : undefined,
-    }
-  );
+  const [topSellers] = api.sellers.list.all.useSuspenseQuery({
+    sorting,
+    limit,
+  });
 
-  return <DataTable columns={columns} data={topSellers.pages[0].items} />;
+  return <DataTable columns={columns} data={topSellers.items} />;
 };
