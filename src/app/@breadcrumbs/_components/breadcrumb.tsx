@@ -15,9 +15,10 @@ interface Props<T extends string> {
   href: Route<T>;
   image: string | null;
   name: string;
-  Fallback: LucideIcon;
+  Fallback: LucideIcon | null;
   mobileHideText?: boolean;
   disabled?: boolean;
+  textClassName?: string;
 }
 
 export const Breadcrumb = <T extends string>({
@@ -25,6 +26,7 @@ export const Breadcrumb = <T extends string>({
   image,
   name,
   Fallback,
+  textClassName,
   mobileHideText = false,
   disabled = false,
 }: Props<T>) => {
@@ -35,24 +37,28 @@ export const Breadcrumb = <T extends string>({
       aria-disabled={disabled}
     >
       <div className="flex items-center gap-2 cursor-pointer">
-        <Avatar className={cn('rounded-md overflow-hidden bg-card size-5')}>
-          {image ? (
-            <AvatarImage src={image} className="size-full" />
-          ) : (
-            <AvatarImage />
-          )}
-          <AvatarFallback
-            className={cn(
-              'size-full flex items-center justify-center border rounded-md',
-              'size-5'
+        {(Fallback !== null || image !== null) && (
+          <Avatar className={cn('rounded-md overflow-hidden bg-card size-5')}>
+            {image ? (
+              <AvatarImage src={image} className="size-full" />
+            ) : (
+              <AvatarImage />
             )}
-          >
-            <Fallback className="size-3" />
-          </AvatarFallback>
-        </Avatar>
+            <AvatarFallback
+              className={cn(
+                'size-full flex items-center justify-center border rounded-md',
+                'size-5'
+              )}
+            >
+              {Fallback && <Fallback className="size-3" />}
+            </AvatarFallback>
+          </Avatar>
+        )}
+
         <p
           className={cn(
             'font-semibold text-sm',
+            textClassName,
             mobileHideText && 'hidden md:block'
           )}
         >
