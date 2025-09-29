@@ -7,7 +7,7 @@ import {
   useReactTable,
   getPaginationRowModel,
 } from "@tanstack/react-table";
-import { Skeleton } from "../skeleton";
+import { Skeleton } from "./skeleton";
 
 import {
   Table,
@@ -17,8 +17,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card } from "../card";
-import { Button } from "../button";
+import { Card } from "./card";
+import { Button } from "./button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type { Route } from "next";

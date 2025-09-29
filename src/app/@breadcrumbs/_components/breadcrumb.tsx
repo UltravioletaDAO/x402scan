@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
-import { Skeleton } from "@/components/ui/skeleton";
+// import { Skeleton } from "@/components/ui/skeleton";
 
 import { cn } from "@/lib/utils";
 
@@ -63,11 +63,11 @@ export const Breadcrumb = <T extends string>({
   );
 };
 
-export const LoadingBreadcrumb = () => {
-  return (
-    <div className="flex items-center gap-2 cursor-pointer">
-      <Skeleton className="size-5" />
-      <Skeleton className="w-16 h-[14px]" />
-    </div>
-  );
-};
+// export const LoadingBreadcrumb = () => {
+//   return (
+//     <div className="flex items-center gap-2 cursor-pointer">
+//       <Skeleton className="size-5" />
+//       <Skeleton className="w-16 h-[14px]" />
+//     </div>
+//   );
+// };

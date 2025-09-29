@@ -2,7 +2,7 @@ import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import type z from "zod";
 import { ZodError } from "zod";
-import { timeInfiniteQuerySchema, infiniteQuerySchema } from "@/lib/pagination";
+import { infiniteQuerySchema } from "@/lib/pagination";
 
 /**
  * Context that is passed to all TRPC procedures
@@ -82,11 +82,3 @@ export const infiniteQueryProcedure = <T>(cursorType: z.ZodType<T>) =>
         },
       });
     });
-
-export const timeBasedPaginatedProcedure = t.procedure
-  .input(timeInfiniteQuerySchema)
-  .use(async ({ ctx, next, input }) => {
-    return next({
-      ctx: { ...ctx, pagination: input },
-    });
-  });

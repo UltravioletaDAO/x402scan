@@ -14,11 +14,11 @@ function Select({
   return <SelectPrimitive.Root data-slot="select" {...props} />;
 }
 
-function SelectValue({
-  ...props
-}: React.ComponentProps<typeof SelectPrimitive.Value>) {
-  return <SelectPrimitive.Value data-slot="select-value" {...props} />;
-}
+// function SelectValue({
+//   ...props
+// }: React.ComponentProps<typeof SelectPrimitive.Value>) {
+//   return <SelectPrimitive.Value data-slot="select-value" {...props} />;
+// }
 
 function SelectTrigger({
   className,
@@ -145,4 +145,4 @@ function SelectScrollDownButton({
   );
 }
 
-export { Select, SelectContent, SelectItem, SelectTrigger, SelectValue };
+export { Select, SelectContent, SelectItem, SelectTrigger };

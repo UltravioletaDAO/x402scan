@@ -110,7 +110,7 @@ export const LoadingOverallStatsCard = ({
   );
 };
 
-export const OverallStatsCardContainer = ({
+const OverallStatsCardContainer = ({
   title,
   children,
   value,

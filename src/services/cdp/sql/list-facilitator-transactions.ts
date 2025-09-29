@@ -4,7 +4,7 @@ import { runBaseSqlQuery } from "./query";
 
 import { ethereumAddressSchema } from "@/lib/schemas";
 
-const inputSchema = z.object({
+export const listFacilitatorTransactionsInputSchema = z.object({
   recipient: ethereumAddressSchema,
   after: z
     .object({
@@ -28,9 +28,9 @@ const outputSchema = z.array(
 );
 
 export const listFacilitatorTransactions = async (
-  input: z.input<typeof inputSchema>
+  input: z.input<typeof listFacilitatorTransactionsInputSchema>
 ) => {
-  const parseResult = inputSchema.safeParse(input);
+  const parseResult = listFacilitatorTransactionsInputSchema.safeParse(input);
   if (!parseResult.success) {
     console.error("invalid input", input);
     throw new Error("Invalid input: " + parseResult.error.message);
@@ -76,5 +76,3 @@ ORDER BY block_timestamp, log_index ASC
 LIMIT ${limit};`;
   return await runBaseSqlQuery(sql, outputSchema);
 };
-
-export type FacilitatorTransaction = z.infer<typeof outputSchema>[number];

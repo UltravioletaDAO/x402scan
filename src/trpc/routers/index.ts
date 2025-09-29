@@ -4,12 +4,14 @@ import { originsRouter } from "./origins";
 import { resourcesRouter } from "./resources";
 import { sellersRouter } from "./sellers";
 import { statisticsRouter } from "./statistics";
+import { transactionsRouter } from "./transactions";
 
 export const appRouter = createTRPCRouter({
   stats: statisticsRouter,
   sellers: sellersRouter,
   resources: resourcesRouter,
   origins: originsRouter,
+  transactions: transactionsRouter,
 });
 
 export type AppRouter = typeof appRouter;

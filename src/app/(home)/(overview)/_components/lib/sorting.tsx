@@ -45,7 +45,7 @@ interface SortingContext {
   setSorting: (sorting: SortType[]) => void;
 }
 
-export const SortingContext = React.createContext<SortingContext>({
+const SortingContext = React.createContext<SortingContext>({
   sorting: defaultSorting,
   setSorting: () => {
     // do nothing

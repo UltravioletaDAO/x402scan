@@ -65,19 +65,21 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
   return result[0];
 };
 
-/**
- * Query to get the blockTimestamp of the first transfer.
- * Returns the earliest block_timestamp for a Transfer event matching the same filters.
- */
-export const getFirstTransferTimestamp = async ({
-  addresses,
-  startDate,
-  endDate,
-}: {
-  addresses?: string[];
-  startDate?: Date;
-  endDate?: Date;
-}): Promise<Date | null> => {
+export const getFirstTransferTimestampInputSchema = z.object({
+  addresses: z.array(ethereumAddressSchema).optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
+});
+
+export const getFirstTransferTimestamp = async (
+  input: z.input<typeof getFirstTransferTimestampInputSchema>
+): Promise<Date | null> => {
+  const parseResult = getFirstTransferTimestampInputSchema.safeParse(input);
+  if (!parseResult.success) {
+    throw new Error("Invalid input: " + parseResult.error.message);
+  }
+  const { addresses, startDate, endDate } = parseResult.data;
+
   const sql = `SELECT block_timestamp
     FROM base.events
     WHERE event_signature = 'Transfer(address,address,uint256)'
