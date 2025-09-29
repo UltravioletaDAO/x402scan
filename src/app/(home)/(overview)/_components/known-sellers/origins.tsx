@@ -34,7 +34,9 @@ export const Origins: React.FC<Props> = ({ origins, address }) => {
           )
         }
         title={new URL(origin.origin).hostname}
-        address={<Address address={address} className="border-none p-0" />}
+        address={
+          <Address address={address} className="border-none p-0" hideTooltip />
+        }
       />
     );
   }
@@ -56,7 +58,9 @@ export const Origins: React.FC<Props> = ({ origins, address }) => {
           </TooltipContent>
         </Tooltip>
       }
-      address={<Address address={address} className="border-none p-0" />}
+      address={
+        <Address address={address} className="border-none p-0" hideTooltip />
+      }
     />
   );
 };

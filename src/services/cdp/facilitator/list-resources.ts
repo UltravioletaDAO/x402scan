@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { facilitator as baseFacilitator } from '@coinbase/x402';
 import type { FacilitatorConfig } from 'x402/types';
 import { useFacilitator as facilitatorUtils } from 'x402/verify';

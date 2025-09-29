@@ -18,15 +18,6 @@ export const statisticsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await getOverallStatistics(input);
     }),
-  getBazaarOverallStatistics: publicProcedure
-    .input(overallStatisticsInputSchema)
-    .query(async ({ input }) => {
-      const originsByAddress = await getAcceptsAddresses();
-      return await getOverallStatistics({
-        ...input,
-        addresses: Object.keys(originsByAddress),
-      });
-    }),
   getBucketedStatistics: publicProcedure
     .input(bucketedStatisticsInputSchema)
     .query(async ({ input }) => {

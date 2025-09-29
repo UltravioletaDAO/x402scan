@@ -21,7 +21,7 @@ export const TopServers = async () => {
     startDate,
     endDate,
   });
-  void api.stats.getBazaarOverallStatistics.prefetch({
+  void api.stats.bazaar.overallStatistics.prefetch({
     startDate,
     endDate,
   });

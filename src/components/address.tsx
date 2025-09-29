@@ -9,19 +9,30 @@ import { cn, formatAddress } from '@/lib/utils';
 interface Props {
   address: string;
   className?: string;
+  hideTooltip?: boolean;
 }
 
-export const Address: React.FC<Props> = ({ address, className }) => {
+export const Address: React.FC<Props> = ({
+  address,
+  className,
+  hideTooltip,
+}) => {
+  const addressComponent = (
+    <Copyable
+      value={address}
+      className={cn('font-mono text-xs border rounded-md px-1', className)}
+    >
+      {formatAddress(address)}
+    </Copyable>
+  );
+
+  if (hideTooltip) {
+    return addressComponent;
+  }
+
   return (
     <Tooltip>
-      <TooltipTrigger>
-        <Copyable
-          value={address}
-          className={cn('font-mono text-xs border rounded-md px-1', className)}
-        >
-          {formatAddress(address)}
-        </Copyable>
-      </TooltipTrigger>
+      <TooltipTrigger>{addressComponent}</TooltipTrigger>
       <TooltipContent>
         <p className="font-mono">{address}</p>
       </TooltipContent>
