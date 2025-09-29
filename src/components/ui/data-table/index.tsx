@@ -41,6 +41,7 @@ interface DataTableProps<TData, TValue, AppRoute extends string> {
   href?: (data: TData) => Route<AppRoute>;
   isLoading?: boolean;
   loadingRowCount?: number;
+  pageSize?: number;
 }
 
 export function DataTable<TData, TValue, AppRoute extends string>({
@@ -49,12 +50,18 @@ export function DataTable<TData, TValue, AppRoute extends string>({
   href,
   isLoading = false,
   loadingRowCount = 5,
+  pageSize = 10,
 }: DataTableProps<TData, TValue, AppRoute>) {
   const table = useReactTable({
     data: isLoading ? (Array(loadingRowCount).fill(null) as TData[]) : data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: {
+        pageSize,
+      },
+    },
   });
 
   const router = useRouter();

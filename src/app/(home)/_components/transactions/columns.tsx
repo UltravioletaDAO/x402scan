@@ -10,7 +10,7 @@ import { HeaderCell } from '@/components/ui/data-table/header-cell';
 
 import { Address } from '@/components/address';
 
-import { Seller, SellerSkeleton } from '../../../../_components/seller';
+import { Seller, SellerSkeleton } from '../../../_components/seller';
 
 import { formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
