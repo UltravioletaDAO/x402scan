@@ -38,8 +38,8 @@ export const BaseBarChart = <
             x2="0"
             y2="1"
           >
-            <stop offset="0%" stopColor={color} stopOpacity={0.9} />
-            <stop offset="100%" stopColor={color} stopOpacity={0.1} />
+            <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
           </linearGradient>
         ))}
       </defs>
@@ -51,8 +51,9 @@ export const BaseBarChart = <
             isAnimationActive={index === bars.length - 1}
             dataKey={dataKey as string}
             stackId={stacked ? "1" : index.toString()}
-            fill={`color-mix(in oklab, ${color} 40%, transparent)`}
+            fill={`url(#${dataKey as string}-gradient)`}
             stroke={color}
+            strokeWidth={0.5}
             radius={
               index === bars.length - 1 || !stacked ? [4, 4, 0, 0] : undefined
             }

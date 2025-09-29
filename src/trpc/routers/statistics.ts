@@ -10,12 +10,22 @@ import {
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { firstTransferInputSchema } from "@/services/cdp/sql/first-transfer";
+import { getAcceptsAddresses } from "@/services/db/accepts";
 
 export const statisticsRouter = createTRPCRouter({
   getOverallStatistics: publicProcedure
     .input(overallStatisticsInputSchema)
     .query(async ({ input }) => {
       return await getOverallStatistics(input);
+    }),
+  getBazaarOverallStatistics: publicProcedure
+    .input(overallStatisticsInputSchema)
+    .query(async ({ input }) => {
+      const originsByAddress = await getAcceptsAddresses();
+      return await getOverallStatistics({
+        ...input,
+        addresses: Object.keys(originsByAddress),
+      });
     }),
   getBucketedStatistics: publicProcedure
     .input(bucketedStatisticsInputSchema)
@@ -28,4 +38,25 @@ export const statisticsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       return await getFirstTransferTimestamp(input);
     }),
+
+  bazaar: {
+    overallStatistics: publicProcedure
+      .input(overallStatisticsInputSchema)
+      .query(async ({ input }) => {
+        const originsByAddress = await getAcceptsAddresses();
+        return await getOverallStatistics({
+          ...input,
+          addresses: Object.keys(originsByAddress),
+        });
+      }),
+    bucketedStatistics: publicProcedure
+      .input(bucketedStatisticsInputSchema)
+      .query(async ({ input }) => {
+        const originsByAddress = await getAcceptsAddresses();
+        return await getBucketedStatistics({
+          ...input,
+          addresses: Object.keys(originsByAddress),
+        });
+      }),
+  },
 });

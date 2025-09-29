@@ -20,6 +20,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
   height = 350,
   margin = { top: 0, right: 0, left: 0, bottom: 0 },
   yAxes,
+  dataMax = "dataMax",
 }: ChartProps<T> & { type: "bar" | "area" | "line" | "composed" }) => {
   const getContainer = () => {
     switch (type) {
@@ -53,13 +54,7 @@ export const BaseChart = <T extends Omit<Record<string, number>, "timestamp">>({
             <YAxis key={index} domain={domain} hide={hide} yAxisId={index} />
           ))
         ) : (
-          <YAxis
-            domain={[
-              "dataMin - (dataMax - dataMin) * 0.1",
-              "dataMax + (dataMax - dataMin) * 0.1",
-            ]}
-            hide={true}
-          />
+          <YAxis domain={["0", dataMax]} hide={true} />
         )}
         {children}
         {tooltipRows && (

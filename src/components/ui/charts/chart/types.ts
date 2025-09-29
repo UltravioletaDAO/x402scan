@@ -27,6 +27,7 @@ export interface ChartProps<T extends Record<string, number>> {
     domain: AxisDomain;
     hide: boolean;
   }>;
+  dataMax?: number | string;
 }
 
 export type Series<T extends Record<string, number>, S> = S & {

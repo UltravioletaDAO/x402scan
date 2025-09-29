@@ -1,7 +1,14 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
-import { Calendar, DollarSign, Hash, Store } from "lucide-react";
+import {
+  Activity,
+  ArrowLeftRight,
+  Calendar,
+  DollarSign,
+  Store,
+  Users,
+} from "lucide-react";
 
 import { formatTokenAmount } from "@/lib/token";
 
@@ -19,7 +26,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: "recipient",
     header: () => (
-      <HeaderCell Icon={Store} label="Server" className="justify-start" />
+      <HeaderCell Icon={Store} label="Recipient" className="justify-start" />
     ),
     cell: ({ row }) => (
       <Origins
@@ -27,19 +34,19 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         address={row.original.recipient}
       />
     ),
-    size: 300,
+    size: 400,
     loading: () => <OriginsSkeleton />,
   },
   {
     accessorKey: "chart",
-    header: () => null,
+    header: () => <HeaderCell Icon={Activity} label="Activity" />,
     cell: ({ row }) => <KnownSellerChart address={row.original.recipient} />,
     size: 100,
     loading: () => <LoadingKnownSellerChart />,
   },
   {
     accessorKey: "tx_count",
-    header: () => <HeaderCell Icon={Hash} label="Txns" />,
+    header: () => <HeaderCell Icon={ArrowLeftRight} label="Txns" />,
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.tx_count.toLocaleString(undefined, {
@@ -54,7 +61,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: "unique_buyers",
-    header: () => <HeaderCell Icon={Hash} label="Buyers" />,
+    header: () => <HeaderCell Icon={Users} label="Buyers" />,
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.unique_buyers.toLocaleString(undefined, {
@@ -103,7 +110,7 @@ const HeaderCell: React.FC<HeaderCellProps> = ({ Icon, label, className }) => {
   return (
     <div
       className={cn(
-        "flex items-center justify-center gap-1 text-xs",
+        "flex items-center justify-center gap-1 text-sm text-muted-foreground",
         className
       )}
     >

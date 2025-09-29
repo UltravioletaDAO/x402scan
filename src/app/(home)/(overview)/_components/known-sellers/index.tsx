@@ -21,6 +21,10 @@ export const TopServers = async () => {
     startDate,
     endDate,
   });
+  await api.stats.getBazaarOverallStatistics.prefetch({
+    startDate,
+    endDate,
+  });
 
   return (
     <HydrateClient>

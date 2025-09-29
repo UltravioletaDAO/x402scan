@@ -23,6 +23,12 @@ export const KnownSellerChart = ({ address }: Props) => {
       numBuckets: 48,
     });
 
+  const [bazaarOverallStats] =
+    api.stats.bazaar.overallStatistics.useSuspenseQuery({
+      startDate,
+      endDate,
+    });
+
   if (isLoading) {
     return <LoadingKnownSellerChart />;
   }
@@ -48,6 +54,7 @@ export const KnownSellerChart = ({ address }: Props) => {
         },
       ]}
       height={32}
+      dataMax={Number(bazaarOverallStats.total_transactions) / 48}
     />
   );
 };
