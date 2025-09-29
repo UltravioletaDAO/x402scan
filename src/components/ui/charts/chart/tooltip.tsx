@@ -48,7 +48,7 @@ const TooltipRow = <T extends Record<string, number>, K extends keyof T>({
       <p
         className={cn(
           "text-xs text-muted-foreground font-medium",
-          valueClassName
+          valueClassName,
         )}
       >
         {value}

@@ -23,7 +23,7 @@ export const sellersRouter = createTRPCRouter({
             ...input,
             addresses: Object.keys(originsByAddress),
           },
-          pagination
+          pagination,
         );
 
         return {

@@ -13,20 +13,23 @@ export const getAcceptsAddresses = async () => {
     },
   });
 
-  return accepts.reduce((acc, accept) => {
-    if (!accept.payTo) {
-      return acc;
-    }
-    if (acc[accept.payTo]) {
-      const existingOrigin = acc[accept.payTo].find(
-        (origin) => origin.id === accept.resourceRel.origin.id
-      );
-      if (!existingOrigin) {
-        acc[accept.payTo].push(accept.resourceRel.origin);
+  return accepts.reduce(
+    (acc, accept) => {
+      if (!accept.payTo) {
+        return acc;
       }
-    } else {
-      acc[accept.payTo] = [accept.resourceRel.origin];
-    }
-    return acc;
-  }, {} as Record<string, Array<ResourceOrigin>>);
+      if (acc[accept.payTo]) {
+        const existingOrigin = acc[accept.payTo].find(
+          (origin) => origin.id === accept.resourceRel.origin.id,
+        );
+        if (!existingOrigin) {
+          acc[accept.payTo].push(accept.resourceRel.origin);
+        }
+      } else {
+        acc[accept.payTo] = [accept.resourceRel.origin];
+      }
+      return acc;
+    },
+    {} as Record<string, Array<ResourceOrigin>>,
+  );
 };

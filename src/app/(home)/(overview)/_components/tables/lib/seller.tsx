@@ -15,7 +15,7 @@ export const Seller: React.FC<Props> = ({ address }) => {
     address,
     {
       enabled: !!address,
-    }
+    },
   );
 
   if (isLoading) {

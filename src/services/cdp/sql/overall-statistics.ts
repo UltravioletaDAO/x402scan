@@ -12,7 +12,7 @@ export const overallStatisticsInputSchema = z.object({
 });
 
 export const getOverallStatistics = async (
-  input: z.input<typeof overallStatisticsInputSchema>
+  input: z.input<typeof overallStatisticsInputSchema>,
 ) => {
   const parseResult = overallStatisticsInputSchema.safeParse(input);
   if (!parseResult.success) {
@@ -72,7 +72,7 @@ export const getFirstTransferTimestampInputSchema = z.object({
 });
 
 export const getFirstTransferTimestamp = async (
-  input: z.input<typeof getFirstTransferTimestampInputSchema>
+  input: z.input<typeof getFirstTransferTimestampInputSchema>,
 ): Promise<Date | null> => {
   const parseResult = getFirstTransferTimestampInputSchema.safeParse(input);
   if (!parseResult.success) {
@@ -107,7 +107,7 @@ export const getFirstTransferTimestamp = async (
 
   const result = await runBaseSqlQuery(
     sql,
-    z.array(z.object({ block_timestamp: z.string() }))
+    z.array(z.object({ block_timestamp: z.string() })),
   );
 
   if (!result || result.length === 0) {

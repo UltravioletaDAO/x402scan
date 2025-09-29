@@ -52,7 +52,7 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
     <div
       className={cn(
         "flex flex-col gap-8 max-w-6xl w-full mx-auto py-8 px-2",
-        className
+        className,
       )}
     >
       {children}

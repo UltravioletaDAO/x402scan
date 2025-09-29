@@ -18,7 +18,7 @@ export const listTopSellersInputSchema = z.object({
           "unique_buyers",
         ]),
         desc: z.boolean(),
-      })
+      }),
     )
     .default([{ id: "total_amount", desc: true }]),
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -28,7 +28,7 @@ export const listTopSellersInputSchema = z.object({
 
 export const listTopSellers = async (
   input: z.input<typeof listTopSellersInputSchema>,
-  pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
+  pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>,
 ) => {
   const parseResult = listTopSellersInputSchema.safeParse(input);
   if (!parseResult.success) {
@@ -43,7 +43,7 @@ export const listTopSellers = async (
       total_amount: z.coerce.bigint(),
       latest_block_timestamp: z.coerce.date(),
       unique_buyers: z.coerce.bigint(),
-    })
+    }),
   );
 
   const sql = `SELECT 

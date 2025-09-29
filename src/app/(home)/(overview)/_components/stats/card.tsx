@@ -51,8 +51,8 @@ export const OverallStatsCard = <T extends Record<string, number>>({
                 percentageChange > 0
                   ? "bg-green-600/10 text-green-600"
                   : percentageChange === 0
-                  ? "bg-neutral-600/10 text-neutral-600"
-                  : "bg-red-600/10 text-red-500"
+                    ? "bg-neutral-600/10 text-neutral-600"
+                    : "bg-red-600/10 text-red-500",
               )}
             >
               <p>

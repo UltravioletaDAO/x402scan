@@ -68,7 +68,7 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
           disabled={isSigningIn}
           className={cn(
             "h-fit py-4 md:text-base",
-            signInError && "border-destructive"
+            signInError && "border-destructive",
           )}
         />
         {signInError && (

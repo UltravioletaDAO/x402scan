@@ -19,7 +19,7 @@ export const bucketedStatisticsInputSchema = z.object({
 });
 
 export const getBucketedStatistics = async (
-  input: z.input<typeof bucketedStatisticsInputSchema>
+  input: z.input<typeof bucketedStatisticsInputSchema>,
 ) => {
   const parseResult = bucketedStatisticsInputSchema.safeParse(input);
   if (!parseResult.success) {
@@ -91,7 +91,7 @@ ORDER BY bucket_start ASC;
         unique_buyers: item.unique_buyers,
         unique_sellers: item.unique_sellers,
       },
-    ])
+    ]),
   );
 
   // Generate all expected time buckets using consistent bucket alignment

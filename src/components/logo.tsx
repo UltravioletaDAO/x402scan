@@ -36,7 +36,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
         />
       </div>
     );
-  }
+  },
 );
 
 Logo.displayName = "Logo";

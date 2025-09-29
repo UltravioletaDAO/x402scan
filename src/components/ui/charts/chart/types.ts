@@ -4,7 +4,7 @@ import type { AreaChartProps } from "./area/types";
 
 export interface TooltipRowProps<
   T extends Record<string, number>,
-  K extends keyof T = keyof T
+  K extends keyof T = keyof T,
 > {
   key: K;
   label: string;

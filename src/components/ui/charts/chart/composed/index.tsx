@@ -10,7 +10,7 @@ import { simulateChartData } from "../simulate";
 import type { ComposedChartProps } from "./types";
 
 export const BaseComposedChart = <
-  T extends Omit<Record<string, number>, "timestamp">
+  T extends Omit<Record<string, number>, "timestamp">,
 >({
   data,
   children,

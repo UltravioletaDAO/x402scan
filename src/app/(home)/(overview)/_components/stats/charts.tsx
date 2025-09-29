@@ -55,7 +55,7 @@ export const OverallCharts = () => {
             ? undefined
             : getPercentageFromBigInt(
                 previousOverallStats.total_amount,
-                overallStats.total_amount
+                overallStats.total_amount,
               )
         }
         items={{
@@ -90,7 +90,7 @@ export const OverallCharts = () => {
             ? undefined
             : getPercentageFromBigInt(
                 previousOverallStats.total_transactions,
-                overallStats.total_transactions
+                overallStats.total_transactions,
               )
         }
         items={{
@@ -123,7 +123,7 @@ export const OverallCharts = () => {
             ? undefined
             : getPercentageFromBigInt(
                 previousOverallStats.unique_buyers,
-                overallStats.unique_buyers
+                overallStats.unique_buyers,
               )
         }
         items={{
@@ -156,7 +156,7 @@ export const OverallCharts = () => {
             ? undefined
             : getPercentageFromBigInt(
                 previousOverallStats.unique_sellers,
-                overallStats.unique_sellers
+                overallStats.unique_sellers,
               )
         }
         items={{

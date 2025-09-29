@@ -4,7 +4,7 @@ import { generateCdpJwt } from "../generate-jwt";
 
 const runBaseSqlQueryInternal = async <T>(
   sql: string,
-  resultSchema: z.ZodSchema<T>
+  resultSchema: z.ZodSchema<T>,
 ): Promise<T | null> => {
   const jwt = await generateCdpJwt({
     requestMethod: "POST",
@@ -19,13 +19,13 @@ const runBaseSqlQueryInternal = async <T>(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ sql }),
-    }
+    },
   );
 
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(
-      `Failed to run SQL query: ${response.status} ${response.statusText} - ${errorText}`
+      `Failed to run SQL query: ${response.status} ${response.statusText} - ${errorText}`,
     );
   }
 
@@ -45,7 +45,7 @@ const runBaseSqlQueryInternal = async <T>(
 
 export async function runBaseSqlQuery<T>(
   sql: string,
-  resultSchema: z.ZodSchema<T>
+  resultSchema: z.ZodSchema<T>,
 ): Promise<T | null> {
   // Add exponential backoff for rate limiting
   const maxRetries = 5;
@@ -73,7 +73,7 @@ export async function runBaseSqlQuery<T>(
         console.warn(
           `Rate limited when running base SQL query (attempt ${
             attempt + 1
-          }). Retrying in ${Math.round(delay)}ms...`
+          }). Retrying in ${Math.round(delay)}ms...`,
         );
         await new Promise((resolve) => setTimeout(resolve, delay));
         attempt++;

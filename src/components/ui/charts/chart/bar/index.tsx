@@ -10,7 +10,7 @@ import { simulateChartData } from "../simulate";
 import type { BarChartProps } from "./types";
 
 export const BaseBarChart = <
-  T extends Omit<Record<string, number>, "timestamp">
+  T extends Omit<Record<string, number>, "timestamp">,
 >({
   data,
   children,

@@ -13,7 +13,7 @@ export const getEchoAccountByUserId = async (userId: string) => {
 
 export const updateEchoAccountByUserId = async (
   echoAccountId: string,
-  data: Prisma.AccountUpdateInput
+  data: Prisma.AccountUpdateInput,
 ) => {
   await prisma.account.update({
     where: {

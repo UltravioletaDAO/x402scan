@@ -21,7 +21,7 @@ const handler = (req: NextRequest) =>
       // Also log to console in development for immediate feedback
       if (env.NEXT_PUBLIC_NODE_ENV === "development") {
         console.error(
-          `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`
+          `❌ tRPC failed on ${path ?? "<no-path>"}: ${error.message}`,
         );
       }
     },

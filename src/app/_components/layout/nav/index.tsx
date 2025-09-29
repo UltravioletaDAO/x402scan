@@ -25,7 +25,7 @@ interface Props<T extends string = string> {
 
 export const Nav = <T extends string>({ tabs }: Props<T>) => {
   const [buttonRefs, setButtonRefs] = useState<Array<HTMLAnchorElement | null>>(
-    []
+    [],
   );
 
   const { scrollY } = useScroll();

@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export const formatCurrency = (
   value: number,
-  options?: Intl.NumberFormatOptions
+  options?: Intl.NumberFormatOptions,
 ): string => {
   if (value < 0.01 && value > 0) {
     return "< $0.01";

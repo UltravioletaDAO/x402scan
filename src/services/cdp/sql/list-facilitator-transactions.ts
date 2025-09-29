@@ -24,11 +24,11 @@ const outputSchema = z.array(
     transaction_hash: z.string(),
     block_timestamp: z.coerce.date(),
     log_index: z.number(),
-  })
+  }),
 );
 
 export const listFacilitatorTransactions = async (
-  input: z.input<typeof listFacilitatorTransactionsInputSchema>
+  input: z.input<typeof listFacilitatorTransactionsInputSchema>,
 ) => {
   const parseResult = listFacilitatorTransactionsInputSchema.safeParse(input);
   if (!parseResult.success) {

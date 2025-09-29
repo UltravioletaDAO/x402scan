@@ -42,11 +42,11 @@ export const TimeRangeProvider = ({
   creationDate,
 }: Props) => {
   const [timeframe, setTimeframe] = useState<ActivityTimeframe>(
-    initialTimeframe ?? ActivityTimeframe.AllTime
+    initialTimeframe ?? ActivityTimeframe.AllTime,
   );
   const [endDate, setEndDate] = useState<Date>(initialEndDate ?? new Date());
   const [startDate, setStartDate] = useState<Date>(
-    initialStartDate ?? creationDate
+    initialStartDate ?? creationDate,
   );
 
   const selectTimeframe = (timeframe: ActivityTimeframe) => {

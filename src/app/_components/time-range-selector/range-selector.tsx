@@ -27,7 +27,7 @@ export const RangeSelector = () => {
 
   // Get only the numeric enum values
   const timeframeValues = Object.values(ActivityTimeframe).filter(
-    (value) => typeof value === "number"
+    (value) => typeof value === "number",
   ) as ActivityTimeframe[];
 
   const formatRange = (startDate: Date, endDate: Date) => {
@@ -42,7 +42,7 @@ export const RangeSelector = () => {
     // Different month or year: show both
     return `${format(startDate, "MMM d, yyyy")} - ${format(
       endDate,
-      "MMM d, yyyy"
+      "MMM d, yyyy",
     )}`;
   };
 
@@ -90,8 +90,8 @@ export const RangeSelector = () => {
               {timeframe === ActivityTimeframe.AllTime
                 ? "All Time"
                 : timeframe === ActivityTimeframe.OneDay
-                ? "Past 24 Hours"
-                : `Past ${timeframe} Days`}
+                  ? "Past 24 Hours"
+                  : `Past ${timeframe} Days`}
             </span>
           )}
         </SelectTrigger>
@@ -101,10 +101,10 @@ export const RangeSelector = () => {
               {value === ActivityTimeframe.Custom
                 ? "Custom"
                 : value === ActivityTimeframe.AllTime
-                ? "All Time"
-                : value === ActivityTimeframe.OneDay
-                ? "Past 24 Hours"
-                : `Past ${value} Days`}
+                  ? "All Time"
+                  : value === ActivityTimeframe.OneDay
+                    ? "Past 24 Hours"
+                    : `Past ${value} Days`}
             </SelectItem>
           ))}
         </SelectContent>

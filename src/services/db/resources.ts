@@ -4,10 +4,10 @@ import type { FacilitatorResource } from "../cdp/facilitator/list-resources";
 import { getOriginFromUrl } from "@/lib/url";
 
 export const upsertResource = async (
-  facilitatorResource: FacilitatorResource
+  facilitatorResource: FacilitatorResource,
 ) => {
   const baseAccepts = facilitatorResource.accepts.find(
-    (accept) => accept.network === "base"
+    (accept) => accept.network === "base",
   );
   const origin = getOriginFromUrl(facilitatorResource.resource);
   if (!baseAccepts) return;

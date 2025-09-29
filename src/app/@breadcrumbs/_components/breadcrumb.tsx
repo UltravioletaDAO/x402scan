@@ -44,7 +44,7 @@ export const Breadcrumb = <T extends string>({
           <AvatarFallback
             className={cn(
               "size-full flex items-center justify-center border rounded-md",
-              "size-5"
+              "size-5",
             )}
           >
             <Fallback className="size-3" />
@@ -53,7 +53,7 @@ export const Breadcrumb = <T extends string>({
         <p
           className={cn(
             "font-semibold text-sm",
-            mobileHideText && "hidden md:block"
+            mobileHideText && "hidden md:block",
           )}
         >
           {name}

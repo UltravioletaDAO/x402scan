@@ -91,7 +91,7 @@ const HeaderCell: React.FC<HeaderCellProps> = ({ Icon, label, className }) => {
     <div
       className={cn(
         "flex items-center justify-center gap-2 text-sm",
-        className
+        className,
       )}
     >
       <Icon className="size-4" />

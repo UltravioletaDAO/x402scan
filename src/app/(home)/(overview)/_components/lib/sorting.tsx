@@ -74,22 +74,22 @@ export const Sorting = () => {
   const sensors = useSensors(
     useSensor(MouseSensor, {}),
     useSensor(TouchSensor, {}),
-    useSensor(KeyboardSensor, {})
+    useSensor(KeyboardSensor, {}),
   );
 
   const sortingIds = React.useMemo<UniqueIdentifier[]>(
     () => sorting.map(({ id }) => id),
-    [sorting]
+    [sorting],
   );
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (active && over && active.id !== over.id) {
       const oldIndex = sorting.findIndex(
-        (item: SortType) => item.id === active.id
+        (item: SortType) => item.id === active.id,
       );
       const newIndex = sorting.findIndex(
-        (item: SortType) => item.id === over.id
+        (item: SortType) => item.id === over.id,
       );
       setSorting(arrayMove(sorting, oldIndex, newIndex));
     }
@@ -127,8 +127,8 @@ export const Sorting = () => {
                   onToggle={() =>
                     setSorting(
                       sorting.map((s) =>
-                        s.id === sort.id ? { ...s, desc: !s.desc } : s
-                      )
+                        s.id === sort.id ? { ...s, desc: !s.desc } : s,
+                      ),
                     )
                   }
                 />
@@ -198,7 +198,7 @@ const SortableItem: React.FC<SortableItemProps> = ({ sort, onToggle }) => {
         <ArrowDown
           className={cn(
             "size-3 transition-transform duration-200",
-            sort.desc ? "rotate-0" : "rotate-180"
+            sort.desc ? "rotate-0" : "rotate-180",
           )}
         />
       </Button>

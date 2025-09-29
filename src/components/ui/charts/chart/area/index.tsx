@@ -9,7 +9,7 @@ import { simulateChartData } from "../simulate";
 import type { AreaChartProps } from "./types";
 
 export const BaseAreaChart = <
-  T extends Omit<Record<string, number>, "timestamp">
+  T extends Omit<Record<string, number>, "timestamp">,
 >({
   data,
   children,

@@ -8,7 +8,7 @@ interface EchoProfile {
 }
 
 export default function EchoProvider<P extends EchoProfile>(
-  options: OAuthUserConfig<P>
+  options: OAuthUserConfig<P>,
 ): OAuthConfig<P> {
   return {
     id: "echo",

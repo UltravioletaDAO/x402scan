@@ -140,17 +140,17 @@ export const syncResourcesTask = schedules.task({
             });
             return { origin, success: false, error };
           }
-        })
+        }),
       );
 
       // Analyze origin processing results
       const successfulOrigins = originResults.filter(
         (
-          result
+          result,
         ): result is PromiseFulfilledResult<{
           origin: string;
           success: true;
-        }> => result.status === "fulfilled" && result.value.success
+        }> => result.status === "fulfilled" && result.value.success,
       ).length;
       const failedOrigins = originResults.length - successfulOrigins;
 
@@ -192,17 +192,17 @@ export const syncResourcesTask = schedules.task({
               error: error instanceof Error ? error.message : "Unknown error",
             };
           }
-        })
+        }),
       );
 
       // Analyze resource processing results
       const successfulResources = resourceResults.filter(
         (
-          result
+          result,
         ): result is PromiseFulfilledResult<{
           resource: string;
           success: true;
-        }> => result.status === "fulfilled" && result.value.success
+        }> => result.status === "fulfilled" && result.value.success,
       ).length;
       const failedResources = resourceResults.length - successfulResources;
 

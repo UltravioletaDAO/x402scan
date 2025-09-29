@@ -53,7 +53,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
                 grant_type: "refresh_token",
                 refresh_token: account.refresh_token ?? "",
               }),
-            }
+            },
           );
 
           const tokensOrError = (await response.json()) as unknown;
@@ -69,7 +69,7 @@ const { handlers, auth: uncachedAuth } = NextAuth({
           await updateEchoAccountByUserId(account.providerAccountId, {
             access_token: newTokens.access_token,
             expires_at: getUnixTime(
-              addSeconds(new Date(), newTokens.expires_in)
+              addSeconds(new Date(), newTokens.expires_in),
             ),
             refresh_token: newTokens.refresh_token,
           });

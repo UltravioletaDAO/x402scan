@@ -8,6 +8,7 @@
     "build": "prisma migrate deploy && next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write .",
     "db:dev": "npx prisma dev",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:prod": "prisma migrate deploy",
@@ -18,6 +19,7 @@
     "db:studio": "prisma studio",
     "check:types": "tsc --noEmit",
     "check:knip": "knip",
+    "check:format": "prettier --check .",
     "trigger:dev": "trigger dev",
     "trigger:deploy": "trigger deploy"
   },
@@ -86,6 +88,7 @@
     "eslint-config-next": "15.5.4",
     "eslint-config-prettier": "^10.1.8",
     "knip": "^5.64.0",
+    "prettier": "^3.6.2",
     "prisma": "^6.16.2",
     "tailwindcss": "^4",
     "trigger.dev": "^4.0.4",

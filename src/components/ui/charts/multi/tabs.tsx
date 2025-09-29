@@ -67,7 +67,7 @@ function TabsTrigger({
         "data-[state=active]:border-b-primary data-[state=active]:bg-card",
         "cursor-pointer hover:bg-card/50",
         "disabled:opacity-50 disabled:cursor-not-allowed",
-        className
+        className,
       )}
       disabled={isLoading}
       {...props}
@@ -88,8 +88,8 @@ function TabsTrigger({
                   changePercentage > 0
                     ? "bg-green-600/10 text-green-600"
                     : changePercentage === 0
-                    ? "bg-neutral-600/10 text-neutral-600"
-                    : "bg-red-600/10 text-red-500"
+                      ? "bg-neutral-600/10 text-neutral-600"
+                      : "bg-red-600/10 text-red-500",
                 )}
               >
                 <p className="text-sm">

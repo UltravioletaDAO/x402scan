@@ -73,7 +73,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -121,7 +121,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

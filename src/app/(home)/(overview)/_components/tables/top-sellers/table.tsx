@@ -21,7 +21,7 @@ export const TopSellersTable = () => {
         lastPage.hasNextPage && lastPage.items.length > 0
           ? lastPage.items[lastPage.items.length - 1][sorting[0].id]
           : undefined,
-    }
+    },
   );
 
   return <DataTable columns={columns} data={topSellers.pages[0].items} />;

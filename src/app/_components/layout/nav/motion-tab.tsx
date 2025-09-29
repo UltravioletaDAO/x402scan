@@ -25,7 +25,7 @@ export const MotionTab = forwardRef<HTMLLIElement, Props>(
         <div
           className={cn(
             "relative py-1.5 px-4 text-muted-foreground/80 hover:text-foreground font-medium",
-            isSelected && "text-foreground font-bold"
+            isSelected && "text-foreground font-bold",
           )}
         >
           {children}
@@ -44,7 +44,7 @@ export const MotionTab = forwardRef<HTMLLIElement, Props>(
         ) : null}
       </motion.li>
     );
-  }
+  },
 );
 
 MotionTab.displayName = "MotionTab";
