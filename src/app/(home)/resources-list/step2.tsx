@@ -6,6 +6,33 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Loader2, Play } from "lucide-react";
 import { type ParsedX402Response, type NormalizedInputSchema } from "@/lib/x402-schema";
+import { useX402Fetch } from "@/lib/use-x402-fetch";
+
+const MICRO_FACTOR = 1_000_000n;
+const VALUE_PATTERN = /^\d*(\.\d{0,6})?$/;
+
+function formatMicrosToValue(value: string | undefined): string {
+    if (!value) return "0";
+
+    try {
+        const micros = BigInt(value);
+        const whole = micros / MICRO_FACTOR;
+        const fractional = (micros % MICRO_FACTOR).toString().padStart(6, "0").replace(/0+$/, "");
+        return fractional ? `${whole}.${fractional}` : whole.toString();
+    } catch {
+        return "0";
+    }
+}
+
+function parseValueToMicros(value: string): bigint {
+    if (!value) return 0n;
+
+    const [rawWhole, rawFraction = ""] = value.split(".");
+    const whole = rawWhole === "" ? "0" : rawWhole;
+    const fraction = (rawFraction + "000000").slice(0, 6);
+
+    return BigInt(whole) * MICRO_FACTOR + BigInt(fraction || "0");
+}
 
 type FieldDefinition = {
     name: string;
@@ -47,7 +74,7 @@ function getFields(record: Record<string, unknown> | null | undefined): FieldDef
     });
 }
 
-export function Step2({ resource, x402Response, bazaarMethod: method }: Step2Props) {
+export function Step2({ resource, x402Response }: Step2Props) {
     const inputSchema = useMemo(() => {
         return x402Response.accepts?.[0]?.outputSchema?.input ?? null;
     }, [x402Response]);
@@ -56,16 +83,15 @@ export function Step2({ resource, x402Response, bazaarMethod: method }: Step2Pro
     const bodyFields = useMemo(() => getFields(inputSchema?.bodyFields ?? null), [inputSchema]);
     const [queryValues, setQueryValues] = useState<Record<string, string>>({});
     const [bodyValues, setBodyValues] = useState<Record<string, string>>({});
-    const [isLoading, setIsLoading] = useState(false);
-    const [response, setResponse] = useState<unknown>(null);
-    const [error, setError] = useState<string | null>(null);
+    const maxAmountRequired = x402Response.accepts?.[0]?.maxAmountRequired;
+    const defaultValue = useMemo(() => formatMicrosToValue(maxAmountRequired), [maxAmountRequired]);
+    const [valueInput, setValueInput] = useState<string>(defaultValue);
 
     useEffect(() => {
         setQueryValues({});
         setBodyValues({});
-        setResponse(null);
-        setError(null);
-    }, [inputSchema, resource]);
+        setValueInput(defaultValue);
+    }, [inputSchema, resource, defaultValue]);
 
     const handleQueryChange = (name: string, value: string) => {
         setQueryValues((prev) => ({ ...prev, [name]: value }));
@@ -75,73 +101,111 @@ export function Step2({ resource, x402Response, bazaarMethod: method }: Step2Pro
         setBodyValues((prev) => ({ ...prev, [name]: value }));
     };
 
-    const handleSubmit = async () => {
-        setIsLoading(true);
-        setError(null);
-        setResponse(null);
-
-        try {
-            const proxyResponse = await fetch("/api/test-402", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    url: resource,
-                    method: method || "GET",
-                    queryParams: Object.fromEntries(
-                        Object.entries(queryValues)
-                            .map(([key, value]) => [key, value.trim()])
-                            .filter(([, value]) => value.length > 0)
-                    ),
-                    bodyParams: Object.fromEntries(
-                        Object.entries(bodyValues)
-                            .map(([key, value]) => [key, value.trim()])
-                            .filter(([, value]) => value.length > 0)
-                    ),
-                    outputSchema: null,
-                }),
-            });
-
-            if (!proxyResponse.ok) {
-                const text = await proxyResponse.text();
-                throw new Error(text || `Request failed with ${proxyResponse.status}`);
-            }
-
-            const data = await proxyResponse.json().catch(() => null);
-            setResponse(data);
-        } catch (err) {
-            const message = err instanceof Error ? err.message : "Unknown error";
-            setError(message);
-        } finally {
-            setIsLoading(false);
+    const handleValueChange = (next: string) => {
+        if (next === "" || VALUE_PATTERN.test(next)) {
+            setValueInput(next);
         }
     };
+
+    const paymentValue = useMemo(() => parseValueToMicros(valueInput), [valueInput]);
+    const method = x402Response.accepts?.[0]?.outputSchema?.input?.method?.toUpperCase() ?? "GET";
+
+    const queryEntries = Object.entries(queryValues).reduce<Array<[string, string]>>((acc, [key, value]) => {
+        const trimmed = value.trim();
+        if (trimmed.length > 0) {
+            acc.push([key, trimmed]);
+        }
+        return acc;
+    }, []);
+
+    // Build URL with query parameters
+    const targetUrl = useMemo(() => {
+        if (queryEntries.length === 0) return resource;
+        const searchParams = new URLSearchParams(queryEntries);
+        const separator = resource.includes("?") ? "&" : "?";
+        return `${resource}${separator}${searchParams.toString()}`;
+    }, [resource, queryEntries]);
+
+    const bodyEntries = Object.entries(bodyValues).reduce<Array<[string, string]>>((acc, [key, value]) => {
+        const trimmed = value.trim();
+        if (trimmed.length > 0) {
+            acc.push([key, trimmed]);
+        }
+        return acc;
+    }, []);
+
+    const init = {
+        method,
+        body: bodyEntries.length > 0
+            ? JSON.stringify(Object.fromEntries(bodyEntries))
+            : undefined,
+    } satisfies RequestInit;
+
+    const {
+        data: response,
+        mutate: execute,
+        isPending,
+        error,
+    } = useX402Fetch(targetUrl, paymentValue, init);
+
+    console.log("response", response);
 
     const hasSchema = inputSchema !== null;
     const showQuery = queryFields.length > 0;
     const showBody = bodyFields.length > 0;
 
+    // Check if all required fields are filled
+    const allRequiredFieldsFilled = useMemo(() => {
+        const requiredQuery = queryFields.filter(field => field.required);
+        const requiredBody = bodyFields.filter(field => field.required);
+
+        const queryFilled = requiredQuery.every(field =>
+            queryValues[field.name] && queryValues[field.name].trim().length > 0
+        );
+        const bodyFilled = requiredBody.every(field =>
+            bodyValues[field.name] && bodyValues[field.name].trim().length > 0
+        );
+
+        return queryFilled && bodyFilled;
+    }, [queryFields, bodyFields, queryValues, bodyValues]);
+
     return (
         <div className="mt-6 space-y-4">
-            <div>
-                <h2 className="text-md font-medium tracking-tight">Query</h2>
+            <div className="flex justify-between items-center">
+                <h2 className="text-md font-medium tracking-tight">Execute</h2>
+                <Button size="sm" variant="ghost" className="inline-flex items-center gap-2" disabled={isPending || !allRequiredFieldsFilled} onClick={() => execute()}>
+                    {isPending ? (
+                        <>
+                            <Loader2 className="size-4 animate-spin" />
+                            Fetching
+                        </>
+                    ) : (
+                        <>
+                            <Play className="size-4" />
+                            Fetch
+                        </>
+                    )}
+                </Button>
             </div>
 
             {!hasSchema ? null : !showQuery && !showBody ? (
                 <p className="text-sm text-muted-foreground">No input parameters required.</p>
             ) : (
                 <div className="space-y-4">
-                    <form
-                        className="space-y-4"
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            handleSubmit();
-                        }}
-                    >
+                        <div className="space-y-1">
+                            <Label htmlFor="value">Value</Label>
+                            <Input
+                                id="value"
+                                inputMode="decimal"
+                                placeholder="0"
+                                value={valueInput}
+                                onChange={(event) => handleValueChange(event.target.value)}
+                            />
+                            <p className="text-xs text-muted-foreground">Default: ${defaultValue}</p>
+                        </div>
+
                         {showQuery && (
                             <div className="space-y-3">
-                                <h3 className="text-sm font-medium text-muted-foreground">Query Parameters</h3>
                                 {queryFields.map((field) => (
                                     <div key={`query-${field.name}`} className="space-y-1">
                                         <Label htmlFor={`query-${field.name}`}>
@@ -187,24 +251,10 @@ export function Step2({ resource, x402Response, bazaarMethod: method }: Step2Pro
                             </div>
                         )}
 
-                        <Button type="submit" size="sm" variant="ghost" className="inline-flex items-center gap-2" disabled={isLoading}>
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="size-4 animate-spin" />
-                                    Fetching
-                                </>
-                            ) : (
-                                <>
-                                    <Play className="size-4" />
-                                    Fetch
-                                </>
-                            )}
-                        </Button>
-                    </form>
 
-                    {error && <p className="text-sm text-red-600">{error}</p>}
+                    {error && <p className="text-sm text-red-600">{error.message}</p>}
 
-                    {response !== null && (
+                    {response !== undefined && (
                         <pre className="max-h-60 overflow-auto rounded-md bg-muted p-3 text-xs">
                             {JSON.stringify(response, null, 2)}
                         </pre>
@@ -214,4 +264,3 @@ export function Step2({ resource, x402Response, bazaarMethod: method }: Step2Pro
         </div>
     );
 }
-

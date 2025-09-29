@@ -114,22 +114,6 @@ describe('parseX402Response with normalized schemas', () => {
     }
   })
 
-  it('should handle responses wrapped in body field', () => {
-    const wrappedResponse = { body: rawBodies[1] }
-    const result = parseX402Response(wrappedResponse)
-
-    expect(result.success).toBe(true)
-  })
-
-  it('should handle invalid JSON in body field', () => {
-    const invalidWrapper = { body: 'invalid json {' }
-    const result = parseX402Response(invalidWrapper)
-
-    expect(result.success).toBe(false)
-    expect(result.errors.length).toBeGreaterThan(0)
-    expect(result.errors[0]).toContain('not valid JSON')
-  })
-
   it('should return error for empty accepts array', () => {
     const invalidResponse = { x402Version: 1, accepts: [] }
     const result = parseX402Response(invalidResponse)

@@ -21,17 +21,17 @@ interface ResourcesListProps {
 export function ResourcesList({ accepts }: ResourcesListProps) {
   // URLs to filter out for quick prototyping
   const failingUrls = [
-    'https://aeon-qrpay-sbx.alchemytech.cc/open/ai/402/payment',
-    'https://agentanalyst-production.up.railway.app/api/analyze',
+    // 'https://aeon-qrpay-sbx.alchemytech.cc/open/ai/402/payment',
+    // 'https://agentanalyst-production.up.railway.app/api/analyze',
     'https://api.prixe.io/x402/last_sold',
-    'https://api.prixe.io/x402/search',
-    'https://daa254c34060.ngrok-free.app/weather',
-    'https://macrotrendsanalyst-production.up.railway.app/api/analyze',
-    'https://priceagent-production.up.railway.app/api/prices',
-    'https://scoutpay-production.up.railway.app/api/prices',
-    'https://smartanalyst-production.up.railway.app/api/analyze',
-    'https://x402-hello-agent-production.up.railway.app/api/hello',
-    'https://x402-test.vercel.app/blog'
+    // 'https://api.prixe.io/x402/search',
+    // 'https://daa254c34060.ngrok-free.app/weather',
+    // 'https://macrotrendsanalyst-production.up.railway.app/api/analyze',
+    // 'https://priceagent-production.up.railway.app/api/prices',
+    // 'https://scoutpay-production.up.railway.app/api/prices',
+    // 'https://smartanalyst-production.up.railway.app/api/analyze',
+    // 'https://x402-hello-agent-production.up.railway.app/api/hello',
+    // 'https://x402-test.vercel.app/blog'
   ];
 
   const filteredAccepts = useMemo(() => {
@@ -56,9 +56,6 @@ export function ResourcesList({ accepts }: ResourcesListProps) {
           {filteredAccepts.map((accept) => (
             <Card key={accept.id}>
               <CardContent className="p-4">
-                <div className="font-mono text-sm break-all">
-                  {accept.resource}
-                </div>
                 <Stepper resource={accept.resource} bazaarMethod={accept.outputSchema?.input?.method} />
               </CardContent>
             </Card>

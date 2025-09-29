@@ -10,14 +10,8 @@ import { x402ResponseSchema, type x402Response, schemes } from 'x402/types';
 export function parseX402Response(data: unknown): Result<ParsedX402Response> {
   const errors: string[] = [];
 
-  // Layer 1: Unwrap response body if needed
-  const unwrapped = unwrapResponseBody(data, errors);
-  if (errors.length > 0) {
-    return { success: false, data: null, errors };
-  }
-
-  // Layer 2: Parse x402 response with lenient error handling
-  const parseResult = parseRawX402Response(unwrapped);
+  // Layer 1: Parse x402 response with lenient error handling
+  const parseResult = parseRawX402Response(data);
   if (!parseResult.success) {
     const issues = parseResult.error?.issues ?? [];
     issues.forEach((issue: any) => {
@@ -27,7 +21,7 @@ export function parseX402Response(data: unknown): Result<ParsedX402Response> {
     return { success: false, data: null, errors };
   }
 
-  // Layer 3: Enhance response by normalizing all outputSchemas
+  // Layer 2: Enhance response by normalizing all outputSchemas
   const enhanced = enhanceX402Response(parseResult.data);
 
   return { success: true, data: enhanced, errors };
@@ -37,10 +31,12 @@ export function parseX402Response(data: unknown): Result<ParsedX402Response> {
 // ==================== TYPES ====================
 
 export type NormalizedInputSchema = {
-  queryParams: Record<string, FieldDef>;
-  bodyFields: Record<string, FieldDef>;
-  bodyType?: string;
+  type?: string;
+  method?: string;
   headerFields?: Record<string, FieldDef>;
+  queryParams: Record<string, FieldDef>;
+  bodyType?: string;
+  bodyFields: Record<string, FieldDef>;
 };
 
 export type FieldDef = {
@@ -75,36 +71,7 @@ interface ParsedAccept {
   };
 }
 
-// ==================== LAYER 1: RAW DATA HANDLING ====================
-
-/**
- * Extract data from potential wrapper object (e.g., { body: "..." })
- */
-function unwrapResponseBody(raw: unknown, errors: string[]): unknown {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
-    return raw;
-  }
-
-  const wrapper = raw as Record<string, unknown>;
-  if (!('body' in wrapper)) {
-    return raw;
-  }
-
-  const body = wrapper.body;
-  if (typeof body !== 'string') {
-    return raw;
-  }
-
-  try {
-    return JSON.parse(body);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Unknown JSON parse error';
-    errors.push(`Proxy body was not valid JSON: ${message}`);
-    return raw;
-  }
-}
-
-// ==================== LAYER 2: RESPONSE PARSING ====================
+// ==================== LAYER 1: RESPONSE PARSING ====================
 
 /**
  * Parse raw x402 response with lenient error field handling
@@ -144,6 +111,8 @@ function parseWithLenientError(data: unknown, originalError: any): { success: tr
 
   return { success: false, error: originalError };
 }
+
+// ==================== LAYER 2: ENHANCEMENT ====================
 
 /**
  * Enhance x402Response by normalizing all outputSchemas
@@ -193,7 +162,7 @@ function enhanceAccept(accept: any): ParsedAccept {
   return base;
 }
 
-// ==================== LAYER 3: SCHEMA EXTRACTION ====================
+// ==================== LAYER 3: NORMALIZATION ====================
 
 /**
  * Extract input data from outputSchema, handling nested structure
@@ -205,8 +174,6 @@ function extractInputData(outputSchema: Record<string, unknown>): Record<string,
     : {};
 }
 
-// ==================== LAYER 4: NORMALIZATION ====================
-
 /**
  * Normalize input schema by converting snake_case to camelCase and cleaning field definitions
  */
@@ -214,10 +181,12 @@ function normalizeInputSchema(input: Record<string, unknown>): NormalizedInputSc
   const normalized = normalizeFieldNames(input);
 
   return {
-    queryParams: normalizeFieldRecord(normalized.queryParams ?? {}),
-    bodyFields: normalizeFieldRecord(normalized.bodyFields ?? {}),
-    bodyType: typeof normalized.bodyType === 'string' ? normalized.bodyType : undefined,
+    type: typeof normalized.type === 'string' ? normalized.type : undefined,
+    method: typeof normalized.method === 'string' ? normalized.method : undefined,
     headerFields: normalized.headerFields ? normalizeFieldRecord(normalized.headerFields) : undefined,
+    queryParams: normalizeFieldRecord(normalized.queryParams ?? {}),
+    bodyType: typeof normalized.bodyType === 'string' ? normalized.bodyType : undefined,
+    bodyFields: normalizeFieldRecord(normalized.bodyFields ?? {}),
   };
 }
 
@@ -314,6 +283,8 @@ const fieldDefSchema = z.object({
 });
 
 const inputSchema = z.object({
+  type: z.string().optional(),
+  method: z.string().optional(),
   queryParams: z.record(z.string(), fieldDefSchema),
   bodyFields: z.record(z.string(), fieldDefSchema),
   bodyType: z.string().optional(),

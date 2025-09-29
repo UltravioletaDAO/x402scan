@@ -18,12 +18,8 @@ export default function HomeLayout({
             href: "/news",
           },
           {
-            label: "Resources",
-            href: "/resources",
-          },
-          {
-            label: "Resources2",
-            href: "/resources2",
+            label: "Resource List",
+            href: "/resources-list",
           },
         ]}
       />

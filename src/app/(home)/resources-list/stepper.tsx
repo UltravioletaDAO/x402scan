@@ -11,7 +11,6 @@ export function Stepper({ resource, bazaarMethod }: { resource: string; bazaarMe
 
     return (
         <div className="">
-            <hr className="my-4" />
             <Step1 resource={resource} bazaarMethod={bazaarMethod} onX402Response={setX402Response} />
             {x402Response && <Step2 resource={resource} x402Response={x402Response} bazaarMethod={bazaarMethod} />}
         </div>
