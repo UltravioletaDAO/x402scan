@@ -78,7 +78,8 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
       <Button
         onClick={handleSignIn}
         disabled={isSigningIn || !z.email().safeParse(email).success}
-        className="user-message h-12 w-full"
+        className="user-message h-12 md:h-12 w-full"
+        variant="turbo"
       >
         {isSigningIn ? (
           <>
