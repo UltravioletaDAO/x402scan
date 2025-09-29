@@ -1,14 +1,17 @@
-"use client";
+'use client';
 
-import type { ColumnDef } from "@tanstack/react-table";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+import { useRouter } from 'next/navigation';
+
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
-} from "@tanstack/react-table";
-import { Skeleton } from "../skeleton";
+} from '@tanstack/react-table';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -16,10 +19,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Card } from "../card";
-import { Button } from "../button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+} from '@/components/ui/table';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
+import { cn } from '@/lib/utils';
+
+import type { ColumnDef } from '@tanstack/react-table';
+import type { Route } from 'next';
 
 export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
   TData,
@@ -28,19 +35,21 @@ export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
   loading?: React.ComponentType;
 };
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData, TValue, AppRoute extends string> {
   columns: ExtendedColumnDef<TData, TValue>[];
   data: TData[];
+  href?: (data: TData) => Route<AppRoute>;
   isLoading?: boolean;
   loadingRowCount?: number;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<TData, TValue, AppRoute extends string>({
   columns,
   data,
+  href,
   isLoading = false,
   loadingRowCount = 5,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TData, TValue, AppRoute>) {
   const table = useReactTable({
     data: isLoading ? (Array(loadingRowCount).fill(null) as TData[]) : data,
     columns,
@@ -48,14 +57,16 @@ export function DataTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
   });
 
+  const router = useRouter();
+
   return (
     <div className="flex flex-col gap-2">
       <Card className="overflow-hidden">
         <Table>
           <TableHeader className="bg-muted">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers.map(header => {
                   return (
                     <TableHead
                       key={header.id}
@@ -94,12 +105,20 @@ export function DataTable<TData, TValue>({
                 </TableRow>
               ))
             ) : table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map(row => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
+                  data-state={row.getIsSelected() && 'selected'}
+                  onClick={
+                    href
+                      ? () => {
+                          router.push(href(row.original));
+                        }
+                      : undefined
+                  }
+                  className={cn(href && 'cursor-pointer')}
                 >
-                  {row.getVisibleCells().map((cell) => (
+                  {row.getVisibleCells().map(cell => (
                     <TableCell
                       key={cell.id}
                       style={{ width: cell.column.getSize() }}

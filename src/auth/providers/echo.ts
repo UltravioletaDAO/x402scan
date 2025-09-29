@@ -1,6 +1,6 @@
-import type { OAuthConfig, OAuthUserConfig } from "next-auth/providers";
+import type { OAuthConfig, OAuthUserConfig } from 'next-auth/providers';
 
-export interface EchoProfile {
+interface EchoProfile {
   sub: string;
   name: string;
   email?: string;
@@ -11,31 +11,31 @@ export default function EchoProvider<P extends EchoProfile>(
   options: OAuthUserConfig<P>
 ): OAuthConfig<P> {
   return {
-    id: "echo",
-    name: "Echo",
-    type: "oauth",
+    id: 'echo',
+    name: 'Echo',
+    type: 'oauth',
     authorization: {
-      url: "https://echo.merit.systems/api/oauth/authorize",
+      url: 'https://echo.merit.systems/api/oauth/authorize',
       params: {
-        scope: "llm:invoke offline_access",
+        scope: 'llm:invoke offline_access',
       },
     },
     token: `https://echo.merit.systems/api/oauth/token?client_id=${options.clientId}`,
     userinfo: {
-      url: "https://echo.merit.systems/api/oauth/userinfo",
+      url: 'https://echo.merit.systems/api/oauth/userinfo',
     },
     profile(profile) {
       return {
         id: profile.sub,
         name: profile.name,
-        email: profile.email ?? "",
-        image: profile.picture ?? "",
+        email: profile.email ?? '',
+        image: profile.picture ?? '',
       };
     },
     style: {
-      logo: "/icons/echo.png",
-      bg: "#fff",
-      text: "#000",
+      logo: '/icons/echo.png',
+      bg: '#fff',
+      text: '#000',
     },
     options,
   };

@@ -1,10 +1,10 @@
-import { createTRPCRouter, infiniteQueryProcedure } from "../trpc";
-import z from "zod";
+import { createTRPCRouter, infiniteQueryProcedure } from '../trpc';
+import z from 'zod';
 import {
   listTopSellers,
   listTopSellersInputSchema,
-} from "@/services/cdp/sql/list-top-sellers";
-import { getAcceptsAddresses } from "@/services/db/accepts";
+} from '@/services/cdp/sql/list-top-sellers';
+import { getAcceptsAddresses } from '@/services/db/accepts';
 
 export const sellersRouter = createTRPCRouter({
   list: {
@@ -16,15 +16,23 @@ export const sellersRouter = createTRPCRouter({
     bazaar: infiniteQueryProcedure(z.bigint())
       .input(listTopSellersInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
-        const addresses = await getAcceptsAddresses();
+        const originsByAddress = await getAcceptsAddresses();
 
-        return await listTopSellers(
+        const result = await listTopSellers(
           {
             ...input,
-            addresses,
+            addresses: Object.keys(originsByAddress),
           },
           pagination
         );
+
+        return {
+          items: result.items.map(item => ({
+            ...item,
+            origins: originsByAddress[item.recipient],
+          })),
+          hasNextPage: result.hasNextPage,
+        };
       }),
   },
 });

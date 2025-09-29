@@ -1,9 +1,8 @@
-import { Body, Heading } from "../../_components/layout/page-utils";
-import { TopSellers } from "./_components/tables/top-sellers";
-import { TopResources } from "./_components/tables/top-resources";
-import { OverallStats } from "./_components/stats";
-import { Suspense } from "react";
-import { TopServers } from "./_components/known-sellers";
+import { Body, Heading } from '../../_components/layout/page-utils';
+import { TopSellers } from './_components/top-sellers';
+import { OverallStats } from './_components/stats';
+import { TopServers } from './_components/known-sellers';
+import { LatestTransactions } from './_components/transactions';
 
 export default async function Home() {
   return (
@@ -13,11 +12,9 @@ export default async function Home() {
         description="See what's happening in the x402 ecosystem"
       />
       <Body>
-        <Suspense fallback={<div>Loading...</div>}>
-          <OverallStats />
-        </Suspense>
+        <OverallStats />
         <TopServers />
-        <TopResources />
+        <LatestTransactions />
         <TopSellers />
       </Body>
     </div>

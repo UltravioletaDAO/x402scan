@@ -1,17 +1,19 @@
-import { createCallerFactory, createTRPCRouter } from "../trpc";
-import { acceptsRouter } from "./accepts";
-import { originsRouter } from "./origins";
+import { createCallerFactory, createTRPCRouter } from '../trpc';
+import { acceptsRouter } from './accepts';
+import { originsRouter } from './origins';
 
-import { resourcesRouter } from "./resources";
-import { sellersRouter } from "./sellers";
-import { statisticsRouter } from "./statistics";
+import { resourcesRouter } from './resources';
+import { sellersRouter } from './sellers';
+import { statisticsRouter } from './statistics';
+import { transactionsRouter } from './transactions';
 
 export const appRouter = createTRPCRouter({
+  accepts: acceptsRouter,
   stats: statisticsRouter,
   sellers: sellersRouter,
   resources: resourcesRouter,
   origins: originsRouter,
-  accepts: acceptsRouter,
+  transactions: transactionsRouter,
 });
 
 export type AppRouter = typeof appRouter;

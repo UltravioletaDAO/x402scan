@@ -1,11 +1,13 @@
-import z from "zod";
+import z from 'zod';
 
-import { runBaseSqlQuery } from "./query";
+import { runBaseSqlQuery } from './query';
 
-import { ethereumAddressSchema } from "@/lib/schemas";
+import { ethereumAddressSchema } from '@/lib/schemas';
+import { toPaginatedResponse } from '@/lib/pagination';
+import { formatDateForSql } from './lib';
 
-const inputSchema = z.object({
-  recipient: ethereumAddressSchema,
+export const listFacilitatorTransactionsInputSchema = z.object({
+  recipient: ethereumAddressSchema.optional(),
   after: z
     .object({
       timestamp: z.date(),
@@ -28,38 +30,14 @@ const outputSchema = z.array(
 );
 
 export const listFacilitatorTransactions = async (
-  input: z.input<typeof inputSchema>
+  input: z.input<typeof listFacilitatorTransactionsInputSchema>
 ) => {
-  const parseResult = inputSchema.safeParse(input);
+  const parseResult = listFacilitatorTransactionsInputSchema.safeParse(input);
   if (!parseResult.success) {
-    console.error("invalid input", input);
-    throw new Error("Invalid input: " + parseResult.error.message);
+    console.error('invalid input', input);
+    throw new Error('Invalid input: ' + parseResult.error.message);
   }
   const { recipient, after, limit } = parseResult.data;
-
-  // Escape the recipient address to prevent SQL injection
-  const escapedRecipient = recipient.replace(/'/g, "''");
-
-  // Build the WHERE clause with proper escaping
-  let whereClause = `event_signature = 'Transfer(address,address,uint256)'
-  AND transaction_from in ('0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6')
-  AND recipient = '${escapedRecipient}'`;
-
-  if (after) {
-    // Format date properly for ClickHouse/Base SQL
-    const formattedDate = after.timestamp
-      .toISOString()
-      .replace("T", " ")
-      .replace("Z", "");
-
-    if (after.logIndex !== undefined) {
-      // If we have a logIndex, use it for more precise pagination
-      whereClause += ` AND (block_timestamp > '${formattedDate}' OR (block_timestamp = '${formattedDate}' AND log_index > ${after.logIndex}))`;
-    } else {
-      // Fallback to timestamp-only comparison
-      whereClause += ` AND block_timestamp > '${formattedDate}'`;
-    }
-  }
 
   const sql = `SELECT
   parameters['from']::String AS sender,
@@ -71,10 +49,16 @@ export const listFacilitatorTransactions = async (
   block_timestamp,
   log_index
 FROM base.events
-WHERE ${whereClause}
-ORDER BY block_timestamp, log_index ASC
-LIMIT ${limit};`;
-  return await runBaseSqlQuery(sql, outputSchema);
-};
+WHERE event_signature = 'Transfer(address,address,uint256)'
+  AND transaction_from in ('0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6')
+  ${recipient ? `AND recipient = '${recipient}'` : ''}
+  ${after ? `AND block_timestamp > '${formatDateForSql(after.timestamp)}'` : ''}
+ORDER BY block_timestamp DESC
+LIMIT ${limit + 1};`;
+  const result = await runBaseSqlQuery(sql, outputSchema);
 
-export type FacilitatorTransaction = z.infer<typeof outputSchema>[number];
+  return toPaginatedResponse({
+    items: result ?? [],
+    limit,
+  });
+};

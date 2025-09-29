@@ -1,49 +1,53 @@
-"use client";
+'use client';
 
-import { createConfig, WagmiProvider, http } from "wagmi";
-import { base } from "wagmi/chains";
+import { createConfig, WagmiProvider, http } from 'wagmi';
+import { base } from 'wagmi/chains';
 
-import { CDPHooksProvider as CDPHooksProviderBase } from "@coinbase/cdp-hooks";
-import { createCDPEmbeddedWalletConnector } from "@coinbase/cdp-wagmi";
+import { CDPHooksProvider as CDPHooksProviderBase } from '@coinbase/cdp-hooks';
+import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
 
-import { env } from "@/env";
+import { env } from '@/env';
 
 interface Props {
   children: React.ReactNode;
 }
 
-const cdpConfig = {
-  projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID ?? "",
-  ethereum: {
-    createOnLogin: "smart" as const,
-  },
-  solana: {
-    createOnLogin: true,
-  },
-};
+export const CDPHooksProvider = ({ children }: Props) => {
+  if (typeof window === 'undefined') {
+    return children;
+  }
 
-const connector = createCDPEmbeddedWalletConnector({
-  cdpConfig,
-  providerConfig: {
+  if (!env.NEXT_PUBLIC_CDP_PROJECT_ID) {
+    return children;
+  }
+
+  const cdpConfig = {
+    projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID ?? '',
+    ethereum: {
+      createOnLogin: 'smart' as const,
+    },
+    solana: {
+      createOnLogin: true,
+    },
+  };
+
+  const connector = createCDPEmbeddedWalletConnector({
+    cdpConfig,
+    providerConfig: {
+      chains: [base],
+      transports: {
+        [base.id]: http(),
+      },
+    },
+  });
+
+  const wagmiConfig = createConfig({
+    connectors: [connector],
     chains: [base],
     transports: {
       [base.id]: http(),
     },
-  },
-});
-
-const wagmiConfig = createConfig({
-  connectors: [connector],
-  chains: [base],
-  transports: {
-    [base.id]: http(),
-  },
-});
-
-export const CDPHooksProvider = ({ children }: Props) => {
-  if (!env.NEXT_PUBLIC_CDP_PROJECT_ID) {
-    return children;
-  }
+  });
 
   return (
     <CDPHooksProviderBase config={cdpConfig}>

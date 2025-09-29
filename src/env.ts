@@ -1,5 +1,5 @@
-import { createEnv } from "@t3-oss/env-nextjs";
-import { z } from "zod";
+import { createEnv } from '@t3-oss/env-nextjs';
+import { z } from 'zod';
 
 export const env = createEnv({
   server: {
@@ -10,19 +10,19 @@ export const env = createEnv({
     ECHO_APP_ID: z.string().optional(),
   },
   client: {
-    NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
+    NEXT_PUBLIC_APP_URL: z.url().default('http://localhost:3000'),
     NEXT_PUBLIC_NODE_ENV: z
-      .enum(["development", "production"])
-      .default("development"),
+      .enum(['development', 'production'])
+      .default('development'),
     NEXT_PUBLIC_CDP_PROJECT_ID: z.string().optional(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL:
-      process.env.NEXT_PUBLIC_APP_URL ??
-      process.env.VERCEL_PROJECT_PRODUCTION_URL
+      (process.env.NEXT_PUBLIC_APP_URL ??
+      process.env.VERCEL_PROJECT_PRODUCTION_URL)
         ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-        : "http://localhost:3000",
-    NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV ?? "development",
+        : 'http://localhost:3000',
+    NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV ?? 'development',
     NEXT_PUBLIC_CDP_PROJECT_ID: process.env.NEXT_PUBLIC_CDP_PROJECT_ID,
   },
   emptyStringAsUndefined: true,

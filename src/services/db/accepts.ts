@@ -1,12 +1,35 @@
-import { prisma } from "./client";
+import type { ResourceOrigin } from '@prisma/client';
+import { prisma } from './client';
 
 export const getAcceptsAddresses = async () => {
   const accepts = await prisma.accepts.findMany({
-    select: {
-      payTo: true,
+    include: {
+      resourceRel: {
+        select: {
+          origin: true,
+          _count: true,
+        },
+      },
     },
   });
-  return Array.from(new Set(accepts.map((accept) => accept.payTo))).filter(
-    (address) => address !== ""
+
+  return accepts.reduce(
+    (acc, accept) => {
+      if (!accept.payTo) {
+        return acc;
+      }
+      if (acc[accept.payTo]) {
+        const existingOrigin = acc[accept.payTo].find(
+          origin => origin.id === accept.resourceRel.origin.id
+        );
+        if (!existingOrigin) {
+          acc[accept.payTo].push(accept.resourceRel.origin);
+        }
+      } else {
+        acc[accept.payTo] = [accept.resourceRel.origin];
+      }
+      return acc;
+    },
+    {} as Record<string, Array<ResourceOrigin>>
   );
 };

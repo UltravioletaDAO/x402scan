@@ -5,6 +5,7 @@ import * as TabsPrimitive from '@radix-ui/react-tabs';
 
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { TrendingDown, TrendingUp } from 'lucide-react';
 
 function Tabs({
   className,
@@ -37,6 +38,7 @@ export type TabsTriggerProps = React.ComponentProps<
 > & {
   label: string;
   value: string;
+  changePercentage?: number;
 } & (
     | {
         isLoading: true;
@@ -53,6 +55,7 @@ function TabsTrigger({
   label,
   isLoading,
   amount,
+  changePercentage,
   ...props
 }: TabsTriggerProps) {
   return (
@@ -74,9 +77,34 @@ function TabsTrigger({
         {isLoading === true ? (
           <Skeleton className="w-16 md:w-24 h-[20px] my-[4px] md:h-[30px] md:my-[3px]" />
         ) : (
-          <p className="text-xl md:text-3xl font-bold text-muted-foreground group-data-[state=active]:text-foreground">
-            {amount}
-          </p>
+          <div className="flex items-center gap-1">
+            <p className="text-xl md:text-3xl font-bold text-muted-foreground group-data-[state=active]:text-foreground">
+              {amount}
+            </p>
+            {changePercentage !== undefined && (
+              <div
+                className={cn(
+                  'flex items-center gap-1 px-1 rounded-md',
+                  changePercentage > 0
+                    ? 'bg-green-600/10 text-green-600'
+                    : changePercentage === 0
+                      ? 'bg-neutral-600/10 text-neutral-600'
+                      : 'bg-red-600/10 text-red-500'
+                )}
+              >
+                <p className="text-sm">
+                  {changePercentage >= 0 ? '+' : ''}
+                  {changePercentage.toFixed(2)}%
+                </p>
+
+                {changePercentage > 0 ? (
+                  <TrendingUp className="size-3" />
+                ) : changePercentage < 0 ? (
+                  <TrendingDown className="size-3" />
+                ) : null}
+              </div>
+            )}
+          </div>
         )}
       </div>
     </TabsPrimitive.Trigger>

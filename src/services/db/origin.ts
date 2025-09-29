@@ -1,8 +1,8 @@
-import { prisma } from "./client";
+import { prisma } from './client';
 
-import { z } from "zod";
+import { z } from 'zod';
 
-export const ogImageSchema = z.object({
+const ogImageSchema = z.object({
   url: z.url(),
   height: z.coerce.number().optional(),
   width: z.coerce.number().optional(),

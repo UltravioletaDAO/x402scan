@@ -1,4 +1,4 @@
-import { parser } from "html-metadata-parser";
+import { parser } from 'html-metadata-parser';
 
 export const scrapeMetadata = async (url: string) => {
   try {

@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
-import Link from "next/link";
+import Link from 'next/link';
 
-import { ExternalLink } from "lucide-react";
+import { ExternalLink } from 'lucide-react';
 
-import { AnimatePresence, motion, useScroll, useTransform } from "motion/react";
+import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react';
 
-import { MotionTab } from "./motion-tab";
+import { MotionTab } from './motion-tab';
 
-import type { Route } from "next";
+import type { Route } from 'next';
 
 interface Tab<T extends string> {
   label: string;
@@ -33,7 +33,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
   const paddingLeft = useTransform(scrollY, [0, 56], [0, 36]);
 
   useEffect(() => {
-    setButtonRefs((prev) => prev.slice(0, tabs.length));
+    setButtonRefs(prev => prev.slice(0, tabs.length));
   }, [tabs.length]);
 
   const navRef = useRef<HTMLDivElement>(null);
@@ -61,7 +61,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
                 className="z-11"
                 onMouseEnter={() => setHoveredTabIndex(index)}
                 onMouseLeave={() => setHoveredTabIndex(null)}
-                ref={(el) => {
+                ref={el => {
                   if (el) {
                     buttonRefs[index] = el;
                   }
@@ -95,8 +95,8 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
                 opacity: 0,
               }}
               transition={{
-                type: "tween",
-                ease: "easeOut",
+                type: 'tween',
+                ease: 'easeOut',
                 duration: 0.15,
               }}
             />

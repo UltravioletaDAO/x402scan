@@ -1,9 +1,11 @@
-import { generateJwt } from "@coinbase/cdp-sdk/auth";
+import 'server-only';
 
-import { env } from "@/env";
+import { generateJwt } from '@coinbase/cdp-sdk/auth';
+
+import { env } from '@/env';
 
 interface GenerateCdpJwtInput {
-  requestMethod: "POST" | "GET" | "PUT" | "DELETE";
+  requestMethod: 'POST' | 'GET' | 'PUT' | 'DELETE';
   requestHost?: string;
   requestPath: string;
   expiresIn?: number;
@@ -12,7 +14,7 @@ interface GenerateCdpJwtInput {
 export const generateCdpJwt = async ({
   requestMethod,
   requestPath,
-  requestHost = "api.cdp.coinbase.com",
+  requestHost = 'api.cdp.coinbase.com',
   expiresIn = 120,
 }: GenerateCdpJwtInput) => {
   return await generateJwt({

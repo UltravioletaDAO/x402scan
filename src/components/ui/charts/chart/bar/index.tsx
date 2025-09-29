@@ -1,14 +1,16 @@
-import { useMemo } from "react";
+'use client';
 
-import { Bar } from "recharts";
+import { useMemo } from 'react';
 
-import { BaseChart } from "../chart";
-import { simulateChartData } from "../simulate";
+import { Bar } from 'recharts';
 
-import type { BarChartProps } from "./types";
+import { BaseChart } from '../chart';
+import { simulateChartData } from '../simulate';
+
+import type { BarChartProps } from './types';
 
 export const BaseBarChart = <
-  T extends Omit<Record<string, number>, "timestamp">
+  T extends Omit<Record<string, number>, 'timestamp'>,
 >({
   data,
   children,
@@ -36,8 +38,8 @@ export const BaseBarChart = <
             x2="0"
             y2="1"
           >
-            <stop offset="0%" stopColor={color} stopOpacity={0.9} />
-            <stop offset="100%" stopColor={color} stopOpacity={0.1} />
+            <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
           </linearGradient>
         ))}
       </defs>
@@ -48,9 +50,10 @@ export const BaseBarChart = <
             key={dataKey as string}
             isAnimationActive={index === bars.length - 1}
             dataKey={dataKey as string}
-            stackId={stacked ? "1" : index.toString()}
-            fill={`color-mix(in oklab, ${color} 40%, transparent)`}
+            stackId={stacked ? '1' : index.toString()}
+            fill={`url(#${dataKey as string}-gradient)`}
             stroke={color}
+            strokeWidth={0.5}
             radius={
               index === bars.length - 1 || !stacked ? [4, 4, 0, 0] : undefined
             }
@@ -76,9 +79,9 @@ export const LoadingBarChart = ({
         data={simulatedData}
         bars={[
           {
-            dataKey: "value",
+            dataKey: 'value',
             color:
-              "color-mix(in oklab, var(--color-neutral-500) 20%, transparent)",
+              'color-mix(in oklab, var(--color-neutral-500) 20%, transparent)',
             isAnimationActive: false,
           },
         ]}
