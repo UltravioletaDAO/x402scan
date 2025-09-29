@@ -1,10 +1,10 @@
 'use client';
 
-import { Calendar, DollarSign, Hash, Store } from 'lucide-react';
+import { Calendar, DollarSign, Hash, Server } from 'lucide-react';
 
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 
-import { Seller, SellerSkeleton } from './seller';
+import { Seller, SellerSkeleton } from '../../../../_components/seller';
 
 import { formatTokenAmount } from '@/lib/token';
 import { formatCompactAgo } from '@/lib/utils';
@@ -20,7 +20,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: 'recipient',
     header: () => (
-      <HeaderCell Icon={Store} label="Seller" className="justify-start" />
+      <HeaderCell Icon={Server} label="Server" className="justify-start" />
     ),
     cell: ({ row }) => <Seller address={row.original.recipient} />,
     size: 300, // Fixed width for seller column (widest for address display)

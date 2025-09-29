@@ -162,6 +162,7 @@ export const LoadingActivityCharts = () => {
       tabs={[
         { type: 'bar', label: 'Transactions' },
         { type: 'area', label: 'Volume' },
+        { type: 'bar', label: 'Buyers' },
       ]}
     />
   );

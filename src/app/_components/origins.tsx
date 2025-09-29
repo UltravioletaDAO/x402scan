@@ -51,12 +51,19 @@ export const Origins: React.FC<Props> = ({ origins, address }) => {
           <TooltipTrigger className="cursor-pointer hover:bg-muted hover:text-muted-foreground rounded-md transition-colors">
             {origins.length} servers
           </TooltipTrigger>
-          <TooltipContent>
-            {origins.map(origin => (
-              <div key={origin.id}>
-                {origin.title ?? new URL(origin.origin).hostname}
-              </div>
-            ))}
+          <TooltipContent className="max-w-sm flex flex-col gap-1">
+            <p>
+              Addresses can be associated with multiple servers.
+              <br />
+              This address is associated with the following servers:
+            </p>
+            <ul className="list-disc list-inside">
+              {origins.map(origin => (
+                <li key={origin.id}>
+                  {origin.title ?? new URL(origin.origin).hostname}
+                </li>
+              ))}
+            </ul>
           </TooltipContent>
         </Tooltip>
       }
