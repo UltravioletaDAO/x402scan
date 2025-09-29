@@ -11,7 +11,8 @@
     "@trigger.dev/build",
     "tailwindcss",
     "tsx",
-    "postcss"
+    "postcss",
+    "@radix-ui/react-tabs"
   ],
   "ignore": [
     "/scripts/**",
