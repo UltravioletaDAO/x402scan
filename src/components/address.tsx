@@ -20,10 +20,7 @@ export const Address: React.FC<Props> = ({
   side,
 }) => {
   const addressComponent = (
-    <Copyable
-      value={address}
-      className={cn('font-mono text-xs border rounded-md px-1', className)}
-    >
+    <Copyable value={address} className={cn('font-mono text-xs', className)}>
       {formatAddress(address)}
     </Copyable>
   );

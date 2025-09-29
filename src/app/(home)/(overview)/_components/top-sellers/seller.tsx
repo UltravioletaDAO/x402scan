@@ -1,10 +1,11 @@
 'use client';
 
-import { Address } from '@/components/address';
 import { Skeleton } from '@/components/ui/skeleton';
+
+import { Address } from '@/components/address';
+
+import { Origins } from '@/app/_components/origins';
 import { api } from '@/trpc/client';
-import type { ResourceOrigin } from '@prisma/client';
-import { Globe } from 'lucide-react';
 
 interface Props {
   address: string;
@@ -23,46 +24,12 @@ export const Seller: React.FC<Props> = ({ address }) => {
   }
 
   if (!origins || origins.length === 0) {
-    return <Address address={address} />;
+    return <Address address={address} className="text-sm font-medium" />;
   }
 
-  const Origin = ({ origin }: { origin: ResourceOrigin }) => {
-    return (
-      <SellerContainer>
-        {origin.favicon ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={origin.favicon} alt="Favicon" className="size-3" />
-        ) : (
-          <Globe className="size-3" />
-        )}
-        <p className="font-mono text-xs">
-          {origin.title ?? new URL(origin.origin).hostname}
-        </p>
-      </SellerContainer>
-    );
-  };
-
-  return (
-    <div className="flex flex-row gap-1 w-full flex-wrap">
-      {origins.map(origin => (
-        <Origin key={origin.id} origin={origin} />
-      ))}
-    </div>
-  );
+  return <Origins origins={origins} address={address} />;
 };
 
 export const SellerSkeleton = () => {
-  return (
-    <SellerContainer>
-      <Skeleton className="h-3 w-20 my-[2.75px]" />
-    </SellerContainer>
-  );
-};
-
-const SellerContainer = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="px-1 border border-border rounded-md w-fit flex items-center gap-1">
-      {children}
-    </div>
-  );
+  return <Skeleton className="h-3 w-20 my-[2.75px]" />;
 };

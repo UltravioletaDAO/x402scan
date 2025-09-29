@@ -1,14 +1,17 @@
 'use client';
 
-import type { ColumnDef } from '@tanstack/react-table';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+import { useRouter } from 'next/navigation';
+
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
 } from '@tanstack/react-table';
-import { Skeleton } from './skeleton';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -17,12 +20,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Card } from './card';
-import { Button } from './button';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import type { Route } from 'next';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
 import { cn } from '@/lib/utils';
+
+import type { ColumnDef } from '@tanstack/react-table';
+import type { Route } from 'next';
 
 export type ExtendedColumnDef<TData, TValue = unknown> = ColumnDef<
   TData,

@@ -1,15 +1,17 @@
 import { Globe, Server } from 'lucide-react';
 
-import { Skeleton } from '@/components/ui/skeleton';
-
-import type { ResourceOrigin } from '@prisma/client';
-import { Address } from '@/components/address';
-import { cn } from '@/lib/utils';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { Address } from '@/components/address';
+
+import { cn } from '@/lib/utils';
+
+import type { ResourceOrigin } from '@prisma/client';
 
 interface Props {
   address: string;
@@ -18,7 +20,7 @@ interface Props {
 
 export const Origins: React.FC<Props> = ({ origins, address }) => {
   if (!origins || origins.length === 0) {
-    return null;
+    return <Address address={address} />;
   }
 
   if (origins.length === 1) {
