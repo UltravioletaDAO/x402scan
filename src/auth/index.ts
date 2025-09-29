@@ -31,12 +31,7 @@ declare module "next-auth" {
   }
 }
 
-const {
-  handlers,
-  signIn,
-  signOut,
-  auth: uncachedAuth,
-} = NextAuth({
+const { handlers, auth: uncachedAuth } = NextAuth({
   providers,
   adapter: PrismaAdapter(prisma),
   callbacks: {
@@ -128,4 +123,4 @@ const {
 
 const auth = cache(uncachedAuth);
 
-export { handlers, signIn, signOut, auth };
+export { handlers, auth };

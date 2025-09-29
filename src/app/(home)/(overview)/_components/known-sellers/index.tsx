@@ -15,13 +15,13 @@ export const TopServers = async () => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
-  await api.sellers.list.bazaar.prefetch({
+  void api.sellers.list.bazaar.prefetch({
     sorting: defaultSorting,
     limit: 100,
     startDate,
     endDate,
   });
-  await api.stats.getBazaarOverallStatistics.prefetch({
+  void api.stats.getBazaarOverallStatistics.prefetch({
     startDate,
     endDate,
   });

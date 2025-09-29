@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useState } from "react";
 
 import { subDays } from "date-fns";
 
@@ -48,23 +48,6 @@ export const TimeRangeProvider = ({
   const [startDate, setStartDate] = useState<Date>(
     initialStartDate ?? creationDate
   );
-  const [isInitial, setIsInitial] = useState(true);
-
-  useEffect(() => {
-    if (isInitial) {
-      setIsInitial(false);
-      return;
-    }
-    if (timeframe === ActivityTimeframe.Custom) {
-      return;
-    }
-    if (timeframe === ActivityTimeframe.AllTime) {
-      setStartDate(creationDate);
-      return;
-    }
-    setStartDate(subDays(new Date(), timeframe));
-    setEndDate(new Date());
-  }, [timeframe, creationDate, isInitial]);
 
   const selectTimeframe = (timeframe: ActivityTimeframe) => {
     if (timeframe === ActivityTimeframe.AllTime) {
