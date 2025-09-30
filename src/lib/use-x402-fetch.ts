@@ -8,7 +8,7 @@ import { parseX402Response } from "./x402-schema";
 import { useWalletClient } from "wagmi";
 import { wrapFetchWithPayment } from "x402-fetch";
 
-const PROXY_ENDPOINT = "/api/test-402" as const;
+const PROXY_ENDPOINT = "/api/proxy-402" as const;
 const TARGET_HEADER = "x-proxy-target" as const;
 
 function createFetchWithProxyHeader(targetUrl: string) {
