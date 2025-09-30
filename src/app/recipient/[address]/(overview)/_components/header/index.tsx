@@ -12,7 +12,7 @@ import { OverallRecipientStats, LoadingOverallRecipientStats } from './stats';
 import { cn, formatAddress } from '@/lib/utils';
 
 import { api } from '@/trpc/server';
-import { Address } from '@/components/address';
+import { Address } from '@/components/ui/address';
 import { HeaderButtons, LoadingHeaderButtons } from './buttons';
 
 interface Props {

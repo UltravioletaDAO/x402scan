@@ -10,7 +10,7 @@ import { signInWithEthereum } from '@/auth/providers/siwe/sign-in';
 import { EmbeddedWalletOTP } from './otp';
 import { EmbeddedWalletEmail } from './email';
 
-export const EmbeddedWallet = () => {
+export const ConnectEmbeddedWalletForm = () => {
   const [flowId, setFlowId] = useState('');
 
   const account = useAccount();

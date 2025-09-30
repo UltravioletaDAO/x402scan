@@ -2,7 +2,7 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { Address } from '@/components/address';
+import { Address } from '@/components/ui/address';
 
 import { Origins } from '@/app/_components/origins';
 import { api } from '@/trpc/client';

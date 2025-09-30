@@ -9,13 +9,13 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Logo } from '@/components/logo';
-import { EmbeddedWallet } from './embedded-wallet';
+import { ConnectEmbeddedWalletForm } from './form';
 
 interface AuthModalProps {
   children: React.ReactNode;
 }
 
-export const AuthModal = ({ children }: AuthModalProps) => {
+export const ConnectEmbeddedWalletDialog = ({ children }: AuthModalProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -31,7 +31,7 @@ export const AuthModal = ({ children }: AuthModalProps) => {
             </DialogDescription>
           </div>
         </DialogHeader>
-        <EmbeddedWallet />
+        <ConnectEmbeddedWalletForm />
       </DialogContent>
     </Dialog>
   );
