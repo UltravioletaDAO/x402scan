@@ -17,6 +17,7 @@ import type { User } from '@coinbase/cdp-hooks';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowDown, ArrowUp, Wallet } from 'lucide-react';
 import { Deposit } from './deposit';
+import { Withdraw } from './withdraw';
 
 interface Props {
   children: React.ReactNode;
@@ -92,7 +93,7 @@ export const DisplayEmbeddedWalletDialog: React.FC<Props> = ({
             value="withdraw"
             className="px-4 w-full overflow-hidden mt-0"
           >
-            BBB
+            <Withdraw />
           </TabsContent>
         </Tabs>
         <DialogFooter className="bg-muted border-t p-4">

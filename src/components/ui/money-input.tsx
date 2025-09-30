@@ -113,7 +113,7 @@ export const MoneyInput: React.FC<Props> = ({
         <Button
           variant="primaryGhost"
           size="icon"
-          className="size-fit bg-transparent px-1"
+          className="size-fit md:size-fit bg-transparent px-1"
           onClick={() => {
             if (inputRef.current && balance) {
               autoNumericRef.current?.set(balance);
