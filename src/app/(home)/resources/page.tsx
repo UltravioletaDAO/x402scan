@@ -2,6 +2,16 @@ import { Body, Heading } from "../../_components/layout/page-utils";
 import { api } from "@/trpc/server";
 import { ResourceExecutor } from "../../_components/resource-executor/resource-executor";
 
+function getBazaarMethod(outputSchema: unknown): string | undefined {
+  if (typeof outputSchema === 'object' && outputSchema && 'input' in outputSchema) {
+    const input = (outputSchema as { input: unknown }).input;
+    if (typeof input === 'object' && input && 'method' in input) {
+      return (input as { method: unknown }).method as string;
+    }
+  }
+  return undefined;
+}
+
 export default async function ResourcesPage() {
   const accepts = await api.accepts.list();
 
@@ -12,7 +22,7 @@ export default async function ResourcesPage() {
         <div className="space-y-4">
           <div className="space-y-3">
             {accepts.map((accept) => (
-              <GenericResourceCaller key={accept.id} resource={accept.resource} bazaarMethod={accept.outputSchema?.input?.method} />
+              <ResourceExecutor key={accept.id} resource={accept.resource} bazaarMethod={getBazaarMethod(accept.outputSchema)} />
             ))}
           </div>
         </div>
