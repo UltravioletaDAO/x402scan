@@ -55,10 +55,6 @@ const EnhancedX402ResponseSchema = z3.object({
 
 // Types
 export type ParsedX402Response = z3.infer<typeof EnhancedX402ResponseSchema>;
-export type EnhancedPaymentRequirements = z3.infer<
-  typeof EnhancedPaymentRequirementsSchema
->;
-export type FieldDef = z3.infer<typeof FieldDefSchema>;
 
 type Result<T> =
   | { success: true; data: T; errors: string[] }
