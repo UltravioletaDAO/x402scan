@@ -33,3 +33,21 @@ export const getAcceptsAddresses = async () => {
     {} as Record<string, Array<ResourceOrigin>>
   );
 };
+
+export const listAccepts = async () => {
+  return await prisma.accepts.findMany({
+    select: {
+      id: true,
+      resource: true,
+      outputSchema: true,
+      scheme: true,
+      network: true,
+      description: true,
+      payTo: true,
+      asset: true,
+    },
+    orderBy: {
+      resource: 'asc',
+    },
+  });
+};

@@ -12,7 +12,11 @@ import { AnimatedThemeToggler } from '@/components/magicui/animated-theme-toggle
 import { Toaster } from '@/components/ui/sonner';
 
 import { LogoContainer } from './_components/layout/logo';
-import { AuthButton } from './_components/auth/button';
+import { NavbarSearchButton } from './_components/layout/navbar/search';
+import { NavbarAuthButton } from './_components/layout/navbar/auth-button';
+
+import { CDPHooksProvider } from './_contexts/cdp';
+import { SearchProvider } from './_contexts/search/provider';
 
 import { TRPCReactProvider } from '@/trpc/client';
 
@@ -21,9 +25,6 @@ import { env } from '@/env';
 import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
-import { CDPHooksProvider } from './_contexts/cdp';
-import { SearchProvider } from './_contexts/search/provider';
-import { SearchButton } from './_contexts/search/button';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -94,8 +95,8 @@ export default function RootLayout({
                         {breadcrumbs}
                       </div>
                       <div className="flex items-center gap-1 md:gap-2">
-                        <SearchButton />
-                        <AuthButton />
+                        <NavbarSearchButton />
+                        <NavbarAuthButton />
                         <AnimatedThemeToggler />
                       </div>
                     </div>

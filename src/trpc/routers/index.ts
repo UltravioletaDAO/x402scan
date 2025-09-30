@@ -1,4 +1,5 @@
 import { createCallerFactory, createTRPCRouter } from '../trpc';
+import { acceptsRouter } from './accepts';
 import { originsRouter } from './origins';
 
 import { resourcesRouter } from './resources';
@@ -7,6 +8,7 @@ import { statisticsRouter } from './statistics';
 import { transactionsRouter } from './transactions';
 
 export const appRouter = createTRPCRouter({
+  accepts: acceptsRouter,
   stats: statisticsRouter,
   sellers: sellersRouter,
   resources: resourcesRouter,

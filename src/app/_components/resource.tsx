@@ -1,4 +1,4 @@
-import { Address } from '@/components/address';
+import { Address } from '@/components/ui/address';
 import { Favicon } from '@/components/favicon';
 
 import type { Accepts, ResourceOrigin, Resources } from '@prisma/client';
