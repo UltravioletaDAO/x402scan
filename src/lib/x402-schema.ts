@@ -1,47 +1,57 @@
-import { z, type ZodError } from 'zod';
-import { x402ResponseSchema, type x402Response, type PaymentRequirements, PaymentRequirementsSchema } from 'x402/types';
+import { HTTPRequestStructureSchema, PaymentRequirementsSchema } from 'x402/types';
 import { z as z3 } from 'zod3';
 
 // ==================== TYPES ====================
 
+// Handle both string shorthand and object field definitions
+const FieldDefSchema = z3.preprocess(
+  (val) => {
+    // Convert string shorthand to object
+    if (typeof val === 'string') {
+      return { type: val };
+    }
+    return val;
+  },
+  z3.object({
+    type: z3.string().optional(),
+    required: z3.boolean().optional(),
+    description: z3.string().optional(),
+    enum: z3.array(z3.string()).optional(),
+    properties: z3.record(z3.unknown()).optional(),
+  })
+);
 
-// Enhanced x402Response with normalized, strongly-typed outputSchema
-export interface ParsedX402Response extends Omit<x402Response, 'accepts' | 'error'> {
-  error?: string;  // Accept any string, not just the ErrorReasons enum
-  accepts?: Array<EnhancedPaymentRequirements>;
-}
+// Enhanced input schema with proper field definitions
+const EnhancedInputSchema = HTTPRequestStructureSchema
+  .omit({ queryParams: true, bodyFields: true, headerFields: true })
+  .extend({
+    queryParams: z3.record(FieldDefSchema).optional(),
+    bodyFields: z3.record(FieldDefSchema).optional(),
+    headerFields: z3.record(FieldDefSchema).optional(),
+  });
 
-// Create lenient schema that accepts any string for error (using zod3 for compatibility)
-const lenientX402ResponseSchema = z3.object({
-  x402Version: z3.number(),
-  error: z3.string().optional(),  // Accept any string
-  accepts: z3.array(PaymentRequirementsSchema).optional(),
-  payer: z3.string().optional(),
+// Enhanced outputSchema
+const EnhancedOutputSchema = z3.object({
+  input: EnhancedInputSchema,
+  output: z3.record(z3.unknown()).optional(),
 });
 
-export type EnhancedPaymentRequirements = PaymentRequirements & {
-  outputSchema?: {
-    input: NormalizedInputSchema;
-    output?: Record<string, unknown>;
-  };
-};
+// Enhanced PaymentRequirements
+const EnhancedPaymentRequirementsSchema = PaymentRequirementsSchema.extend({
+  outputSchema: EnhancedOutputSchema.optional(),
+});
 
-export type NormalizedInputSchema = {
-  type?: string;
-  method?: string;
-  headerFields?: Record<string, FieldDef>;
-  queryParams: Record<string, FieldDef>;
-  bodyType?: string;
-  bodyFields: Record<string, FieldDef>;
-};
+// Complete x402Response with lenient error field (using zod3)
+const EnhancedX402ResponseSchema = z3.object({
+  x402Version: z3.number(),
+  error: z3.string().optional(), // Accept any error string
+  accepts: z3.array(EnhancedPaymentRequirementsSchema).optional(),
+});
 
-export type FieldDef = {
-  type?: string;
-  required?: boolean;
-  description?: string;
-  enum?: string[];
-  properties?: Record<string, unknown>;
-};
+// Types
+export type ParsedX402Response = z3.infer<typeof EnhancedX402ResponseSchema>;
+export type EnhancedPaymentRequirements = z3.infer<typeof EnhancedPaymentRequirementsSchema>;
+export type FieldDef = z3.infer<typeof FieldDefSchema>;
 
 type Result<T> = { success: true; data: T; errors: string[] } | { success: false; data: null; errors: string[] };
 
@@ -53,162 +63,42 @@ type Result<T> = { success: true; data: T; errors: string[] } | { success: false
  * Returns enhanced response with normalized, strongly-typed outputSchema
  */
 export function parseX402Response(data: unknown): Result<ParsedX402Response> {
-  const errors: string[] = [];
+  // Step 1: Selective snake → camel conversion (only for x402 protocol fields, not API schemas)
+  const normalized = normalizeX402Fields(data);
 
-  // Layer 1: Parse x402 response with lenient error handling
-  const parseResult = parseRawX402Response(data);
-  if (!parseResult.success) {
-    const issues = parseResult.error?.issues ?? [];
-    issues.forEach((issue) => {
-      const path = issue.path.length > 0 ? issue.path.join('.') : '(root)';
-      errors.push(`${path}: ${issue.message}`);
-    });
-    return { success: false, data: null, errors };
-  }
-
-  // Layer 2: Enhance response by normalizing all outputSchemas
-  const enhanced = enhanceX402Response(parseResult.data);
-
-  return { success: true, data: enhanced, errors };
-}
-
-
-// ==================== LAYER 1: RESPONSE PARSING ====================
-
-
-/**
- * Parse raw x402 response with lenient error field handling
- */
-function parseRawX402Response(data: unknown): { success: true; data: x402Response } | { success: false; error: ZodError<unknown> } {
-  // Just use lenient parsing directly
-  const result = lenientX402ResponseSchema.safeParse(data);
+  // Step 2: Parse with our enhanced schema (handles everything!)
+  const result = EnhancedX402ResponseSchema.safeParse(normalized);
 
   if (result.success) {
-    return { success: true, data: result.data as x402Response };
+    return { success: true, data: result.data, errors: [] };
   }
 
-  return { success: false, error: result.error as unknown as ZodError<unknown> };
-}
-
-
-// ==================== LAYER 2: ENHANCEMENT ====================
-
-/**
- * Enhance x402Response by normalizing all outputSchemas
- */
-function enhanceX402Response(response: x402Response): ParsedX402Response {
-  const enhanced: ParsedX402Response = {
-    ...response,
-    accepts: response.accepts?.map(accept => enhanceAccept(accept))
-  };
-
-  return enhanced;
+  // Format errors
+  const errors = result.error.issues.map(issue =>
+    `${issue.path.join('.')}: ${issue.message}`
+  );
+  return { success: false, data: null, errors };
 }
 
 /**
- * Enhance a single accept entry by normalizing its outputSchema
+ * Normalize only x402 protocol fields, preserve API schema field names
  */
-function enhanceAccept(accept: PaymentRequirements): EnhancedPaymentRequirements {
-  // Omit outputSchema when spreading to avoid type conflict
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { outputSchema: _, ...acceptWithoutSchema } = accept;
-  const enhanced: EnhancedPaymentRequirements = { ...acceptWithoutSchema };
-
-  // Only process outputSchema if it exists (handle both camelCase and snake_case)
-  const acceptWithSnakeCase = accept as PaymentRequirements & { output_schema?: Record<string, unknown> };
-  const rawOutputSchema = accept.outputSchema ?? acceptWithSnakeCase.output_schema;
-  if (rawOutputSchema) {
-    const inputData = extractInputData(rawOutputSchema as Record<string, unknown>);
-    const normalizedInput = normalizeInputSchema(inputData);
-
-    // Validate the normalized input
-    const validation = inputSchema.safeParse(normalizedInput);
-    if (validation.success) {
-      const outputSchemaObj = rawOutputSchema as Record<string, unknown>;
-      enhanced.outputSchema = {
-        input: validation.data,
-        output: outputSchemaObj.output as Record<string, unknown> | undefined
-      };
-    }
+function normalizeX402Fields(obj: unknown): unknown {
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
+    return obj;
   }
 
-  return enhanced;
-}
+  const data = obj as Record<string, unknown>;
+  const result: Record<string, unknown> = {};
 
-// ==================== LAYER 3: NORMALIZATION ====================
-
-/**
- * Extract input data from outputSchema, handling nested structure
- */
-function extractInputData(outputSchema: Record<string, unknown>): Record<string, unknown> {
-  const input = outputSchema.input;
-  return input && typeof input === 'object' && !Array.isArray(input)
-    ? input as Record<string, unknown>
-    : {};
-}
-
-/**
- * Normalize input schema by converting snake_case to camelCase and cleaning field definitions
- */
-function normalizeInputSchema(input: Record<string, unknown>): NormalizedInputSchema {
-  const normalized = normalizeFieldNames(input);
-
-  return {
-    type: typeof normalized.type === 'string' ? normalized.type : undefined,
-    method: typeof normalized.method === 'string' ? normalized.method : undefined,
-    headerFields: normalized.headerFields ? normalizeFieldRecord(normalized.headerFields) : undefined,
-    queryParams: normalizeFieldRecord(normalized.queryParams ?? {}),
-    bodyType: typeof normalized.bodyType === 'string' ? normalized.bodyType : undefined,
-    bodyFields: normalizeFieldRecord(normalized.bodyFields ?? {}),
-  };
-}
-
-/**
- * Convert snake_case fields to camelCase
- */
-function normalizeFieldNames(obj: Record<string, unknown>): {
-  queryParams?: unknown;
-  bodyFields?: unknown;
-  bodyType?: unknown;
-  headerFields?: unknown;
-} & Record<string, unknown> {
-  const result = { ...obj };
-
-  // Handle snake_case to camelCase conversion
-  if ('query_params' in obj) {
-    result.queryParams = obj.query_params;
-    delete result.query_params;
-  }
-  if ('body_fields' in obj) {
-    result.bodyFields = obj.body_fields;
-    delete result.body_fields;
-  }
-  if ('body_type' in obj) {
-    result.bodyType = obj.body_type;
-    delete result.body_type;
-  }
-  if ('header_fields' in obj) {
-    result.headerFields = obj.header_fields;
-    delete result.header_fields;
-  }
-
-  return result;
-}
-
-/**
- * Normalize a record of field definitions
- */
-function normalizeFieldRecord(record: unknown): Record<string, FieldDef> {
-  if (!record || typeof record !== 'object' || Array.isArray(record)) {
-    return {};
-  }
-
-  const result: Record<string, FieldDef> = {};
-
-  for (const [key, value] of Object.entries(record as Record<string, unknown>)) {
-    const normalized = normalizeFieldDef(value);
-    if (normalized) {
-      result[key] = normalized;
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'accepts' && Array.isArray(value)) {
+      // Process accepts array but preserve outputSchema contents
+      result[key] = value.map(accept => normalizeAcceptEntry(accept));
+    } else {
+      // Convert x402 protocol fields
+      const camelKey = snakeToCamelCase(key);
+      result[camelKey] = value;
     }
   }
 
@@ -216,65 +106,86 @@ function normalizeFieldRecord(record: unknown): Record<string, FieldDef> {
 }
 
 /**
- * Normalize a single field definition, handling various formats
+ * Normalize accept entry while preserving outputSchema field names
  */
-function normalizeFieldDef(field: unknown): FieldDef | null {
-  if (!field) return null;
-
-  // Handle string shorthand
-  if (typeof field === 'string') {
-    return { type: field };
+function normalizeAcceptEntry(accept: unknown): unknown {
+  if (!accept || typeof accept !== 'object' || Array.isArray(accept)) {
+    return accept;
   }
 
-  // Handle object format
-  if (typeof field === 'object' && !Array.isArray(field)) {
-    const obj = field as Record<string, unknown>;
-    return {
-      type: typeof obj.type === 'string' ? obj.type : undefined,
-      required: typeof obj.required === 'boolean' ? obj.required : undefined,
-      description: typeof obj.description === 'string' ? obj.description : undefined,
-      enum: Array.isArray(obj.enum) && obj.enum.every(x => typeof x === 'string')
-        ? obj.enum
-        : undefined,
-      properties: obj.properties && typeof obj.properties === 'object' && !Array.isArray(obj.properties)
-        ? obj.properties as Record<string, unknown>
-        : undefined,
-    };
+  const data = accept as Record<string, unknown>;
+  const result: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'outputSchema' || key === 'output_schema') {
+      // Normalize outputSchema structure but preserve API field names
+      result.outputSchema = normalizeOutputSchema(value);
+    } else {
+      // Convert x402 protocol fields
+      const camelKey = snakeToCamelCase(key);
+      result[camelKey] = value;
+    }
   }
 
-  return null;
+  return result;
 }
 
-// ==================== SCHEMAS (Implementation Details) ====================
+/**
+ * Normalize outputSchema structure (input/output keys and HTTP schema fields)
+ * but preserve the actual API field names within queryParams/bodyFields/headerFields
+ */
+function normalizeOutputSchema(outputSchema: unknown): unknown {
+  if (!outputSchema || typeof outputSchema !== 'object' || Array.isArray(outputSchema)) {
+    return outputSchema;
+  }
 
-const fieldDefSchema = z.object({
-  type: z.string().optional(),
-  required: z.boolean().optional(),
-  description: z.string().optional(),
-  enum: z.array(z.string()).optional(),
-  properties: z.record(z.string(), z.unknown()).optional(),
-});
+  const data = outputSchema as Record<string, unknown>;
+  const result: Record<string, unknown> = {};
 
-const inputSchema = z.object({
-  type: z.string().optional(),
-  method: z.string().optional(),
-  queryParams: z.record(z.string(), fieldDefSchema),
-  bodyFields: z.record(z.string(), fieldDefSchema),
-  bodyType: z.string().optional(),
-  headerFields: z.record(z.string(), fieldDefSchema).optional(),
-});
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'input') {
+      result.input = normalizeInputSchema(value);
+    } else {
+      result[key] = value;
+    }
+  }
 
-export const outputSchema = z.object({
-  input: z.object({
-    type: z.literal('http'),
-    method: z.enum(['GET', 'POST', 'PUT', 'DELETE', 'PATCH']),
-    discoverable: z.boolean().optional(),
-    queryParams: z.record(z.string(), fieldDefSchema).optional(),
-    bodyFields: z.record(z.string(), fieldDefSchema).optional(),
-    bodyType: z.enum(['json', 'form-data', 'text']).optional(),
-    headerFields: z.record(z.string(), fieldDefSchema).optional(),
-  }),
-  output: z.record(z.string(), z.unknown()).optional(),
-});
+  return result;
+}
 
-export type OutputSchema = z.infer<typeof outputSchema>;
+/**
+ * Normalize input schema structure (convert query_params -> queryParams, etc.)
+ * but preserve field names within the param/field records
+ */
+function normalizeInputSchema(input: unknown): unknown {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return input;
+  }
+
+  const data = input as Record<string, unknown>;
+  const result: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(data)) {
+    // Convert HTTP schema structure field names
+    if (key === 'query_params') {
+      result.queryParams = value; // Preserve field names within
+    } else if (key === 'body_fields') {
+      result.bodyFields = value; // Preserve field names within
+    } else if (key === 'body_type') {
+      result.bodyType = value;
+    } else if (key === 'header_fields') {
+      result.headerFields = value; // Preserve field names within
+    } else {
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Converts a single snake_case string to camelCase
+ */
+function snakeToCamelCase(str: string): string {
+  return str.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
+}

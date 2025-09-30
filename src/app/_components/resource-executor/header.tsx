@@ -73,7 +73,7 @@ export function Header({ resource, bazaarMethod: method, onX402Response }: Heade
                                 </pre>
                             </div>
                         )}
-                        {rawResponse && (
+                        {rawResponse != null && rawResponse !== undefined && (
                             <div>
                                 <h4 className="text-sm font-medium mb-2">Raw Response</h4>
                                 <pre className="text-xs font-mono whitespace-pre-wrap">

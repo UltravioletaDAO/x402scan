@@ -61,7 +61,7 @@ describe('parseX402Response with normalized schemas', () => {
       const inputSchema = result.data.accepts?.[0]?.outputSchema?.input
       expect(inputSchema).toBeDefined()
       expect(inputSchema?.queryParams?.feed_categories).toBeDefined()
-      expect(inputSchema?.bodyFields).toEqual({})
+      expect(inputSchema?.bodyFields).toBeUndefined()
     }
   })
 
@@ -85,7 +85,7 @@ describe('parseX402Response with normalized schemas', () => {
       expect(inputSchema).toBeDefined()
       expect(inputSchema?.bodyFields?.prompt).toBeDefined()
       expect(inputSchema?.bodyType).toBe('json')
-      expect(inputSchema?.queryParams).toEqual({})
+      expect(inputSchema?.queryParams).toBeUndefined()
     }
   })
 
@@ -109,8 +109,8 @@ describe('parseX402Response with normalized schemas', () => {
     expect(result.success).toBe(true)
     if (result.success) {
       const inputSchema = result.data.accepts?.[0]?.outputSchema?.input
-      expect(inputSchema?.queryParams).toEqual({})
-      expect(inputSchema?.bodyFields).toEqual({})
+      expect(inputSchema?.queryParams).toBeUndefined()
+      expect(inputSchema?.bodyFields).toBeUndefined()
     }
   })
 
@@ -210,8 +210,8 @@ describe('schema validation edge cases', () => {
     expect(result.success).toBe(true)
     if (result.success && result.data.accepts?.[0]?.outputSchema?.input) {
       const inputSchema = result.data.accepts[0].outputSchema.input
-      expect(inputSchema.queryParams).toEqual({})
-      expect(inputSchema.bodyFields).toEqual({})
+      expect(inputSchema.queryParams).toBeUndefined()
+      expect(inputSchema.bodyFields).toBeUndefined()
     }
   })
 
