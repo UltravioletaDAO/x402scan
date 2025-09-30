@@ -56,17 +56,17 @@ export function Header({
 
   return (
     <>
-      <div className="flex items-center justify-between py-2">
-        <span className="font-mono text-sm truncate flex-1 mr-4">
-          {resource}
-        </span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div
+            className={`w-3 h-3 rounded-full ${statusColor} ${hasResponse ? 'cursor-pointer' : ''}`}
+            onClick={hasResponse ? () => setShowDialog(true) : undefined}
+          />
+          <span className="font-mono text-sm truncate">{resource}</span>
+        </div>
         {!hasError && (
-          <span className="font-bold font-mono text-sm mr-4">${price}</span>
+          <span className="font-bold font-mono text-sm">${price}</span>
         )}
-        <div
-          className={`w-3 h-3 rounded-full ${statusColor} ${hasResponse ? 'cursor-pointer' : ''}`}
-          onClick={hasResponse ? () => setShowDialog(true) : undefined}
-        />
       </div>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>

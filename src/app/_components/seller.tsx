@@ -19,7 +19,7 @@ export const Seller: React.FC<Props> = ({
   addressClassName,
   disableCopy,
 }) => {
-  const { data: origins, isLoading } = api.origins.getOriginsByAddress.useQuery(
+  const { data: origins, isLoading } = api.origins.list.byAddress.useQuery(
     address,
     {
       enabled: !!address,

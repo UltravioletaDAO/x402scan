@@ -10,6 +10,7 @@ import { useX402Fetch } from '@/app/_hooks/x402/use-fetch';
 import { useWalletClient } from 'wagmi';
 import { useCurrentUser, useIsInitialized } from '@coinbase/cdp-hooks';
 import { ConnectEmbeddedWalletDialog } from '../auth/embedded-wallet/connect/dialog';
+import { CardContent, CardFooter } from '@/components/ui/card';
 
 const MICRO_FACTOR = 1_000_000n;
 const VALUE_PATTERN = /^\d*(\.\d{0,6})?$/;
@@ -212,31 +213,146 @@ export function Form({ resource, x402Response }: FormProps) {
   }, [queryFields, bodyFields, queryValues, bodyValues]);
 
   return (
-    <div className="mt-6 space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-md font-medium tracking-tight">Execute</h2>
-        {isLoadingWalletClient || !isInitialized ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : !walletClient || !currentUser ? (
+    <>
+      <CardContent className="flex flex-col gap-4 p-4">
+        {!hasSchema ? null : !showQuery && !showBody ? (
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              No input parameters required.
+            </p>
+            <div className="space-y-1">
+              <Label htmlFor="value">Value</Label>
+              <Input
+                id="value"
+                inputMode="decimal"
+                placeholder="0"
+                value={valueInput}
+                onChange={event => handleValueChange(event.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Default: ${defaultValue}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* <div className="space-y-1">
+              <Label htmlFor="value">Value</Label>
+              <Input
+                id="value"
+                inputMode="decimal"
+                placeholder="0"
+                value={valueInput}
+                onChange={event => handleValueChange(event.target.value)}
+              />
+              <p className="text-xs text-muted-foreground">
+                Default: ${defaultValue}
+              </p>
+            </div> */}
+
+            {showQuery && (
+              <div className="space-y-3">
+                {queryFields.map(field => (
+                  <div key={`query-${field.name}`} className="space-y-1">
+                    <Label htmlFor={`query-${field.name}`}>
+                      {field.name}
+                      {field.required ? (
+                        <span className="text-destructive">*</span>
+                      ) : null}
+                    </Label>
+                    <Input
+                      id={`query-${field.name}`}
+                      placeholder={field.description ?? field.type ?? 'Value'}
+                      value={queryValues[field.name] ?? ''}
+                      onChange={event =>
+                        handleQueryChange(field.name, event.target.value)
+                      }
+                      aria-required={field.required}
+                    />
+                    {field.description && (
+                      <p className="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {showBody && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-muted-foreground">
+                  Body Parameters
+                </h3>
+                {bodyFields.map(field => (
+                  <div key={`body-${field.name}`} className="space-y-1">
+                    <Label htmlFor={`body-${field.name}`}>
+                      {field.name}
+                      {field.required ? (
+                        <span className="text-destructive">*</span>
+                      ) : null}
+                    </Label>
+                    <Input
+                      id={`body-${field.name}`}
+                      placeholder={field.description ?? field.type ?? 'Value'}
+                      value={bodyValues[field.name] ?? ''}
+                      onChange={event =>
+                        handleBodyChange(field.name, event.target.value)
+                      }
+                      aria-required={field.required}
+                    />
+                    {field.description && (
+                      <p className="text-xs text-muted-foreground">
+                        {field.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Error and response display - always visible */}
+        {error && (
+          <p className="text-xs text-red-600 bg-red-50 p-3 rounded-md">
+            {error.message}
+          </p>
+        )}
+
+        {response !== undefined && (
+          <pre className="max-h-60 overflow-auto rounded-md bg-muted p-3 text-xs">
+            {JSON.stringify(response, null, 2)}
+          </pre>
+        )}
+      </CardContent>
+      <CardFooter className="px-4 pb-2 justify-end">
+        {!walletClient || !currentUser ? (
           <ConnectEmbeddedWalletDialog>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="inline-flex items-center gap-2"
-            >
+            <Button variant="turbo">
               <Wallet className="size-4" />
               Connect Wallet
             </Button>
           </ConnectEmbeddedWalletDialog>
         ) : (
           <Button
-            size="sm"
-            variant="ghost"
-            className="inline-flex items-center gap-2"
-            disabled={isPending || !allRequiredFieldsFilled}
+            variant="turbo"
+            disabled={
+              isPending ||
+              !allRequiredFieldsFilled ||
+              isLoadingWalletClient ||
+              !isInitialized ||
+              !walletClient ||
+              !currentUser
+            }
             onClick={() => execute()}
           >
-            {isPending ? (
+            {isLoadingWalletClient ||
+            !isInitialized ||
+            !walletClient ||
+            !currentUser ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : isPending ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
                 Fetching
@@ -245,121 +361,14 @@ export function Form({ resource, x402Response }: FormProps) {
               <>
                 <Play className="size-4" />
                 Fetch
+                <span className="opacity-60">
+                  ${formatMicrosToValue(paymentValue.toString())}
+                </span>
               </>
             )}
           </Button>
         )}
-      </div>
-      {!hasSchema ? null : !showQuery && !showBody ? (
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            No input parameters required.
-          </p>
-          <div className="space-y-1">
-            <Label htmlFor="value">Value</Label>
-            <Input
-              id="value"
-              inputMode="decimal"
-              placeholder="0"
-              value={valueInput}
-              onChange={event => handleValueChange(event.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              Default: ${defaultValue}
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className="space-y-1">
-            <Label htmlFor="value">Value</Label>
-            <Input
-              id="value"
-              inputMode="decimal"
-              placeholder="0"
-              value={valueInput}
-              onChange={event => handleValueChange(event.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              Default: ${defaultValue}
-            </p>
-          </div>
-
-          {showQuery && (
-            <div className="space-y-3">
-              {queryFields.map(field => (
-                <div key={`query-${field.name}`} className="space-y-1">
-                  <Label htmlFor={`query-${field.name}`}>
-                    {field.name}
-                    {field.required ? (
-                      <span className="text-destructive">*</span>
-                    ) : null}
-                  </Label>
-                  <Input
-                    id={`query-${field.name}`}
-                    placeholder={field.description ?? field.type ?? 'Value'}
-                    value={queryValues[field.name] ?? ''}
-                    onChange={event =>
-                      handleQueryChange(field.name, event.target.value)
-                    }
-                    aria-required={field.required}
-                  />
-                  {field.description && (
-                    <p className="text-xs text-muted-foreground">
-                      {field.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-
-          {showBody && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium text-muted-foreground">
-                Body Parameters
-              </h3>
-              {bodyFields.map(field => (
-                <div key={`body-${field.name}`} className="space-y-1">
-                  <Label htmlFor={`body-${field.name}`}>
-                    {field.name}
-                    {field.required ? (
-                      <span className="text-destructive">*</span>
-                    ) : null}
-                  </Label>
-                  <Input
-                    id={`body-${field.name}`}
-                    placeholder={field.description ?? field.type ?? 'Value'}
-                    value={bodyValues[field.name] ?? ''}
-                    onChange={event =>
-                      handleBodyChange(field.name, event.target.value)
-                    }
-                    aria-required={field.required}
-                  />
-                  {field.description && (
-                    <p className="text-xs text-muted-foreground">
-                      {field.description}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Error and response display - always visible */}
-      {error && (
-        <p className="text-xs text-red-600 bg-red-50 p-3 rounded-md">
-          {error.message}
-        </p>
-      )}
-
-      {response !== undefined && (
-        <pre className="max-h-60 overflow-auto rounded-md bg-muted p-3 text-xs">
-          {JSON.stringify(response, null, 2)}
-        </pre>
-      )}
-    </div>
+      </CardFooter>
+    </>
   );
 }
