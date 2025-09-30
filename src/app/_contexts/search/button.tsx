@@ -14,14 +14,16 @@ export const SearchButton = () => {
     <Button
       size="navbar"
       variant="outline"
-      className="flex md:justify-between items-center gap-0 md:gap-16 text-muted-foreground"
+      className="flex md:justify-between items-center gap-0 md:gap-16 text-muted-foreground md:px-2 md:pr-1"
       onClick={() => setIsOpen(true)}
     >
       <div className="flex items-center gap-0 md:gap-2 text-sm">
         <Search className="size-4" />
         <span className="hidden md:block">Search</span>
       </div>
-      <Shortcut className="hidden md:block bg-muted rounded-md">⌘K</Shortcut>
+      <Shortcut className="hidden md:block px-1 bg-muted rounded-md">
+        ⌘K
+      </Shortcut>
     </Button>
   );
 };

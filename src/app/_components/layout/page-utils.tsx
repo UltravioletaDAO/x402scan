@@ -20,22 +20,41 @@ export const Heading: React.FC<HeadingProps> = ({
   actions,
 }) => {
   return (
-    <>
-      <div className="flex items-center justify-between max-w-full md:max-w-6xl w-full px-2 pb-6 md:pb-8 mx-auto gap-4">
-        <div className="flex items-center gap-4 shrink-0 flex-1">
-          {icon}
-          <div className="flex flex-col gap-3 text-left">
-            {typeof title === 'string' ? (
-              <h1 className="text-2xl md:text-4xl font-bold">{title}</h1>
-            ) : (
-              title
-            )}
-            {description && (
-              <p className="text-muted-foreground/80">{description}</p>
-            )}
-          </div>
+    <HeadingContainer className="flex items-center justify-between gap-4">
+      <div className="flex items-center gap-4 shrink-0 flex-1">
+        {icon}
+        <div className="flex flex-col gap-3 text-left">
+          {typeof title === 'string' ? (
+            <h1 className="text-2xl md:text-4xl font-bold">{title}</h1>
+          ) : (
+            title
+          )}
+          {description && (
+            <p className="text-muted-foreground/80">{description}</p>
+          )}
         </div>
-        {actions}
+      </div>
+      {actions}
+    </HeadingContainer>
+  );
+};
+
+export const HeadingContainer = ({
+  children,
+  className,
+}: {
+  children: ReactNode;
+  className?: string;
+}) => {
+  return (
+    <>
+      <div
+        className={cn(
+          'max-w-full md:max-w-6xl w-full px-2 pb-6 md:pb-8 mx-auto',
+          className
+        )}
+      >
+        {children}
       </div>
       <Separator />
     </>
