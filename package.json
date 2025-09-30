@@ -22,7 +22,9 @@
     "check:knip": "knip",
     "check:format": "prettier --check .",
     "trigger:dev": "trigger dev",
-    "trigger:deploy": "trigger deploy"
+    "trigger:deploy": "trigger deploy",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",

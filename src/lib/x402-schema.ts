@@ -1,5 +1,5 @@
 import { z, type ZodError } from 'zod';
-import { x402ResponseSchema, type x402Response, type schemes } from 'x402/types';
+import { x402ResponseSchema, type x402Response, type PaymentRequirements } from 'x402/types';
 
 // ==================== MAIN EXPORTS ====================
 
@@ -49,27 +49,19 @@ export type FieldDef = {
 
 type Result<T> = { success: true; data: T; errors: string[] } | { success: false; data: null; errors: string[] };
 
-// Enhanced x402Response with normalized, strongly-typed outputSchema
-export interface ParsedX402Response extends Omit<x402Response, 'accepts'> {
-  accepts?: Array<ParsedAccept>;
-}
-
-interface ParsedAccept {
-  scheme: (typeof schemes)[number];
-  network: string;
-  maxAmountRequired: string;
-  resource: string;
-  description: string;
-  mimeType: string;
-  payTo: string;
-  maxTimeoutSeconds: number;
-  asset: string;
-  extra?: Record<string, unknown>;
+// Temporary type alias - will be replaced with proper schema later
+export type EnhancedPaymentRequirements = PaymentRequirements & {
   outputSchema?: {
     input: NormalizedInputSchema;
     output?: Record<string, unknown>;
   };
+};
+
+// Enhanced x402Response with normalized, strongly-typed outputSchema
+export interface ParsedX402Response extends Omit<x402Response, 'accepts'> {
+  accepts?: Array<EnhancedPaymentRequirements>;
 }
+
 
 // ==================== LAYER 1: RESPONSE PARSING ====================
 
@@ -129,37 +121,31 @@ function enhanceX402Response(response: x402Response): ParsedX402Response {
 /**
  * Enhance a single accept entry by normalizing its outputSchema
  */
-function enhanceAccept(accept: Record<string, unknown>): ParsedAccept {
-  const base: ParsedAccept = {
-    scheme: accept.scheme as ParsedAccept['scheme'],
-    network: accept.network as string,
-    maxAmountRequired: accept.maxAmountRequired as string,
-    resource: accept.resource as string,
-    description: accept.description as string,
-    mimeType: accept.mimeType as string,
-    payTo: accept.payTo as string,
-    maxTimeoutSeconds: accept.maxTimeoutSeconds as number,
-    asset: accept.asset as string,
-    extra: accept.extra as Record<string, unknown> | undefined
-  };
+function enhanceAccept(accept: PaymentRequirements): EnhancedPaymentRequirements {
+  // Omit outputSchema when spreading to avoid type conflict
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { outputSchema: _, ...acceptWithoutSchema } = accept;
+  const enhanced: EnhancedPaymentRequirements = { ...acceptWithoutSchema };
 
-  // Extract and normalize outputSchema if present
-  const rawOutputSchema = (accept.outputSchema ?? accept.output_schema) as Record<string, unknown> | undefined;
-  if (rawOutputSchema && typeof rawOutputSchema === 'object') {
-    const inputData = extractInputData(rawOutputSchema);
+  // Only process outputSchema if it exists (handle both camelCase and snake_case)
+  const acceptWithSnakeCase = accept as PaymentRequirements & { output_schema?: Record<string, unknown> };
+  const rawOutputSchema = accept.outputSchema ?? acceptWithSnakeCase.output_schema;
+  if (rawOutputSchema) {
+    const inputData = extractInputData(rawOutputSchema as Record<string, unknown>);
     const normalizedInput = normalizeInputSchema(inputData);
 
     // Validate the normalized input
     const validation = inputSchema.safeParse(normalizedInput);
     if (validation.success) {
-      base.outputSchema = {
+      const outputSchemaObj = rawOutputSchema as Record<string, unknown>;
+      enhanced.outputSchema = {
         input: validation.data,
-        output: rawOutputSchema.output as Record<string, unknown> | undefined
+        output: outputSchemaObj.output as Record<string, unknown> | undefined
       };
     }
   }
 
-  return base;
+  return enhanced;
 }
 
 // ==================== LAYER 3: NORMALIZATION ====================
