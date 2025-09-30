@@ -48,6 +48,11 @@ export const Activity: React.FC<Props> = async ({ address }) => {
     startDate,
     endDate,
   });
+  void api.stats.getOverallStatistics.prefetch({
+    addresses: [address],
+    startDate,
+    endDate,
+  });
 
   return (
     <HydrateClient>

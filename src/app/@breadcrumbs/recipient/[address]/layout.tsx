@@ -18,6 +18,7 @@ export default async function RecipientPage({
         image={null}
         name={formatAddress(address)}
         Fallback={Wallet}
+        mobileHideImage
       />
       {children}
     </>

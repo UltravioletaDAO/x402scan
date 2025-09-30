@@ -1,4 +1,5 @@
-import { BookOpen } from 'lucide-react';
+import { ArrowLeftRight } from 'lucide-react';
+
 import { Breadcrumb } from '../../_components/breadcrumb';
 import { Separator } from '../../_components/separator';
 
@@ -10,7 +11,7 @@ export default function NewsPage() {
         href="/transactions"
         image={null}
         name="Transactions"
-        Fallback={BookOpen}
+        Fallback={ArrowLeftRight}
       />
     </>
   );
