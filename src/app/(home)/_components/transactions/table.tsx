@@ -7,14 +7,20 @@ import { DataTable } from '@/components/ui/data-table';
 import { columns } from './columns';
 
 interface Props {
-  address: string;
+  limit: number;
+  pageSize?: number;
 }
 
-export const LatestTransactionsTable: React.FC<Props> = ({ address }) => {
+export const Table: React.FC<Props> = ({ limit, pageSize }) => {
   const [latestTransactions] = api.transactions.list.useSuspenseQuery({
-    limit: 100,
-    recipient: address,
+    limit,
   });
 
-  return <DataTable columns={columns} data={latestTransactions.items} />;
+  return (
+    <DataTable
+      columns={columns}
+      data={latestTransactions.items}
+      pageSize={pageSize}
+    />
+  );
 };

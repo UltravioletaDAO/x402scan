@@ -14,6 +14,10 @@ export default function HomeLayout({
             href: '/',
           },
           {
+            label: 'Transactions',
+            href: '/transactions',
+          },
+          {
             label: 'News',
             href: '/news',
           },
