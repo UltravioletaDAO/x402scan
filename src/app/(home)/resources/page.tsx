@@ -1,6 +1,6 @@
 import { Body, Heading } from '../../_components/layout/page-utils';
 import { api } from '@/trpc/server';
-import { ResourceExecutor } from '../../_components/resource-executor/resource-executor';
+import { ResourceExecutor } from '../../_components/resource-executor';
 
 function getBazaarMethod(outputSchema: unknown): string | undefined {
   if (

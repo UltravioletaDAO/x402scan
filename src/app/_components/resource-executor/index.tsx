@@ -1,10 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { type ParsedX402Response } from '@/lib/x402-schema';
+
 import { Card, CardContent } from '@/components/ui/card';
+
 import { Header } from './header';
 import { Form } from './form';
+
+import type { ParsedX402Response } from '@/lib/x402/schema';
 
 export function ResourceExecutor({
   resource,

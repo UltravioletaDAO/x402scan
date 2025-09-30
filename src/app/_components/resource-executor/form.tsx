@@ -5,8 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Loader2, Play } from 'lucide-react';
-import { type ParsedX402Response } from '@/lib/x402-schema';
-import { useX402Fetch } from '@/lib/use-x402-fetch';
+import { type ParsedX402Response } from '@/lib/x402/schema';
+import { useX402Fetch } from '@/app/_hooks/x402/use-fetch';
 
 const MICRO_FACTOR = 1_000_000n;
 const VALUE_PATTERN = /^\d*(\.\d{0,6})?$/;

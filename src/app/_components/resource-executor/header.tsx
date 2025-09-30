@@ -1,14 +1,17 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { type ParsedX402Response } from '@/lib/x402-schema';
-import { useX402Test } from '@/lib/use-x402-fetch';
+
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+
+import { useX402Test } from '@/app/_hooks/x402/use-test';
+
+import type { ParsedX402Response } from '@/lib/x402/schema';
 
 type HeaderProps = {
   resource: string;

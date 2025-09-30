@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parseX402Response } from './x402-schema';
+import { parseX402Response } from './schema';
 
 // Raw bodies from the test data file
 const rawBodies = [
