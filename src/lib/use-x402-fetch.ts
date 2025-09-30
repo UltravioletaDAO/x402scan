@@ -11,7 +11,6 @@ import { wrapFetchWithPayment } from "x402-fetch";
 const PROXY_ENDPOINT = "/api/test-402" as const;
 const TARGET_HEADER = "x-proxy-target" as const;
 
-
 function createFetchWithProxyHeader(targetUrl: string) {
   return async (input: RequestInfo | URL, requestInit?: RequestInit) => {
     const headers = new Headers(requestInit?.headers);
@@ -62,8 +61,8 @@ export const useX402Fetch = <TData = unknown>(
       );
 
       const response = await fetchWithPayment(PROXY_ENDPOINT, init);
-      const contentType = response.headers.get("content-type") ?? "";
 
+      const contentType = response.headers.get("content-type") ?? "";
       return contentType.includes("application/json")
         ? response.json() as Promise<TData>
         : response.text() as Promise<TData>;

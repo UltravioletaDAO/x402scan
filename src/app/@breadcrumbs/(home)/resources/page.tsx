@@ -6,7 +6,7 @@ export default function NewsPage() {
   return (
     <>
       <Separator />
-      <Breadcrumb href="/resource-list" image={null} name="Resources" Fallback={ScrollText} />
+      <Breadcrumb href="/resources" image={null} name="Resources" Fallback={ScrollText} />
     </>
   );
 }

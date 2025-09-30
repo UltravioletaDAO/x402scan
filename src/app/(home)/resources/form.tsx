@@ -148,8 +148,6 @@ export function Form({ resource, x402Response }: FormProps) {
         error,
     } = useX402Fetch(targetUrl, paymentValue, init);
 
-    console.log("response", response);
-
     const hasSchema = inputSchema !== null;
     const showQuery = queryFields.length > 0;
     const showBody = bodyFields.length > 0;
@@ -189,77 +187,90 @@ export function Form({ resource, x402Response }: FormProps) {
             </div>
 
             {!hasSchema ? null : !showQuery && !showBody ? (
-                <p className="text-sm text-muted-foreground">No input parameters required.</p>
+                <div className="space-y-4">
+                    <p className="text-sm text-muted-foreground">No input parameters required.</p>
+                    <div className="space-y-1">
+                        <Label htmlFor="value">Value</Label>
+                        <Input
+                            id="value"
+                            inputMode="decimal"
+                            placeholder="0"
+                            value={valueInput}
+                            onChange={(event) => handleValueChange(event.target.value)}
+                        />
+                        <p className="text-xs text-muted-foreground">Default: ${defaultValue}</p>
+                    </div>
+                </div>
             ) : (
                 <div className="space-y-4">
-                        <div className="space-y-1">
-                            <Label htmlFor="value">Value</Label>
-                            <Input
-                                id="value"
-                                inputMode="decimal"
-                                placeholder="0"
-                                value={valueInput}
-                                onChange={(event) => handleValueChange(event.target.value)}
-                            />
-                            <p className="text-xs text-muted-foreground">Default: ${defaultValue}</p>
+                    <div className="space-y-1">
+                        <Label htmlFor="value">Value</Label>
+                        <Input
+                            id="value"
+                            inputMode="decimal"
+                            placeholder="0"
+                            value={valueInput}
+                            onChange={(event) => handleValueChange(event.target.value)}
+                        />
+                        <p className="text-xs text-muted-foreground">Default: ${defaultValue}</p>
+                    </div>
+
+                    {showQuery && (
+                        <div className="space-y-3">
+                            {queryFields.map((field) => (
+                                <div key={`query-${field.name}`} className="space-y-1">
+                                    <Label htmlFor={`query-${field.name}`}>
+                                        {field.name}
+                                        {field.required ? <span className="text-destructive">*</span> : null}
+                                    </Label>
+                                    <Input
+                                        id={`query-${field.name}`}
+                                        placeholder={field.description || field.type || "Value"}
+                                        value={queryValues[field.name] ?? ""}
+                                        onChange={(event) => handleQueryChange(field.name, event.target.value)}
+                                        aria-required={field.required}
+                                    />
+                                    {field.description && (
+                                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                                    )}
+                                </div>
+                            ))}
                         </div>
+                    )}
 
-                        {showQuery && (
-                            <div className="space-y-3">
-                                {queryFields.map((field) => (
-                                    <div key={`query-${field.name}`} className="space-y-1">
-                                        <Label htmlFor={`query-${field.name}`}>
-                                            {field.name}
-                                            {field.required ? <span className="text-destructive">*</span> : null}
-                                        </Label>
-                                        <Input
-                                            id={`query-${field.name}`}
-                                            placeholder={field.description || field.type || "Value"}
-                                            value={queryValues[field.name] ?? ""}
-                                            onChange={(event) => handleQueryChange(field.name, event.target.value)}
-                                            aria-required={field.required}
-                                        />
-                                        {field.description && (
-                                            <p className="text-xs text-muted-foreground">{field.description}</p>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {showBody && (
-                            <div className="space-y-3">
-                                <h3 className="text-sm font-medium text-muted-foreground">Body Parameters</h3>
-                                {bodyFields.map((field) => (
-                                    <div key={`body-${field.name}`} className="space-y-1">
-                                        <Label htmlFor={`body-${field.name}`}>
-                                            {field.name}
-                                            {field.required ? <span className="text-destructive">*</span> : null}
-                                        </Label>
-                                        <Input
-                                            id={`body-${field.name}`}
-                                            placeholder={field.description || field.type || "Value"}
-                                            value={bodyValues[field.name] ?? ""}
-                                            onChange={(event) => handleBodyChange(field.name, event.target.value)}
-                                            aria-required={field.required}
-                                        />
-                                        {field.description && (
-                                            <p className="text-xs text-muted-foreground">{field.description}</p>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-
-                    {error && <p className="text-sm text-red-600">{error.message}</p>}
-
-                    {response !== undefined && (
-                        <pre className="max-h-60 overflow-auto rounded-md bg-muted p-3 text-xs">
-                            {JSON.stringify(response, null, 2)}
-                        </pre>
+                    {showBody && (
+                        <div className="space-y-3">
+                            <h3 className="text-sm font-medium text-muted-foreground">Body Parameters</h3>
+                            {bodyFields.map((field) => (
+                                <div key={`body-${field.name}`} className="space-y-1">
+                                    <Label htmlFor={`body-${field.name}`}>
+                                        {field.name}
+                                        {field.required ? <span className="text-destructive">*</span> : null}
+                                    </Label>
+                                    <Input
+                                        id={`body-${field.name}`}
+                                        placeholder={field.description || field.type || "Value"}
+                                        value={bodyValues[field.name] ?? ""}
+                                        onChange={(event) => handleBodyChange(field.name, event.target.value)}
+                                        aria-required={field.required}
+                                    />
+                                    {field.description && (
+                                        <p className="text-xs text-muted-foreground">{field.description}</p>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
                     )}
                 </div>
+            )}
+
+            {/* Error and response display - always visible */}
+            {error && <p className="text-xs text-red-600 bg-red-50 p-3 rounded-md">{error.message}</p>}
+
+            {response !== undefined && (
+                <pre className="max-h-60 overflow-auto rounded-md bg-muted p-3 text-xs">
+                    {JSON.stringify(response, null, 2)}
+                </pre>
             )}
         </div>
     );
