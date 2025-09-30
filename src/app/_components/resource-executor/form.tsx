@@ -4,9 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Loader2, Play } from 'lucide-react';
+import { Loader2, Play, Wallet } from 'lucide-react';
 import { type ParsedX402Response } from '@/lib/x402/schema';
 import { useX402Fetch } from '@/app/_hooks/x402/use-fetch';
+import { useWalletClient } from 'wagmi';
+import { useCurrentUser, useIsInitialized } from '@coinbase/cdp-hooks';
+import { ConnectEmbeddedWalletDialog } from '../auth/embedded-wallet/connect/dialog';
 
 const MICRO_FACTOR = 1_000_000n;
 const VALUE_PATTERN = /^\d*(\.\d{0,6})?$/;
@@ -182,6 +185,11 @@ export function Form({ resource, x402Response }: FormProps) {
     error,
   } = useX402Fetch(targetUrl, paymentValue, init);
 
+  const { data: walletClient, isLoading: isLoadingWalletClient } =
+    useWalletClient();
+  const { isInitialized } = useIsInitialized();
+  const { currentUser } = useCurrentUser();
+
   const hasSchema = inputSchema !== null;
   const showQuery = queryFields.length > 0;
   const showBody = bodyFields.length > 0;
@@ -207,27 +215,41 @@ export function Form({ resource, x402Response }: FormProps) {
     <div className="mt-6 space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-md font-medium tracking-tight">Execute</h2>
-        <Button
-          size="sm"
-          variant="ghost"
-          className="inline-flex items-center gap-2"
-          disabled={isPending || !allRequiredFieldsFilled}
-          onClick={() => execute()}
-        >
-          {isPending ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              Fetching
-            </>
-          ) : (
-            <>
-              <Play className="size-4" />
-              Fetch
-            </>
-          )}
-        </Button>
+        {isLoadingWalletClient || !isInitialized ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : !walletClient || !currentUser ? (
+          <ConnectEmbeddedWalletDialog>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="inline-flex items-center gap-2"
+            >
+              <Wallet className="size-4" />
+              Connect Wallet
+            </Button>
+          </ConnectEmbeddedWalletDialog>
+        ) : (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="inline-flex items-center gap-2"
+            disabled={isPending || !allRequiredFieldsFilled}
+            onClick={() => execute()}
+          >
+            {isPending ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Fetching
+              </>
+            ) : (
+              <>
+                <Play className="size-4" />
+                Fetch
+              </>
+            )}
+          </Button>
+        )}
       </div>
-
       {!hasSchema ? null : !showQuery && !showBody ? (
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
