@@ -19,7 +19,7 @@ type HeaderProps = {
 export function Header({ resource, bazaarMethod: method, onX402Response }: HeaderProps) {
     const { isLoading, response, rawResponse, error, x402Response, parseErrors } = useX402Test(
         resource,
-        { method: method || "GET" },
+        { method: method ?? "GET" },
         { enabled: true }
     );
 
@@ -44,9 +44,9 @@ export function Header({ resource, bazaarMethod: method, onX402Response }: Heade
         return "bg-gray-500";
     }, [isLoading, error, response, x402Response, parseErrors]);
 
-    const hasError = error || parseErrors.length > 0;
-    const errorContent = error || parseErrors.join('\n');
-    const hasResponse = !isLoading && (rawResponse || hasError);
+    const hasError = Boolean(error) || parseErrors.length > 0;
+    const errorContent = error ?? parseErrors.join('\n');
+    const hasResponse = !isLoading && Boolean(rawResponse ?? hasError);
 
     return (
         <>

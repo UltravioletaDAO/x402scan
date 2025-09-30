@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 const TARGET_HEADER = "x-proxy-target";
 const RESPONSE_HEADER_BLOCKLIST = new Set(["content-encoding", "transfer-encoding", "content-length"]);

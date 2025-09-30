@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { x402ResponseSchema, type x402Response, schemes } from 'x402/types';
+import { z, type ZodError } from 'zod';
+import { x402ResponseSchema, type x402Response, type schemes } from 'x402/types';
 
 // ==================== MAIN EXPORTS ====================
 
@@ -14,7 +14,7 @@ export function parseX402Response(data: unknown): Result<ParsedX402Response> {
   const parseResult = parseRawX402Response(data);
   if (!parseResult.success) {
     const issues = parseResult.error?.issues ?? [];
-    issues.forEach((issue: any) => {
+    issues.forEach((issue) => {
       const path = issue.path.length > 0 ? issue.path.join('.') : '(root)';
       errors.push(`${path}: ${issue.message}`);
     });
@@ -64,7 +64,7 @@ interface ParsedAccept {
   payTo: string;
   maxTimeoutSeconds: number;
   asset: string;
-  extra?: Record<string, any>;
+  extra?: Record<string, unknown>;
   outputSchema?: {
     input: NormalizedInputSchema;
     output?: Record<string, unknown>;
@@ -76,26 +76,26 @@ interface ParsedAccept {
 /**
  * Parse raw x402 response with lenient error field handling
  */
-function parseRawX402Response(data: unknown): { success: true; data: x402Response } | { success: false; error: any } {
+function parseRawX402Response(data: unknown): { success: true; data: x402Response } | { success: false; error: ZodError<unknown> } {
   const strictResult = x402ResponseSchema.safeParse(data);
   if (strictResult.success) {
     return { success: true, data: strictResult.data };
   }
 
   // Try lenient parsing for responses with error fields
-  return parseWithLenientError(data, strictResult.error);
+  return parseWithLenientError(data, strictResult.error as unknown as ZodError<unknown>);
 }
 
 /**
  * Handle x402 response with lenient error field parsing
  */
-function parseWithLenientError(data: unknown, originalError: any): { success: true; data: x402Response } | { success: false; error: any } {
+function parseWithLenientError(data: unknown, originalError: ZodError<unknown>): { success: true; data: x402Response } | { success: false; error: ZodError<unknown> } {
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     return { success: false, error: originalError };
   }
 
   // Check if all errors are just about the error field
-  const errorFieldIssues = originalError.issues.filter((err: any) =>
+  const errorFieldIssues = originalError.issues.filter((err) =>
     err.path.length === 1 && err.path[0] === 'error'
   );
 
@@ -129,22 +129,22 @@ function enhanceX402Response(response: x402Response): ParsedX402Response {
 /**
  * Enhance a single accept entry by normalizing its outputSchema
  */
-function enhanceAccept(accept: any): ParsedAccept {
+function enhanceAccept(accept: Record<string, unknown>): ParsedAccept {
   const base: ParsedAccept = {
-    scheme: accept.scheme,
-    network: accept.network,
-    maxAmountRequired: accept.maxAmountRequired,
-    resource: accept.resource,
-    description: accept.description,
-    mimeType: accept.mimeType,
-    payTo: accept.payTo,
-    maxTimeoutSeconds: accept.maxTimeoutSeconds,
-    asset: accept.asset,
-    extra: accept.extra
+    scheme: accept.scheme as ParsedAccept['scheme'],
+    network: accept.network as string,
+    maxAmountRequired: accept.maxAmountRequired as string,
+    resource: accept.resource as string,
+    description: accept.description as string,
+    mimeType: accept.mimeType as string,
+    payTo: accept.payTo as string,
+    maxTimeoutSeconds: accept.maxTimeoutSeconds as number,
+    asset: accept.asset as string,
+    extra: accept.extra as Record<string, unknown> | undefined
   };
 
   // Extract and normalize outputSchema if present
-  const rawOutputSchema = accept.outputSchema ?? accept.output_schema;
+  const rawOutputSchema = (accept.outputSchema ?? accept.output_schema) as Record<string, unknown> | undefined;
   if (rawOutputSchema && typeof rawOutputSchema === 'object') {
     const inputData = extractInputData(rawOutputSchema);
     const normalizedInput = normalizeInputSchema(inputData);
@@ -154,7 +154,7 @@ function enhanceAccept(accept: any): ParsedAccept {
     if (validation.success) {
       base.outputSchema = {
         input: validation.data,
-        output: (rawOutputSchema as any).output
+        output: rawOutputSchema.output as Record<string, unknown> | undefined
       };
     }
   }
@@ -193,12 +193,12 @@ function normalizeInputSchema(input: Record<string, unknown>): NormalizedInputSc
 /**
  * Convert snake_case fields to camelCase
  */
-function normalizeFieldNames(obj: Record<string, any>): {
+function normalizeFieldNames(obj: Record<string, unknown>): {
   queryParams?: unknown;
   bodyFields?: unknown;
   bodyType?: unknown;
   headerFields?: unknown;
-} & Record<string, any> {
+} & Record<string, unknown> {
   const result = { ...obj };
 
   // Handle snake_case to camelCase conversion
@@ -261,7 +261,7 @@ function normalizeFieldDef(field: unknown): FieldDef | null {
       required: typeof obj.required === 'boolean' ? obj.required : undefined,
       description: typeof obj.description === 'string' ? obj.description : undefined,
       enum: Array.isArray(obj.enum) && obj.enum.every(x => typeof x === 'string')
-        ? obj.enum as string[]
+        ? obj.enum
         : undefined,
       properties: obj.properties && typeof obj.properties === 'object' && !Array.isArray(obj.properties)
         ? obj.properties as Record<string, unknown>

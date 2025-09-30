@@ -225,7 +225,7 @@ export function Form({ resource, x402Response }: FormProps) {
                                     </Label>
                                     <Input
                                         id={`query-${field.name}`}
-                                        placeholder={field.description || field.type || "Value"}
+                                        placeholder={field.description ?? field.type ?? "Value"}
                                         value={queryValues[field.name] ?? ""}
                                         onChange={(event) => handleQueryChange(field.name, event.target.value)}
                                         aria-required={field.required}
@@ -249,7 +249,7 @@ export function Form({ resource, x402Response }: FormProps) {
                                     </Label>
                                     <Input
                                         id={`body-${field.name}`}
-                                        placeholder={field.description || field.type || "Value"}
+                                        placeholder={field.description ?? field.type ?? "Value"}
                                         value={bodyValues[field.name] ?? ""}
                                         onChange={(event) => handleBodyChange(field.name, event.target.value)}
                                         aria-required={field.required}

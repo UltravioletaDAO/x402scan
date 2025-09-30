@@ -4,7 +4,7 @@ import {
   type UseMutationOptions,
 } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { parseX402Response, type ParsedX402Response } from "./x402-schema";
+import { parseX402Response } from "./x402-schema";
 import { useWalletClient } from "wagmi";
 import { wrapFetchWithPayment } from "x402-fetch";
 
@@ -83,13 +83,13 @@ export const useX402Test = (
       const proxyResponse = await fetchWithProxyHeader(PROXY_ENDPOINT, init);
 
       if (proxyResponse.status === 402) {
-        const data = await proxyResponse.json().catch(() => null);
+        const data = await proxyResponse.json().catch(() => null) as unknown;
         return data;
       } else if (!proxyResponse.ok) {
         const text = await proxyResponse.text();
         throw new Error(text || `Request failed with ${proxyResponse.status}`);
       } else {
-        const data = await proxyResponse.json().catch(() => null);
+        const data = await proxyResponse.json().catch(() => null) as unknown;
         return data;
       }
     },
@@ -113,7 +113,7 @@ export const useX402Test = (
     isLoading: query.isPending,
     response: query.data,
     rawResponse: query.data,
-    error: query.error?.message || null,
+    error: query.error?.message ?? null,
     x402Response,
     parseErrors,
     refetch: query.refetch,

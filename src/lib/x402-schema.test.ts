@@ -15,7 +15,7 @@ const rawBodies = [
 
 describe('parseX402Response', () => {
   it('should handle x402 responses with lenient parsing', () => {
-    const responseWithError = JSON.parse(rawBodies[1])
+    const responseWithError = JSON.parse(rawBodies[1]) as unknown
     const result = parseX402Response(responseWithError)
 
     // The function should handle responses with error fields, even if strict parsing fails
@@ -53,7 +53,7 @@ describe('parseX402Response', () => {
 
 describe('parseX402Response with normalized schemas', () => {
   it('should normalize Gloria AI response with queryParams', () => {
-    const response = JSON.parse(rawBodies[1])
+    const response = JSON.parse(rawBodies[1]) as unknown
     const result = parseX402Response(response)
 
     expect(result.success).toBe(true)
@@ -66,7 +66,7 @@ describe('parseX402Response with normalized schemas', () => {
   })
 
   it('should handle validation errors for invalid payTo field', () => {
-    const response = JSON.parse(rawBodies[0])
+    const response = JSON.parse(rawBodies[0]) as unknown
     const result = parseX402Response(response)
 
     // This should fail because payTo is an empty string
@@ -76,7 +76,7 @@ describe('parseX402Response with normalized schemas', () => {
   })
 
   it('should extract field information from API responses', () => {
-    const response = JSON.parse(rawBodies[5])
+    const response = JSON.parse(rawBodies[5]) as unknown
     const result = parseX402Response(response)
 
     expect(result.success).toBe(true)
@@ -90,7 +90,7 @@ describe('parseX402Response with normalized schemas', () => {
   })
 
   it('should handle various API response formats', () => {
-    const response = JSON.parse(rawBodies[6])
+    const response = JSON.parse(rawBodies[6]) as unknown
     const result = parseX402Response(response)
 
     expect(result.success).toBe(true)
@@ -103,7 +103,7 @@ describe('parseX402Response with normalized schemas', () => {
   })
 
   it('should handle GET requests without body fields', () => {
-    const response = JSON.parse(rawBodies[3])
+    const response = JSON.parse(rawBodies[3]) as unknown
     const result = parseX402Response(response)
 
     expect(result.success).toBe(true)
@@ -216,7 +216,7 @@ describe('schema validation edge cases', () => {
   })
 
   it('should handle error fields in responses', () => {
-    const responseWithError = JSON.parse(rawBodies[0])
+    const responseWithError = JSON.parse(rawBodies[0]) as unknown
     const result = parseX402Response(responseWithError)
 
     // The function should handle responses with error fields
