@@ -2,6 +2,7 @@ import { prisma } from './client';
 
 import type { FacilitatorResource } from '../cdp/facilitator/list-resources';
 import { getOriginFromUrl } from '@/lib/url';
+import { z } from 'zod';
 
 export const upsertResource = async (
   facilitatorResource: FacilitatorResource
@@ -92,5 +93,47 @@ export const getResourceByAddress = async (address: string) => {
         },
       },
     },
+  });
+};
+
+export const searchResourcesSchema = z.object({
+  search: z.string(),
+  limit: z.number().optional().default(10),
+});
+
+export const searchResources = async (
+  input: z.input<typeof searchResourcesSchema>
+) => {
+  const { search, limit } = searchResourcesSchema.parse(input);
+  return await prisma.resources.findMany({
+    where: {
+      OR: [
+        {
+          resource: {
+            contains: search,
+          },
+        },
+        {
+          origin: {
+            resources: {
+              some: {
+                accepts: {
+                  some: {
+                    payTo: search.toLowerCase(),
+                  },
+                },
+              },
+            },
+          },
+        },
+        {
+          metadata: {
+            path: ['title', 'description'],
+            string_contains: search,
+          },
+        },
+      ],
+    },
+    take: limit,
   });
 };

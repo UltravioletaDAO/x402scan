@@ -86,3 +86,33 @@ export const getOriginsByAddress = async (address: string) => {
     },
   });
 };
+
+export const searchOriginsSchema = z.object({
+  search: z.string(),
+  limit: z.number().optional().default(10),
+});
+
+export const searchOrigins = async (
+  input: z.input<typeof searchOriginsSchema>
+) => {
+  const { search, limit } = searchOriginsSchema.parse(input);
+  return await prisma.resourceOrigin.findMany({
+    where: {
+      origin: {
+        contains: search,
+      },
+    },
+    include: {
+      resources: {
+        include: {
+          accepts: {
+            select: {
+              payTo: true,
+            },
+          },
+        },
+      },
+    },
+    take: limit,
+  });
+};
