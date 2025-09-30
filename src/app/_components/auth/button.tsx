@@ -12,7 +12,7 @@ export const AuthButton = async () => {
 
   return (
     <AuthModal>
-      <Button size="navbar">
+      <Button size="navbar" variant="outline">
         <span className="hidden md:block">Sign in</span>
         <Wallet className="size-4 md:hidden" />
       </Button>

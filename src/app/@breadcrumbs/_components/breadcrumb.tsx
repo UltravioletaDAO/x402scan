@@ -64,7 +64,7 @@ export const Breadcrumb = <T extends string>({
 
         <p
           className={cn(
-            'font-semibold text-sm',
+            'font-semibold text-sm font-mono md:text-base',
             textClassName,
             mobileHideText && 'hidden md:block'
           )}

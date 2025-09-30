@@ -12,7 +12,7 @@ export default function BreadcrumbLayout({
         image={null}
         Fallback={null}
         name="x402scan"
-        textClassName="font-bold"
+        textClassName="font-bold font-mono"
         mobileHideText={true}
       />
       {children}

@@ -1,11 +1,7 @@
-import { Skeleton } from '@/components/ui/skeleton';
-
 import { Address } from '@/components/address';
-
-import { cn } from '@/lib/utils';
+import { Favicon } from '@/components/favicon';
 
 import type { Accepts, ResourceOrigin, Resources } from '@prisma/client';
-import { Favicon } from '@/components/favicon';
 
 interface Props {
   resource: Resources & {
@@ -28,18 +24,6 @@ export const Resource: React.FC<Props> = ({ resource }) => {
           hideTooltip
         />
       }
-    />
-  );
-};
-
-export const ResourceSkeleton = () => {
-  return (
-    <ResourceContainer
-      Icon={({ className }) => (
-        <Skeleton className={cn('rounded-full', className)} />
-      )}
-      title={<Skeleton className="h-[14px] w-32 my-[3px]" />}
-      address={<Skeleton className="h-3 w-20 my-[2px]" />}
     />
   );
 };
