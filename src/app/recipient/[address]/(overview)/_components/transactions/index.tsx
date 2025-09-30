@@ -2,8 +2,8 @@ import { Suspense } from 'react';
 
 import { DataTable } from '@/components/ui/data-table';
 
-import { columns } from './columns';
-import { LatestTransactionsTable } from './table';
+import { columns } from '../../../_components/transactions/columns';
+import { LatestTransactionsTable } from '../../../_components/transactions/table';
 
 import { api, HydrateClient } from '@/trpc/server';
 
@@ -29,7 +29,11 @@ export const LatestTransactions: React.FC<Props> = ({ address }) => {
           </p>
         </div>
         <Suspense fallback={<LoadingLatestTransactions />}>
-          <LatestTransactionsTable address={address} />
+          <LatestTransactionsTable
+            address={address}
+            limit={100}
+            pageSize={10}
+          />
         </Suspense>
       </div>
     </HydrateClient>
