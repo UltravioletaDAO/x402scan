@@ -1,5 +1,50 @@
 import { z, type ZodError } from 'zod';
-import { x402ResponseSchema, type x402Response, type PaymentRequirements } from 'x402/types';
+import { x402ResponseSchema, type x402Response, type PaymentRequirements, PaymentRequirementsSchema } from 'x402/types';
+import { z as z3 } from 'zod3';
+
+// ==================== TYPES ====================
+
+
+// Enhanced x402Response with normalized, strongly-typed outputSchema
+export interface ParsedX402Response extends Omit<x402Response, 'accepts' | 'error'> {
+  error?: string;  // Accept any string, not just the ErrorReasons enum
+  accepts?: Array<EnhancedPaymentRequirements>;
+}
+
+// Create lenient schema that accepts any string for error (using zod3 for compatibility)
+const lenientX402ResponseSchema = z3.object({
+  x402Version: z3.number(),
+  error: z3.string().optional(),  // Accept any string
+  accepts: z3.array(PaymentRequirementsSchema).optional(),
+  payer: z3.string().optional(),
+});
+
+export type EnhancedPaymentRequirements = PaymentRequirements & {
+  outputSchema?: {
+    input: NormalizedInputSchema;
+    output?: Record<string, unknown>;
+  };
+};
+
+export type NormalizedInputSchema = {
+  type?: string;
+  method?: string;
+  headerFields?: Record<string, FieldDef>;
+  queryParams: Record<string, FieldDef>;
+  bodyType?: string;
+  bodyFields: Record<string, FieldDef>;
+};
+
+export type FieldDef = {
+  type?: string;
+  required?: boolean;
+  description?: string;
+  enum?: string[];
+  properties?: Record<string, unknown>;
+};
+
+type Result<T> = { success: true; data: T; errors: string[] } | { success: false; data: null; errors: string[] };
+
 
 // ==================== MAIN EXPORTS ====================
 
@@ -28,81 +73,23 @@ export function parseX402Response(data: unknown): Result<ParsedX402Response> {
 }
 
 
-// ==================== TYPES ====================
-
-export type NormalizedInputSchema = {
-  type?: string;
-  method?: string;
-  headerFields?: Record<string, FieldDef>;
-  queryParams: Record<string, FieldDef>;
-  bodyType?: string;
-  bodyFields: Record<string, FieldDef>;
-};
-
-export type FieldDef = {
-  type?: string;
-  required?: boolean;
-  description?: string;
-  enum?: string[];
-  properties?: Record<string, unknown>;
-};
-
-type Result<T> = { success: true; data: T; errors: string[] } | { success: false; data: null; errors: string[] };
-
-// Temporary type alias - will be replaced with proper schema later
-export type EnhancedPaymentRequirements = PaymentRequirements & {
-  outputSchema?: {
-    input: NormalizedInputSchema;
-    output?: Record<string, unknown>;
-  };
-};
-
-// Enhanced x402Response with normalized, strongly-typed outputSchema
-export interface ParsedX402Response extends Omit<x402Response, 'accepts'> {
-  accepts?: Array<EnhancedPaymentRequirements>;
-}
-
-
 // ==================== LAYER 1: RESPONSE PARSING ====================
+
 
 /**
  * Parse raw x402 response with lenient error field handling
  */
 function parseRawX402Response(data: unknown): { success: true; data: x402Response } | { success: false; error: ZodError<unknown> } {
-  const strictResult = x402ResponseSchema.safeParse(data);
-  if (strictResult.success) {
-    return { success: true, data: strictResult.data };
+  // Just use lenient parsing directly
+  const result = lenientX402ResponseSchema.safeParse(data);
+
+  if (result.success) {
+    return { success: true, data: result.data as x402Response };
   }
 
-  // Try lenient parsing for responses with error fields
-  return parseWithLenientError(data, strictResult.error as unknown as ZodError<unknown>);
+  return { success: false, error: result.error as unknown as ZodError<unknown> };
 }
 
-/**
- * Handle x402 response with lenient error field parsing
- */
-function parseWithLenientError(data: unknown, originalError: ZodError<unknown>): { success: true; data: x402Response } | { success: false; error: ZodError<unknown> } {
-  if (!data || typeof data !== 'object' || Array.isArray(data)) {
-    return { success: false, error: originalError };
-  }
-
-  // Check if all errors are just about the error field
-  const errorFieldIssues = originalError.issues.filter((err) =>
-    err.path.length === 1 && err.path[0] === 'error'
-  );
-
-  if (errorFieldIssues.length > 0 && originalError.issues.length === errorFieldIssues.length) {
-    // Try parsing without the error field, then add it back
-    const { error, ...dataWithoutError } = data as Record<string, unknown> & { error?: unknown };
-    const lenientResult = x402ResponseSchema.safeParse(dataWithoutError);
-
-    if (lenientResult.success) {
-      return { success: true, data: { ...lenientResult.data, error } as x402Response };
-    }
-  }
-
-  return { success: false, error: originalError };
-}
 
 // ==================== LAYER 2: ENHANCEMENT ====================
 
