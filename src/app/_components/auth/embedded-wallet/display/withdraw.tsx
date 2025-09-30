@@ -91,7 +91,7 @@ export const Withdraw: React.FC = () => {
           placeholder="0x..."
           value={address}
           onChange={e => setAddress(e.target.value)}
-          className="border-2 shadow-none placeholder:text-muted-foreground/60"
+          className="border-2 shadow-none placeholder:text-muted-foreground/60 font-mono"
         />
       </div>
 

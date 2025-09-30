@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Play } from 'lucide-react';
 import { type ParsedX402Response } from '@/lib/x402/schema';
 import { useX402Fetch } from '@/app/_hooks/x402/use-fetch';
-import { useWalletClient } from 'wagmi';
 
 const MICRO_FACTOR = 1_000_000n;
 const VALUE_PATTERN = /^\d*(\.\d{0,6})?$/;
@@ -176,9 +175,6 @@ export function Form({ resource, x402Response }: FormProps) {
         : undefined,
   } satisfies RequestInit;
 
-  const { data: walletClient, isLoading: isLoadingWalletClient } =
-    useWalletClient();
-
   const {
     data: response,
     mutate: execute,
@@ -215,9 +211,7 @@ export function Form({ resource, x402Response }: FormProps) {
           size="sm"
           variant="ghost"
           className="inline-flex items-center gap-2"
-          disabled={
-            isPending || !allRequiredFieldsFilled || isLoadingWalletClient
-          }
+          disabled={isPending || !allRequiredFieldsFilled}
           onClick={() => execute()}
         >
           {isPending ? (
