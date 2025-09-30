@@ -53,3 +53,5 @@ export const formatAddress = (address: string) => {
 export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
   return ((Number(current) - Number(previous)) / Number(previous)) * 100;
 };
+
+export const USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';

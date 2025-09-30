@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 
-import { Address } from '@/components/address';
+import { Address } from '@/components/ui/address';
 
 import { Seller, SellerSkeleton } from '../../../_components/seller';
 
