@@ -1,22 +1,9 @@
 import { createTRPCRouter, publicProcedure } from '../trpc';
-import { prisma } from '@/services/db/client';
+
+import { listAccepts } from '@/services/db/accepts';
 
 export const acceptsRouter = createTRPCRouter({
   list: publicProcedure.query(async () => {
-    return await prisma.accepts.findMany({
-      select: {
-        id: true,
-        resource: true,
-        outputSchema: true,
-        scheme: true,
-        network: true,
-        description: true,
-        payTo: true,
-        asset: true,
-      },
-      orderBy: {
-        resource: 'asc',
-      },
-    });
+    return await listAccepts();
   }),
 });
