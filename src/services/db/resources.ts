@@ -134,6 +134,10 @@ export const searchResources = async (
         },
       ],
     },
+    include: {
+      origin: true,
+      accepts: true,
+    },
     take: limit,
   });
 };

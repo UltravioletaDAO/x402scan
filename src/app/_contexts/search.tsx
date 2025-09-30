@@ -2,6 +2,10 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 
+import { Loader2, Search, SearchX } from 'lucide-react';
+
+import { useRouter } from 'next/navigation';
+
 import {
   CommandDialog,
   CommandEmpty,
@@ -10,13 +14,15 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { ethereumAddressSchema } from '@/lib/schemas';
-import Link from 'next/link';
+
+import { Origin } from '../_components/origins';
+
 import { api } from '@/trpc/client';
-import { useRouter } from 'next/navigation';
+
+import { ethereumAddressSchema } from '@/lib/schemas';
+
 import type { Route } from 'next';
-import { Globe, Loader2, Search, SearchX } from 'lucide-react';
-import { Origins } from '../_components/origins';
+import { Resource } from '../_components/resource';
 
 interface SearchContext {
   isOpen: boolean;
@@ -74,8 +80,6 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
       }
     );
 
-  console.log(origins, resources);
-
   const handleSelect = <T extends string>(route: Route<T>) => {
     router.push(route);
     setIsOpen(false);
@@ -95,20 +99,20 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
           onValueChange={setSearch}
         />
         <CommandList>
-          <CommandEmpty className="flex flex-col items-center justify-center gap-4 p-8 text-center text-muted-foreground text-sm">
+          <CommandEmpty className="flex flex-col items-center justify-center gap-2 p-8 text-center text-muted-foreground text-sm">
             {isLoadingOrigins || isLoadingResources ? (
               <>
-                <Loader2 className="size-8 animate-spin" />
+                <Loader2 className="size-10 animate-spin" />
                 <p>Loading...</p>
               </>
             ) : search.length > 0 ? (
               <>
-                <SearchX className="size-8" />
+                <SearchX className="size-10" />
                 <p>No results found.</p>
               </>
             ) : (
               <>
-                <Search className="size-8" />
+                <Search className="size-10" />
                 <p>Search by address, origin, or resource.</p>
               </>
             )}
@@ -136,10 +140,16 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
           {origins && origins.length > 0 && (
             <CommandGroup heading="Origins">
               {origins.map(origin => (
-                <CommandItem key={origin.resources[0].id}>
-                  <Origins
-                    origins={[origin]}
-                    address={origin.resources[0].accepts[0].payTo}
+                <CommandItem key={origin.id}>
+                  <Origin
+                    origin={origin}
+                    addresses={Array.from(
+                      new Set(
+                        origin.resources.flatMap(resource =>
+                          resource.accepts.map(accept => accept.payTo)
+                        )
+                      )
+                    )}
                   />
                 </CommandItem>
               ))}
@@ -148,7 +158,9 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
           {resources && resources.length > 0 && (
             <CommandGroup heading="Resources">
               {resources.map(resource => (
-                <CommandItem key={resource.id}>{resource.resource}</CommandItem>
+                <CommandItem key={resource.id}>
+                  <Resource resource={resource} />
+                </CommandItem>
               ))}
             </CommandGroup>
           )}

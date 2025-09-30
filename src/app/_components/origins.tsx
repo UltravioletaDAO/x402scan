@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { Address } from '@/components/address';
+import { Address, Addresses } from '@/components/address';
 
 import { cn } from '@/lib/utils';
 
@@ -69,6 +69,34 @@ export const Origins: React.FC<Props> = ({ origins, address }) => {
       }
       address={
         <Address address={address} className="border-none p-0" hideTooltip />
+      }
+    />
+  );
+};
+
+interface OriginProps {
+  origin: ResourceOrigin;
+  addresses: string[];
+}
+
+export const Origin: React.FC<OriginProps> = ({ origin, addresses }) => {
+  return (
+    <OriginsContainer
+      Icon={({ className }) =>
+        origin.favicon ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={origin.favicon} alt="Favicon" className={className} />
+        ) : (
+          <Globe className={className} />
+        )
+      }
+      title={new URL(origin.origin).hostname}
+      address={
+        <Addresses
+          addresses={addresses}
+          className="border-none p-0"
+          hideTooltip
+        />
       }
     />
   );
