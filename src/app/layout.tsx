@@ -22,7 +22,8 @@ import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
 import { CDPHooksProvider } from './_contexts/cdp';
-import { SearchProvider } from './_contexts/search';
+import { SearchProvider } from './_contexts/search/provider';
+import { SearchButton } from './_contexts/search/button';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -93,6 +94,7 @@ export default function RootLayout({
                         {breadcrumbs}
                       </div>
                       <div className="flex items-center gap-1 md:gap-2">
+                        <SearchButton />
                         <AuthButton />
                         <AnimatedThemeToggler />
                       </div>

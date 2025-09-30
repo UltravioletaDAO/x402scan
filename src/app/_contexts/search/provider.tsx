@@ -1,46 +1,29 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
-import { Loader2, Search, SearchX } from 'lucide-react';
+import { Loader2, SearchX, Search } from 'lucide-react';
 
 import { useRouter } from 'next/navigation';
 
 import {
   CommandDialog,
+  CommandInput,
+  CommandList,
   CommandEmpty,
   CommandGroup,
-  CommandInput,
   CommandItem,
-  CommandList,
 } from '@/components/ui/command';
 
-import { Origin } from '../_components/origins';
+import { SearchContext } from './context';
+import { Origin } from '@/app/_components/origins';
+import { Resource } from '@/app/_components/resource';
 
 import { api } from '@/trpc/client';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 
 import type { Route } from 'next';
-import { Resource } from '../_components/resource';
-
-interface SearchContext {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-  search: string;
-  setSearch: (search: string) => void;
-}
-
-const SearchContext = createContext<SearchContext>({
-  isOpen: false,
-  setIsOpen: () => {
-    // do nothing
-  },
-  search: '',
-  setSearch: () => {
-    // do nothing
-  },
-});
 
 export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
@@ -63,7 +46,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
     api.origins.search.useQuery(
       {
         search,
-        limit: 4,
+        limit: 3,
       },
       {
         enabled: isOpen && search.length > 0,
@@ -73,7 +56,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
     api.resources.search.useQuery(
       {
         search,
-        limit: 4,
+        limit: 3,
       },
       {
         enabled: isOpen && search.length > 0,
@@ -94,7 +77,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
         shouldFilter={false}
       >
         <CommandInput
-          placeholder="Type a command or search..."
+          placeholder="Search for an address, origin, or resource..."
           value={search}
           onValueChange={setSearch}
         />
@@ -169,8 +152,4 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
       {children}
     </SearchContext.Provider>
   );
-};
-
-export const useSearch = () => {
-  return useContext(SearchContext);
 };

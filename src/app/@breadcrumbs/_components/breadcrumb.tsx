@@ -17,6 +17,7 @@ interface Props<T extends string> {
   name: string;
   Fallback: LucideIcon | null;
   mobileHideText?: boolean;
+  mobileHideImage?: boolean;
   disabled?: boolean;
   textClassName?: string;
 }
@@ -27,6 +28,7 @@ export const Breadcrumb = <T extends string>({
   name,
   Fallback,
   textClassName,
+  mobileHideImage = false,
   mobileHideText = false,
   disabled = false,
 }: Props<T>) => {
@@ -38,7 +40,12 @@ export const Breadcrumb = <T extends string>({
     >
       <div className="flex items-center gap-2 cursor-pointer">
         {(Fallback !== null || image !== null) && (
-          <Avatar className={cn('rounded-md overflow-hidden bg-card size-5')}>
+          <Avatar
+            className={cn(
+              'rounded-md overflow-hidden bg-card size-5',
+              mobileHideImage && 'hidden md:block'
+            )}
+          >
             {image ? (
               <AvatarImage src={image} className="size-full" />
             ) : (
