@@ -7,7 +7,7 @@ import { Header } from "./header";
 import { Form } from "./form";
 
 
-export function GenericResourceCaller({ resource, bazaarMethod }: { resource: string; bazaarMethod?: string }) {
+export function ResourceExecutor({ resource, bazaarMethod }: { resource: string; bazaarMethod?: string }) {
     const [init402Response, setInit402Response] = useState<ParsedX402Response | null>(null);
 
     return (
