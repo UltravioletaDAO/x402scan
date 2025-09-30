@@ -1,6 +1,7 @@
 import {
   HTTPRequestStructureSchema,
   PaymentRequirementsSchema,
+  x402ResponseSchema,
 } from 'x402/types';
 import { z as z3 } from 'zod3';
 
@@ -24,7 +25,6 @@ const FieldDefSchema = z3.preprocess(
   })
 );
 
-// Enhanced input schema with proper field definitions
 const EnhancedInputSchema = HTTPRequestStructureSchema.omit({
   queryParams: true,
   bodyFields: true,
@@ -35,23 +35,24 @@ const EnhancedInputSchema = HTTPRequestStructureSchema.omit({
   headerFields: z3.record(FieldDefSchema).optional(),
 });
 
-// Enhanced outputSchema
 const EnhancedOutputSchema = z3.object({
   input: EnhancedInputSchema,
   output: z3.record(z3.unknown()).optional(),
 });
 
-// Enhanced PaymentRequirements
 const EnhancedPaymentRequirementsSchema = PaymentRequirementsSchema.extend({
   outputSchema: EnhancedOutputSchema.optional(),
 });
 
-// Complete x402Response with lenient error field (using zod3)
-const EnhancedX402ResponseSchema = z3.object({
-  x402Version: z3.number(),
-  error: z3.string().optional(), // Accept any error string
-  accepts: z3.array(EnhancedPaymentRequirementsSchema).optional(),
-});
+const EnhancedX402ResponseSchema = x402ResponseSchema
+  .omit({
+    error: true,
+    accepts: true,
+  })
+  .extend({
+    error: z3.string().optional(), // Accept any error string
+    accepts: z3.array(EnhancedPaymentRequirementsSchema).optional(),
+  });
 
 // Types
 export type ParsedX402Response = z3.infer<typeof EnhancedX402ResponseSchema>;
