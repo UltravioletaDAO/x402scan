@@ -1,5 +1,5 @@
-import { createTRPCRouter, publicProcedure } from "../trpc";
-import { prisma } from "@/services/db/client";
+import { createTRPCRouter, publicProcedure } from '../trpc';
+import { prisma } from '@/services/db/client';
 
 export const acceptsRouter = createTRPCRouter({
   list: publicProcedure.query(async () => {
@@ -15,7 +15,7 @@ export const acceptsRouter = createTRPCRouter({
         asset: true,
       },
       orderBy: {
-        resource: "asc",
+        resource: 'asc',
       },
     });
   }),

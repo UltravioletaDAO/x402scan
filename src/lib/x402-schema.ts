@@ -1,11 +1,14 @@
-import { HTTPRequestStructureSchema, PaymentRequirementsSchema } from 'x402/types';
+import {
+  HTTPRequestStructureSchema,
+  PaymentRequirementsSchema,
+} from 'x402/types';
 import { z as z3 } from 'zod3';
 
 // ==================== TYPES ====================
 
 // Handle both string shorthand and object field definitions
 const FieldDefSchema = z3.preprocess(
-  (val) => {
+  val => {
     // Convert string shorthand to object
     if (typeof val === 'string') {
       return { type: val };
@@ -22,13 +25,15 @@ const FieldDefSchema = z3.preprocess(
 );
 
 // Enhanced input schema with proper field definitions
-const EnhancedInputSchema = HTTPRequestStructureSchema
-  .omit({ queryParams: true, bodyFields: true, headerFields: true })
-  .extend({
-    queryParams: z3.record(FieldDefSchema).optional(),
-    bodyFields: z3.record(FieldDefSchema).optional(),
-    headerFields: z3.record(FieldDefSchema).optional(),
-  });
+const EnhancedInputSchema = HTTPRequestStructureSchema.omit({
+  queryParams: true,
+  bodyFields: true,
+  headerFields: true,
+}).extend({
+  queryParams: z3.record(FieldDefSchema).optional(),
+  bodyFields: z3.record(FieldDefSchema).optional(),
+  headerFields: z3.record(FieldDefSchema).optional(),
+});
 
 // Enhanced outputSchema
 const EnhancedOutputSchema = z3.object({
@@ -50,11 +55,14 @@ const EnhancedX402ResponseSchema = z3.object({
 
 // Types
 export type ParsedX402Response = z3.infer<typeof EnhancedX402ResponseSchema>;
-export type EnhancedPaymentRequirements = z3.infer<typeof EnhancedPaymentRequirementsSchema>;
+export type EnhancedPaymentRequirements = z3.infer<
+  typeof EnhancedPaymentRequirementsSchema
+>;
 export type FieldDef = z3.infer<typeof FieldDefSchema>;
 
-type Result<T> = { success: true; data: T; errors: string[] } | { success: false; data: null; errors: string[] };
-
+type Result<T> =
+  | { success: true; data: T; errors: string[] }
+  | { success: false; data: null; errors: string[] };
 
 // ==================== MAIN EXPORTS ====================
 
@@ -74,8 +82,8 @@ export function parseX402Response(data: unknown): Result<ParsedX402Response> {
   }
 
   // Format errors
-  const errors = result.error.issues.map(issue =>
-    `${issue.path.join('.')}: ${issue.message}`
+  const errors = result.error.issues.map(
+    issue => `${issue.path.join('.')}: ${issue.message}`
   );
   return { success: false, data: null, errors };
 }
@@ -135,7 +143,11 @@ function normalizeAcceptEntry(accept: unknown): unknown {
  * but preserve the actual API field names within queryParams/bodyFields/headerFields
  */
 function normalizeOutputSchema(outputSchema: unknown): unknown {
-  if (!outputSchema || typeof outputSchema !== 'object' || Array.isArray(outputSchema)) {
+  if (
+    !outputSchema ||
+    typeof outputSchema !== 'object' ||
+    Array.isArray(outputSchema)
+  ) {
     return outputSchema;
   }
 

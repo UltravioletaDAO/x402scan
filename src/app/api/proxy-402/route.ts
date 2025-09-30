@@ -1,21 +1,35 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from 'next/server';
 
-const TARGET_HEADER = "x-proxy-target";
-const RESPONSE_HEADER_BLOCKLIST = new Set(["content-encoding", "transfer-encoding", "content-length"]);
-const REQUEST_HEADER_BLOCKLIST = new Set(["host", "content-length", TARGET_HEADER]);
+const TARGET_HEADER = 'x-proxy-target';
+const RESPONSE_HEADER_BLOCKLIST = new Set([
+  'content-encoding',
+  'transfer-encoding',
+  'content-length',
+]);
+const REQUEST_HEADER_BLOCKLIST = new Set([
+  'host',
+  'content-length',
+  TARGET_HEADER,
+]);
 
 async function proxy(request: NextRequest) {
   const targetValue = request.headers.get(TARGET_HEADER);
 
   if (!targetValue) {
-    return NextResponse.json({ error: "Missing x-proxy-target header" }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Missing x-proxy-target header' },
+      { status: 400 }
+    );
   }
 
   let targetUrl: URL;
   try {
     targetUrl = new URL(targetValue);
   } catch {
-    return NextResponse.json({ error: "Invalid x-proxy-target header" }, { status: 400 });
+    return NextResponse.json(
+      { error: 'Invalid x-proxy-target header' },
+      { status: 400 }
+    );
   }
 
   const upstreamHeaders = new Headers();
@@ -28,7 +42,7 @@ async function proxy(request: NextRequest) {
   const method = request.method.toUpperCase();
   let body: ArrayBuffer | undefined;
 
-  if (method !== "GET" && method !== "HEAD") {
+  if (method !== 'GET' && method !== 'HEAD') {
     body = await request.arrayBuffer();
   }
 
@@ -53,7 +67,8 @@ async function proxy(request: NextRequest) {
       headers: responseHeaders,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown upstream error";
+    const message =
+      error instanceof Error ? error.message : 'Unknown upstream error';
     return NextResponse.json({ error: message }, { status: 502 });
   }
 }

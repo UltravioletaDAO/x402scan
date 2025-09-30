@@ -2,26 +2,30 @@ import {
   useMutation,
   useQuery,
   type UseMutationOptions,
-} from "@tanstack/react-query";
-import { useMemo } from "react";
-import { parseX402Response } from "./x402-schema";
-import { useWalletClient } from "wagmi";
-import { wrapFetchWithPayment } from "x402-fetch";
+} from '@tanstack/react-query';
+import { useMemo } from 'react';
+import { parseX402Response } from './x402-schema';
+import { useWalletClient } from 'wagmi';
+import { wrapFetchWithPayment } from 'x402-fetch';
 
-const PROXY_ENDPOINT = "/api/proxy-402" as const;
-const TARGET_HEADER = "x-proxy-target" as const;
+const PROXY_ENDPOINT = '/api/proxy-402' as const;
+const TARGET_HEADER = 'x-proxy-target' as const;
 
 function createFetchWithProxyHeader(targetUrl: string) {
   return async (input: RequestInfo | URL, requestInit?: RequestInit) => {
     const headers = new Headers(requestInit?.headers);
     headers.set(TARGET_HEADER, targetUrl);
 
-    const { method = "GET", ...restInit } = requestInit ?? {};
+    const { method = 'GET', ...restInit } = requestInit ?? {};
     const normalizedMethod = method.toString().toUpperCase();
 
     // Auto-add Content-Type for requests with body
-    if (normalizedMethod !== "GET" && normalizedMethod !== "HEAD" && restInit.body) {
-      headers.set("Content-Type", "application/json");
+    if (
+      normalizedMethod !== 'GET' &&
+      normalizedMethod !== 'HEAD' &&
+      restInit.body
+    ) {
+      headers.set('Content-Type', 'application/json');
     }
 
     // Clear body for GET/HEAD requests
@@ -31,7 +35,7 @@ function createFetchWithProxyHeader(targetUrl: string) {
       headers,
     };
 
-    if (normalizedMethod === "GET" || normalizedMethod === "HEAD") {
+    if (normalizedMethod === 'GET' || normalizedMethod === 'HEAD') {
       finalInit.body = undefined;
     }
 
@@ -43,7 +47,7 @@ export const useX402Fetch = <TData = unknown>(
   targetUrl: string,
   value: bigint,
   init?: RequestInit,
-  options?: Omit<UseMutationOptions<TData>, "mutationFn">,
+  options?: Omit<UseMutationOptions<TData>, 'mutationFn'>
 ) => {
   const { data: walletClient } = useWalletClient({
     chainId: 8453,
@@ -51,21 +55,21 @@ export const useX402Fetch = <TData = unknown>(
 
   return useMutation({
     mutationFn: async () => {
-      if (!walletClient) throw new Error("Wallet client not available");
+      if (!walletClient) throw new Error('Wallet client not available');
 
       const fetchWithProxyHeader = createFetchWithProxyHeader(targetUrl);
       const fetchWithPayment = wrapFetchWithPayment(
         fetchWithProxyHeader,
         walletClient as unknown as Parameters<typeof wrapFetchWithPayment>[1],
-        value,
+        value
       );
 
       const response = await fetchWithPayment(PROXY_ENDPOINT, init);
 
-      const contentType = response.headers.get("content-type") ?? "";
-      return contentType.includes("application/json")
-        ? response.json() as Promise<TData>
-        : response.text() as Promise<TData>;
+      const contentType = response.headers.get('content-type') ?? '';
+      return contentType.includes('application/json')
+        ? (response.json() as Promise<TData>)
+        : (response.text() as Promise<TData>);
     },
     ...options,
   });
@@ -77,19 +81,19 @@ export const useX402Test = (
   options?: { enabled?: boolean }
 ) => {
   const query = useQuery({
-    queryKey: ["x402-test", resource, init],
+    queryKey: ['x402-test', resource, init],
     queryFn: async () => {
       const fetchWithProxyHeader = createFetchWithProxyHeader(resource);
       const proxyResponse = await fetchWithProxyHeader(PROXY_ENDPOINT, init);
 
       if (proxyResponse.status === 402) {
-        const data = await proxyResponse.json().catch(() => null) as unknown;
+        const data = (await proxyResponse.json().catch(() => null)) as unknown;
         return data;
       } else if (!proxyResponse.ok) {
         const text = await proxyResponse.text();
         throw new Error(text || `Request failed with ${proxyResponse.status}`);
       } else {
-        const data = await proxyResponse.json().catch(() => null) as unknown;
+        const data = (await proxyResponse.json().catch(() => null)) as unknown;
         return data;
       }
     },
