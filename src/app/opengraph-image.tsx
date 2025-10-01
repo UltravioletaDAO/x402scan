@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { logoBase64 } from './logo-base64'
 
 export const runtime = 'edge'
 
@@ -44,7 +45,7 @@ export default async function Image() {
             }}
           >
             <img
-              src="/logo.png"
+              src={logoBase64}
               width="72"
               height="72"
               style={{ borderRadius: 16 }}
