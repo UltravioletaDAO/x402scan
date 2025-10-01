@@ -17,6 +17,7 @@ import { formatTokenAmount } from '@/lib/token';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 
 import type { Address as AddressType } from 'viem';
+import Link from 'next/link';
 
 interface Props {
   buyerAddress: AddressType;
@@ -72,20 +73,22 @@ export const TransactionGraphic: React.FC<Props> = ({
         </CardContent>
       </Card>
 
-      <Card className={cardClassName} ref={sellerRef}>
-        <CardHeader className="p-2 bg-muted border-b flex flex-row items-center justify-between space-y-0">
-          <CardTitle className="text-base">Seller</CardTitle>
-          <p className="text-base font-bold text-primary">
-            {formatTokenAmount(amount)}
-          </p>
-        </CardHeader>
-        <CardContent className="pt-4">
-          <Seller
-            address={sellerAddress}
-            addressClassName="text-base font-semibold"
-          />
-        </CardContent>
-      </Card>
+      <Link href={`/recipient/${sellerAddress}`} className={cardClassName}>
+        <Card className="w-full overflow-hidden" ref={sellerRef}>
+          <CardHeader className="p-2 bg-muted border-b flex flex-row items-center justify-between space-y-0">
+            <CardTitle className="text-base">Seller</CardTitle>
+            <p className="text-base font-bold text-primary">
+              {formatTokenAmount(amount)}
+            </p>
+          </CardHeader>
+          <CardContent className="pt-4">
+            <Seller
+              address={sellerAddress}
+              addressClassName="text-base font-semibold"
+            />
+          </CardContent>
+        </Card>
+      </Link>
       <Card className={cardClassName} ref={facilitatorRef}>
         <CardHeader className="p-2 bg-muted border-b">
           {facilitator && (

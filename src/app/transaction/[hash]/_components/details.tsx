@@ -38,11 +38,11 @@ export const TransactionDetails: React.FC<Props> = ({
         />
         <Row
           label="Sender"
-          value={<p className="font-mono">{transaction.from_address}</p>}
+          value={<p className="font-mono">{transfer.sender}</p>}
         />
         <Row
           label="Recipient"
-          value={<p className="font-mono">{transaction.to_address}</p>}
+          value={<p className="font-mono">{transfer.recipient}</p>}
         />
         <Row
           label="Token Address"
