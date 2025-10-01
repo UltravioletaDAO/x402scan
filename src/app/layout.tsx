@@ -64,22 +64,12 @@ export const metadata: Metadata = {
     title: 'x402scan • x402 Ecosystem Explorer',
     description: 'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
     siteName: 'x402scan',
-    images: [
-      {
-        url: '/opengraph-image',
-        width: 1200,
-        height: 630,
-        type: 'image/png',
-        alt: 'x402scan • x402 Ecosystem Explorer',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'x402scan • x402 Ecosystem Explorer',
     description: 'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
     creator: '@x402scan',
-    images: ['/opengraph-image'],
   },
   appleWebApp: {
     title: 'x402scan',
