@@ -5,7 +5,6 @@ import { Favicon } from '@/components/favicon';
 import { cn } from '@/lib/utils';
 
 import type { OgImage, ResourceOrigin } from '@prisma/client';
-import { ImageOff } from 'lucide-react';
 
 interface Props {
   origin: ResourceOrigin & {

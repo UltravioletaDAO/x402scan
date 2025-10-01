@@ -11,6 +11,7 @@ import { useWalletClient } from 'wagmi';
 import { useCurrentUser, useIsInitialized } from '@coinbase/cdp-hooks';
 import { ConnectEmbeddedWalletDialog } from '../auth/embedded-wallet/connect/dialog';
 import { CardContent, CardFooter } from '@/components/ui/card';
+import { useResourceExecutor } from './context/hook';
 
 const MICRO_FACTOR = 1_000_000n;
 const VALUE_PATTERN = /^\d*(\.\d{0,6})?$/;
@@ -49,9 +50,7 @@ type FieldDefinition = {
 };
 
 type FormProps = {
-  resource: string;
   x402Response: ParsedX402Response;
-  bazaarMethod?: string;
 };
 
 function getFields(
@@ -93,7 +92,8 @@ function getFields(
   });
 }
 
-export function Form({ resource, x402Response }: FormProps) {
+export function Form({ x402Response }: FormProps) {
+  const { resource, method } = useResourceExecutor();
   const inputSchema = useMemo(() => {
     return x402Response.accepts?.[0]?.outputSchema?.input ?? null;
   }, [x402Response]);
@@ -139,9 +139,6 @@ export function Form({ resource, x402Response }: FormProps) {
     () => parseValueToMicros(valueInput),
     [valueInput]
   );
-  const method =
-    x402Response.accepts?.[0]?.outputSchema?.input?.method?.toUpperCase() ??
-    'GET';
 
   const queryEntries = Object.entries(queryValues).reduce<
     Array<[string, string]>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   Dialog,
@@ -9,45 +9,38 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-import { useX402Test } from '@/app/_hooks/x402/use-test';
+import { Method } from './method';
+import { useResourceExecutor } from './context/hook';
 
-import type { ParsedX402Response } from '@/lib/x402/schema';
-
-type HeaderProps = {
-  resource: string;
-  bazaarMethod?: string;
-  onX402Response?: (response: ParsedX402Response | null) => void;
-};
-
-export function Header({
-  resource,
-  bazaarMethod: method,
-  onX402Response,
-}: HeaderProps) {
-  const { isLoading, response, rawResponse, error, x402Response, parseErrors } =
-    useX402Test(resource, { method: method ?? 'GET' }, { enabled: true });
+export function Header() {
+  const {
+    isLoading,
+    response,
+    rawResponse,
+    error,
+    response: x402Response,
+    parseErrors,
+    method,
+    resource,
+  } = useResourceExecutor();
 
   const [showDialog, setShowDialog] = useState(false);
 
-  useEffect(() => {
-    onX402Response?.(x402Response);
-  }, [x402Response, onX402Response]);
-
   const price = useMemo(() => {
-    const maxAmount = x402Response?.accepts?.[0]?.maxAmountRequired;
+    const maxAmount = response?.accepts?.[0]?.maxAmountRequired;
     if (!maxAmount) return '0.00';
     const value = Number(maxAmount) / 1_000_000;
     return value.toFixed(2);
-  }, [x402Response]);
+  }, [response]);
 
   const statusColor = useMemo(() => {
     if (isLoading) return 'bg-gray-500';
     if (error || !response) return 'bg-red-500';
     if (response && x402Response && parseErrors.length === 0)
-      return 'bg-green-500';
+      return 'bg-green-600';
     if (response && (!x402Response || parseErrors.length > 0))
-      return 'bg-red-500';
-    return 'bg-gray-500';
+      return 'bg-red-600';
+    return 'bg-gray-600';
   }, [isLoading, error, response, x402Response, parseErrors]);
 
   const hasError = Boolean(error) || parseErrors.length > 0;
@@ -57,12 +50,13 @@ export function Header({
   return (
     <>
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 bg-muted border px-2 py-1 rounded-lg">
+          <Method method={method} />
+          <span className="font-mono text-sm truncate">{resource}</span>
           <div
             className={`w-3 h-3 rounded-full ${statusColor} ${hasResponse ? 'cursor-pointer' : ''}`}
             onClick={hasResponse ? () => setShowDialog(true) : undefined}
           />
-          <span className="font-mono text-sm truncate">{resource}</span>
         </div>
         {!hasError && (
           <span className="font-bold font-mono text-sm">${price}</span>

@@ -1,12 +1,14 @@
-export function getBazaarMethod(outputSchema: unknown): string | undefined {
+import type { Methods } from '@/types/methods';
+
+export function getBazaarMethod(outputSchema: unknown): Methods | undefined {
   if (
     typeof outputSchema === 'object' &&
     outputSchema &&
     'input' in outputSchema
   ) {
-    const input = (outputSchema as { input: unknown }).input;
+    const input = (outputSchema as { input: { method: Methods } }).input;
     if (typeof input === 'object' && input && 'method' in input) {
-      return (input as { method: unknown }).method as string;
+      return (input as { method: Methods }).method;
     }
   }
   return undefined;
