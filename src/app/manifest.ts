@@ -4,7 +4,8 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'x402scan',
     short_name: 'x402scan',
-    description: "See what's happening in the x402 ecosystem",
+    description:
+      'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
     start_url: '/',
     display: 'standalone',
     theme_color: '#ffffff',
