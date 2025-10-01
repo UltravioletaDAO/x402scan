@@ -43,7 +43,7 @@ export default async function Image() {
           position: 'relative',
           backgroundColor: '#030712',
           backgroundImage:
-            'radial-gradient(circle at 25% 25%, #1e40af20 0%, transparent 70%), radial-gradient(circle at 75% 75%, #06b6d420 0%, transparent 70%), linear-gradient(90deg, #ffffff08 1px, transparent 1px), linear-gradient(#ffffff08 1px, transparent 1px)',
+            'radial-gradient(circle at 25% 25%, #1e40af20 0%, transparent 70%), radial-gradient(circle at 75% 75%, #06b6d420 0%, transparent 70%), linear-gradient(90deg, #ffffff15 1px, transparent 1px), linear-gradient(#ffffff15 1px, transparent 1px)',
           backgroundSize: '100% 100%, 100% 100%, 60px 60px, 60px 60px',
           border: '1px solid #1e293b',
           boxShadow:
