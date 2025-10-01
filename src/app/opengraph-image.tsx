@@ -1,37 +1,37 @@
-import { ImageResponse } from 'next/og'
-import { logoBase64 } from './logo-base64'
+import { ImageResponse } from 'next/og';
+import { logoBase64 } from './logo-base64';
 
-export const runtime = 'edge'
+export const runtime = 'edge';
 
-export const alt = 'x402scan • x402 Ecosystem Explorer'
+export const alt = 'x402scan • x402 Ecosystem Explorer';
 export const size = {
   width: 1200,
   height: 630,
-}
-export const contentType = 'image/png'
+};
+export const contentType = 'image/png';
 
 // Load Google Font dynamically
 async function loadGoogleFont(font: string, text: string) {
   const url = `https://fonts.googleapis.com/css2?family=${font}:wght@700&text=${encodeURIComponent(
     text
-  )}`
+  )}`;
 
-  const css = await fetch(url).then((res) => res.text())
+  const css = await fetch(url).then(res => res.text());
 
-  const resource = /src: url\((.+)\) format\('(opentype|truetype)'\)/.exec(css)
+  const resource = /src: url\((.+)\) format\('(opentype|truetype)'\)/.exec(css);
 
   if (resource) {
-    const response = await fetch(resource[1])
+    const response = await fetch(resource[1]);
     if (response.status == 200) {
-      return await response.arrayBuffer()
+      return await response.arrayBuffer();
     }
   }
 
-  throw new Error('failed to load font data')
+  throw new Error('failed to load font data');
 }
 
 export default async function Image() {
-  const fontData = await loadGoogleFont('JetBrains Mono', 'x402scan')
+  const fontData = await loadGoogleFont('JetBrains Mono', 'x402scan');
 
   return new ImageResponse(
     (
@@ -42,10 +42,12 @@ export default async function Image() {
           display: 'flex',
           position: 'relative',
           backgroundColor: '#030712',
-          backgroundImage: 'radial-gradient(circle at 25% 25%, #1e40af20 0%, transparent 70%), radial-gradient(circle at 75% 75%, #06b6d420 0%, transparent 70%), linear-gradient(90deg, #ffffff08 1px, transparent 1px), linear-gradient(#ffffff08 1px, transparent 1px)',
+          backgroundImage:
+            'radial-gradient(circle at 25% 25%, #1e40af20 0%, transparent 70%), radial-gradient(circle at 75% 75%, #06b6d420 0%, transparent 70%), linear-gradient(90deg, #ffffff08 1px, transparent 1px), linear-gradient(#ffffff08 1px, transparent 1px)',
           backgroundSize: '100% 100%, 100% 100%, 60px 60px, 60px 60px',
           border: '1px solid #1e293b',
-          boxShadow: 'inset 0 1px 0 0 #334155, 0 0 40px rgba(14, 165, 233, 0.1)',
+          boxShadow:
+            'inset 0 1px 0 0 #334155, 0 0 40px rgba(14, 165, 233, 0.1)',
         }}
       >
         {/* Main content container */}
@@ -85,7 +87,8 @@ export default async function Image() {
                 color: '#f8fafc',
                 letterSpacing: '-0.025em',
                 lineHeight: 0.9,
-                textShadow: '0 0 20px rgba(14, 165, 233, 0.3), 0 2px 4px rgba(0, 0, 0, 0.5)',
+                textShadow:
+                  '0 0 20px rgba(14, 165, 233, 0.3), 0 2px 4px rgba(0, 0, 0, 0.5)',
               }}
             >
               x402scan
@@ -120,10 +123,11 @@ export default async function Image() {
               letterSpacing: '-0.005em',
             }}
           >
-            <div style={{ display: 'flex' }}>Explore the future of agentic commerce.</div>
+            <div style={{ display: 'flex' }}>
+              Explore the future of agentic commerce.
+            </div>
           </div>
         </div>
-
       </div>
     ),
     {
@@ -137,5 +141,5 @@ export default async function Image() {
         },
       ],
     }
-  )
+  );
 }

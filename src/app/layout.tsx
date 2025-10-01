@@ -41,8 +41,20 @@ export const metadata: Metadata = {
     default: 'x402scan • x402 Ecosystem Explorer',
     template: '%s | x402scan',
   },
-  description: 'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
-  keywords: ['x402', 'blockchain', 'ecosystem', 'transactions', 'agentic commerce', 'crypto', 'web3', 'block explorer', 'analytics', 'sellers'],
+  description:
+    'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
+  keywords: [
+    'x402',
+    'blockchain',
+    'ecosystem',
+    'transactions',
+    'agentic commerce',
+    'crypto',
+    'web3',
+    'block explorer',
+    'analytics',
+    'sellers',
+  ],
   authors: [{ name: 'x402scan' }],
   creator: 'x402scan',
   publisher: 'x402scan',
@@ -62,7 +74,8 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: env.NEXT_PUBLIC_APP_URL,
     title: 'x402scan • x402 Ecosystem Explorer',
-    description: 'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
+    description:
+      'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
     siteName: 'x402scan',
     images: [
       {
@@ -82,7 +95,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'x402scan • x402 Ecosystem Explorer',
-    description: 'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
+    description:
+      'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
     creator: '@x402scan',
     images: [`${env.NEXT_PUBLIC_APP_URL}/opengraph-image`],
   },
