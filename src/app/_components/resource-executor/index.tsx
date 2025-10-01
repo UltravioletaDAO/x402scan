@@ -10,8 +10,10 @@ import type { Methods } from '@/types/methods';
 import { ResourceExecutorProvider } from './context/provider';
 import { useResourceExecutor } from './context/hook';
 
+import type { Resources } from '@prisma/client';
+
 interface Props {
-  resource: string;
+  resource: Resources;
   bazaarMethod?: Methods;
   className?: string;
 }
@@ -22,10 +24,13 @@ export const ResourceExecutor: React.FC<Props> = ({
   className,
 }) => {
   return (
-    <ResourceExecutorProvider resource={resource} method={bazaarMethod}>
+    <ResourceExecutorProvider
+      resource={resource.resource}
+      method={bazaarMethod}
+    >
       <Card className={cn(className, 'overflow-hidden')}>
-        <CardHeader>
-          <Header />
+        <CardHeader className="bg-muted px-4 py-2">
+          <Header resource={resource} />
         </CardHeader>
         <FormWrapper />
       </Card>

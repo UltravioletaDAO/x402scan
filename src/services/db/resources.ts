@@ -3,6 +3,7 @@ import { prisma } from './client';
 import type { FacilitatorResource } from '../cdp/facilitator/list-resources';
 import { getOriginFromUrl } from '@/lib/url';
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 
 export const upsertResource = async (
   facilitatorResource: FacilitatorResource
@@ -81,6 +82,15 @@ export const upsertResource = async (
       resource,
       accepts,
     };
+  });
+};
+
+export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
+  return await prisma.resources.findMany({
+    where,
+    include: {
+      accepts: true,
+    },
   });
 };
 

@@ -211,7 +211,7 @@ export function Form({ x402Response }: FormProps) {
 
   return (
     <>
-      <CardContent className="flex flex-col gap-4 p-4">
+      <CardContent className="flex flex-col gap-4 p-4 border-t">
         {!hasSchema ? null : !showQuery && !showBody ? (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
@@ -323,49 +323,6 @@ export function Form({ x402Response }: FormProps) {
           </pre>
         )}
       </CardContent>
-      <CardFooter className="px-4 pb-2 justify-end">
-        {!walletClient || !currentUser ? (
-          <ConnectEmbeddedWalletDialog>
-            <Button variant="turbo">
-              <Wallet className="size-4" />
-              Connect Wallet
-            </Button>
-          </ConnectEmbeddedWalletDialog>
-        ) : (
-          <Button
-            variant="turbo"
-            disabled={
-              isPending ||
-              !allRequiredFieldsFilled ||
-              isLoadingWalletClient ||
-              !isInitialized ||
-              !walletClient ||
-              !currentUser
-            }
-            onClick={() => execute()}
-          >
-            {isLoadingWalletClient ||
-            !isInitialized ||
-            !walletClient ||
-            !currentUser ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : isPending ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Fetching
-              </>
-            ) : (
-              <>
-                <Play className="size-4" />
-                Fetch
-                <span className="opacity-60">
-                  ${formatMicrosToValue(paymentValue.toString())}
-                </span>
-              </>
-            )}
-          </Button>
-        )}
-      </CardFooter>
     </>
   );
 }

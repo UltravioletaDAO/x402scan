@@ -26,7 +26,7 @@ export default async function ResourcesPage({
                 <div key={resource.id} className="pt-4 pl-4 border-l relative">
                   <div className="absolute left-0 top-[calc(2rem+10px)] w-4 h-[1px] bg-border" />
                   <ResourceExecutor
-                    resource={resource.resource}
+                    resource={resource}
                     bazaarMethod={getBazaarMethod(
                       resource.accepts[0].outputSchema
                     )}

@@ -12,7 +12,14 @@ import {
 import { Method } from './method';
 import { useResourceExecutor } from './context/hook';
 
-export function Header() {
+import type { Resources } from '@prisma/client';
+import { FetchButton } from './fetch-button';
+
+interface Props {
+  resource: Resources;
+}
+
+export const Header: React.FC<Props> = ({ resource }) => {
   const {
     isLoading,
     response,
@@ -21,17 +28,16 @@ export function Header() {
     response: x402Response,
     parseErrors,
     method,
-    resource,
   } = useResourceExecutor();
 
   const [showDialog, setShowDialog] = useState(false);
 
-  const price = useMemo(() => {
-    const maxAmount = response?.accepts?.[0]?.maxAmountRequired;
-    if (!maxAmount) return '0.00';
-    const value = Number(maxAmount) / 1_000_000;
-    return value.toFixed(2);
-  }, [response]);
+  // const price = useMemo(() => {
+  //   const maxAmount = response?.accepts?.[0]?.maxAmountRequired;
+  //   if (!maxAmount) return '0.00';
+  //   const value = Number(maxAmount) / 1_000_000;
+  //   return value.toFixed(2);
+  // }, [response]);
 
   const statusColor = useMemo(() => {
     if (isLoading) return 'bg-gray-500';
@@ -50,17 +56,17 @@ export function Header() {
   return (
     <>
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 bg-muted border px-2 py-1 rounded-lg">
+        <div className="flex items-center gap-2 flex-1">
           <Method method={method} />
-          <span className="font-mono text-sm truncate">{resource}</span>
+          <span className="font-mono text-sm truncate">
+            {resource.resource}
+          </span>
           <div
             className={`w-3 h-3 rounded-full ${statusColor} ${hasResponse ? 'cursor-pointer' : ''}`}
             onClick={hasResponse ? () => setShowDialog(true) : undefined}
           />
         </div>
-        {!hasError && (
-          <span className="font-bold font-mono text-sm">${price}</span>
-        )}
+        {Boolean(rawResponse) && !hasError && <FetchButton />}
       </div>
 
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
@@ -92,4 +98,4 @@ export function Header() {
       </Dialog>
     </>
   );
-}
+};
