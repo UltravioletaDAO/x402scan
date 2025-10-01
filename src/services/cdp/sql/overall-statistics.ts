@@ -117,6 +117,5 @@ export const getFirstTransferTimestamp = async (
     return null;
   }
 
-  // Assuming block_timestamp is an ISO string or compatible with Date
   return new Date(result[0].block_timestamp);
 };
