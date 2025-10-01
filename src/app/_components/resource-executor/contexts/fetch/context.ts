@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext } from 'react';
 
 import type { FieldDefinition } from '@/types/x402';
 
