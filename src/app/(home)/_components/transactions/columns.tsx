@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, DollarSign, Server, User } from 'lucide-react';
+import { Calendar, DollarSign, Hash, Server, User } from 'lucide-react';
 
 import Link from 'next/link';
 
@@ -18,7 +18,7 @@ import { formatTokenAmount } from '@/lib/token';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 
-type ColumnType = RouterOutputs['transactions']['list']['items'][number];
+type ColumnType = RouterOutputs['transfers']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
@@ -35,7 +35,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         />
       </Link>
     ),
-    size: 300, // Fixed width for seller column (widest for address display)
+    size: 200,
     loading: () => <SellerSkeleton />,
   },
   {
@@ -53,27 +53,42 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
-    accessorKey: 'amount',
-    header: () => <HeaderCell Icon={DollarSign} label="Amount" />,
+    accessorKey: 'block_timestamp',
+    header: () => <HeaderCell Icon={Calendar} label="Timestamp" />,
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
-        {formatTokenAmount(row.original.amount)}
-      </div>
-    ),
-    size: 100, // Fixed width for buyers count
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
-  },
-  {
-    accessorKey: 'block_timestamp',
-    header: () => (
-      <HeaderCell Icon={Calendar} label="Timestamp" className="justify-end" />
-    ),
-    cell: ({ row }) => (
-      <div className="text-right font-mono text-xs">
         {formatCompactAgo(row.original.block_timestamp)}
       </div>
     ),
     size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
+    accessorKey: 'transaction_hash',
+    header: () => <HeaderCell Icon={Hash} label="Hash" />,
+    cell: ({ row }) => (
+      <Link href={`/transaction/${row.original.transaction_hash}`}>
+        <Address
+          address={row.original.transaction_hash}
+          className="text-xs block text-center"
+          disableCopy
+          hideTooltip
+        />
+      </Link>
+    ),
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
+    accessorKey: 'amount',
+    header: () => (
+      <HeaderCell Icon={DollarSign} label="Amount" className="justify-end" />
+    ),
+    cell: ({ row }) => (
+      <div className="text-right font-mono text-xs">
+        {formatTokenAmount(row.original.amount)}
+      </div>
+    ),
+    size: 100, // Fixed width for buyers count
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];

@@ -16,7 +16,7 @@ export default async function TransactionsPage({
 
   const limit = 150;
 
-  void api.transactions.list.prefetch({
+  void api.transfers.list.prefetch({
     limit,
     recipient: address,
   });

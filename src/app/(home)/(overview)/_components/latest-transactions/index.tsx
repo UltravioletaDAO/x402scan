@@ -9,7 +9,7 @@ import {
 } from '@/app/(home)/_components/transactions';
 
 export const LatestTransactions = () => {
-  void api.transactions.list.prefetch({
+  void api.transfers.list.prefetch({
     limit,
   });
 

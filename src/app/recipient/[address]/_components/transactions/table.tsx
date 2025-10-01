@@ -17,7 +17,7 @@ export const LatestTransactionsTable: React.FC<Props> = ({
   limit,
   pageSize,
 }) => {
-  const [latestTransactions] = api.transactions.list.useSuspenseQuery({
+  const [latestTransactions] = api.transfers.list.useSuspenseQuery({
     limit,
     recipient: address,
   });

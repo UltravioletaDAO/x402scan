@@ -9,7 +9,7 @@ import type { ReactNode } from 'react';
 interface HeadingProps {
   title: string | ReactNode;
   icon?: ReactNode;
-  description?: string;
+  description?: string | ReactNode;
   actions?: ReactNode;
 }
 
@@ -29,9 +29,12 @@ export const Heading: React.FC<HeadingProps> = ({
           ) : (
             title
           )}
-          {description && (
-            <p className="text-muted-foreground/80">{description}</p>
-          )}
+          {description &&
+            (typeof description === 'string' ? (
+              <p className="text-muted-foreground/80">{description}</p>
+            ) : (
+              description
+            ))}
         </div>
       </div>
       {actions}

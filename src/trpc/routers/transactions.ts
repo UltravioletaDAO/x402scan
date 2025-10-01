@@ -1,14 +1,14 @@
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import {
-  listFacilitatorTransactions,
-  listFacilitatorTransactionsInputSchema,
-} from '@/services/cdp/sql/list-facilitator-transactions';
+  getTransaction,
+  getTransactionInputSchema,
+} from '@/services/cdp/sql/transactions/get';
 
 export const transactionsRouter = createTRPCRouter({
-  list: publicProcedure
-    .input(listFacilitatorTransactionsInputSchema)
+  get: publicProcedure
+    .input(getTransactionInputSchema)
     .query(async ({ input }) => {
-      return await listFacilitatorTransactions(input);
+      return await getTransaction(input);
     }),
 });

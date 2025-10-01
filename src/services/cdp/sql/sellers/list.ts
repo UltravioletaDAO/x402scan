@@ -1,13 +1,13 @@
 import z from 'zod';
 
-import { runBaseSqlQuery } from './query';
+import { runBaseSqlQuery } from '../query';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
-import { formatDateForSql } from './lib';
+import { baseQuerySchema, formatDateForSql } from '../lib';
 
-export const listTopSellersInputSchema = z.object({
+export const listTopSellersInputSchema = baseQuerySchema.extend({
   sorting: z
     .array(
       z.object({
@@ -34,7 +34,8 @@ export const listTopSellers = async (
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { sorting, addresses, startDate, endDate } = parseResult.data;
+  const { sorting, addresses, startDate, endDate, facilitators, tokens } =
+    parseResult.data;
   const { limit } = pagination;
   const outputSchema = z.array(
     z.object({
@@ -54,11 +55,8 @@ export const listTopSellers = async (
     COUNT(DISTINCT parameters['from']::String) AS unique_buyers
 FROM base.events 
 WHERE event_signature = 'Transfer(address,address,uint256)'
-    AND address = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
-    AND transaction_from IN (
-        '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', 
-        '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6'
-    )
+    AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
+    AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
     ${
       addresses
         ? `AND recipient IN (${addresses.map(a => `'${a}'`).join(', ')})`

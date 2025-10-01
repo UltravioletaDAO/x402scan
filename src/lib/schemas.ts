@@ -1,8 +1,13 @@
 import z from 'zod';
 
-import type { Address } from 'viem';
+import type { Address, Hash } from 'viem';
 
 export const ethereumAddressSchema = z
   .string()
   .regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid Ethereum address')
   .transform(address => address.toLowerCase() as Address);
+
+export const ethereumHashSchema = z
+  .string()
+  .regex(/^0x[a-fA-F0-9]{64}$/, 'Invalid transaction hash')
+  .transform(hash => hash.toLowerCase() as Hash);

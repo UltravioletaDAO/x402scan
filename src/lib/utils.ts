@@ -43,7 +43,8 @@ export const formatCompactAgo = (date: Date) => {
     .replace(' months', 'M')
     .replace(' month', 'M')
     .replace(' years', 'y')
-    .replace(' year', 'y');
+    .replace(' year', 'y')
+    .replace(' a ', ' 1');
 };
 
 export const formatAddress = (address: string) => {

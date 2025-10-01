@@ -1,12 +1,12 @@
 import z from 'zod';
 
-import { runBaseSqlQuery } from './query';
+import { runBaseSqlQuery } from '../query';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
-import { formatDateForSql } from './lib';
+import { baseQuerySchema, formatDateForSql } from '../lib';
 
-export const listFacilitatorTransactionsInputSchema = z.object({
+export const listFacilitatorTransfersInputSchema = baseQuerySchema.extend({
   recipient: ethereumAddressSchema.optional(),
   after: z
     .object({
@@ -29,15 +29,15 @@ const outputSchema = z.array(
   })
 );
 
-export const listFacilitatorTransactions = async (
-  input: z.input<typeof listFacilitatorTransactionsInputSchema>
+export const listFacilitatorTransfers = async (
+  input: z.input<typeof listFacilitatorTransfersInputSchema>
 ) => {
-  const parseResult = listFacilitatorTransactionsInputSchema.safeParse(input);
+  const parseResult = listFacilitatorTransfersInputSchema.safeParse(input);
   if (!parseResult.success) {
     console.error('invalid input', input);
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { recipient, after, limit } = parseResult.data;
+  const { recipient, after, limit, facilitators, tokens } = parseResult.data;
 
   const sql = `SELECT
   parameters['from']::String AS sender,
@@ -50,7 +50,8 @@ export const listFacilitatorTransactions = async (
   log_index
 FROM base.events
 WHERE event_signature = 'Transfer(address,address,uint256)'
-  AND transaction_from in ('0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6')
+  AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
+  AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
   ${recipient ? `AND recipient = '${recipient}'` : ''}
   ${after ? `AND block_timestamp > '${formatDateForSql(after.timestamp)}'` : ''}
 ORDER BY block_timestamp DESC
