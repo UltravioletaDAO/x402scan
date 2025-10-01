@@ -1,19 +1,14 @@
-import { ethereumHashSchema } from '@/lib/schemas';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import {
-  listFacilitatorTransfers,
-  listFacilitatorTransactionsInputSchema,
-} from '@/services/cdp/sql/transfers/list';
-import { getTransaction } from '@/services/cdp/sql/transactions/get';
+  getTransaction,
+  getTransactionInputSchema,
+} from '@/services/cdp/sql/transactions/get';
 
 export const transactionsRouter = createTRPCRouter({
-  get: publicProcedure.input(ethereumHashSchema).query(async ({ input }) => {
-    return await getTransaction(input);
-  }),
-  list: publicProcedure
-    .input(listFacilitatorTransactionsInputSchema)
+  get: publicProcedure
+    .input(getTransactionInputSchema)
     .query(async ({ input }) => {
-      return await listFacilitatorTransfers(input);
+      return await getTransaction(input);
     }),
 });

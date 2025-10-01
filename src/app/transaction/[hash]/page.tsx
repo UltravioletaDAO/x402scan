@@ -1,16 +1,20 @@
-import { Heading } from '@/app/_components/layout/page-utils';
+import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { Address } from '@/components/ui/address';
 import { api } from '@/trpc/server';
 import { notFound } from 'next/navigation';
+import { TransactionGraphic } from './_components/graphic';
 
 export default async function TransactionPage({
   params,
 }: PageProps<'/transaction/[hash]'>) {
   const { hash } = await params;
 
-  const transaction = await api.transactions.get(hash);
+  const [transaction, transfer] = await Promise.all([
+    api.transactions.get({ transaction_hash: hash }),
+    api.transfers.get({ transaction_hash: hash }),
+  ]);
 
-  if (!transaction) {
+  if (!transaction || !transfer) {
     return notFound();
   }
 
@@ -22,6 +26,14 @@ export default async function TransactionPage({
           <Address address={hash} className="text-sm" side="bottom" />
         }
       />
+      <Body>
+        <TransactionGraphic
+          buyerAddress={transfer.sender}
+          facilitatorAddress={transaction.from_address}
+          sellerAddress={transfer.recipient}
+          amount={transfer.amount}
+        />
+      </Body>
     </div>
   );
 }

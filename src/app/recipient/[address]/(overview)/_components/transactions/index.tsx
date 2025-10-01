@@ -12,7 +12,7 @@ interface Props {
 }
 
 export const LatestTransactions: React.FC<Props> = ({ address }) => {
-  void api.transactions.list.prefetch({
+  void api.transfers.list.prefetch({
     limit: 100,
     recipient: address,
   });

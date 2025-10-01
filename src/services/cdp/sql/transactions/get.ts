@@ -18,7 +18,9 @@ const outputSchema = z.object({
   gas_price: z.coerce.bigint(),
 });
 
-export const getTransaction = async (input: string) => {
+export const getTransaction = async (
+  input: z.input<typeof getTransactionInputSchema>
+) => {
   const parseResult = getTransactionInputSchema.safeParse(input);
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);

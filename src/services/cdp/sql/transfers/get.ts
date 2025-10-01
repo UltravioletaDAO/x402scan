@@ -3,18 +3,10 @@ import z from 'zod';
 import { runBaseSqlQuery } from '../query';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
-import { toPaginatedResponse } from '@/lib/pagination';
-import { baseQuerySchema, formatDateForSql } from '../lib';
+import { baseQuerySchema } from '../lib';
 
-export const listFacilitatorTransfersInputSchema = baseQuerySchema.extend({
-  recipient: ethereumAddressSchema.optional(),
-  after: z
-    .object({
-      timestamp: z.date(),
-      logIndex: z.number().optional(),
-    })
-    .optional(),
-  limit: z.number().default(100),
+export const getFacilitatorTransferInputSchema = baseQuerySchema.extend({
+  transaction_hash: z.string(),
 });
 
 const outputSchema = z.array(
@@ -29,15 +21,15 @@ const outputSchema = z.array(
   })
 );
 
-export const listFacilitatorTransfers = async (
-  input: z.input<typeof listFacilitatorTransfersInputSchema>
+export const getFacilitatorTransfer = async (
+  input: z.input<typeof getFacilitatorTransferInputSchema>
 ) => {
-  const parseResult = listFacilitatorTransfersInputSchema.safeParse(input);
+  const parseResult = getFacilitatorTransferInputSchema.safeParse(input);
   if (!parseResult.success) {
     console.error('invalid input', input);
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { recipient, after, limit, facilitators, tokens } = parseResult.data;
+  const { transaction_hash, tokens } = parseResult.data;
 
   const sql = `SELECT
   parameters['from']::String AS sender,
@@ -50,16 +42,11 @@ export const listFacilitatorTransfers = async (
   log_index
 FROM base.events
 WHERE event_signature = 'Transfer(address,address,uint256)'
-  AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
   AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
-  ${recipient ? `AND recipient = '${recipient}'` : ''}
-  ${after ? `AND block_timestamp > '${formatDateForSql(after.timestamp)}'` : ''}
+  AND transaction_hash = '${transaction_hash}'
 ORDER BY block_timestamp DESC
-LIMIT ${limit + 1};`;
+LIMIT 1;`;
   const result = await runBaseSqlQuery(sql, outputSchema);
 
-  return toPaginatedResponse({
-    items: result ?? [],
-    limit,
-  });
+  return result ? result[0] : null;
 };
