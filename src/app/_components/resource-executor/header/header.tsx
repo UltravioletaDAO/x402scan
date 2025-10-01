@@ -10,10 +10,11 @@ import {
 } from '@/components/ui/dialog';
 
 import { Method } from './method';
-import { useResourceExecutor } from './context/hook';
+import { FetchButton } from './fetch-button';
+
+import { useResourceExecutor } from '../context/hook';
 
 import type { Resources } from '@prisma/client';
-import { FetchButton } from './fetch-button';
 
 interface Props {
   resource: Resources;

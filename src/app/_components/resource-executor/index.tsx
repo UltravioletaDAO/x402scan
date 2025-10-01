@@ -2,7 +2,7 @@
 
 import { Card, CardHeader } from '@/components/ui/card';
 
-import { Header } from './header';
+import { Header } from './header/header';
 import { Form } from './form';
 
 import { cn } from '@/lib/utils';

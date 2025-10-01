@@ -3,14 +3,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Loader2, Play, Wallet } from 'lucide-react';
 import { type ParsedX402Response } from '@/lib/x402/schema';
 import { useX402Fetch } from '@/app/_hooks/x402/use-fetch';
 import { useWalletClient } from 'wagmi';
 import { useCurrentUser, useIsInitialized } from '@coinbase/cdp-hooks';
-import { ConnectEmbeddedWalletDialog } from '../auth/embedded-wallet/connect/dialog';
-import { CardContent, CardFooter } from '@/components/ui/card';
+import { CardContent } from '@/components/ui/card';
 import { useResourceExecutor } from './context/hook';
 
 const MICRO_FACTOR = 1_000_000n;

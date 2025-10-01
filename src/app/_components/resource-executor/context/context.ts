@@ -1,7 +1,7 @@
 import { createContext } from 'react';
 
 import type { ParsedX402Response } from '@/lib/x402/schema';
-import type { Methods } from '@/types/methods';
+import { Methods } from '@/types/methods';
 
 interface ResourceExecutorContextType {
   resource: string;
@@ -17,7 +17,7 @@ interface ResourceExecutorContextType {
 export const ResourceExecutorContext =
   createContext<ResourceExecutorContextType>({
     resource: '',
-    method: undefined,
+    method: Methods.GET,
     response: null,
     isLoading: false,
     error: null,
