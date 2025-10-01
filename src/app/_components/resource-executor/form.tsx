@@ -3,8 +3,16 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CardContent } from '@/components/ui/card';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 import { useResourceFetch } from './contexts/fetch/hook';
+import type { FieldDefinition } from '@/types/x402';
 
 export function Form() {
   const {
@@ -41,14 +49,11 @@ export function Form() {
                       <span className="text-destructive">*</span>
                     ) : null}
                   </Label>
-                  <Input
-                    id={`query-${field.name}`}
-                    placeholder={field.description ?? field.type ?? 'Value'}
-                    value={queryValues[field.name] ?? ''}
-                    onChange={event =>
-                      handleQueryChange(field.name, event.target.value)
-                    }
-                    aria-required={field.required}
+                  <FieldInput
+                    field={field}
+                    value={queryValues[field.name] ?? field.default ?? ''}
+                    onChange={value => handleQueryChange(field.name, value)}
+                    prefix="query"
                   />
                   {field.description && (
                     <p className="text-xs text-muted-foreground">
@@ -73,14 +78,11 @@ export function Form() {
                       <span className="text-destructive">*</span>
                     ) : null}
                   </Label>
-                  <Input
-                    id={`body-${field.name}`}
-                    placeholder={field.description ?? field.type ?? 'Value'}
-                    value={bodyValues[field.name] ?? ''}
-                    onChange={event =>
-                      handleBodyChange(field.name, event.target.value)
-                    }
-                    aria-required={field.required}
+                  <FieldInput
+                    field={field}
+                    value={bodyValues[field.name] ?? field.default ?? ''}
+                    onChange={value => handleBodyChange(field.name, value)}
+                    prefix="body"
                   />
                   {field.description && (
                     <p className="text-xs text-muted-foreground">
@@ -105,5 +107,50 @@ export function Form() {
         </pre>
       )}
     </CardContent>
+  );
+}
+
+function FieldInput({
+  field,
+  value,
+  onChange,
+  prefix,
+}: {
+  field: FieldDefinition;
+  value: string;
+  onChange: (value: string) => void;
+  prefix: string;
+}) {
+  const fieldId = `${prefix}-${field.name}`;
+
+  // If field has enum options, render a Select dropdown
+  if (field.enum && field.enum.length > 0) {
+    return (
+      <Select value={value} onValueChange={onChange}>
+        <SelectTrigger id={fieldId} className="w-full">
+          <SelectValue
+            placeholder={field.description ?? `Select ${field.name}`}
+          />
+        </SelectTrigger>
+        <SelectContent>
+          {field.enum.map(option => (
+            <SelectItem key={option} value={option}>
+              {option}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    );
+  }
+
+  // Default to regular input
+  return (
+    <Input
+      id={fieldId}
+      placeholder={field.description ?? field.type ?? 'Value'}
+      value={value}
+      onChange={event => onChange(event.target.value)}
+      aria-required={field.required}
+    />
   );
 }

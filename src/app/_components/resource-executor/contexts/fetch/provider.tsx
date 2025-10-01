@@ -88,6 +88,11 @@ export const ResourceFetchProvider: React.FC<Props> = ({
     return acc;
   }, []);
 
+  // Reconstruct nested objects from dot-notation fields
+  const reconstructedBody = reconstructNestedObject(
+    Object.fromEntries(bodyEntries)
+  );
+
   console.log(maxAmountRequired);
 
   const {
@@ -98,9 +103,7 @@ export const ResourceFetchProvider: React.FC<Props> = ({
   } = useX402Fetch(targetUrl, maxAmountRequired, {
     method,
     body:
-      bodyEntries.length > 0
-        ? JSON.stringify(Object.fromEntries(bodyEntries))
-        : undefined,
+      bodyEntries.length > 0 ? JSON.stringify(reconstructedBody) : undefined,
   });
 
   return (
@@ -132,34 +135,103 @@ function getFields(
     return [];
   }
 
-  return Object.entries(record).map(([name, raw]) => {
+  return expandFields(record);
+}
+
+function expandFields(
+  record: Record<string, unknown>,
+  prefix = '',
+  parentRequired?: string[]
+): FieldDefinition[] {
+  const fields: FieldDefinition[] = [];
+
+  for (const [name, raw] of Object.entries(record)) {
+    const fullName = prefix ? `${prefix}.${name}` : name;
+
     if (typeof raw === 'string') {
-      return { name, type: raw } satisfies FieldDefinition;
+      fields.push({
+        name: fullName,
+        type: raw,
+        required: parentRequired?.includes(name) ?? false,
+        enum: undefined,
+        default: undefined,
+      } satisfies FieldDefinition);
+      continue;
     }
 
-    return {
-      name,
-      type:
-        typeof raw === 'object' &&
-        raw &&
-        'type' in raw &&
-        typeof (raw as Record<string, unknown>).type === 'string'
-          ? ((raw as Record<string, unknown>).type as string)
-          : undefined,
-      description:
-        typeof raw === 'object' &&
-        raw &&
-        'description' in raw &&
-        typeof (raw as Record<string, unknown>).description === 'string'
-          ? ((raw as Record<string, unknown>).description as string)
-          : undefined,
-      required:
-        typeof raw === 'object' &&
-        raw &&
-        'required' in raw &&
-        typeof (raw as Record<string, unknown>).required === 'boolean'
-          ? ((raw as Record<string, unknown>).required as boolean)
-          : undefined,
-    } satisfies FieldDefinition;
-  });
+    if (typeof raw !== 'object' || !raw) {
+      continue;
+    }
+
+    const field = raw as Record<string, unknown>;
+    const fieldType = typeof field.type === 'string' ? field.type : undefined;
+    const fieldDescription =
+      typeof field.description === 'string' ? field.description : undefined;
+    const fieldEnum = Array.isArray(field.enum)
+      ? (field.enum as string[])
+      : undefined;
+    const fieldDefault =
+      typeof field.default === 'string' ? field.default : undefined;
+
+    // Determine if this field is required
+    const isFieldRequired =
+      typeof field.required === 'boolean'
+        ? field.required
+        : (parentRequired?.includes(name) ?? false);
+
+    // Handle object type with properties - expand recursively
+    if (
+      fieldType === 'object' &&
+      field.properties &&
+      typeof field.properties === 'object'
+    ) {
+      const objectRequired = Array.isArray(field.required)
+        ? field.required
+        : [];
+      const expandedFields = expandFields(
+        field.properties as Record<string, unknown>,
+        fullName,
+        objectRequired
+      );
+      fields.push(...expandedFields);
+    } else {
+      // Regular field or object without properties
+      fields.push({
+        name: fullName,
+        type: fieldType,
+        description: fieldDescription,
+        required: isFieldRequired,
+        enum: fieldEnum,
+        default: fieldDefault,
+      } satisfies FieldDefinition);
+    }
+  }
+
+  return fields;
+}
+
+function reconstructNestedObject(
+  flatObject: Record<string, string>
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(flatObject)) {
+    const parts = key.split('.');
+    let current = result;
+
+    // Navigate/create nested structure
+    for (let i = 0; i < parts.length - 1; i++) {
+      const part = parts[i];
+      if (!(part in current)) {
+        current[part] = {};
+      }
+      current = current[part] as Record<string, unknown>;
+    }
+
+    // Set the final value
+    const finalKey = parts[parts.length - 1];
+    current[finalKey] = value;
+  }
+
+  return result;
 }

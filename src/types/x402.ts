@@ -11,4 +11,6 @@ export type FieldDefinition = {
   type?: string;
   description?: string;
   required?: boolean;
+  enum?: string[];
+  default?: string;
 };
