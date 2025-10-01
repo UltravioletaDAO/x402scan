@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og'
-import { logoBase64 } from './logo-base64'
 
 export const runtime = 'edge'
 
