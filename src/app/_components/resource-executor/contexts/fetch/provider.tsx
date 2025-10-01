@@ -152,7 +152,9 @@ function expandFields(
       fields.push({
         name: fullName,
         type: raw,
-        required: parentRequired?.includes(name) ?? false
+        required: parentRequired?.includes(name) ?? false,
+        enum: undefined,
+        default: undefined,
       } satisfies FieldDefinition);
       continue;
     }
@@ -164,6 +166,8 @@ function expandFields(
     const field = raw as Record<string, unknown>;
     const fieldType = typeof field.type === 'string' ? field.type : undefined;
     const fieldDescription = typeof field.description === 'string' ? field.description : undefined;
+    const fieldEnum = Array.isArray(field.enum) ? (field.enum as string[]) : undefined;
+    const fieldDefault = typeof field.default === 'string' ? field.default : undefined;
 
     // Determine if this field is required
     const isFieldRequired =
@@ -187,6 +191,8 @@ function expandFields(
         type: fieldType,
         description: fieldDescription,
         required: isFieldRequired,
+        enum: fieldEnum,
+        default: fieldDefault,
       } satisfies FieldDefinition);
     }
   }

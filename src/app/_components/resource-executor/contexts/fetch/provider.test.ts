@@ -11,12 +11,16 @@ function expandFields(
   type?: string;
   description?: string;
   required?: boolean;
+  enum?: string[];
+  default?: string;
 }> {
   const fields: Array<{
     name: string;
     type?: string;
     description?: string;
     required?: boolean;
+    enum?: string[];
+    default?: string;
   }> = [];
 
   for (const [name, raw] of Object.entries(record)) {
@@ -26,7 +30,9 @@ function expandFields(
       fields.push({
         name: fullName,
         type: raw,
-        required: parentRequired?.includes(name) ?? false
+        required: parentRequired?.includes(name) ?? false,
+        enum: undefined,
+        default: undefined,
       });
       continue;
     }
@@ -38,6 +44,8 @@ function expandFields(
     const field = raw as Record<string, unknown>;
     const fieldType = typeof field.type === 'string' ? field.type : undefined;
     const fieldDescription = typeof field.description === 'string' ? field.description : undefined;
+    const fieldEnum = Array.isArray(field.enum) ? (field.enum as string[]) : undefined;
+    const fieldDefault = typeof field.default === 'string' ? field.default : undefined;
 
     // Determine if this field is required
     const isFieldRequired =
@@ -61,6 +69,8 @@ function expandFields(
         type: fieldType,
         description: fieldDescription,
         required: isFieldRequired,
+        enum: fieldEnum,
+        default: fieldDefault,
       });
     }
   }
@@ -100,6 +110,12 @@ describe('Field Expansion', () => {
         description: 'The prompt text',
         required: true
       },
+      color: {
+        type: 'string',
+        description: 'Color selection',
+        default: 'White',
+        enum: ['Black', 'White']
+      },
       bankData: {
         type: 'object',
         description: 'Bank information',
@@ -119,29 +135,45 @@ describe('Field Expansion', () => {
 
     const result = expandFields(input);
 
-    expect(result).toHaveLength(3);
+    expect(result).toHaveLength(4);
 
     // Check regular field
     expect(result[0]).toEqual({
       name: 'prompt',
       type: 'string',
       description: 'The prompt text',
-      required: true
+      required: true,
+      enum: undefined,
+      default: undefined,
+    });
+
+    // Check enum field
+    expect(result[1]).toEqual({
+      name: 'color',
+      type: 'string',
+      description: 'Color selection',
+      required: false,
+      enum: ['Black', 'White'],
+      default: 'White',
     });
 
     // Check expanded nested fields
-    expect(result[1]).toEqual({
+    expect(result[2]).toEqual({
       name: 'bankData.bankAccountName',
       type: 'string',
       description: 'Bank account name',
-      required: true // Should be true because it's in the parent's required array
+      required: true, // Should be true because it's in the parent's required array
+      enum: undefined,
+      default: undefined,
     });
 
-    expect(result[2]).toEqual({
+    expect(result[3]).toEqual({
       name: 'bankData.bankCode',
       type: 'string',
       description: 'Bank code',
-      required: false // Should be false because it's not in the parent's required array
+      required: false, // Should be false because it's not in the parent's required array
+      enum: undefined,
+      default: undefined,
     });
   });
 
@@ -173,8 +205,12 @@ describe('Field Expansion', () => {
     expect(result).toHaveLength(2);
     expect(result[0].name).toBe('user.profile.name');
     expect(result[0].required).toBe(true);
+    expect(result[0].enum).toBeUndefined();
+    expect(result[0].default).toBeUndefined();
     expect(result[1].name).toBe('user.profile.age');
     expect(result[1].required).toBe(false);
+    expect(result[1].enum).toBeUndefined();
+    expect(result[1].default).toBeUndefined();
   });
 });
 
