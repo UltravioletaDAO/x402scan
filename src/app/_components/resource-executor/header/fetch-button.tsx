@@ -4,12 +4,16 @@ import { useWalletClient } from 'wagmi';
 import { Button } from '@/components/ui/button';
 import { Loader2, Play, Wallet } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
+import { useResourceFetch } from '../contexts/fetch/hook';
 
 export const FetchButton = () => {
   const { data: walletClient, isLoading: isLoadingWalletClient } =
     useWalletClient();
   const { isInitialized } = useIsInitialized();
   const { currentUser } = useCurrentUser();
+
+  const { execute, isPending, allRequiredFieldsFilled, maxAmountRequired } =
+    useResourceFetch();
 
   if (!walletClient || !currentUser) {
     return (
@@ -21,13 +25,6 @@ export const FetchButton = () => {
       </ConnectEmbeddedWalletDialog>
     );
   }
-
-  const isPending = false;
-  const allRequiredFieldsFilled = false;
-  const execute = () => {
-    void 0;
-  };
-  const paymentValue = 50000n;
 
   return (
     <Button
@@ -58,7 +55,7 @@ export const FetchButton = () => {
         <>
           <Play className="size-4" />
           Fetch
-          <span>{formatTokenAmount(paymentValue)}</span>
+          <span>{formatTokenAmount(maxAmountRequired)}</span>
         </>
       )}
     </Button>

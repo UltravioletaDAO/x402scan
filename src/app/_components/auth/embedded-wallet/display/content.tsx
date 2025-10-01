@@ -41,12 +41,12 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user }) => {
           )
         }
       />
-      {user.evmSmartAccounts && user.evmSmartAccounts.length > 0 && (
+      {user.evmAccounts && user.evmAccounts.length > 0 && (
         <ItemContainer
           label="Address"
           value={
             <CopyCode
-              code={user.evmSmartAccounts[0]}
+              code={user.evmAccounts[0]}
               toastMessage="Address copied to clipboard"
             />
           }

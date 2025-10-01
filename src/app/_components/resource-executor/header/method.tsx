@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Methods } from '@/types/methods';
+import { Methods } from '@/types/x402';
 import { cn } from '@/lib/utils';
 
 interface Props {

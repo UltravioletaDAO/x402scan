@@ -1,4 +1,4 @@
-import type { Methods } from '@/types/methods';
+import type { Methods } from '@/types/x402';
 
 export function getBazaarMethod(outputSchema: unknown): Methods | undefined {
   if (

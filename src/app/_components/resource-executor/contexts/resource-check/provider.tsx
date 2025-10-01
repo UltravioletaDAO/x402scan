@@ -1,6 +1,6 @@
-import { ResourceExecutorContext } from './context';
+import { ResourceCheckContext } from './context';
 import { useX402Test } from '@/app/_hooks/x402/use-test';
-import { Methods } from '@/types/methods';
+import { Methods } from '@/types/x402';
 
 interface Props {
   resource: string;
@@ -17,7 +17,7 @@ export const ResourceExecutorProvider: React.FC<Props> = ({
     useX402Test(resource, { method: method ?? Methods.GET }, { enabled: true });
 
   return (
-    <ResourceExecutorContext.Provider
+    <ResourceCheckContext.Provider
       value={{
         resource,
         method,
@@ -30,6 +30,6 @@ export const ResourceExecutorProvider: React.FC<Props> = ({
       }}
     >
       {children}
-    </ResourceExecutorContext.Provider>
+    </ResourceCheckContext.Provider>
   );
 };
