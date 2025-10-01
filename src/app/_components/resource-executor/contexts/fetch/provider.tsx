@@ -156,9 +156,12 @@ function getFields(
       required:
         typeof raw === 'object' &&
         raw &&
-        'required' in raw &&
-        typeof (raw as Record<string, unknown>).required === 'boolean'
-          ? ((raw as Record<string, unknown>).required as boolean)
+        'required' in raw
+          ? typeof (raw as Record<string, unknown>).required === 'boolean'
+            ? ((raw as Record<string, unknown>).required as boolean)
+            : Array.isArray((raw as Record<string, unknown>).required)
+            ? undefined // For object-level required arrays, we don't set field-level required
+            : undefined
           : undefined,
     } satisfies FieldDefinition;
   });

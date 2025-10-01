@@ -7,22 +7,24 @@ import { z as z3 } from 'zod3';
 
 // ==================== TYPES ====================
 
-// Handle both string shorthand and object field definitions
-const FieldDefSchema = z3.preprocess(
-  val => {
-    // Convert string shorthand to object
-    if (typeof val === 'string') {
-      return { type: val };
-    }
-    return val;
-  },
-  z3.object({
-    type: z3.string().optional(),
-    required: z3.boolean().optional(),
-    description: z3.string().optional(),
-    enum: z3.array(z3.string()).optional(),
-    properties: z3.record(z3.unknown()).optional(),
-  })
+// Handle both string shorthand and object field definitions with recursive properties
+const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
+  z3.preprocess(
+    val => {
+      // Convert string shorthand to object
+      if (typeof val === 'string') {
+        return { type: val };
+      }
+      return val;
+    },
+    z3.object({
+      type: z3.string().optional(),
+      required: z3.union([z3.boolean(), z3.array(z3.string())]).optional(),
+      description: z3.string().optional(),
+      enum: z3.array(z3.string()).optional(),
+      properties: z3.record(z3.lazy(() => FieldDefSchema)).optional(),
+    })
+  )
 );
 
 const EnhancedInputSchema = HTTPRequestStructureSchema.omit({
