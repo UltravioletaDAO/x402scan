@@ -1,13 +1,15 @@
 import {
-  getFirstTransferTimestampInputSchema,
-  getFirstTransferTimestamp,
   getOverallStatistics,
   overallStatisticsInputSchema,
-} from '@/services/cdp/sql/overall-statistics';
+} from '@/services/cdp/sql/stats/overall';
 import {
   getBucketedStatistics,
   bucketedStatisticsInputSchema,
-} from '@/services/cdp/sql/bucketed-statistics';
+} from '@/services/cdp/sql/stats/bucketed';
+import {
+  getFirstTransferTimestampInputSchema,
+  getFirstTransferTimestamp,
+} from '@/services/cdp/sql/stats/first-transfer';
 
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import { getAcceptsAddresses } from '@/services/db/accepts';

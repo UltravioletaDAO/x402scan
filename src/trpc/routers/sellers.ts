@@ -3,7 +3,7 @@ import z from 'zod';
 import {
   listTopSellers,
   listTopSellersInputSchema,
-} from '@/services/cdp/sql/list-top-sellers';
+} from '@/services/cdp/sql/sellers/list';
 import { getAcceptsAddresses } from '@/services/db/accepts';
 
 export const sellersRouter = createTRPCRouter({

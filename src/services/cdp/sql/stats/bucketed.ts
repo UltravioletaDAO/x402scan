@@ -1,11 +1,13 @@
 import z from 'zod';
 
-import { runBaseSqlQuery } from './query';
-import { ethereumAddressSchema } from '@/lib/schemas';
 import { subMonths } from 'date-fns';
-import { formatDateForSql } from './lib';
 
-export const bucketedStatisticsInputSchema = z.object({
+import { runBaseSqlQuery } from '../query';
+import { baseQuerySchema, formatDateForSql } from '../lib';
+
+import { ethereumAddressSchema } from '@/lib/schemas';
+
+export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   addresses: z.array(ethereumAddressSchema).optional(),
   startDate: z
     .date()
@@ -25,7 +27,8 @@ export const getBucketedStatistics = async (
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { addresses, startDate, endDate, numBuckets } = parseResult.data;
+  const { addresses, startDate, endDate, numBuckets, facilitators, tokens } =
+    parseResult.data;
   const outputSchema = z.object({
     bucket_start: z.coerce.date(),
     total_transactions: z.coerce.bigint(),
@@ -53,11 +56,8 @@ export const getBucketedStatistics = async (
     COUNT(DISTINCT parameters['to']::String) AS unique_sellers
 FROM base.events 
 WHERE event_signature = 'Transfer(address,address,uint256)'
-    AND address = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
-    AND transaction_from IN (
-        '0xd8dfc729cbd05381647eb5540d756f4f8ad63eec', 
-        '0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6'
-    )
+    AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
+    AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
     ${
       addresses
         ? `AND parameters['to']::String IN (${addresses

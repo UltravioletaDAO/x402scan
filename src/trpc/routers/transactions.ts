@@ -2,10 +2,10 @@ import { ethereumHashSchema } from '@/lib/schemas';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import {
-  listFacilitatorTransactions,
+  listFacilitatorTransfers,
   listFacilitatorTransactionsInputSchema,
-} from '@/services/cdp/sql/list-facilitator-transactions';
-import { getTransaction } from '@/services/cdp/sql/transaction';
+} from '@/services/cdp/sql/transfers/list';
+import { getTransaction } from '@/services/cdp/sql/transactions/get';
 
 export const transactionsRouter = createTRPCRouter({
   get: publicProcedure.input(ethereumHashSchema).query(async ({ input }) => {
@@ -14,6 +14,6 @@ export const transactionsRouter = createTRPCRouter({
   list: publicProcedure
     .input(listFacilitatorTransactionsInputSchema)
     .query(async ({ input }) => {
-      return await listFacilitatorTransactions(input);
+      return await listFacilitatorTransfers(input);
     }),
 });
