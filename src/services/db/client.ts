@@ -7,9 +7,11 @@ import { neonConfig } from '@neondatabase/serverless';
 
 import ws from 'ws';
 
+import { env } from '@/env';
+
 neonConfig.webSocketConstructor = ws;
 
-const connectionString = `${process.env.DATABASE_URL}`;
+const connectionString = `${env.POSTGRES_PRISMA_URL}`;
 const adapter = new PrismaNeon({ connectionString });
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };

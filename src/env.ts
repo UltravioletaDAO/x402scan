@@ -3,7 +3,8 @@ import { z } from 'zod';
 
 export const env = createEnv({
   server: {
-    DATABASE_URL: z.url(),
+    POSTGRES_PRISMA_URL: z.url(),
+    POSTGRES_URL_NON_POOLING: z.url(),
     CDP_API_KEY_NAME: z.string(),
     CDP_API_KEY_ID: z.string(),
     CDP_API_KEY_SECRET: z.string(),
