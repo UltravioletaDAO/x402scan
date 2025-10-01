@@ -44,12 +44,6 @@ export default async function Image() {
               marginBottom: 48,
             }}
           >
-            <img
-              src={logoBase64}
-              width="72"
-              height="72"
-              style={{ borderRadius: 16 }}
-            />
             <div
               style={{
                 fontSize: 84,
