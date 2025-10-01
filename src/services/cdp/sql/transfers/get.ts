@@ -2,11 +2,11 @@ import z from 'zod';
 
 import { runBaseSqlQuery } from '../query';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
 import { baseQuerySchema } from '../lib';
 
 export const getFacilitatorTransferInputSchema = baseQuerySchema.extend({
-  transaction_hash: z.string(),
+  transaction_hash: ethereumHashSchema,
 });
 
 const outputSchema = z.array(
@@ -15,7 +15,7 @@ const outputSchema = z.array(
     recipient: ethereumAddressSchema,
     amount: z.coerce.bigint(),
     token_address: ethereumAddressSchema,
-    transaction_hash: z.string(),
+    transaction_hash: ethereumHashSchema,
     block_timestamp: z.coerce.date(),
     log_index: z.number(),
   })

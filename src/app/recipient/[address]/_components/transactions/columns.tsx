@@ -14,7 +14,7 @@ import { formatTokenAmount } from '@/lib/token';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 
-type ColumnType = RouterOutputs['transactions']['list']['items'][number];
+type ColumnType = RouterOutputs['transfers']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {

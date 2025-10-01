@@ -1,16 +1,16 @@
 import z from 'zod';
 import { runBaseSqlQuery } from '../query';
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
 import { baseQuerySchema } from '../lib';
 
 export const getTransactionInputSchema = baseQuerySchema.extend({
-  transaction_hash: z.string(),
+  transaction_hash: ethereumHashSchema,
 });
 
 const outputSchema = z.object({
   block_number: z.coerce.bigint(),
   timestamp: z.coerce.date(),
-  transaction_hash: z.string(),
+  transaction_hash: ethereumHashSchema,
   transaction_index: z.coerce.bigint(),
   from_address: ethereumAddressSchema,
   to_address: ethereumAddressSchema,
