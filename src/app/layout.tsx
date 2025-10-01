@@ -38,10 +38,53 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'x402scan',
+    default: 'x402scan • x402 Ecosystem Explorer',
     template: '%s | x402scan',
   },
-  description: "See what's happening in the x402 ecosystem",
+  description:
+    'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
+  keywords: [
+    'x402',
+    'blockchain',
+    'ecosystem',
+    'transactions',
+    'agentic commerce',
+    'crypto',
+    'web3',
+    'block explorer',
+    'analytics',
+    'sellers',
+  ],
+  authors: [{ name: 'x402scan' }],
+  creator: 'x402scan',
+  publisher: 'x402scan',
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: env.NEXT_PUBLIC_APP_URL,
+    title: 'x402scan • x402 Ecosystem Explorer',
+    description:
+      'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
+    siteName: 'x402scan',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'x402scan • x402 Ecosystem Explorer',
+    description:
+      'Explore the x402 ecosystem. View transactions, sellers, origins and resources. Explore the future of agentic commerce.',
+    creator: '@x402scan',
+  },
   appleWebApp: {
     title: 'x402scan',
     statusBarStyle: 'black-translucent',
