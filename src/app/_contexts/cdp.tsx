@@ -23,12 +23,7 @@ export const CDPHooksProvider = ({ children }: Props) => {
 
   const cdpConfig = {
     projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID ?? '',
-    ethereum: {
-      createOnLogin: 'smart' as const,
-    },
-    solana: {
-      createOnLogin: true,
-    },
+    ethereum: {},
   };
 
   const connector = createCDPEmbeddedWalletConnector({

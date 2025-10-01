@@ -20,7 +20,7 @@ interface Props {
 }
 
 export const HeaderCard: React.FC<Props> = async ({ address }) => {
-  const origins = await api.origins.getOriginsByAddress(address);
+  const origins = await api.origins.list.byAddress(address);
 
   return (
     <Card className={cn('relative mt-10 md:mt-12')}>

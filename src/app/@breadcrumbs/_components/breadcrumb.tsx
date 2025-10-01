@@ -76,11 +76,44 @@ export const Breadcrumb = <T extends string>({
   );
 };
 
-// export const LoadingBreadcrumb = () => {
+// export const LoadingBreadcrumb = ({
+//   Fallback,
+//   name,
+//   textClassName,
+//   mobileHideText,
+// }: {
+//   Fallback?: LucideIcon;
+//   name: string;
+//   textClassName?: string;
+//   mobileHideText?: boolean;
+// }) => {
 //   return (
 //     <div className="flex items-center gap-2 cursor-pointer">
-//       <Skeleton className="size-5" />
-//       <Skeleton className="w-16 h-[14px]" />
+//       {Fallback ? (
+//         <div
+//           className={cn(
+//             'size-full flex items-center justify-center border rounded-md',
+//             'size-5'
+//           )}
+//         >
+//           {Fallback && <Fallback className="size-3" />}
+//         </div>
+//       ) : (
+//         <Skeleton className="size-5" />
+//       )}
+//       {name ? (
+//         <p
+//           className={cn(
+//             'font-semibold text-sm font-mono md:text-base',
+//             textClassName,
+//             mobileHideText && 'hidden md:block'
+//           )}
+//         >
+//           {name}
+//         </p>
+//       ) : (
+//         <Skeleton className="w-16 h-[14px] md:h-4" />
+//       )}
 //     </div>
 //   );
 // };

@@ -14,7 +14,7 @@ interface Props {
 }
 
 export const Deposit: React.FC<Props> = ({ user }) => {
-  const address = user?.evmSmartAccounts?.[0];
+  const address = user?.evmAccounts?.[0];
 
   if (!address) {
     return <p>There was a problem getting your wallet address</p>;
