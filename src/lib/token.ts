@@ -1,9 +1,8 @@
 import { formatCurrency } from './utils';
 
-export const convertTokenAmount = (amount: bigint) => {
+export const convertTokenAmount = (amount: bigint, decimals = 6) => {
   // Convert to string, then use string manipulation to preserve precision
   const amountStr = amount.toString();
-  const decimals = 6;
 
   if (amountStr.length <= decimals) {
     // Amount is less than 1 token (e.g., 500000 -> 0.5)
@@ -16,6 +15,6 @@ export const convertTokenAmount = (amount: bigint) => {
   }
 };
 
-export const formatTokenAmount = (amount: bigint) => {
-  return formatCurrency(Number(convertTokenAmount(amount)));
+export const formatTokenAmount = (amount: bigint, decimals = 6) => {
+  return formatCurrency(Number(convertTokenAmount(amount, decimals)));
 };

@@ -3,6 +3,7 @@ import { Address } from '@/components/ui/address';
 import { api } from '@/trpc/server';
 import { notFound } from 'next/navigation';
 import { TransactionGraphic } from './_components/graphic';
+import { TransactionDetails } from './_components/details';
 
 export default async function TransactionPage({
   params,
@@ -33,6 +34,7 @@ export default async function TransactionPage({
           sellerAddress={transfer.recipient}
           amount={transfer.amount}
         />
+        <TransactionDetails transaction={transaction} transfer={transfer} />
       </Body>
     </div>
   );
