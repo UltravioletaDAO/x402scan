@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { logoBase64 } from './logo-base64'
 
 export const runtime = 'edge'
 
@@ -43,8 +44,15 @@ export default async function Image() {
               marginBottom: 48,
             }}
           >
+            <img
+              src={logoBase64}
+              width="72"
+              height="72"
+              style={{ borderRadius: 16 }}
+            />
             <div
               style={{
+                display: 'flex',
                 fontSize: 84,
                 fontWeight: 700,
                 fontFamily: 'ui-monospace, Menlo, Monaco, "Cascadia Code", "Segoe UI Mono", "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro", "Fira Code", "Droid Sans Mono", "Courier New", monospace',
@@ -74,6 +82,8 @@ export default async function Image() {
           {/* Description */}
           <div
             style={{
+              display: 'flex',
+              flexDirection: 'column',
               fontSize: 24,
               fontWeight: 400,
               color: '#94a3b8',
@@ -82,38 +92,11 @@ export default async function Image() {
               letterSpacing: '-0.005em',
             }}
           >
-            View transactions, sellers, origins and resources.
-            <br />
-            Explore the future of agentic commerce.
+            <div style={{ display: 'flex' }}>View transactions, sellers, origins and resources.</div>
+            <div style={{ display: 'flex' }}>Explore the future of agentic commerce.</div>
           </div>
         </div>
 
-        {/* Decorative elements */}
-        <div
-          style={{
-            position: 'absolute',
-            right: 80,
-            bottom: 80,
-            width: 200,
-            height: 200,
-            borderRadius: '50%',
-            background: 'linear-gradient(135deg, #1e40af40, #06b6d440)',
-            filter: 'blur(60px)',
-          }}
-        />
-
-        <div
-          style={{
-            position: 'absolute',
-            top: -50,
-            right: -50,
-            width: 300,
-            height: 300,
-            borderRadius: '50%',
-            background: 'linear-gradient(225deg, #0f172a, transparent)',
-            opacity: 0.3,
-          }}
-        />
       </div>
     ),
     {
