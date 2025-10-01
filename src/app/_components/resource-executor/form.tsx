@@ -3,7 +3,13 @@
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CardContent } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 import { useResourceFetch } from './contexts/fetch/hook';
 import type { FieldDefinition } from '@/types/x402';
@@ -108,7 +114,7 @@ function FieldInput({
   field,
   value,
   onChange,
-  prefix
+  prefix,
 }: {
   field: FieldDefinition;
   value: string;
@@ -120,15 +126,14 @@ function FieldInput({
   // If field has enum options, render a Select dropdown
   if (field.enum && field.enum.length > 0) {
     return (
-      <Select
-        value={value}
-        onValueChange={onChange}
-      >
+      <Select value={value} onValueChange={onChange}>
         <SelectTrigger id={fieldId} className="w-full">
-          <SelectValue placeholder={field.description ?? `Select ${field.name}`} />
+          <SelectValue
+            placeholder={field.description ?? `Select ${field.name}`}
+          />
         </SelectTrigger>
         <SelectContent>
-          {field.enum.map((option) => (
+          {field.enum.map(option => (
             <SelectItem key={option} value={option}>
               {option}
             </SelectItem>
@@ -144,7 +149,7 @@ function FieldInput({
       id={fieldId}
       placeholder={field.description ?? field.type ?? 'Value'}
       value={value}
-      onChange={(event) => onChange(event.target.value)}
+      onChange={event => onChange(event.target.value)}
       aria-required={field.required}
     />
   );

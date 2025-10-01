@@ -43,19 +43,29 @@ function expandFields(
 
     const field = raw as Record<string, unknown>;
     const fieldType = typeof field.type === 'string' ? field.type : undefined;
-    const fieldDescription = typeof field.description === 'string' ? field.description : undefined;
-    const fieldEnum = Array.isArray(field.enum) ? (field.enum as string[]) : undefined;
-    const fieldDefault = typeof field.default === 'string' ? field.default : undefined;
+    const fieldDescription =
+      typeof field.description === 'string' ? field.description : undefined;
+    const fieldEnum = Array.isArray(field.enum)
+      ? (field.enum as string[])
+      : undefined;
+    const fieldDefault =
+      typeof field.default === 'string' ? field.default : undefined;
 
     // Determine if this field is required
     const isFieldRequired =
       typeof field.required === 'boolean'
         ? field.required
-        : parentRequired?.includes(name) ?? false;
+        : (parentRequired?.includes(name) ?? false);
 
     // Handle object type with properties - expand recursively
-    if (fieldType === 'object' && field.properties && typeof field.properties === 'object') {
-      const objectRequired = Array.isArray(field.required) ? field.required : [];
+    if (
+      fieldType === 'object' &&
+      field.properties &&
+      typeof field.properties === 'object'
+    ) {
+      const objectRequired = Array.isArray(field.required)
+        ? field.required
+        : [];
       const expandedFields = expandFields(
         field.properties as Record<string, unknown>,
         fullName,
@@ -78,7 +88,9 @@ function expandFields(
   return fields;
 }
 
-function reconstructNestedObject(flatObject: Record<string, string>): Record<string, unknown> {
+function reconstructNestedObject(
+  flatObject: Record<string, string>
+): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(flatObject)) {
@@ -108,13 +120,13 @@ describe('Field Expansion', () => {
       prompt: {
         type: 'string',
         description: 'The prompt text',
-        required: true
+        required: true,
       },
       color: {
         type: 'string',
         description: 'Color selection',
         default: 'White',
-        enum: ['Black', 'White']
+        enum: ['Black', 'White'],
       },
       bankData: {
         type: 'object',
@@ -123,14 +135,14 @@ describe('Field Expansion', () => {
         properties: {
           bankAccountName: {
             type: 'string',
-            description: 'Bank account name'
+            description: 'Bank account name',
           },
           bankCode: {
             type: 'string',
-            description: 'Bank code'
-          }
-        }
-      }
+            description: 'Bank code',
+          },
+        },
+      },
     };
 
     const result = expandFields(input);
@@ -188,16 +200,16 @@ describe('Field Expansion', () => {
             properties: {
               name: {
                 type: 'string',
-                description: 'User name'
+                description: 'User name',
               },
               age: {
                 type: 'number',
-                description: 'User age'
-              }
-            }
-          }
-        }
-      }
+                description: 'User age',
+              },
+            },
+          },
+        },
+      },
     };
 
     const result = expandFields(input);
@@ -217,11 +229,11 @@ describe('Field Expansion', () => {
 describe('Object Reconstruction', () => {
   it('should reconstruct nested objects from flat dot-notation fields', () => {
     const input = {
-      'prompt': 'test prompt',
+      prompt: 'test prompt',
       'bankData.bankAccountName': 'John Doe',
       'bankData.bankCode': '123456',
       'user.profile.name': 'Jane',
-      'user.profile.age': '25'
+      'user.profile.age': '25',
     };
 
     const result = reconstructNestedObject(input);
@@ -230,28 +242,28 @@ describe('Object Reconstruction', () => {
       prompt: 'test prompt',
       bankData: {
         bankAccountName: 'John Doe',
-        bankCode: '123456'
+        bankCode: '123456',
       },
       user: {
         profile: {
           name: 'Jane',
-          age: '25'
-        }
-      }
+          age: '25',
+        },
+      },
     });
   });
 
   it('should handle single-level fields', () => {
     const input = {
-      'name': 'test',
-      'email': 'test@example.com'
+      name: 'test',
+      email: 'test@example.com',
     };
 
     const result = reconstructNestedObject(input);
 
     expect(result).toEqual({
       name: 'test',
-      email: 'test@example.com'
+      email: 'test@example.com',
     });
   });
 });

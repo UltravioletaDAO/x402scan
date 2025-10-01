@@ -89,7 +89,9 @@ export const ResourceFetchProvider: React.FC<Props> = ({
   }, []);
 
   // Reconstruct nested objects from dot-notation fields
-  const reconstructedBody = reconstructNestedObject(Object.fromEntries(bodyEntries));
+  const reconstructedBody = reconstructNestedObject(
+    Object.fromEntries(bodyEntries)
+  );
 
   console.log(maxAmountRequired);
 
@@ -101,9 +103,7 @@ export const ResourceFetchProvider: React.FC<Props> = ({
   } = useX402Fetch(targetUrl, maxAmountRequired, {
     method,
     body:
-      bodyEntries.length > 0
-        ? JSON.stringify(reconstructedBody)
-        : undefined,
+      bodyEntries.length > 0 ? JSON.stringify(reconstructedBody) : undefined,
   });
 
   return (
@@ -165,19 +165,29 @@ function expandFields(
 
     const field = raw as Record<string, unknown>;
     const fieldType = typeof field.type === 'string' ? field.type : undefined;
-    const fieldDescription = typeof field.description === 'string' ? field.description : undefined;
-    const fieldEnum = Array.isArray(field.enum) ? (field.enum as string[]) : undefined;
-    const fieldDefault = typeof field.default === 'string' ? field.default : undefined;
+    const fieldDescription =
+      typeof field.description === 'string' ? field.description : undefined;
+    const fieldEnum = Array.isArray(field.enum)
+      ? (field.enum as string[])
+      : undefined;
+    const fieldDefault =
+      typeof field.default === 'string' ? field.default : undefined;
 
     // Determine if this field is required
     const isFieldRequired =
       typeof field.required === 'boolean'
         ? field.required
-        : parentRequired?.includes(name) ?? false;
+        : (parentRequired?.includes(name) ?? false);
 
     // Handle object type with properties - expand recursively
-    if (fieldType === 'object' && field.properties && typeof field.properties === 'object') {
-      const objectRequired = Array.isArray(field.required) ? field.required : [];
+    if (
+      fieldType === 'object' &&
+      field.properties &&
+      typeof field.properties === 'object'
+    ) {
+      const objectRequired = Array.isArray(field.required)
+        ? field.required
+        : [];
       const expandedFields = expandFields(
         field.properties as Record<string, unknown>,
         fullName,
@@ -200,7 +210,9 @@ function expandFields(
   return fields;
 }
 
-function reconstructNestedObject(flatObject: Record<string, string>): Record<string, unknown> {
+function reconstructNestedObject(
+  flatObject: Record<string, string>
+): Record<string, unknown> {
   const result: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(flatObject)) {
