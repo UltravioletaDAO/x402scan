@@ -1,3 +1,4 @@
+import type { Prisma } from '@prisma/client';
 import { prisma } from './client';
 
 import { z } from 'zod';
@@ -71,18 +72,36 @@ export const upsertOrigin = async (
   });
 };
 
-export const getOriginsByAddress = async (address: string) => {
-  return await prisma.resourceOrigin.findMany({
-    where: {
-      resources: {
-        some: {
-          accepts: {
-            some: {
-              payTo: address.toLowerCase(),
-            },
+const listOriginsWhere = (address: string): Prisma.ResourceOriginWhereInput => {
+  return {
+    resources: {
+      some: {
+        accepts: {
+          some: {
+            payTo: address.toLowerCase(),
           },
         },
       },
+    },
+  };
+};
+
+export const listOriginsByAddress = async (address: string) => {
+  return await prisma.resourceOrigin.findMany({
+    where: listOriginsWhere(address),
+  });
+};
+
+export const listOriginsWithResources = async (address: string) => {
+  return await prisma.resourceOrigin.findMany({
+    where: listOriginsWhere(address),
+    include: {
+      resources: {
+        include: {
+          accepts: true,
+        },
+      },
+      ogImages: true,
     },
   });
 };

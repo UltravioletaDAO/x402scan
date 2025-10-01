@@ -1,41 +1,75 @@
 'use client';
 
-import { useState } from 'react';
+import { Card, CardHeader } from '@/components/ui/card';
 
-import { Card, CardContent } from '@/components/ui/card';
-
-import { Header } from './header';
+import { Header } from './header/header';
 import { Form } from './form';
 
-import type { ParsedX402Response } from '@/lib/x402/schema';
+import { cn } from '@/lib/utils';
+import type { Methods } from '@/types/x402';
+import { ResourceExecutorProvider } from './contexts/resource-check/provider';
+import { useResourceCheck } from './contexts/resource-check/hook';
 
-export function ResourceExecutor({
+import type { Resources } from '@prisma/client';
+import { ResourceFetchProvider } from './contexts/fetch/provider';
+
+interface Props {
+  resource: Resources;
+  bazaarMethod?: Methods;
+  className?: string;
+}
+
+export const ResourceExecutor: React.FC<Props> = ({
   resource,
   bazaarMethod,
-}: {
-  resource: string;
-  bazaarMethod?: string;
-}) {
-  const [init402Response, setInit402Response] =
-    useState<ParsedX402Response | null>(null);
+  className,
+}) => {
+  return (
+    <ResourceExecutorProvider
+      resource={resource.resource}
+      method={bazaarMethod}
+    >
+      <ResourceFetchWrapper>
+        <Card className={cn(className, 'overflow-hidden')}>
+          <CardHeader className="bg-muted px-4 py-2">
+            <Header resource={resource} />
+          </CardHeader>
+          <FormWrapper />
+        </Card>
+      </ResourceFetchWrapper>
+    </ResourceExecutorProvider>
+  );
+};
+
+function ResourceFetchWrapper({ children }: { children: React.ReactNode }) {
+  const { response } = useResourceCheck();
+
+  if (!response) return children;
+
+  const accept = response?.accepts?.[0];
+
+  if (!accept) return null;
+
+  const inputSchema = accept.outputSchema?.input;
+
+  if (!inputSchema) return null;
+
+  const maxAmountRequired = BigInt(accept.maxAmountRequired);
 
   return (
-    <Card>
-      <CardContent className="p-4">
-        <Header
-          resource={resource}
-          bazaarMethod={bazaarMethod}
-          onX402Response={setInit402Response}
-        />
-
-        {init402Response && (
-          <Form
-            resource={resource}
-            x402Response={init402Response}
-            bazaarMethod={bazaarMethod}
-          />
-        )}
-      </CardContent>
-    </Card>
+    <ResourceFetchProvider
+      inputSchema={inputSchema}
+      maxAmountRequired={maxAmountRequired}
+    >
+      {children}
+    </ResourceFetchProvider>
   );
+}
+
+function FormWrapper() {
+  const { response } = useResourceCheck();
+
+  if (!response) return null;
+
+  return <Form />;
 }

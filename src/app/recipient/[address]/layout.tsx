@@ -14,6 +14,10 @@ export default async function RecipientLayout({
             href: `/recipient/${address}`,
           },
           {
+            label: 'Resources',
+            href: `/recipient/${address}/resources`,
+          },
+          {
             label: 'Transactions',
             href: `/recipient/${address}/transactions`,
           },

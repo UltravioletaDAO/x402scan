@@ -123,7 +123,15 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
           {origins?.length && (
             <CommandGroup heading="Origins">
               {origins.map(origin => (
-                <CommandItem key={origin.id}>
+                <CommandItem
+                  key={origin.id}
+                  value={origin.origin}
+                  onSelect={() =>
+                    handleSelect(
+                      `/recipient/${origin.resources[0].accepts[0].payTo}/resources`
+                    )
+                  }
+                >
                   <Origin
                     origin={origin}
                     addresses={Array.from(
@@ -141,7 +149,15 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
           {resources?.length && (
             <CommandGroup heading="Resources">
               {resources.map(resource => (
-                <CommandItem key={resource.id}>
+                <CommandItem
+                  key={resource.id}
+                  value={resource.resource}
+                  onSelect={() =>
+                    handleSelect(
+                      `/recipient/${resource.accepts[0].payTo}/resources`
+                    )
+                  }
+                >
                   <Resource resource={resource} />
                 </CommandItem>
               ))}
