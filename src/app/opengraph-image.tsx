@@ -18,9 +18,7 @@ async function loadGoogleFont(font: string, text: string) {
 
   const css = await fetch(url).then((res) => res.text())
 
-  const resource = css.match(
-    /src: url\((.+)\) format\('(opentype|truetype)'\)/
-  )
+  const resource = /src: url\((.+)\) format\('(opentype|truetype)'\)/.exec(css)
 
   if (resource) {
     const response = await fetch(resource[1])
@@ -75,6 +73,7 @@ export default async function Image() {
               src={logoBase64}
               width="72"
               height="72"
+              alt="x402scan logo"
               style={{ borderRadius: 16 }}
             />
             <div
