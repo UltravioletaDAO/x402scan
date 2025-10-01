@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CardContent } from '@/components/ui/card';
 
-import { useResourceFetch } from './contexts/fetch/context';
+import { useResourceFetch } from './contexts/fetch/hook';
 
 export function Form() {
   const {
