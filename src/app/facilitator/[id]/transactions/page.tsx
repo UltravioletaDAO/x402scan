@@ -11,6 +11,12 @@ import {
 
 import { api, HydrateClient } from '@/trpc/server';
 import { facilitatorIdMap } from '@/lib/facilitators';
+import { subMonths } from 'date-fns';
+import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
+import { ActivityTimeframe } from '@/types/timeframes';
+import { firstTransfer } from '@/services/cdp/facilitator/constants';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 
 export default async function TransactionsPage({
   params,
@@ -24,10 +30,15 @@ export default async function TransactionsPage({
   }
 
   const limit = 150;
+  const endDate = new Date();
+  const startDate = subMonths(endDate, 1);
 
   void api.transfers.list.prefetch({
     limit,
     facilitators: facilitator.addresses,
+    startDate,
+    endDate,
+    sorting: defaultTransfersSorting,
   });
 
   return (
@@ -37,15 +48,24 @@ export default async function TransactionsPage({
         description="Transactions made through this facilitator"
       />
       <Body>
-        <Suspense
-          fallback={<LoadingLatestTransactionsTable loadingRowCount={15} />}
+        <TimeRangeProvider
+          initialEndDate={endDate}
+          initialStartDate={startDate}
+          creationDate={firstTransfer}
+          initialTimeframe={ActivityTimeframe.ThirtyDays}
         >
-          <LatestTransactionsTable
-            addresses={facilitator.addresses}
-            limit={limit}
-            pageSize={15}
-          />
-        </Suspense>
+          <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
+            <Suspense
+              fallback={<LoadingLatestTransactionsTable loadingRowCount={15} />}
+            >
+              <LatestTransactionsTable
+                addresses={facilitator.addresses}
+                limit={limit}
+                pageSize={15}
+              />
+            </Suspense>
+          </TransfersSortingProvider>
+        </TimeRangeProvider>
       </Body>
     </HydrateClient>
   );

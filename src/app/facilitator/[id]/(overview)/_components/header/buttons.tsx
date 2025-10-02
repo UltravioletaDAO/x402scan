@@ -10,7 +10,7 @@ interface Props {
 export const HeaderButtons: React.FC<Props> = ({ link }) => {
   return (
     <ButtonsContainer>
-      <a href={link}>
+      <a href={link} target="_blank">
         <Button variant="outline">
           <BookOpen className="size-4" />
           Learn More
