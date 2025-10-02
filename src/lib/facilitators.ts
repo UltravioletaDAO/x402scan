@@ -10,12 +10,14 @@
 //   addresses: z.array(ethereumAddressSchema),
 // });
 
+import type { Address } from 'viem';
+
 export type Facilitator = {
   id: string;
   name: string;
   image: string;
   link: string;
-  addresses: string[];
+  addresses: Address[];
 };
 
 const coinbaseFacilitator: Facilitator = {
