@@ -5,6 +5,7 @@ import { TopSellers } from './_components/top-sellers';
 import { OverallStats } from './_components/stats';
 import { TopServers } from './_components/known-sellers';
 import { LatestTransactions } from './_components/latest-transactions';
+import { TopFacilitators } from './_components/top-facilitators';
 
 export default async function Home() {
   return (
@@ -21,6 +22,7 @@ export default async function Home() {
       <Body>
         <OverallStats />
         <TopServers />
+        <TopFacilitators />
         <LatestTransactions />
         <TopSellers />
       </Body>
