@@ -1,17 +1,18 @@
 'use client';
 
 import { DataTable } from '@/components/ui/data-table';
+
+import { useSellersSorting } from '../sorting/hook';
+import { useTimeRangeContext } from '@/app/_components/time-range-selector/context';
+
 import { columns } from './columns';
 import { api } from '@/trpc/client';
-import { useTimeRangeContext } from '@/app/_components/time-range-selector/context';
-import { useSorting } from '../lib/sorting';
 
 export const KnownSellersTable = () => {
-  const { sorting } = useSorting();
+  const { sorting } = useSellersSorting();
   const { startDate, endDate } = useTimeRangeContext();
 
   const [topSellers] = api.sellers.list.bazaar.useSuspenseQuery({
-    limit: 100,
     startDate,
     endDate,
     sorting,

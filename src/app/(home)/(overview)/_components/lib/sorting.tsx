@@ -33,12 +33,7 @@ import type { SortType } from '../../_types/types';
 import { defaultSorting } from './defaults';
 import { useContext, useState } from 'react';
 
-const sortingOptions = [
-  { id: 'tx_count', label: 'Tx Count' },
-  { id: 'total_amount', label: 'Volume' },
-  { id: 'latest_block_timestamp', label: 'Latest Transaction' },
-  { id: 'unique_buyers', label: 'Unique Buyers' },
-];
+const sortingOptions = [{ id: 'tx_count', label: 'Tx Count' }];
 
 interface SortingContext {
   sorting: SortType[];
@@ -58,10 +53,12 @@ export const useSorting = () => {
 
 export const SortingProvider = ({
   children,
+  initialSorting = defaultSorting,
 }: {
   children: React.ReactNode;
+  initialSorting?: SortType[];
 }) => {
-  const [sorting, setSorting] = useState<SortType[]>(defaultSorting);
+  const [sorting, setSorting] = useState<SortType[]>(initialSorting);
   return (
     <SortingContext.Provider value={{ sorting, setSorting }}>
       {children}

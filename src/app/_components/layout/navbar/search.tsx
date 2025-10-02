@@ -5,7 +5,7 @@ import { Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Shortcut } from '@/components/ui/shortcut';
 
-import { useSearch } from '@/app/_contexts/search/hooks';
+import { useSearch } from '@/app/_contexts/search/hook';
 
 export const NavbarSearchButton = () => {
   const { setIsOpen } = useSearch();

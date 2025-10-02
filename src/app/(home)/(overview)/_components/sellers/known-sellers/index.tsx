@@ -1,14 +1,21 @@
+import { Suspense } from 'react';
+
+import { subMonths } from 'date-fns';
+
+import { Section } from '../../utils';
+
+import { KnownSellersTable, LoadingKnownSellersTable } from './table';
+
 import { api, HydrateClient } from '@/trpc/server';
 
-import { Suspense } from 'react';
-import { Section } from '../utils';
-import { KnownSellersTable, LoadingKnownSellersTable } from './table';
-import { Sorting, SortingProvider } from '../lib/sorting';
-import { defaultSorting } from '../lib/defaults';
+import { defaultSellersSorting } from '../sorting/default';
+import { SellersSortingProvider } from '../sorting/provider';
+
 import { TimeRangeProvider } from '@/app/_components/time-range-selector/context';
-import { firstTransfer } from '@/services/cdp/facilitator/constants';
-import { subMonths } from 'date-fns';
 import { RangeSelector } from '@/app/_components/time-range-selector/range-selector';
+
+import { firstTransfer } from '@/services/cdp/facilitator/constants';
+
 import { ActivityTimeframe } from '@/types/timeframes';
 
 export const TopServers = async () => {
@@ -16,10 +23,9 @@ export const TopServers = async () => {
   const startDate = subMonths(endDate, 1);
 
   void api.sellers.list.bazaar.prefetch({
-    sorting: defaultSorting,
-    limit: 100,
     startDate,
     endDate,
+    sorting: defaultSellersSorting,
   });
   void api.stats.bazaar.overallStatistics.prefetch({
     startDate,
@@ -28,7 +34,7 @@ export const TopServers = async () => {
 
   return (
     <HydrateClient>
-      <SortingProvider>
+      <SellersSortingProvider initialSorting={defaultSellersSorting}>
         <TimeRangeProvider
           creationDate={firstTransfer}
           initialEndDate={endDate}
@@ -41,7 +47,7 @@ export const TopServers = async () => {
             </Suspense>
           </TopServersContainer>
         </TimeRangeProvider>
-      </SortingProvider>
+      </SellersSortingProvider>
     </HydrateClient>
   );
 };
@@ -62,7 +68,6 @@ const TopServersContainer = ({ children }: { children: React.ReactNode }) => {
       actions={
         <div className="flex items-center gap-2">
           <RangeSelector />
-          <Sorting />
         </div>
       }
     >

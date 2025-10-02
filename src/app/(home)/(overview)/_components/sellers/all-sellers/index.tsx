@@ -3,21 +3,23 @@ import { Suspense } from 'react';
 import { DataTable } from '@/components/ui/data-table';
 
 import { columns } from './columns';
-import { TopSellersTable } from './table';
+import { AllSellersTable } from './table';
 
-import { Sorting, SortingProvider } from '../lib/sorting';
+import { Sorting } from '../../lib/sorting';
 import { api, HydrateClient } from '@/trpc/server';
-import { defaultSorting, limit } from '../lib/defaults';
+import { limit } from '../../lib/defaults';
+import { SellersSortingProvider } from '../sorting/provider';
+import { defaultSellersSorting } from '../sorting/default';
 
-export const TopSellers = () => {
+export const AllSellers = () => {
   void api.sellers.list.all.prefetch({
-    sorting: defaultSorting,
+    sorting: defaultSellersSorting,
     limit,
   });
 
   return (
     <HydrateClient>
-      <SortingProvider>
+      <SellersSortingProvider initialSorting={defaultSellersSorting}>
         <div className="flex flex-col gap-4">
           <div>
             <div className="flex items-center justify-between">
@@ -29,16 +31,16 @@ export const TopSellers = () => {
               unknown servers
             </p>
           </div>
-          <Suspense fallback={<LoadingTopSellers />}>
-            <TopSellersTable />
+          <Suspense fallback={<LoadingAllSellers />}>
+            <AllSellersTable />
           </Suspense>
         </div>
-      </SortingProvider>
+      </SellersSortingProvider>
     </HydrateClient>
   );
 };
 
-export const LoadingTopSellers = () => {
+export const LoadingAllSellers = () => {
   return (
     <DataTable columns={columns} data={[]} loadingRowCount={10} isLoading />
   );

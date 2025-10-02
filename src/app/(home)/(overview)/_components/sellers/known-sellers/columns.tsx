@@ -16,12 +16,13 @@ import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
 import { Origins, OriginsSkeleton } from '@/app/_components/origins';
 import { Facilitators } from '@/app/_components/facilitator';
 
-import { cn, formatCompactAgo } from '@/lib/utils';
+import { formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
-import type { LucideIcon } from 'lucide-react';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
+import { HeaderCell } from '@/components/ui/data-table/header-cell';
+import { SellersSortingContext } from '../sorting/context';
 
 type ColumnType = RouterOutputs['sellers']['list']['bazaar']['items'][number];
 
@@ -63,7 +64,16 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'tx_count',
-    header: () => <HeaderCell Icon={ArrowLeftRight} label="Txns" />,
+    header: () => (
+      <HeaderCell
+        Icon={ArrowLeftRight}
+        label="Txns"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'tx_count',
+        }}
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.tx_count.toLocaleString(undefined, {
@@ -78,7 +88,16 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'unique_buyers',
-    header: () => <HeaderCell Icon={Users} label="Buyers" />,
+    header: () => (
+      <HeaderCell
+        Icon={Users}
+        label="Buyers"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'unique_buyers',
+        }}
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.unique_buyers.toLocaleString(undefined, {
@@ -93,7 +112,16 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'latest_block_timestamp',
-    header: () => <HeaderCell Icon={Calendar} label="Last Used" />,
+    header: () => (
+      <HeaderCell
+        Icon={Calendar}
+        label="Last Used"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'latest_block_timestamp',
+        }}
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {formatCompactAgo(row.original.latest_block_timestamp)}
@@ -105,7 +133,15 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: 'total_amount',
     header: () => (
-      <HeaderCell Icon={DollarSign} label="Volume" className="justify-end" />
+      <HeaderCell
+        Icon={DollarSign}
+        label="Volume"
+        className="justify-end"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'total_amount',
+        }}
+      />
     ),
     cell: ({ row }) => (
       <div className="text-right font-mono text-xs">
@@ -116,23 +152,3 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];
-
-interface HeaderCellProps {
-  Icon: LucideIcon;
-  label: string;
-  className?: string;
-}
-
-const HeaderCell: React.FC<HeaderCellProps> = ({ Icon, label, className }) => {
-  return (
-    <div
-      className={cn(
-        'flex items-center justify-center gap-1 text-sm text-muted-foreground',
-        className
-      )}
-    >
-      <Icon className="size-3" />
-      {label}
-    </div>
-  );
-};
