@@ -40,6 +40,7 @@ export const listTopSellers = async (
   const outputSchema = z.array(
     z.object({
       recipient: ethereumAddressSchema,
+      facilitators: z.array(ethereumAddressSchema),
       tx_count: z.coerce.bigint(),
       total_amount: z.coerce.bigint(),
       latest_block_timestamp: z.coerce.date(),
@@ -52,7 +53,8 @@ export const listTopSellers = async (
     COUNT(*) AS tx_count, 
     SUM(parameters['value']::UInt256) AS total_amount,
     max(block_timestamp) AS latest_block_timestamp,
-    COUNT(DISTINCT parameters['from']::String) AS unique_buyers
+    COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
+    groupArray(DISTINCT transaction_from) AS facilitators
 FROM base.events 
 WHERE event_signature = 'Transfer(address,address,uint256)'
     AND address IN (${tokens.map(t => `'${t}'`).join(', ')})

@@ -10,14 +10,14 @@ import { HeaderCell } from '@/components/ui/data-table/header-cell';
 
 import { Address } from '@/components/ui/address';
 
-import { Seller, SellerSkeleton } from '../../../_components/seller';
+import { Seller, SellerSkeleton } from '@/app/_components/seller';
+import { Facilitator } from '@/app/_components/facilitator';
 
 import { formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
-import { Facilitator } from '@/app/_components/facilitator';
 
 type ColumnType = RouterOutputs['transfers']['list']['items'][number];
 
@@ -40,6 +40,20 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <SellerSkeleton />,
   },
   {
+    accessorKey: 'facilitator',
+    header: () => (
+      <HeaderCell Icon={Server} label="Facilitator" className="justify-start" />
+    ),
+    cell: ({ row }) => (
+      <Facilitator
+        address={row.original.transaction_from}
+        className="mr-auto justify-start"
+      />
+    ),
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
+  },
+  {
     accessorKey: 'sender',
     header: () => (
       <HeaderCell Icon={User} label="Sender" className="justify-center" />
@@ -51,18 +65,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     size: 100, // Fixed width for transaction count
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
-  },
-  {
-    accessorKey: 'facilitator',
-    header: () => <HeaderCell Icon={Server} label="Facilitator" />,
-    cell: ({ row }) => (
-      <Facilitator
-        address={row.original.transaction_from}
-        className="mx-auto justify-center"
-      />
-    ),
-    size: 100,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
