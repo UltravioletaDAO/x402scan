@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo } from 'react';
 
 import { Area } from 'recharts';
@@ -72,7 +74,7 @@ export const LoadingAreaChart = ({
   const simulatedData = useMemo(simulateChartData, []);
 
   return (
-    <div className="animate-pulse">
+    <div className="animate-pulse" style={{ height }}>
       <BaseAreaChart
         data={simulatedData}
         areas={[

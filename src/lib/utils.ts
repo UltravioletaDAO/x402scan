@@ -29,6 +29,8 @@ export const formatCompactAgo = (date: Date) => {
     addSuffix: true,
   });
   return str
+    .replace('less than ', '< ')
+    .replace('a ', '1 ')
     .replace('about ', '~')
     .replace(' hours', 'h')
     .replace(' hour', 'h')
@@ -43,8 +45,7 @@ export const formatCompactAgo = (date: Date) => {
     .replace(' months', 'M')
     .replace(' month', 'M')
     .replace(' years', 'y')
-    .replace(' year', 'y')
-    .replace(' a ', ' 1');
+    .replace(' year', 'y');
 };
 
 export const formatAddress = (address: string) => {

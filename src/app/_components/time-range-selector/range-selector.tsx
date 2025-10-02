@@ -84,7 +84,7 @@ export const RangeSelector = () => {
           selectTimeframe(Number(value));
         }}
       >
-        <SelectTrigger className="rounded-l-none border border-l-[0.5px] shadow-xs">
+        <SelectTrigger className="rounded-l-none border border-l-[0.5px] shadow-xs dark:border-input">
           {timeframe !== ActivityTimeframe.Custom && (
             <span>
               {timeframe === ActivityTimeframe.AllTime

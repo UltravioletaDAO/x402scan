@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import React from 'react';
 
 // import Link from "next/link";
@@ -12,6 +13,7 @@ interface Props {
   description?: string;
   children: React.ReactNode;
   actions?: React.ReactNode;
+  className?: string;
 }
 
 export const Section: React.FC<Props> = ({
@@ -19,9 +21,10 @@ export const Section: React.FC<Props> = ({
   title,
   actions,
   description,
+  className,
 }) => {
   return (
-    <div className="flex flex-col gap-6">
+    <div className={cn('flex flex-col gap-6', className)}>
       <div className="flex flex-col">
         <div className="flex justify-between items-center">
           <h1 className="font-bold text-2xl">{title}</h1>

@@ -4,7 +4,8 @@ import { Calendar, DollarSign, Hash, Server } from 'lucide-react';
 
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 
-import { Seller, SellerSkeleton } from '../../../../_components/seller';
+import { Seller, SellerSkeleton } from '@/app/_components/seller';
+import { Facilitators } from '@/app/_components/facilitator';
 
 import { formatTokenAmount } from '@/lib/token';
 import { formatCompactAgo } from '@/lib/utils';
@@ -25,6 +26,20 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     cell: ({ row }) => <Seller address={row.original.recipient} />,
     size: 300, // Fixed width for seller column (widest for address display)
     loading: () => <SellerSkeleton />,
+  },
+  {
+    accessorKey: 'facilitators',
+    header: () => (
+      <HeaderCell Icon={Server} label="Facilitator" className="justify-start" />
+    ),
+    cell: ({ row }) => (
+      <Facilitators
+        addresses={row.original.facilitators}
+        className="mr-auto justify-start"
+      />
+    ),
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
   },
   {
     accessorKey: 'tx_count',
@@ -64,7 +79,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         {formatCompactAgo(row.original.latest_block_timestamp)}
       </div>
     ),
-    size: 120, // Fixed width for timestamp
+    size: 50, // Fixed width for timestamp
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -77,7 +92,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         {formatTokenAmount(row.original.total_amount)}
       </div>
     ),
-    size: 150, // Fixed width for volume column
+    size: 50, // Fixed width for volume column
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];

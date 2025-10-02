@@ -1,4 +1,4 @@
-import { coinbaseFacilitator1, coinbaseFacilitator2 } from '@/lib/facilitators';
+import { facilitators } from '@/lib/facilitators';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import z from 'zod';
 
@@ -10,7 +10,7 @@ export const baseQuerySchema = z.object({
   facilitators: z
     .array(ethereumAddressSchema)
     .min(1)
-    .default([coinbaseFacilitator1.address, coinbaseFacilitator2.address]),
+    .default(facilitators.flatMap(f => f.addresses)),
   tokens: z
     .array(ethereumAddressSchema)
     .min(1)

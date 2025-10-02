@@ -7,7 +7,7 @@ export default function LoadingTransactionsPage() {
     <div>
       <Heading
         title="Transactions"
-        description="x402 transactions to this server address"
+        description="Transactions made through this facilitator"
       />
       <Body>
         <LoadingLatestTransactionsTable loadingRowCount={15} />

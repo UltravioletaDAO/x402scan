@@ -1,5 +1,7 @@
 import { Suspense } from 'react';
 
+import { notFound } from 'next/navigation';
+
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 
 import {
@@ -8,31 +10,38 @@ import {
 } from '../_components/transactions/table';
 
 import { api, HydrateClient } from '@/trpc/server';
+import { facilitatorIdMap } from '@/lib/facilitators';
 
 export default async function TransactionsPage({
   params,
-}: PageProps<'/recipient/[address]/transactions'>) {
-  const { address } = await params;
+}: PageProps<'/facilitator/[id]/transactions'>) {
+  const { id } = await params;
+
+  const facilitator = facilitatorIdMap.get(id);
+
+  if (!facilitator) {
+    return notFound();
+  }
 
   const limit = 150;
 
   void api.transfers.list.prefetch({
     limit,
-    recipient: address,
+    facilitators: facilitator.addresses,
   });
 
   return (
     <HydrateClient>
       <Heading
         title="Transactions"
-        description="x402 transactions to this server address"
+        description="Transactions made through this facilitator"
       />
       <Body>
         <Suspense
           fallback={<LoadingLatestTransactionsTable loadingRowCount={15} />}
         >
           <LatestTransactionsTable
-            address={address}
+            addresses={facilitator.addresses}
             limit={limit}
             pageSize={15}
           />

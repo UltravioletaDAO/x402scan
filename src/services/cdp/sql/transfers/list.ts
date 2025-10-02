@@ -2,7 +2,7 @@ import z from 'zod';
 
 import { runBaseSqlQuery } from '../query';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 import { baseQuerySchema, formatDateForSql } from '../lib';
 
@@ -23,7 +23,8 @@ const outputSchema = z.array(
     recipient: ethereumAddressSchema,
     amount: z.coerce.bigint(),
     token_address: ethereumAddressSchema,
-    transaction_hash: z.string(),
+    transaction_from: ethereumAddressSchema,
+    transaction_hash: ethereumHashSchema,
     block_timestamp: z.coerce.date(),
     log_index: z.number(),
   })

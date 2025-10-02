@@ -4,6 +4,7 @@ import { LoadingOverallStats } from './_components/stats';
 import { LoadingTopServers } from './_components/known-sellers';
 import { LoadingLatestTransactions } from './_components/latest-transactions';
 import { SearchButtonContent } from './_components/search-button';
+import { LoadingTopFacilitators } from './_components/top-facilitators';
 
 export default function LoadingOverview() {
   return (
@@ -20,6 +21,7 @@ export default function LoadingOverview() {
       <Body>
         <LoadingOverallStats />
         <LoadingTopServers />
+        <LoadingTopFacilitators />
         <LoadingLatestTransactions />
         <LoadingTopSellers />
       </Body>

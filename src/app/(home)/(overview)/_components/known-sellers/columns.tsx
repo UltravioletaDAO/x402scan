@@ -13,7 +13,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
 
-import { Origins, OriginsSkeleton } from '../../../../_components/origins';
+import { Origins, OriginsSkeleton } from '@/app/_components/origins';
+import { Facilitators } from '@/app/_components/facilitator';
 
 import { cn, formatCompactAgo } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
@@ -38,6 +39,20 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     size: 400,
     loading: () => <OriginsSkeleton />,
+  },
+  {
+    accessorKey: 'facilitators',
+    header: () => (
+      <HeaderCell Icon={Server} label="Facilitator" className="justify-start" />
+    ),
+    cell: ({ row }) => (
+      <Facilitators
+        addresses={row.original.facilitators}
+        className="mr-auto justify-start"
+      />
+    ),
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
   },
   {
     accessorKey: 'chart',
@@ -93,7 +108,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={DollarSign} label="Volume" className="justify-end" />
     ),
     cell: ({ row }) => (
-      <div className="text-right font-mono font-semibold text-xs">
+      <div className="text-right font-mono text-xs">
         {formatTokenAmount(row.original.total_amount)}
       </div>
     ),
