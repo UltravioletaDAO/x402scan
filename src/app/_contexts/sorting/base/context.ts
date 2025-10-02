@@ -5,7 +5,7 @@ import * as React from 'react';
 import type { SortType } from './types';
 import type { Context } from 'react';
 
-export interface SortingContextValue<SortKey extends string> {
+interface SortingContextValue<SortKey extends string> {
   sorting: SortType<SortKey>;
   setSorting: (sorting: SortType<SortKey>) => void;
 }

@@ -5,7 +5,6 @@ import { api } from '@/trpc/client';
 import { DataTable } from '@/components/ui/data-table';
 
 import { columns } from './columns';
-import { limit } from '../../lib/defaults';
 import { useSellersSorting } from '../../../../../_contexts/sorting/sellers/hook';
 
 export const AllSellersTable = () => {
@@ -13,7 +12,7 @@ export const AllSellersTable = () => {
 
   const [topSellers] = api.sellers.list.all.useSuspenseQuery({
     sorting: sortingContext.sorting,
-    limit,
+    limit: 100,
   });
 
   return (

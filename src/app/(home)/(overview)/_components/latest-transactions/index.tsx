@@ -1,7 +1,5 @@
 import { Suspense } from 'react';
 
-import { limit } from '../lib/defaults';
-
 import { api, HydrateClient } from '@/trpc/server';
 import {
   LatestTransactionsTable,
@@ -19,6 +17,7 @@ import { ActivityTimeframe } from '@/types/timeframes';
 export const LatestTransactions = () => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
+  const limit = 100;
 
   void api.transfers.list.prefetch({
     limit,

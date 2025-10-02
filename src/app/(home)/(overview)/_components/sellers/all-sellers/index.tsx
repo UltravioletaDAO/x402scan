@@ -6,7 +6,6 @@ import { columns } from './columns';
 import { AllSellersTable } from './table';
 
 import { api, HydrateClient } from '@/trpc/server';
-import { limit } from '../../lib/defaults';
 import { SellersSortingProvider } from '../../../../../_contexts/sorting/sellers/provider';
 import { defaultSellersSorting } from '../../../../../_contexts/sorting/sellers/default';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
@@ -19,6 +18,8 @@ import { ActivityTimeframe } from '@/types/timeframes';
 export const AllSellers = () => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
+
+  const limit = 100;
 
   void api.sellers.list.all.prefetch({
     sorting: defaultSellersSorting,

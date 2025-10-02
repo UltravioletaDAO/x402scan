@@ -6,10 +6,7 @@ import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
 
-export const listFacilitatorTransfersSortIds = [
-  'block_timestamp',
-  'amount',
-] as const;
+const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 
 export type TransfersSortId = (typeof listFacilitatorTransfersSortIds)[number];
 
