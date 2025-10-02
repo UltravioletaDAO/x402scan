@@ -17,6 +17,7 @@ import { formatTokenAmount } from '@/lib/token';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
+import { Facilitator } from '@/app/_components/facilitator';
 
 type ColumnType = RouterOutputs['transfers']['list']['items'][number];
 
@@ -53,12 +54,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
-    accessorKey: 'block_timestamp',
-    header: () => <HeaderCell Icon={Calendar} label="Timestamp" />,
+    accessorKey: 'facilitator',
+    header: () => <HeaderCell Icon={Server} label="Facilitator" />,
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {formatCompactAgo(row.original.block_timestamp)}
-      </div>
+      <Facilitator
+        address={row.original.transaction_from}
+        className="mx-auto justify-center"
+      />
     ),
     size: 100,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
@@ -76,6 +78,18 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         />
       </Link>
     ),
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
+    accessorKey: 'block_timestamp',
+    header: () => <HeaderCell Icon={Calendar} label="Timestamp" />,
+    cell: ({ row }) => (
+      <div className="text-center font-mono text-xs">
+        {formatCompactAgo(row.original.block_timestamp)}
+      </div>
+    ),
+    size: 50,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -88,7 +102,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         {formatTokenAmount(row.original.amount)}
       </div>
     ),
-    size: 100, // Fixed width for buyers count
+    size: 50, // Fixed width for buyers count
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];
