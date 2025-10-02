@@ -1,18 +1,24 @@
-import { z } from 'zod';
+// import { z } from 'zod';
 
-import { ethereumAddressSchema } from './schemas';
+// import { ethereumAddressSchema } from './schemas';
 
-export const facilitatorSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  image: z.string(),
-  link: z.url(),
-  addresses: z.array(ethereumAddressSchema),
-});
+// const facilitatorSchema = z.object({
+//   id: z.string(),
+//   name: z.string(),
+//   image: z.string(),
+//   link: z.url(),
+//   addresses: z.array(ethereumAddressSchema),
+// });
 
-export type Facilitator = z.infer<typeof facilitatorSchema>;
+export type Facilitator = {
+  id: string;
+  name: string;
+  image: string;
+  link: string;
+  addresses: string[];
+};
 
-export const coinbaseFacilitator: Facilitator = {
+const coinbaseFacilitator: Facilitator = {
   id: 'coinbase',
   name: 'Coinbase',
   image: '/coinbase.png',
@@ -20,7 +26,7 @@ export const coinbaseFacilitator: Facilitator = {
   addresses: ['0xdbdf3d8ed80f84c35d01c6c9f9271761bad90ba6'],
 };
 
-export const x402rsFacilitator: Facilitator = {
+const x402rsFacilitator: Facilitator = {
   id: 'x402rs',
   name: 'X402rs',
   image: '/x402rs.png',
@@ -28,7 +34,7 @@ export const x402rsFacilitator: Facilitator = {
   addresses: ['0xd8dfc729cbd05381647eb5540d756f4f8ad63eec'],
 };
 
-export const payAiFacilitator: Facilitator = {
+const payAiFacilitator: Facilitator = {
   id: 'payai',
   name: 'PayAI',
   image: '/payai.png',

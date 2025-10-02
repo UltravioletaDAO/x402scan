@@ -1,6 +1,8 @@
 'use client';
 
-import { Calendar, DollarSign, Server, User } from 'lucide-react';
+import { Calendar, DollarSign, Hash, Server, User } from 'lucide-react';
+
+import Link from 'next/link';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -23,23 +25,46 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     header: () => (
       <HeaderCell Icon={Server} label="Server" className="justify-start" />
     ),
-    cell: ({ row }) => <Seller address={row.original.recipient} />,
+    cell: ({ row }) => (
+      <Seller
+        address={row.original.recipient}
+        addressClassName="text-xs font-normal"
+      />
+    ),
     size: 300, // Fixed width for seller column (widest for address display)
     loading: () => <SellerSkeleton />,
   },
   {
     accessorKey: 'sender',
     header: () => (
-      <HeaderCell Icon={User} label="Sender" className="justify-start" />
+      <HeaderCell Icon={User} label="Sender" className="justify-center" />
     ),
     cell: ({ row }) => (
       <Address
         address={row.original.sender}
-        className="text-xs block text-left"
+        className="text-xs block text-center"
       />
     ),
     size: 300,
-    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
+    accessorKey: 'transaction_hash',
+    header: () => (
+      <HeaderCell Icon={Hash} label="Hash" className="justify-center" />
+    ),
+    cell: ({ row }) => (
+      <Link href={`/transaction/${row.original.transaction_hash}`}>
+        <Address
+          address={row.original.transaction_hash}
+          className="text-xs block text-center"
+          disableCopy
+          hideTooltip
+        />
+      </Link>
+    ),
+    size: 300,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
     accessorKey: 'amount',

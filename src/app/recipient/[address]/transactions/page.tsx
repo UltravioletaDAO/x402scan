@@ -25,7 +25,7 @@ export default async function TransactionsPage({
     <HydrateClient>
       <Heading
         title="Transactions"
-        description="Transactions made through the Coinbase facilitator to this recipient address"
+        description="x402 transactions to this server address"
       />
       <Body>
         <Suspense
