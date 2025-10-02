@@ -2,6 +2,8 @@ import { facilitators } from '@/lib/facilitators';
 import { runBaseSqlQuery } from '../query';
 import { formatDateForSql } from '../lib';
 import z from 'zod';
+import { ethereumAddressSchema } from '@/lib/schemas';
+import { USDC_ADDRESS } from '@/lib/utils';
 
 export const listTopFacilitatorsInputSchema = z.object({
   startDate: z.date().optional(),
@@ -20,12 +22,13 @@ export const listTopFacilitatorsInputSchema = z.object({
       })
     )
     .default([{ id: 'tx_count', desc: true }]),
+  tokens: z.array(ethereumAddressSchema).default([USDC_ADDRESS]),
 });
 
 export const listTopFacilitators = async (
   input: z.input<typeof listTopFacilitatorsInputSchema>
 ) => {
-  const { startDate, endDate, limit, sorting } =
+  const { startDate, endDate, limit, sorting, tokens } =
     listTopFacilitatorsInputSchema.parse(input);
 
   const sql = `SELECT 
@@ -48,6 +51,7 @@ export const listTopFacilitators = async (
     END AS facilitator_name
 FROM base.events 
 WHERE event_signature = 'Transfer(address,address,uint256)'
+    AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
     AND transaction_from IN (${facilitators
       .flatMap(f => f.addresses)
       .map(a => `'${a}'`)
