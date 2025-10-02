@@ -67,7 +67,7 @@ const StatCard = ({ value, ...stat }: StatsCardProps) => {
 const LoadingStatCard = (stat: Stat) => {
   return (
     <BaseStatCard {...stat}>
-      <Skeleton className="w-16 h-[28px]" />
+      <Skeleton className="w-16 h-[14px] my-[3px]" />
     </BaseStatCard>
   );
 };

@@ -9,10 +9,10 @@ import { Avatar } from '@/components/ui/avatar';
 
 import { FacilitatorStats, LoadingFacilitatorStats } from './stats';
 
-import { cn } from '@/lib/utils';
-
 import type { Facilitator } from '@/lib/facilitators';
 import type { RouterOutputs } from '@/trpc/client';
+import { FacilitatorChart } from './chart';
+import { LoadingAreaChart } from '@/components/ui/charts/chart/area';
 
 interface Props {
   facilitator: Facilitator;
@@ -24,27 +24,28 @@ export const FacilitatorCard: React.FC<Props> = async ({
   stats,
 }) => {
   return (
-    <Card className={cn('relative mt-5 md:mt-6')}>
-      <Card className="absolute top-0 left-4 -translate-y-1/2 size-10 md:size-12 flex items-center justify-center border rounded-md overflow-hidden">
-        <Avatar
-          src={facilitator.image}
-          className="size-full border-none rounded-none"
-          fallback={<Server className="size-8" />}
-        />
-      </Card>
-      <div className="grid grid-cols-1 md:grid-cols-7">
-        <div className="flex flex-col gap-4 p-4 md:pt-8 col-span-5">
-          <div className="">
-            <h1 className="text-lg font-bold break-words line-clamp-2 leading-tight">
+    <Card className="grid grid-cols-1 md:grid-cols-7">
+      <div className="flex flex-col col-span-5">
+        <div className="flex items-center gap-2 p-4">
+          <Avatar
+            src={facilitator.image}
+            className="size-8 border-none"
+            fallback={<Server className="size-8" />}
+          />
+          <div className="flex flex-col h-fit gap-1">
+            <h1 className="text-lg font-bold break-words leading-none">
               {facilitator.name}
             </h1>
-            <Addresses addresses={facilitator.addresses} className="text-xs" />
+            <Addresses
+              addresses={facilitator.addresses}
+              className="text-xs leading-none"
+            />
           </div>
-          {/* Chart Here */}
         </div>
-        <div className="col-span-2">
-          <FacilitatorStats stats={stats} />
-        </div>
+        <FacilitatorChart facilitator={facilitator} />
+      </div>
+      <div className="col-span-2">
+        <FacilitatorStats stats={stats} />
       </div>
     </Card>
   );
@@ -52,25 +53,19 @@ export const FacilitatorCard: React.FC<Props> = async ({
 
 export const LoadingFacilitatorCard = () => {
   return (
-    <Card className={cn('relative mt-10 md:mt-12 mb-12')}>
-      <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
-        <Avatar
-          src={undefined}
-          className="size-full"
-          fallback={<Skeleton className="size-8" />}
-        />
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-7">
-        <div className="flex flex-col gap-4 p-4 pt-8 md:pt-10 col-span-5">
-          <div className="">
-            <Skeleton className="w-36 h-[30px] my-[3px]" />
-            <Skeleton className="w-64 h-[16px] my-[4px]" />
+    <Card className="grid grid-cols-1 md:grid-cols-7">
+      <div className="flex flex-col col-span-5">
+        <div className="flex items-center gap-2 p-4">
+          <Skeleton className="size-8" />
+          <div className="flex flex-col h-fit gap-1">
+            <Skeleton className="w-24 h-[18px]" />
+            <Skeleton className="w-32 h-3" />
           </div>
         </div>
-        <div className="col-span-2 overflow-hidden">
-          <LoadingFacilitatorStats />
-        </div>
+        <LoadingAreaChart height={'100%'} />
+      </div>
+      <div className="col-span-2">
+        <LoadingFacilitatorStats />
       </div>
     </Card>
   );
