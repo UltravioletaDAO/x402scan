@@ -17,11 +17,13 @@ import { LoadingAreaChart } from '@/components/ui/charts/chart/area';
 interface Props {
   facilitator: Facilitator;
   stats: NonNullable<RouterOutputs['facilitators']['list']>[number];
+  overallStats: NonNullable<RouterOutputs['stats']['getOverallStatistics']>;
 }
 
 export const FacilitatorCard: React.FC<Props> = async ({
   facilitator,
   stats,
+  overallStats,
 }) => {
   return (
     <Card className="grid grid-cols-1 md:grid-cols-7">
@@ -42,7 +44,10 @@ export const FacilitatorCard: React.FC<Props> = async ({
             />
           </div>
         </div>
-        <FacilitatorChart facilitator={facilitator} />
+        <FacilitatorChart
+          facilitator={facilitator}
+          total_transactions={Number(overallStats.total_transactions)}
+        />
       </div>
       <div className="col-span-2">
         <FacilitatorStats stats={stats} />

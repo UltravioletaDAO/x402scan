@@ -2,11 +2,21 @@ import { api } from '@/trpc/server';
 import { Section } from '../utils';
 import { FacilitatorCard, LoadingFacilitatorCard } from './_components/card';
 import { facilitators } from '@/lib/facilitators';
+import { Suspense } from 'react';
 
 export const TopFacilitators = async () => {
-  const facilitatorsData = await api.facilitators.list({
-    limit: 100,
-  });
+  return (
+    <Suspense fallback={<LoadingTopFacilitators />}>
+      <TopFacilitatorsContent />
+    </Suspense>
+  );
+};
+
+const TopFacilitatorsContent = async () => {
+  const [overallStats, facilitatorsData] = await Promise.all([
+    api.stats.getOverallStatistics({}),
+    api.facilitators.list({}),
+  ]);
 
   if (!facilitatorsData) {
     return null;
@@ -21,6 +31,7 @@ export const TopFacilitators = async () => {
           stats={
             facilitatorsData.find(f => f.facilitator_name === facilitator.name)!
           }
+          overallStats={overallStats}
         />
       ))}
     </Container>
