@@ -1,30 +1,12 @@
 'use client';
 
-import { createContext, useContext, useState } from 'react';
+import { useState } from 'react';
 
 import { subDays } from 'date-fns';
 
+import { TimeRangeContext } from './context';
+
 import { ActivityTimeframe } from '@/types/timeframes';
-
-interface TimeRangeContextType {
-  startDate: Date;
-  endDate: Date;
-  timeframe: ActivityTimeframe;
-  selectTimeframe: (timeframe: ActivityTimeframe) => void;
-  setCustomTimeframe: (startDate: Date, endDate: Date) => void;
-}
-
-const TimeRangeContext = createContext<TimeRangeContextType>({
-  startDate: new Date(),
-  endDate: new Date(),
-  timeframe: ActivityTimeframe.SevenDays,
-  selectTimeframe: () => {
-    void 0;
-  },
-  setCustomTimeframe: () => {
-    void 0;
-  },
-});
 
 interface Props {
   children: React.ReactNode;
@@ -78,8 +60,4 @@ export const TimeRangeProvider = ({
       {children}
     </TimeRangeContext.Provider>
   );
-};
-
-export const useTimeRangeContext = () => {
-  return useContext(TimeRangeContext);
 };

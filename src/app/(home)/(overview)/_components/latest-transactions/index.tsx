@@ -1,25 +1,47 @@
 import { Suspense } from 'react';
 
-import { limit } from '../lib/defaults';
-
 import { api, HydrateClient } from '@/trpc/server';
 import {
   LatestTransactionsTable,
   LoadingLatestTransactionsTable,
 } from '@/app/(home)/_components/transactions';
+import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
+import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
+import { Section } from '../utils';
+import { RangeSelector } from '@/app/_contexts/time-range/component';
+import { subMonths } from 'date-fns';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { firstTransfer } from '@/services/cdp/facilitator/constants';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 export const LatestTransactions = () => {
+  const endDate = new Date();
+  const startDate = subMonths(endDate, 1);
+  const limit = 100;
+
   void api.transfers.list.prefetch({
     limit,
+    sorting: defaultTransfersSorting,
+    startDate,
+    endDate,
   });
 
   return (
     <HydrateClient>
-      <LatestTransactionsTableContainer>
-        <Suspense fallback={<LoadingLatestTransactionsTable />}>
-          <LatestTransactionsTable limit={limit} />
-        </Suspense>
-      </LatestTransactionsTableContainer>
+      <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
+        <TimeRangeProvider
+          initialEndDate={endDate}
+          initialStartDate={startDate}
+          creationDate={firstTransfer}
+          initialTimeframe={ActivityTimeframe.ThirtyDays}
+        >
+          <LatestTransactionsTableContainer>
+            <Suspense fallback={<LoadingLatestTransactionsTable />}>
+              <LatestTransactionsTable limit={limit} />
+            </Suspense>
+          </LatestTransactionsTableContainer>
+        </TimeRangeProvider>
+      </TransfersSortingProvider>
     </HydrateClient>
   );
 };
@@ -38,14 +60,12 @@ const LatestTransactionsTableContainer = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex flex-col gap-4">
-      <div>
-        <h2 className="text-2xl font-bold">Latest Transactions</h2>
-        <p className="text-muted-foreground">
-          Latest x402 transactions made using the Coinbase faciltiator
-        </p>
-      </div>
+    <Section
+      title="Transactions"
+      description="x402 requests made through known facilitators"
+      actions={<RangeSelector />}
+    >
       {children}
-    </div>
+    </Section>
   );
 };

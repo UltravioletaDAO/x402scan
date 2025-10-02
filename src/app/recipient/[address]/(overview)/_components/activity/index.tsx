@@ -5,13 +5,16 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { subDays } from 'date-fns';
 
 import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+
+import { ActivityCharts, LoadingActivityCharts } from './charts';
 
 import { api, HydrateClient } from '@/trpc/server';
 
-import { RangeSelector } from '@/app/_components/time-range-selector/range-selector';
-import { ActivityCharts, LoadingActivityCharts } from './charts';
-import { TimeRangeProvider } from '@/app/_components/time-range-selector/context';
-import { Skeleton } from '@/components/ui/skeleton';
+import { RangeSelector } from '@/app/_contexts/time-range/component';
+
 import { ActivityTimeframe } from '@/types/timeframes';
 
 interface Props {

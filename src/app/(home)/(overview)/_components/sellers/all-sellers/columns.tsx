@@ -1,29 +1,22 @@
 'use client';
 
-import {
-  Activity,
-  ArrowLeftRight,
-  Calendar,
-  DollarSign,
-  Server,
-  Users,
-} from 'lucide-react';
+import { Calendar, DollarSign, Hash, Server } from 'lucide-react';
+
+import { HeaderCell } from '@/components/ui/data-table/header-cell';
+
+import { Seller, SellerSkeleton } from '@/app/_components/seller';
+import { Facilitators } from '@/app/_components/facilitator';
+
+import { formatTokenAmount } from '@/lib/token';
+import { formatCompactAgo } from '@/lib/utils';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
-
-import { Origins, OriginsSkeleton } from '@/app/_components/origins';
-import { Facilitators } from '@/app/_components/facilitator';
-
-import { cn, formatCompactAgo } from '@/lib/utils';
-import { formatTokenAmount } from '@/lib/token';
-
-import type { LucideIcon } from 'lucide-react';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
+import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/context';
 
-type ColumnType = RouterOutputs['sellers']['list']['bazaar']['items'][number];
+type ColumnType = RouterOutputs['sellers']['list']['all']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
@@ -31,14 +24,9 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     header: () => (
       <HeaderCell Icon={Server} label="Server" className="justify-start" />
     ),
-    cell: ({ row }) => (
-      <Origins
-        origins={row.original.origins}
-        address={row.original.recipient}
-      />
-    ),
-    size: 400,
-    loading: () => <OriginsSkeleton />,
+    cell: ({ row }) => <Seller address={row.original.recipient} />,
+    size: 300, // Fixed width for seller column (widest for address display)
+    loading: () => <SellerSkeleton />,
   },
   {
     accessorKey: 'facilitators',
@@ -55,15 +43,18 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
   },
   {
-    accessorKey: 'chart',
-    header: () => <HeaderCell Icon={Activity} label="Activity" />,
-    cell: ({ row }) => <KnownSellerChart address={row.original.recipient} />,
-    size: 100,
-    loading: () => <LoadingKnownSellerChart />,
-  },
-  {
     accessorKey: 'tx_count',
-    header: () => <HeaderCell Icon={ArrowLeftRight} label="Txns" />,
+    header: () => (
+      <HeaderCell
+        Icon={Hash}
+        label="Txns"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'tx_count',
+        }}
+        className="mx-auto"
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.tx_count.toLocaleString(undefined, {
@@ -78,7 +69,17 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'unique_buyers',
-    header: () => <HeaderCell Icon={Users} label="Buyers" />,
+    header: () => (
+      <HeaderCell
+        Icon={Hash}
+        label="Buyers"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'unique_buyers',
+        }}
+        className="mx-auto"
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.unique_buyers.toLocaleString(undefined, {
@@ -93,7 +94,17 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'latest_block_timestamp',
-    header: () => <HeaderCell Icon={Calendar} label="Last Used" />,
+    header: () => (
+      <HeaderCell
+        Icon={Calendar}
+        label="Latest"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'latest_block_timestamp',
+        }}
+        className="mx-auto"
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {formatCompactAgo(row.original.latest_block_timestamp)}
@@ -105,10 +116,18 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: 'total_amount',
     header: () => (
-      <HeaderCell Icon={DollarSign} label="Volume" className="justify-end" />
+      <HeaderCell
+        Icon={DollarSign}
+        label="Volume"
+        className="ml-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'total_amount',
+        }}
+      />
     ),
     cell: ({ row }) => (
-      <div className="text-right font-mono text-xs">
+      <div className="text-right font-mono font-semibold text-xs">
         {formatTokenAmount(row.original.total_amount)}
       </div>
     ),
@@ -116,23 +135,3 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];
-
-interface HeaderCellProps {
-  Icon: LucideIcon;
-  label: string;
-  className?: string;
-}
-
-const HeaderCell: React.FC<HeaderCellProps> = ({ Icon, label, className }) => {
-  return (
-    <div
-      className={cn(
-        'flex items-center justify-center gap-1 text-sm text-muted-foreground',
-        className
-      )}
-    >
-      <Icon className="size-3" />
-      {label}
-    </div>
-  );
-};

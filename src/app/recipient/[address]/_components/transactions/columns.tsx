@@ -1,6 +1,7 @@
 'use client';
 
-import { Calendar, DollarSign, User } from 'lucide-react';
+import { Calendar, DollarSign, Hash, User } from 'lucide-react';
+import Link from 'next/link';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -13,15 +14,14 @@ import { formatTokenAmount } from '@/lib/token';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
+import { TransfersSortingContext } from '@/app/_contexts/sorting/transfers/context';
 
 type ColumnType = RouterOutputs['transfers']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: 'sender',
-    header: () => (
-      <HeaderCell Icon={User} label="Sender" className="justify-start" />
-    ),
+    header: () => <HeaderCell Icon={User} label="Sender" className="mr-auto" />,
     cell: ({ row }) => (
       <Address
         address={row.original.sender}
@@ -32,27 +32,61 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
   },
   {
-    accessorKey: 'amount',
-    header: () => <HeaderCell Icon={DollarSign} label="Amount" />,
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {formatTokenAmount(row.original.amount)}
-      </div>
+    accessorKey: 'transaction_hash',
+    header: () => (
+      <HeaderCell Icon={Hash} label="Transaction Hash" className="mx-auto" />
     ),
-    size: 100, // Fixed width for buyers count
+    cell: ({ row }) => (
+      <Link href={`/transaction/${row.original.transaction_hash}`}>
+        <Address
+          address={row.original.transaction_hash}
+          className="text-xs block text-center"
+        />
+      </Link>
+    ),
+    size: 300,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
     accessorKey: 'block_timestamp',
     header: () => (
-      <HeaderCell Icon={Calendar} label="Timestamp" className="justify-end" />
+      <HeaderCell
+        Icon={Calendar}
+        label="Timestamp"
+        className="mx-auto"
+        sorting={{
+          sortContext: TransfersSortingContext,
+          sortKey: 'block_timestamp',
+        }}
+      />
     ),
     cell: ({ row }) => (
-      <div className="text-right font-mono text-xs">
+      <div className="text-center font-mono text-xs">
         {formatCompactAgo(row.original.block_timestamp)}
       </div>
     ),
     size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
+    accessorKey: 'amount',
+    header: () => (
+      <HeaderCell
+        Icon={DollarSign}
+        label="Amount"
+        className="ml-auto"
+        sorting={{
+          sortContext: TransfersSortingContext,
+          sortKey: 'amount',
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="text-right font-mono text-xs">
+        {formatTokenAmount(row.original.amount)}
+      </div>
+    ),
+    size: 100, // Fixed width for buyers count
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];

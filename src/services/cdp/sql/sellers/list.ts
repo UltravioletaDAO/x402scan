@@ -5,22 +5,19 @@ import { ethereumAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
-import { baseQuerySchema, formatDateForSql } from '../lib';
+import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
+
+const sellerSortIds = [
+  'tx_count',
+  'total_amount',
+  'latest_block_timestamp',
+  'unique_buyers',
+] as const;
+
+export type SellerSortId = (typeof sellerSortIds)[number];
 
 export const listTopSellersInputSchema = baseQuerySchema.extend({
-  sorting: z
-    .array(
-      z.object({
-        id: z.enum([
-          'tx_count',
-          'total_amount',
-          'latest_block_timestamp',
-          'unique_buyers',
-        ]),
-        desc: z.boolean(),
-      })
-    )
-    .default([{ id: 'total_amount', desc: true }]),
+  sorting: sortingSchema(sellerSortIds),
   addresses: z.array(ethereumAddressSchema).optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
@@ -69,7 +66,7 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
     }
     ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
 GROUP BY recipient 
-ORDER BY ${sorting.map(s => `${s.id} ${s.desc ? 'DESC' : 'ASC'}`).join(', ')} 
+ORDER BY ${sorting.id} ${sorting.desc ? 'DESC' : 'ASC'}
 LIMIT ${limit + 1};
   `;
 

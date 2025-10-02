@@ -1,6 +1,6 @@
 'use client';
 
-import { useTimeRangeContext } from '@/app/_components/time-range-selector/context';
+import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import {
   BaseAreaChart,
   LoadingAreaChart,

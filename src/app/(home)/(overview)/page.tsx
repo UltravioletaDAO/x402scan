@@ -1,9 +1,9 @@
 import { Body, HeadingContainer } from '../../_components/layout/page-utils';
 
 import { SearchButton } from './_components/search-button';
-import { TopSellers } from './_components/top-sellers';
+import { AllSellers } from './_components/sellers/all-sellers';
 import { OverallStats } from './_components/stats';
-import { TopServers } from './_components/known-sellers';
+import { TopServers } from './_components/sellers/known-sellers';
 import { LatestTransactions } from './_components/latest-transactions';
 import { TopFacilitators } from './_components/top-facilitators';
 
@@ -24,7 +24,7 @@ export default async function Home() {
         <TopServers />
         <TopFacilitators />
         <LatestTransactions />
-        <TopSellers />
+        <AllSellers />
       </Body>
     </div>
   );

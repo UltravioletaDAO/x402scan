@@ -1,7 +1,7 @@
 import { Body, HeadingContainer } from '../../_components/layout/page-utils';
-import { LoadingTopSellers } from './_components/top-sellers';
+import { LoadingAllSellers } from './_components/sellers/all-sellers';
 import { LoadingOverallStats } from './_components/stats';
-import { LoadingTopServers } from './_components/known-sellers';
+import { LoadingTopServers } from './_components/sellers/known-sellers';
 import { LoadingLatestTransactions } from './_components/latest-transactions';
 import { SearchButtonContent } from './_components/search-button';
 import { LoadingTopFacilitators } from './_components/top-facilitators';
@@ -23,7 +23,7 @@ export default function LoadingOverview() {
         <LoadingTopServers />
         <LoadingTopFacilitators />
         <LoadingLatestTransactions />
-        <LoadingTopSellers />
+        <LoadingAllSellers />
       </Body>
     </div>
   );
