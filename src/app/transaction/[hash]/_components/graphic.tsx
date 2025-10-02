@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 import { AnimatedBeam } from '@/components/magicui/animated-beam';
 
-import { facilitatorMap } from '@/lib/facilitators';
+import { facilitatorAddressMap } from '@/lib/facilitators';
 
 import { Seller } from '@/app/_components/seller';
 import { Address } from '@/components/ui/address';
@@ -55,7 +55,7 @@ export const TransactionGraphic: React.FC<Props> = ({
     reverse: isReverse,
   };
 
-  const facilitator = facilitatorMap.get(facilitatorAddress);
+  const facilitator = facilitatorAddressMap.get(facilitatorAddress);
 
   const cardClassName = 'z-10 overflow-hidden w-full md:w-auto md:flex-1';
 

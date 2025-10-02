@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 import { Address } from '@/components/ui/address';
-import { facilitatorMap } from '@/lib/facilitators';
+import { facilitatorAddressMap } from '@/lib/facilitators';
 
 import type { Address as AddressType } from 'viem';
 import { cn } from '@/lib/utils';
@@ -12,7 +12,7 @@ interface Props {
 }
 
 export const Facilitator: React.FC<Props> = ({ address, className }) => {
-  const facilitator = facilitatorMap.get(address);
+  const facilitator = facilitatorAddressMap.get(address);
 
   if (!facilitator) {
     return <Address address={address} className={className} />;
@@ -49,7 +49,7 @@ export const Facilitators: React.FC<FacilitatorsProps> = ({
     <div className={cn('flex items-center gap-1', className)}>
       <div className="flex items-center gap-0.5">
         {addresses.map(address => {
-          const facilitator = facilitatorMap.get(address);
+          const facilitator = facilitatorAddressMap.get(address);
           if (!facilitator) {
             return null;
           }
