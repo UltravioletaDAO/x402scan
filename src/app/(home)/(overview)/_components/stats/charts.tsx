@@ -4,7 +4,7 @@ import { api } from '@/trpc/client';
 
 import { differenceInSeconds, subSeconds } from 'date-fns';
 
-import { useTimeRangeContext } from '@/app/_components/time-range-selector/context';
+import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
 import { LoadingOverallStatsCard, OverallStatsCard } from './card';
 

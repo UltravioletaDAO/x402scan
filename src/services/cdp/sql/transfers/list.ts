@@ -11,17 +11,12 @@ export const listFacilitatorTransfersSortIds = [
   'amount',
 ] as const;
 
-export type ListFacilitatorTransfersSortId =
-  (typeof listFacilitatorTransfersSortIds)[number];
+export type TransfersSortId = (typeof listFacilitatorTransfersSortIds)[number];
 
 export const listFacilitatorTransfersInputSchema = baseQuerySchema.extend({
   recipient: ethereumAddressSchema.optional(),
-  after: z
-    .object({
-      timestamp: z.date(),
-      logIndex: z.number().optional(),
-    })
-    .optional(),
+  startDate: z.date().optional(),
+  endDate: z.date().optional(),
   limit: z.number().default(100),
   sorting: sortingSchema(listFacilitatorTransfersSortIds).default({
     id: 'block_timestamp',
@@ -50,8 +45,15 @@ export const listFacilitatorTransfers = async (
     console.error('invalid input', input);
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { recipient, after, limit, facilitators, tokens, sorting } =
-    parseResult.data;
+  const {
+    recipient,
+    startDate,
+    endDate,
+    limit,
+    facilitators,
+    tokens,
+    sorting,
+  } = parseResult.data;
 
   const sql = `SELECT
   parameters['from']::String AS sender,
@@ -67,7 +69,8 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
   AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
   AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
   ${recipient ? `AND recipient = '${recipient}'` : ''}
-  ${after ? `AND block_timestamp > '${formatDateForSql(after.timestamp)}'` : ''}
+  ${startDate ? `AND block_timestamp > '${formatDateForSql(startDate)}'` : ''}
+  ${endDate ? `AND block_timestamp < '${formatDateForSql(endDate)}'` : ''}
 ORDER BY ${sorting.id} ${sorting.desc ? 'DESC' : 'ASC'}
 LIMIT ${limit + 1};`;
   const result = await runBaseSqlQuery(sql, outputSchema);

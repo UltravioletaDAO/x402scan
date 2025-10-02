@@ -7,8 +7,8 @@ import { subDays } from 'date-fns';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { RangeSelector } from '@/app/_components/time-range-selector/range-selector';
-import { TimeRangeProvider } from '@/app/_components/time-range-selector/context';
+import { RangeSelector } from '@/app/_contexts/time-range/component';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 
 import { ActivityCharts, LoadingActivityCharts } from './charts';
 

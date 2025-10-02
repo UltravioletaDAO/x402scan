@@ -5,43 +5,70 @@ import { DataTable } from '@/components/ui/data-table';
 import { columns } from './columns';
 import { AllSellersTable } from './table';
 
-import { Sorting } from '../../lib/sorting';
 import { api, HydrateClient } from '@/trpc/server';
 import { limit } from '../../lib/defaults';
-import { SellersSortingProvider } from '../sorting/provider';
-import { defaultSellersSorting } from '../sorting/default';
+import { SellersSortingProvider } from '../../../../../_contexts/sorting/sellers/provider';
+import { defaultSellersSorting } from '../../../../../_contexts/sorting/sellers/default';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { firstTransfer } from '@/services/cdp/facilitator/constants';
+import { Section } from '../../utils';
+import { RangeSelector } from '@/app/_contexts/time-range/component';
+import { subMonths } from 'date-fns';
+import { ActivityTimeframe } from '@/types/timeframes';
 
 export const AllSellers = () => {
+  const endDate = new Date();
+  const startDate = subMonths(endDate, 1);
+
   void api.sellers.list.all.prefetch({
     sorting: defaultSellersSorting,
     limit,
+    startDate,
+    endDate,
   });
 
   return (
     <HydrateClient>
-      <SellersSortingProvider initialSorting={defaultSellersSorting}>
-        <div className="flex flex-col gap-4">
-          <div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Top Sellers</h2>
-              <Sorting />
-            </div>
-            <p className="text-muted-foreground">
-              Top addresses that have received x402 transfers - known and
-              unknown servers
-            </p>
-          </div>
-          <Suspense fallback={<LoadingAllSellers />}>
-            <AllSellersTable />
-          </Suspense>
-        </div>
-      </SellersSortingProvider>
+      <TimeRangeProvider
+        creationDate={firstTransfer}
+        initialEndDate={endDate}
+        initialStartDate={startDate}
+        initialTimeframe={ActivityTimeframe.ThirtyDays}
+      >
+        <SellersSortingProvider initialSorting={defaultSellersSorting}>
+          <AllSellersContainer>
+            <Suspense fallback={<LoadingAllSellersTable />}>
+              <AllSellersTable />
+            </Suspense>
+          </AllSellersContainer>
+        </SellersSortingProvider>
+      </TimeRangeProvider>
     </HydrateClient>
   );
 };
 
 export const LoadingAllSellers = () => {
   return (
+    <AllSellersContainer>
+      <LoadingAllSellersTable />
+    </AllSellersContainer>
+  );
+};
+
+const LoadingAllSellersTable = () => {
+  return (
     <DataTable columns={columns} data={[]} loadingRowCount={10} isLoading />
+  );
+};
+
+const AllSellersContainer = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <Section
+      title="All Sellers"
+      description="All addresses that have received x402 transfers - known and unknown servers"
+      actions={<RangeSelector />}
+    >
+      {children}
+    </Section>
   );
 };

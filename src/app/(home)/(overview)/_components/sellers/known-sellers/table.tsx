@@ -2,8 +2,8 @@
 
 import { DataTable } from '@/components/ui/data-table';
 
-import { useSellersSorting } from '../sorting/hook';
-import { useTimeRangeContext } from '@/app/_components/time-range-selector/context';
+import { useSellersSorting } from '@/app/_contexts/sorting/sellers/hook';
+import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
 import { columns } from './columns';
 import { api } from '@/trpc/client';

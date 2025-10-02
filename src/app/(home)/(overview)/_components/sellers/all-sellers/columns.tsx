@@ -14,7 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
-import { SellersSortingContext } from '../sorting/context';
+import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/context';
 
 type ColumnType = RouterOutputs['sellers']['list']['all']['items'][number];
 

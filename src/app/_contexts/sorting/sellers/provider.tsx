@@ -1,8 +1,8 @@
-import { SortingProvider } from '@/app/_contexts/sorting/provider';
+import { SortingProvider } from '../base/provider';
 import { SellersSortingContext } from './context';
 
 import type { SellerSortId } from '@/services/cdp/sql/sellers/list';
-import type { SortType } from '@/types/sorting';
+import type { SortType } from '../base/types';
 
 export const SellersSortingProvider = ({
   children,

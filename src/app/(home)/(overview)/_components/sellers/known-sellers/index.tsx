@@ -8,11 +8,11 @@ import { KnownSellersTable, LoadingKnownSellersTable } from './table';
 
 import { api, HydrateClient } from '@/trpc/server';
 
-import { defaultSellersSorting } from '../sorting/default';
-import { SellersSortingProvider } from '../sorting/provider';
+import { defaultSellersSorting } from '../../../../../_contexts/sorting/sellers/default';
+import { SellersSortingProvider } from '../../../../../_contexts/sorting/sellers/provider';
 
-import { TimeRangeProvider } from '@/app/_components/time-range-selector/context';
-import { RangeSelector } from '@/app/_components/time-range-selector/range-selector';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { RangeSelector } from '@/app/_contexts/time-range/component';
 
 import { firstTransfer } from '@/services/cdp/facilitator/constants';
 

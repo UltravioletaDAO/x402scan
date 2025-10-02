@@ -2,15 +2,21 @@ import React, { Suspense } from 'react';
 
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { api, HydrateClient } from '@/trpc/server';
+import { differenceInSeconds, subMonths, subSeconds } from 'date-fns';
+
+import { Section } from '../utils';
 
 import { OverallCharts, LoadingOverallCharts } from './charts';
-import { Section } from '../utils';
-import { differenceInSeconds, subMonths, subSeconds } from 'date-fns';
-import { TimeRangeProvider } from '@/app/_components/time-range-selector/context';
-import { RangeSelector } from '@/app/_components/time-range-selector/range-selector';
-import { ActivityTimeframe } from '@/types/timeframes';
+
+import { RangeSelector } from '@/app/_contexts/time-range/component';
+
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+
+import { api, HydrateClient } from '@/trpc/server';
+
 import { firstTransfer } from '@/services/cdp/facilitator/constants';
+
+import { ActivityTimeframe } from '@/types/timeframes';
 
 export const OverallStats = async () => {
   const endDate = new Date();

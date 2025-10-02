@@ -1,6 +1,6 @@
 import { SellersSortingContext } from './context';
 
-import { useSorting } from '@/app/_contexts/sorting/hook';
+import { useSorting } from '../base/hook';
 
 export const useSellersSorting = () => {
   const context = useSorting(SellersSortingContext);

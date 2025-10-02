@@ -3,7 +3,7 @@
 import { format } from 'date-fns';
 import { MultiCharts, LoadingMultiCharts } from '@/components/ui/charts/multi';
 
-import { useTimeRangeContext } from '@/app/_components/time-range-selector/context';
+import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
 import { api } from '@/trpc/client';
 

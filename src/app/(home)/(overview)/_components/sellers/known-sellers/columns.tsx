@@ -22,7 +22,7 @@ import { formatTokenAmount } from '@/lib/token';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
-import { SellersSortingContext } from '../sorting/context';
+import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/context';
 
 type ColumnType = RouterOutputs['sellers']['list']['bazaar']['items'][number];
 
@@ -30,7 +30,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: 'recipient',
     header: () => (
-      <HeaderCell Icon={Server} label="Server" className="justify-start" />
+      <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
     cell: ({ row }) => (
       <Origins
@@ -44,7 +44,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: 'facilitators',
     header: () => (
-      <HeaderCell Icon={Server} label="Facilitator" className="justify-start" />
+      <HeaderCell Icon={Server} label="Facilitator" className="mr-auto" />
     ),
     cell: ({ row }) => (
       <Facilitators
@@ -57,7 +57,9 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'chart',
-    header: () => <HeaderCell Icon={Activity} label="Activity" />,
+    header: () => (
+      <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
+    ),
     cell: ({ row }) => <KnownSellerChart address={row.original.recipient} />,
     size: 100,
     loading: () => <LoadingKnownSellerChart />,
@@ -68,6 +70,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell
         Icon={ArrowLeftRight}
         label="Txns"
+        className="mx-auto"
         sorting={{
           sortContext: SellersSortingContext,
           sortKey: 'tx_count',
@@ -92,6 +95,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell
         Icon={Users}
         label="Buyers"
+        className="mx-auto"
         sorting={{
           sortContext: SellersSortingContext,
           sortKey: 'unique_buyers',
@@ -136,7 +140,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell
         Icon={DollarSign}
         label="Volume"
-        className="justify-end"
+        className="ml-auto"
         sorting={{
           sortContext: SellersSortingContext,
           sortKey: 'total_amount',
