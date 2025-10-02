@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
+import { SellersSortingContext } from '../sorting/context';
 
 type ColumnType = RouterOutputs['sellers']['list']['all']['items'][number];
 
@@ -43,7 +44,17 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'tx_count',
-    header: () => <HeaderCell Icon={Hash} label="Txns" />,
+    header: () => (
+      <HeaderCell
+        Icon={Hash}
+        label="Txns"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'tx_count',
+        }}
+        className="mx-auto"
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.tx_count.toLocaleString(undefined, {
@@ -58,7 +69,17 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'unique_buyers',
-    header: () => <HeaderCell Icon={Hash} label="Buyers" />,
+    header: () => (
+      <HeaderCell
+        Icon={Hash}
+        label="Buyers"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'unique_buyers',
+        }}
+        className="mx-auto"
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {row.original.unique_buyers.toLocaleString(undefined, {
@@ -73,26 +94,44 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   },
   {
     accessorKey: 'latest_block_timestamp',
-    header: () => <HeaderCell Icon={Calendar} label="Latest" />,
+    header: () => (
+      <HeaderCell
+        Icon={Calendar}
+        label="Latest"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'latest_block_timestamp',
+        }}
+        className="mx-auto"
+      />
+    ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {formatCompactAgo(row.original.latest_block_timestamp)}
       </div>
     ),
-    size: 50, // Fixed width for timestamp
+    size: 100, // Fixed width for timestamp
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
     accessorKey: 'total_amount',
     header: () => (
-      <HeaderCell Icon={DollarSign} label="Volume" className="justify-end" />
+      <HeaderCell
+        Icon={DollarSign}
+        label="Volume"
+        className="ml-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'total_amount',
+        }}
+      />
     ),
     cell: ({ row }) => (
       <div className="text-right font-mono font-semibold text-xs">
         {formatTokenAmount(row.original.total_amount)}
       </div>
     ),
-    size: 50, // Fixed width for volume column
+    size: 100, // Fixed width for volume column
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];

@@ -56,13 +56,15 @@ const SortableHeaderCell = <SortKey extends string>({
     <HeaderCellInternal
       Icon={Icon}
       label={label}
-      className={className}
+      className={cn(
+        className,
+        'cursor-pointer hover:bg-accent rounded-md transition-all'
+      )}
       onClick={() => {
         if (isSortable) {
           sorting.setSorting({
             id: sortKey,
-            desc:
-              sorting.sorting.id === sortKey ? !sorting.sorting.desc : false,
+            desc: sorting.sorting.id === sortKey ? !sorting.sorting.desc : true,
           });
         }
       }}
@@ -93,7 +95,7 @@ const HeaderCellInternal: React.FC<HeaderCellInternalProps> = ({
   return (
     <div
       className={cn(
-        'flex items-center justify-center gap-1 text-sm text-muted-foreground',
+        'flex items-center justify-center gap-1 text-sm text-muted-foreground w-fit',
         className
       )}
       onClick={onClick}
