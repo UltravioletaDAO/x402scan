@@ -22,17 +22,18 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
-  const firstTransfer = await api.stats.getFirstTransferTimestamp({
-    addresses: [address],
-  });
-
-  await api.transfers.list.prefetch({
-    limit: 100,
-    recipient: address,
-    startDate,
-    endDate,
-    sorting: defaultTransfersSorting,
-  });
+  const [firstTransfer] = await Promise.all([
+    api.stats.getFirstTransferTimestamp({
+      addresses: [address],
+    }),
+    api.transfers.list.prefetch({
+      limit: 100,
+      recipient: address,
+      startDate,
+      endDate,
+      sorting: defaultTransfersSorting,
+    }),
+  ]);
 
   return (
     <HydrateClient>
