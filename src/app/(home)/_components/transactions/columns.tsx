@@ -37,7 +37,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         />
       </Link>
     ),
-    size: 200,
+    size: 300,
     loading: () => <SellerSkeleton />,
   },
   {
@@ -51,7 +51,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         className="mr-auto justify-start"
       />
     ),
-    size: 100,
+    size: 150,
     loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
   },
   {
@@ -63,7 +63,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         className="text-xs mx-auto block text-center"
       />
     ),
-    size: 100, // Fixed width for transaction count
+    size: 150, // Fixed width for transaction count
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -82,7 +82,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         />
       </Link>
     ),
-    size: 100,
+    size: 150,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -103,7 +103,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         {formatCompactAgo(row.original.block_timestamp)}
       </div>
     ),
-    size: 100,
+    size: 150,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -124,7 +124,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         {formatTokenAmount(BigInt(row.original.amount))}
       </div>
     ),
-    size: 100, // Fixed width for buyers count
+    size: 150, // Fixed width for buyers count
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];

@@ -1,6 +1,9 @@
 import { api } from '@/trpc/server';
 
-import { BaseAreaChart } from '@/components/ui/charts/chart/area';
+import {
+  FacilitatorChartContent,
+  LoadingFacilitatorChartContent,
+} from './chart';
 
 import type { Facilitator } from '@/lib/facilitators';
 import type { ChartData } from '@/components/ui/charts/chart/types';
@@ -27,11 +30,13 @@ export const FacilitatorChart: React.FC<Props> = async ({
   }));
 
   return (
-    <BaseAreaChart
-      data={chartData}
-      areas={[{ dataKey: 'total_transactions', color: 'var(--color-primary)' }]}
-      height={'100%'}
-      dataMax={total_transactions / 48}
+    <FacilitatorChartContent
+      chartData={chartData}
+      total_transactions={total_transactions}
     />
   );
+};
+
+export const LoadingFacilitatorChart = () => {
+  return <LoadingFacilitatorChartContent />;
 };
