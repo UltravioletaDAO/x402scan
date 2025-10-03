@@ -7,8 +7,6 @@ import { TopServers } from './_components/sellers/known-sellers';
 import { LatestTransactions } from './_components/latest-transactions';
 import { TopFacilitators } from './_components/top-facilitators';
 
-export const revalidate = 60;
-
 export default async function Home() {
   return (
     <div>
