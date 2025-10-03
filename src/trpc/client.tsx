@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 
-import { QueryClientProvider, type QueryClient } from '@tanstack/react-query';
+import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 
 import {
   httpBatchStreamLink,
@@ -20,6 +21,7 @@ import { createQueryClient } from './query-client';
 import { env } from '@/env';
 
 import type { AppRouter } from './routers';
+import type { QueryClient } from '@tanstack/react-query';
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {
@@ -34,6 +36,10 @@ const getQueryClient = () => {
 };
 
 export const api = createTRPCReact<AppRouter>();
+
+const persister = createAsyncStoragePersister({
+  storage: window.localStorage,
+});
 
 export function TRPCReactProvider(props: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
@@ -72,11 +78,14 @@ export function TRPCReactProvider(props: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <PersistQueryClientProvider
+      client={queryClient}
+      persistOptions={{ persister }}
+    >
       <api.Provider client={trpcClient} queryClient={queryClient}>
         {props.children}
       </api.Provider>
-    </QueryClientProvider>
+    </PersistQueryClientProvider>
   );
 }
 
