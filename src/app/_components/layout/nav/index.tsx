@@ -66,6 +66,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
                     buttonRefs[index] = el;
                   }
                 }}
+                prefetch={false}
               >
                 <MotionTab href={tab.href} subRoutes={tab.subRoutes}>
                   <span className="flex items-center gap-1 whitespace-nowrap">
