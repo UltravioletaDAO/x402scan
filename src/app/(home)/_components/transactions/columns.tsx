@@ -29,7 +29,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Server} label="Server" className="justify-start" />
     ),
     cell: ({ row }) => (
-      <Link href={`/recipient/${row.original.recipient}`}>
+      <Link href={`/recipient/${row.original.recipient}`} prefetch={false}>
         <Seller
           address={row.original.recipient}
           addressClassName="text-xs font-normal"
@@ -70,7 +70,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     accessorKey: 'transaction_hash',
     header: () => <HeaderCell Icon={Hash} label="Hash" className="mx-auto" />,
     cell: ({ row }) => (
-      <Link href={`/transaction/${row.original.transaction_hash}`}>
+      <Link
+        href={`/transaction/${row.original.transaction_hash}`}
+        prefetch={false}
+      >
         <Address
           address={row.original.transaction_hash}
           className="text-xs block text-center"

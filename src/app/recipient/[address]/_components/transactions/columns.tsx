@@ -37,7 +37,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Hash} label="Transaction Hash" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <Link href={`/transaction/${row.original.transaction_hash}`}>
+      <Link
+        href={`/transaction/${row.original.transaction_hash}`}
+        prefetch={false}
+      >
         <Address
           address={row.original.transaction_hash}
           className="text-xs block text-center"
