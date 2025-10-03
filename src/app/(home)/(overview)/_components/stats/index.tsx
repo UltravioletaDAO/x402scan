@@ -19,21 +19,9 @@ import { firstTransfer } from '@/services/cdp/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 export const OverallStats = async () => {
-  // Round to nearest minute for cache consistency
-  const now = new Date();
-  const roundedMinutes = Math.floor(now.getMinutes() / 1) * 1;
-  const endDate = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-    now.getHours(),
-    roundedMinutes,
-    0,
-    0
-  );
+  const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
-  // Prefetch through tRPC - caching happens inside the query functions
   void api.stats.getOverallStatistics.prefetch({
     startDate,
     endDate,
