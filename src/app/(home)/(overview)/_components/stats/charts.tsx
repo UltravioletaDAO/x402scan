@@ -38,10 +38,10 @@ export const OverallCharts = () => {
     buyers: number;
     sellers: number;
   }>[] = bucketedStats.map(stat => ({
-    transactions: Number(stat.total_transactions),
-    totalAmount: parseFloat(convertTokenAmount(stat.total_amount).toString()),
-    buyers: Number(stat.unique_buyers),
-    sellers: Number(stat.unique_sellers),
+    transactions: stat.total_transactions,
+    totalAmount: parseFloat(convertTokenAmount(BigInt(stat.total_amount)).toString()),
+    buyers: stat.unique_buyers,
+    sellers: stat.unique_sellers,
     timestamp: stat.bucket_start.toISOString(),
   }));
 
@@ -80,7 +80,7 @@ export const OverallCharts = () => {
       />
       <OverallStatsCard
         title="Transactions"
-        value={BigInt(overallStats.total_transactions).toLocaleString(undefined, {
+        value={overallStats.total_transactions.toLocaleString(undefined, {
           notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
@@ -113,7 +113,7 @@ export const OverallCharts = () => {
       />
       <OverallStatsCard
         title="Buyers"
-        value={BigInt(overallStats.unique_buyers).toLocaleString(undefined, {
+        value={overallStats.unique_buyers.toLocaleString(undefined, {
           notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
@@ -146,7 +146,7 @@ export const OverallCharts = () => {
       />
       <OverallStatsCard
         title="Sellers"
-        value={BigInt(overallStats.unique_sellers).toLocaleString(undefined, {
+        value={overallStats.unique_sellers.toLocaleString(undefined, {
           notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,

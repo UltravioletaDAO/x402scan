@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import z from 'zod';
 
 import { runBaseSqlQuery } from '../query';
@@ -14,6 +15,9 @@ export const overallStatisticsInputSchema = baseQuerySchema.extend({
 const getOverallStatisticsUncached = async (
   input: z.input<typeof overallStatisticsInputSchema>
 ) => {
+  console.log('[CACHE] getOverallStatisticsUncached EXECUTING - cache miss or expired');
+  const startTime = performance.now();
+
   const parseResult = overallStatisticsInputSchema.safeParse(input);
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);
@@ -21,10 +25,10 @@ const getOverallStatisticsUncached = async (
   const { addresses, startDate, endDate, facilitators, tokens } =
     parseResult.data;
   const outputSchema = z.object({
-    total_transactions: z.coerce.bigint(),
-    total_amount: z.coerce.bigint(),
-    unique_buyers: z.coerce.bigint(),
-    unique_sellers: z.coerce.bigint(),
+    total_transactions: z.coerce.number(),
+    total_amount: z.coerce.number(),
+    unique_buyers: z.coerce.number(),
+    unique_sellers: z.coerce.number(),
     latest_block_timestamp: z.coerce.date(),
   });
 
@@ -55,22 +59,74 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
 
   if (!result || result.length === 0) {
     return {
-      total_transactions: '0',
-      total_amount: '0',
-      unique_buyers: '0',
-      unique_sellers: '0',
+      total_transactions: 0,
+      total_amount: 0,
+      unique_buyers: 0,
+      unique_sellers: 0,
       latest_block_timestamp: new Date(),
     };
   }
 
   const data = result[0];
+  const endTime = performance.now();
+  console.log(`[CACHE] getOverallStatisticsUncached took ${(endTime - startTime).toFixed(2)}ms`);
+
   return {
-    total_transactions: data.total_transactions.toString(),
-    total_amount: data.total_amount.toString(),
-    unique_buyers: data.unique_buyers.toString(),
-    unique_sellers: data.unique_sellers.toString(),
+    total_transactions: data.total_transactions,
+    total_amount: data.total_amount,
+    unique_buyers: data.unique_buyers,
+    unique_sellers: data.unique_sellers,
     latest_block_timestamp: data.latest_block_timestamp,
   };
 };
 
-export const getOverallStatistics = getOverallStatisticsUncached;
+const createCacheKey = (input: z.input<typeof overallStatisticsInputSchema>) => {
+  // Round dates to nearest minute for stable cache keys
+  const roundDate = (date?: Date) => {
+    if (!date) return undefined;
+    const rounded = new Date(date);
+    rounded.setSeconds(0, 0);
+    return rounded.toISOString();
+  };
+
+  return JSON.stringify({
+    addresses: input.addresses?.sort(),
+    startDate: roundDate(input.startDate),
+    endDate: roundDate(input.endDate),
+    facilitators: input.facilitators?.sort(),
+    tokens: input.tokens?.sort(),
+  });
+};
+
+export const getOverallStatistics = async (
+  input: z.input<typeof overallStatisticsInputSchema>
+) => {
+  const cacheKey = createCacheKey(input);
+  console.log('[CACHE] getOverallStatistics called with cache key:', cacheKey);
+
+  const startTime = performance.now();
+  const result = await unstable_cache(
+    async () => {
+      const data = await getOverallStatisticsUncached(input);
+      // Convert date to ISO string for JSON serialization
+      return {
+        ...data,
+        latest_block_timestamp: data.latest_block_timestamp.toISOString(),
+      };
+    },
+    ['overall-statistics', cacheKey],
+    {
+      revalidate: 60,
+      tags: ['statistics'],
+    }
+  )();
+  const endTime = performance.now();
+
+  console.log(`[CACHE] getOverallStatistics total time: ${(endTime - startTime).toFixed(2)}ms`);
+
+  // Convert ISO string back to Date object
+  return {
+    ...result,
+    latest_block_timestamp: new Date(result.latest_block_timestamp),
+  };
+};

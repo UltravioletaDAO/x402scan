@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import z from 'zod';
 
 import { subMonths } from 'date-fns';
@@ -23,6 +24,9 @@ export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
 const getBucketedStatisticsUncached = async (
   input: z.input<typeof bucketedStatisticsInputSchema>
 ) => {
+  console.log('[CACHE] getBucketedStatisticsUncached EXECUTING - cache miss or expired');
+  const startTime = performance.now();
+
   const parseResult = bucketedStatisticsInputSchema.safeParse(input);
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);
@@ -31,10 +35,10 @@ const getBucketedStatisticsUncached = async (
     parseResult.data;
   const outputSchema = z.object({
     bucket_start: z.coerce.date(),
-    total_transactions: z.coerce.bigint(),
-    total_amount: z.coerce.bigint(),
-    unique_buyers: z.coerce.bigint(),
-    unique_sellers: z.coerce.bigint(),
+    total_transactions: z.coerce.number(),
+    total_amount: z.coerce.number(),
+    unique_buyers: z.coerce.number(),
+    unique_sellers: z.coerce.number(),
   });
 
   // Calculate bucket size in seconds for consistent alignment
@@ -111,15 +115,68 @@ ORDER BY bucket_start ASC;
       // Add zero values for missing periods
       completeTimeSeries.push({
         bucket_start: bucketStart,
-        total_transactions: BigInt(0),
-        total_amount: BigInt(0),
-        unique_buyers: BigInt(0),
-        unique_sellers: BigInt(0),
+        total_transactions: 0,
+        total_amount: 0,
+        unique_buyers: 0,
+        unique_sellers: 0,
       });
     }
   }
 
+  const endTime = performance.now();
+  console.log(`[CACHE] getBucketedStatisticsUncached took ${(endTime - startTime).toFixed(2)}ms`);
+
   return completeTimeSeries;
 };
 
-export const getBucketedStatistics = getBucketedStatisticsUncached;
+const createCacheKey = (input: z.input<typeof bucketedStatisticsInputSchema>) => {
+  // Round dates to nearest minute for stable cache keys
+  const roundDate = (date?: Date) => {
+    if (!date) return undefined;
+    const rounded = new Date(date);
+    rounded.setSeconds(0, 0);
+    return rounded.toISOString();
+  };
+
+  return JSON.stringify({
+    addresses: input.addresses?.sort(),
+    startDate: roundDate(input.startDate),
+    endDate: roundDate(input.endDate),
+    numBuckets: input.numBuckets,
+    facilitators: input.facilitators?.sort(),
+    tokens: input.tokens?.sort(),
+  });
+};
+
+export const getBucketedStatistics = async (
+  input: z.input<typeof bucketedStatisticsInputSchema>
+) => {
+  const cacheKey = createCacheKey(input);
+  console.log('[CACHE] getBucketedStatistics called with cache key:', cacheKey);
+
+  const startTime = performance.now();
+  const result = await unstable_cache(
+    async () => {
+      const data = await getBucketedStatisticsUncached(input);
+      // Convert dates to ISO strings for JSON serialization
+      return data.map(item => ({
+        ...item,
+        bucket_start: item.bucket_start.toISOString(),
+      }));
+    },
+    ['bucketed-statistics', cacheKey],
+    {
+      revalidate: 60,
+      tags: ['statistics'],
+    }
+  )();
+  const endTime = performance.now();
+
+  console.log(`[CACHE] getBucketedStatistics total time: ${(endTime - startTime).toFixed(2)}ms`);
+
+  // Convert ISO strings back to Date objects
+  return result.map(item => ({
+    ...item,
+    bucket_start: new Date(item.bucket_start),
+  }));
+};
