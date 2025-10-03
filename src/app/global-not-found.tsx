@@ -2,7 +2,7 @@ import { NotFoundCard } from './_components/error/card';
 
 import type { Metadata } from 'next';
 
-import '@/styles/globals.css';
+import '@/app/globals.css';
 
 export const metadata: Metadata = {
   title: 'Not Found',

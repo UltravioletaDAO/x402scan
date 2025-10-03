@@ -5,7 +5,7 @@ import { ErrorCard } from './_components/error/card';
 import type { Metadata } from 'next';
 import type { NextErrorProps } from '@/types/next-error';
 
-import '@/styles/globals.css';
+import '@/app/globals.css';
 
 export const metadata: Metadata = {
   title: 'Error',
