@@ -47,17 +47,15 @@ export const deserializeDates = <T extends Record<string, unknown>>(
 /**
  * Core cached query wrapper with custom serialization/deserialization
  */
-const createCachedQueryBase = <TInput, TOutput>(
-  config: {
-    queryFn: (input: TInput) => Promise<TOutput>;
-    cacheKeyPrefix: string;
-    createCacheKey: (input: TInput) => string;
-    serialize: (data: TOutput) => TOutput;
-    deserialize: (data: TOutput) => TOutput;
-    revalidate?: number;
-    tags?: string[];
-  }
-) => {
+const createCachedQueryBase = <TInput, TOutput>(config: {
+  queryFn: (input: TInput) => Promise<TOutput>;
+  cacheKeyPrefix: string;
+  createCacheKey: (input: TInput) => string;
+  serialize: (data: TOutput) => TOutput;
+  deserialize: (data: TOutput) => TOutput;
+  revalidate?: number;
+  tags?: string[];
+}) => {
   return async (input: TInput): Promise<TOutput> => {
     const cacheKey = config.createCacheKey(input);
 
@@ -80,40 +78,44 @@ const createCachedQueryBase = <TInput, TOutput>(
 /**
  * Generic cached query wrapper for single items with dates
  */
-export const createCachedQuery = <TInput, TOutput extends Record<string, unknown>>(
-  config: {
-    queryFn: (input: TInput) => Promise<TOutput>;
-    cacheKeyPrefix: string;
-    createCacheKey: (input: TInput) => string;
-    dateFields: (keyof TOutput)[];
-    revalidate?: number;
-    tags?: string[];
-  }
-) => {
+export const createCachedQuery = <
+  TInput,
+  TOutput extends Record<string, unknown>,
+>(config: {
+  queryFn: (input: TInput) => Promise<TOutput>;
+  cacheKeyPrefix: string;
+  createCacheKey: (input: TInput) => string;
+  dateFields: (keyof TOutput)[];
+  revalidate?: number;
+  tags?: string[];
+}) => {
   return createCachedQueryBase({
     ...config,
-    serialize: (data) => serializeDates(data, config.dateFields),
-    deserialize: (data) => deserializeDates(data, config.dateFields),
+    serialize: data => serializeDates(data, config.dateFields),
+    deserialize: data => deserializeDates(data, config.dateFields),
   });
 };
 
 /**
  * Generic cached query wrapper for arrays of items with dates
  */
-export const createCachedArrayQuery = <TInput, TItem extends Record<string, unknown>>(
-  config: {
-    queryFn: (input: TInput) => Promise<TItem[]>;
-    cacheKeyPrefix: string;
-    createCacheKey: (input: TInput) => string;
-    dateFields: (keyof TItem)[];
-    revalidate?: number;
-    tags?: string[];
-  }
-) => {
+export const createCachedArrayQuery = <
+  TInput,
+  TItem extends Record<string, unknown>,
+>(config: {
+  queryFn: (input: TInput) => Promise<TItem[]>;
+  cacheKeyPrefix: string;
+  createCacheKey: (input: TInput) => string;
+  dateFields: (keyof TItem)[];
+  revalidate?: number;
+  tags?: string[];
+}) => {
   return createCachedQueryBase({
     ...config,
-    serialize: (data) => data.map(item => serializeDates(item, config.dateFields)),
-    deserialize: (data) => data.map(item => deserializeDates(item, config.dateFields)),
+    serialize: data =>
+      data.map(item => serializeDates(item, config.dateFields)),
+    deserialize: data =>
+      data.map(item => deserializeDates(item, config.dateFields)),
   });
 };
 
@@ -123,24 +125,22 @@ export const createCachedArrayQuery = <TInput, TItem extends Record<string, unkn
 export const createCachedPaginatedQuery = <
   TInput,
   TItem extends Record<string, unknown>,
-  TPaginated extends { items: TItem[] }
->(
-  config: {
-    queryFn: (input: TInput) => Promise<TPaginated>;
-    cacheKeyPrefix: string;
-    createCacheKey: (input: TInput) => string;
-    dateFields: (keyof TItem)[];
-    revalidate?: number;
-    tags?: string[];
-  }
-) => {
+  TPaginated extends { items: TItem[] },
+>(config: {
+  queryFn: (input: TInput) => Promise<TPaginated>;
+  cacheKeyPrefix: string;
+  createCacheKey: (input: TInput) => string;
+  dateFields: (keyof TItem)[];
+  revalidate?: number;
+  tags?: string[];
+}) => {
   return createCachedQueryBase({
     ...config,
-    serialize: (data) => ({
+    serialize: data => ({
       ...data,
       items: data.items.map(item => serializeDates(item, config.dateFields)),
     }),
-    deserialize: (data) => ({
+    deserialize: data => ({
       ...data,
       items: data.items.map(item => deserializeDates(item, config.dateFields)),
     }),
@@ -151,7 +151,9 @@ export const createCachedPaginatedQuery = <
  * Create a standardized cache key from input parameters
  * Handles date rounding and array sorting automatically
  */
-export const createStandardCacheKey = (params: Record<string, unknown>): string => {
+export const createStandardCacheKey = (
+  params: Record<string, unknown>
+): string => {
   const normalized: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(params)) {

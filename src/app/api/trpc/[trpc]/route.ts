@@ -35,7 +35,8 @@ const handler = (req: NextRequest) =>
       if (allOk && isQuery) {
         return {
           headers: {
-            'cache-control': 'public, max-age=60, s-maxage=60, stale-while-revalidate=60',
+            'cache-control':
+              'public, max-age=60, s-maxage=60, stale-while-revalidate=60',
           },
         };
       }

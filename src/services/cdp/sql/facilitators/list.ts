@@ -95,7 +95,7 @@ LIMIT ${limit + 1}`;
 export const listTopFacilitators = createCachedArrayQuery({
   queryFn: listTopFacilitatorsUncached,
   cacheKeyPrefix: 'facilitators-list',
-  createCacheKey: (input) => createStandardCacheKey(input),
+  createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['latest_block_timestamp'],
   revalidate: 60,
   tags: ['facilitators'],

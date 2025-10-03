@@ -77,7 +77,7 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
 export const getOverallStatistics = createCachedQuery({
   queryFn: getOverallStatisticsUncached,
   cacheKeyPrefix: 'overall-statistics',
-  createCacheKey: (input) => createStandardCacheKey(input),
+  createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['latest_block_timestamp'],
   revalidate: 60,
   tags: ['statistics'],

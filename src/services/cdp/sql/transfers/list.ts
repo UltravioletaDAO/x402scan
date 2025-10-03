@@ -5,7 +5,10 @@ import { runBaseSqlQuery } from '../query';
 import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
-import { createCachedPaginatedQuery, createStandardCacheKey } from '@/lib/cache';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 
@@ -82,7 +85,7 @@ LIMIT ${limit + 1};`;
 export const listFacilitatorTransfers = createCachedPaginatedQuery({
   queryFn: listFacilitatorTransfersUncached,
   cacheKeyPrefix: 'transfers-list',
-  createCacheKey: (input) => createStandardCacheKey(input),
+  createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['block_timestamp'],
   revalidate: 60,
   tags: ['transfers'],

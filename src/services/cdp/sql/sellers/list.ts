@@ -6,7 +6,10 @@ import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
 import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
-import { createCachedPaginatedQuery, createStandardCacheKey } from '@/lib/cache';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const sellerSortIds = [
   'tx_count',
@@ -85,10 +88,16 @@ LIMIT ${limit + 1};
 };
 
 const _listTopSellersCached = createCachedPaginatedQuery({
-  queryFn: ({ input, pagination }: { input: z.input<typeof listTopSellersInputSchema>, pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>> }) =>
-    listTopSellersUncached(input, pagination),
+  queryFn: ({
+    input,
+    pagination,
+  }: {
+    input: z.input<typeof listTopSellersInputSchema>;
+    pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>;
+  }) => listTopSellersUncached(input, pagination),
   cacheKeyPrefix: 'sellers-list',
-  createCacheKey: ({ input, pagination }) => createStandardCacheKey({ ...input, limit: pagination.limit }),
+  createCacheKey: ({ input, pagination }) =>
+    createStandardCacheKey({ ...input, limit: pagination.limit }),
   dateFields: ['latest_block_timestamp'],
   revalidate: 60,
   tags: ['sellers'],
