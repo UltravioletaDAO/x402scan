@@ -20,10 +20,10 @@ export const LogoContainer = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <motion.div
-      className="left-2 md:left-6 z-50"
+      className="left-2 md:left-6 z-50 shrink-0"
       style={{
         height: size,
-        aspectRatio: 1,
+        width: size,
         position: isFixed ? 'fixed' : 'absolute',
         top: top,
       }}
