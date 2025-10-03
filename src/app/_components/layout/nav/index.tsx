@@ -61,6 +61,7 @@ export const Nav = <T extends string>({ tabs }: Props<T>) => {
                 className="z-11"
                 onMouseEnter={() => setHoveredTabIndex(index)}
                 onMouseLeave={() => setHoveredTabIndex(null)}
+                onClick={() => setHoveredTabIndex(null)}
                 ref={el => {
                   if (el) {
                     buttonRefs[index] = el;

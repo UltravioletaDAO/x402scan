@@ -22,15 +22,17 @@ export const TopServers = async () => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
-  void api.sellers.list.bazaar.prefetch({
-    startDate,
-    endDate,
-    sorting: defaultSellersSorting,
-  });
-  void api.stats.bazaar.overallStatistics.prefetch({
-    startDate,
-    endDate,
-  });
+  await Promise.all([
+    api.sellers.list.bazaar.prefetch({
+      startDate,
+      endDate,
+      sorting: defaultSellersSorting,
+    }),
+    api.stats.bazaar.overallStatistics.prefetch({
+      startDate,
+      endDate,
+    }),
+  ]);
 
   return (
     <HydrateClient>

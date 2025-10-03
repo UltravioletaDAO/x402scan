@@ -33,7 +33,7 @@ export default async function TransactionsPage({
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
-  void api.transfers.list.prefetch({
+  await api.transfers.list.prefetch({
     limit,
     facilitators: facilitator.addresses,
     startDate,

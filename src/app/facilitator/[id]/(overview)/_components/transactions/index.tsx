@@ -19,12 +19,12 @@ interface Props {
   addresses: string[];
 }
 
-export const LatestTransactions: React.FC<Props> = ({ addresses }) => {
+export const LatestTransactions: React.FC<Props> = async ({ addresses }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
   const limit = 100;
 
-  void api.transfers.list.prefetch({
+  await api.transfers.list.prefetch({
     limit,
     facilitators: addresses,
     startDate,

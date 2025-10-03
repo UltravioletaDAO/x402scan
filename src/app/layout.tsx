@@ -129,7 +129,7 @@ export default function RootLayout({
                 <div className="min-h-screen flex flex-col relative">
                   <LogoContainer>
                     <Link href="/" prefetch={false}>
-                      <Logo className="size-auto h-full aspect-square" />
+                      <Logo className="size-full aspect-square" />
                     </Link>
                   </LogoContainer>
                   <header className="w-full flex flex-col pt-4 justify-center bg-card">

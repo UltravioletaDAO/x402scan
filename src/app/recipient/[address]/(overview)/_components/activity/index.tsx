@@ -40,22 +40,24 @@ const ActivityContainer = ({
 };
 
 export const Activity: React.FC<Props> = async ({ address }) => {
-  const firstTransferTimestamp = await api.stats.getFirstTransferTimestamp({
-    addresses: [address],
-  });
   const endDate = new Date();
   const startDate = subDays(endDate, 7);
 
-  void api.stats.getBucketedStatistics.prefetch({
-    addresses: [address],
-    startDate,
-    endDate,
-  });
-  void api.stats.getOverallStatistics.prefetch({
-    addresses: [address],
-    startDate,
-    endDate,
-  });
+  const [firstTransferTimestamp] = await Promise.all([
+    api.stats.getFirstTransferTimestamp({
+      addresses: [address],
+    }),
+    api.stats.getBucketedStatistics.prefetch({
+      addresses: [address],
+      startDate,
+      endDate,
+    }),
+    api.stats.getOverallStatistics.prefetch({
+      addresses: [address],
+      startDate,
+      endDate,
+    }),
+  ]);
 
   return (
     <HydrateClient>

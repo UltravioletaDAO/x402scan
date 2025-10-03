@@ -22,19 +22,21 @@ export const OverallStats = async () => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
-  void api.stats.getOverallStatistics.prefetch({
-    startDate,
-    endDate,
-  });
-  void api.stats.getOverallStatistics.prefetch({
-    startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-    endDate: startDate,
-  });
-  void api.stats.getBucketedStatistics.prefetch({
-    startDate,
-    endDate,
-    numBuckets: 32,
-  });
+  await Promise.all([
+    api.stats.getOverallStatistics.prefetch({
+      startDate,
+      endDate,
+    }),
+    api.stats.getOverallStatistics.prefetch({
+      startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
+      endDate: startDate,
+    }),
+    api.stats.getBucketedStatistics.prefetch({
+      startDate,
+      endDate,
+      numBuckets: 32,
+    }),
+  ]);
 
   return (
     <HydrateClient>
