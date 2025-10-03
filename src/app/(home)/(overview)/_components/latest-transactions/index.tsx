@@ -14,12 +14,12 @@ import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/cdp/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 
-export const LatestTransactions = () => {
+export const LatestTransactions = async () => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
   const limit = 100;
 
-  void api.transfers.list.prefetch({
+  await api.transfers.list.prefetch({
     limit,
     sorting: defaultTransfersSorting,
     startDate,

@@ -26,7 +26,7 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
     addresses: [address],
   });
 
-  void api.transfers.list.prefetch({
+  await api.transfers.list.prefetch({
     limit: 100,
     recipient: address,
     startDate,

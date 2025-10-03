@@ -27,7 +27,7 @@ export default async function TransactionsPage({
     addresses: [address],
   });
 
-  void api.transfers.list.prefetch({
+  await api.transfers.list.prefetch({
     limit,
     recipient: address,
     startDate,

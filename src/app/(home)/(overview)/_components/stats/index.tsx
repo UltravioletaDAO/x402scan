@@ -22,15 +22,15 @@ export const OverallStats = async () => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
-  void api.stats.getOverallStatistics.prefetch({
+  await api.stats.getOverallStatistics.prefetch({
     startDate,
     endDate,
   });
-  void api.stats.getOverallStatistics.prefetch({
+  await api.stats.getOverallStatistics.prefetch({
     startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
     endDate: startDate,
   });
-  void api.stats.getBucketedStatistics.prefetch({
+  await api.stats.getBucketedStatistics.prefetch({
     startDate,
     endDate,
     numBuckets: 32,

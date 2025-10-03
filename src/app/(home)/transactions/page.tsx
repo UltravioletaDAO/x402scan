@@ -12,15 +12,13 @@ import { firstTransfer } from '@/services/cdp/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 
-export default function TransactionsPage() {
+export default async function TransactionsPage() {
   const limit = 150;
 
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
-  console.log('transactions page');
-
-  void api.transfers.list.prefetch({
+  await api.transfers.list.prefetch({
     limit,
     startDate,
     endDate,

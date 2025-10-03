@@ -46,12 +46,12 @@ export const Activity: React.FC<Props> = async ({ address }) => {
   const endDate = new Date();
   const startDate = subDays(endDate, 7);
 
-  void api.stats.getBucketedStatistics.prefetch({
+  await api.stats.getBucketedStatistics.prefetch({
     addresses: [address],
     startDate,
     endDate,
   });
-  void api.stats.getOverallStatistics.prefetch({
+  await api.stats.getOverallStatistics.prefetch({
     addresses: [address],
     startDate,
     endDate,

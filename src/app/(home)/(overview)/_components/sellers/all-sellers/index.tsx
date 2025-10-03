@@ -15,13 +15,13 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { subMonths } from 'date-fns';
 import { ActivityTimeframe } from '@/types/timeframes';
 
-export const AllSellers = () => {
+export const AllSellers = async () => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
   const limit = 100;
 
-  void api.sellers.list.all.prefetch({
+  await api.sellers.list.all.prefetch({
     sorting: defaultSellersSorting,
     limit,
     startDate,
