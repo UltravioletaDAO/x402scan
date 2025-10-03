@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+# x402scan
 
-First, run the development server:
+</div>
+
+<div align="center">
+    
+  [![Discord](https://img.shields.io/discord/1382120201713352836?style=flat&logo=discord&logoColor=white&label=Discord)](https://discord.gg/JuKt7tPnNc) 
+  ![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/merit_systems) 
+  [![GitHub Repo stars](https://img.shields.io/github/stars/Merit-Systems/echo?style=social)](https://github.com/Merit-Systems/echo) 
+  [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+</div>
+
+[x402scan](https://x402scan.com) is an ecosystem explorer for [x402](https://www.x402.org/), a new standard for digital payments. It's live at [x402scan.com](https://x402scan.com).
+
+![x402scan screenshot](./preview.png)
+
+x402 API resources can be be purchased just-in-time without a prior relationship with the seller using cryptocurrency. x402 is vision for an internet without ads or centralized intermediaries.
+
+x402scan lets you explore the ecosystem of x402 servers, see their transaction volumes and directly access their resources through an embedded wallet.
+
+## Development
+
+_Note: We're working on making this easier to spin-up. If you have any trouble in the mean time, please reach out._
+
+Fill out a `.env` with the variables in [env.ts](https://github.com/Merit-Systems/x402scan/blob/main/src/env.ts).
+
+Then install and run.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install && pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Contributing
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+We're actively seeking contributors to help build x402scan. We believe an ecosystem explorer will shed light on the activities happening over x402, build trust, and help standardize interaction patterns to grow the ecosystem massively.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+If you run a facilitator and would like to list your discoverable resources, please reach out via issues.
