@@ -1,12 +1,10 @@
-import { unstable_cache } from 'next/cache';
 import z from 'zod';
-
 import { subMonths } from 'date-fns';
 
 import { runBaseSqlQuery } from '../query';
 import { baseQuerySchema, formatDateForSql } from '../lib';
-
 import { ethereumAddressSchema } from '@/lib/schemas';
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -123,49 +121,11 @@ ORDER BY bucket_start ASC;
   return completeTimeSeries;
 };
 
-const createCacheKey = (input: z.input<typeof bucketedStatisticsInputSchema>) => {
-  // Round dates to nearest minute for stable cache keys
-  const roundDate = (date?: Date) => {
-    if (!date) return undefined;
-    const rounded = new Date(date);
-    rounded.setSeconds(0, 0);
-    return rounded.toISOString();
-  };
-
-  return JSON.stringify({
-    addresses: input.addresses?.sort(),
-    startDate: roundDate(input.startDate),
-    endDate: roundDate(input.endDate),
-    numBuckets: input.numBuckets,
-    facilitators: input.facilitators?.sort(),
-    tokens: input.tokens?.sort(),
-  });
-};
-
-export const getBucketedStatistics = async (
-  input: z.input<typeof bucketedStatisticsInputSchema>
-) => {
-  const cacheKey = createCacheKey(input);
-
-  const result = await unstable_cache(
-    async () => {
-      const data = await getBucketedStatisticsUncached(input);
-      // Convert dates to ISO strings for JSON serialization
-      return data.map(item => ({
-        ...item,
-        bucket_start: item.bucket_start.toISOString(),
-      }));
-    },
-    ['bucketed-statistics', cacheKey],
-    {
-      revalidate: 60,
-      tags: ['statistics'],
-    }
-  )();
-
-  // Convert ISO strings back to Date objects
-  return result.map(item => ({
-    ...item,
-    bucket_start: new Date(item.bucket_start),
-  }));
-};
+export const getBucketedStatistics = createCachedArrayQuery({
+  queryFn: getBucketedStatisticsUncached,
+  cacheKeyPrefix: 'bucketed-statistics',
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ['bucket_start'],
+  revalidate: 60,
+  tags: ['statistics'],
+});

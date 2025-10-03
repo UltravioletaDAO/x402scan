@@ -1,10 +1,10 @@
-import { unstable_cache } from 'next/cache';
 import z from 'zod';
 
 import { runBaseSqlQuery } from '../query';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { baseQuerySchema, formatDateForSql } from '../lib';
+import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 
 export const overallStatisticsInputSchema = baseQuerySchema.extend({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -74,48 +74,11 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
   };
 };
 
-const createCacheKey = (input: z.input<typeof overallStatisticsInputSchema>) => {
-  // Round dates to nearest minute for stable cache keys
-  const roundDate = (date?: Date) => {
-    if (!date) return undefined;
-    const rounded = new Date(date);
-    rounded.setSeconds(0, 0);
-    return rounded.toISOString();
-  };
-
-  return JSON.stringify({
-    addresses: input.addresses?.sort(),
-    startDate: roundDate(input.startDate),
-    endDate: roundDate(input.endDate),
-    facilitators: input.facilitators?.sort(),
-    tokens: input.tokens?.sort(),
-  });
-};
-
-export const getOverallStatistics = async (
-  input: z.input<typeof overallStatisticsInputSchema>
-) => {
-  const cacheKey = createCacheKey(input);
-
-  const result = await unstable_cache(
-    async () => {
-      const data = await getOverallStatisticsUncached(input);
-      // Convert date to ISO string for JSON serialization
-      return {
-        ...data,
-        latest_block_timestamp: data.latest_block_timestamp.toISOString(),
-      };
-    },
-    ['overall-statistics', cacheKey],
-    {
-      revalidate: 60,
-      tags: ['statistics'],
-    }
-  )();
-
-  // Convert ISO string back to Date object
-  return {
-    ...result,
-    latest_block_timestamp: new Date(result.latest_block_timestamp),
-  };
-};
+export const getOverallStatistics = createCachedQuery({
+  queryFn: getOverallStatisticsUncached,
+  cacheKeyPrefix: 'overall-statistics',
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ['latest_block_timestamp'],
+  revalidate: 60,
+  tags: ['statistics'],
+});
