@@ -110,14 +110,14 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
                   {search}
                 </CommandItem>
               </CommandGroup>
-              <CommandGroup heading="Buyer Addresses">
+              {/* <CommandGroup heading="Buyer Addresses">
                 <CommandItem
                   value={`${search}-buyer`}
                   onSelect={() => handleSelect(`/recipient/${search}`)}
                 >
                   {search}
                 </CommandItem>
-              </CommandGroup>
+              </CommandGroup> */}
             </>
           )}
           {origins?.length && (
