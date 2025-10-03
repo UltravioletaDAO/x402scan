@@ -18,6 +18,8 @@ export default function TransactionsPage() {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
+  console.log('transactions page');
+
   void api.transfers.list.prefetch({
     limit,
     startDate,
