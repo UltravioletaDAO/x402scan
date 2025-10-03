@@ -106,7 +106,7 @@ export const MoneyInput: React.FC<Props> = ({
           'text-xl ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 md:text-xl',
           inputClassName
         )}
-        disabled={isBalanceLoading && isBalanceMax}
+        disabled={(isBalanceLoading && Boolean(isBalanceMax)) || props.disabled}
         defaultValue={initialAmount?.toString()}
       />
       {showMaxButton && (

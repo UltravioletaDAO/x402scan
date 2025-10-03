@@ -22,13 +22,13 @@ export const Deposit: React.FC<Props> = ({ user }) => {
 
   return (
     <div className="flex flex-col gap-4">
-      <Onramp address={address} />
+      <Send address={address} />
       <div className="flex items-center gap-2">
         <Separator className="flex-1" />
         <p className="text-muted-foreground text-xs">or</p>
         <Separator className="flex-1" />
       </div>
-      <Send address={address} />
+      <Onramp address={address} />
     </div>
   );
 };
@@ -56,9 +56,10 @@ const Onramp: React.FC<OnrampProps> = ({}) => {
         setAmount={setAmount}
         placeholder="0.00"
         inputClassName="placeholder:text-muted-foreground/60"
+        disabled={true}
       />
       <Button variant="turbo" disabled={amount === 0}>
-        Checkout on Coinbase
+        Coming Soon
       </Button>
     </div>
   );
