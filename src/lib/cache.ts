@@ -3,7 +3,7 @@ import { unstable_cache } from 'next/cache';
 /**
  * Round a date to the nearest minute for stable cache keys
  */
-export const roundDateToMinute = (date?: Date): string | undefined => {
+const roundDateToMinute = (date?: Date): string | undefined => {
   if (!date) return undefined;
   const rounded = new Date(date);
   rounded.setSeconds(0, 0);
@@ -13,7 +13,7 @@ export const roundDateToMinute = (date?: Date): string | undefined => {
 /**
  * Serialize dates in an object to ISO strings for JSON serialization
  */
-export const serializeDates = <T extends Record<string, unknown>>(
+const serializeDates = <T extends Record<string, unknown>>(
   obj: T,
   dateKeys: (keyof T)[]
 ): T => {
@@ -30,7 +30,7 @@ export const serializeDates = <T extends Record<string, unknown>>(
 /**
  * Deserialize ISO strings back to Date objects
  */
-export const deserializeDates = <T extends Record<string, unknown>>(
+const deserializeDates = <T extends Record<string, unknown>>(
   obj: T,
   dateKeys: (keyof T)[]
 ): T => {
