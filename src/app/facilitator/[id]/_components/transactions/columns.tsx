@@ -99,7 +99,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <div className="text-right font-mono text-xs">
-        {formatTokenAmount(row.original.amount)}
+        {formatTokenAmount(BigInt(row.original.amount))}
       </div>
     ),
     size: 100, // Fixed width for buyers count

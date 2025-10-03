@@ -30,7 +30,7 @@ export const StatsCards: React.FC<Props> = async ({ stats }) => {
       maximumFractionDigits: 2,
       notation: 'compact',
     }),
-    formatTokenAmount(stats.total_amount),
+    formatTokenAmount(BigInt(stats.total_amount)),
     stats.unique_buyers.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,

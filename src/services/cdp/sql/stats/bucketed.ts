@@ -24,9 +24,6 @@ export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
 const getBucketedStatisticsUncached = async (
   input: z.input<typeof bucketedStatisticsInputSchema>
 ) => {
-  console.log('[CACHE] getBucketedStatisticsUncached EXECUTING - cache miss or expired');
-  const startTime = performance.now();
-
   const parseResult = bucketedStatisticsInputSchema.safeParse(input);
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);
@@ -123,9 +120,6 @@ ORDER BY bucket_start ASC;
     }
   }
 
-  const endTime = performance.now();
-  console.log(`[CACHE] getBucketedStatisticsUncached took ${(endTime - startTime).toFixed(2)}ms`);
-
   return completeTimeSeries;
 };
 
@@ -152,9 +146,7 @@ export const getBucketedStatistics = async (
   input: z.input<typeof bucketedStatisticsInputSchema>
 ) => {
   const cacheKey = createCacheKey(input);
-  console.log('[CACHE] getBucketedStatistics called with cache key:', cacheKey);
 
-  const startTime = performance.now();
   const result = await unstable_cache(
     async () => {
       const data = await getBucketedStatisticsUncached(input);
@@ -170,9 +162,6 @@ export const getBucketedStatistics = async (
       tags: ['statistics'],
     }
   )();
-  const endTime = performance.now();
-
-  console.log(`[CACHE] getBucketedStatistics total time: ${(endTime - startTime).toFixed(2)}ms`);
 
   // Convert ISO strings back to Date objects
   return result.map(item => ({

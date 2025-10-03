@@ -18,10 +18,6 @@ import { firstTransfer } from '@/services/cdp/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-// Import the cached functions directly
-import { getOverallStatistics } from '@/services/cdp/sql/stats/overall';
-import { getBucketedStatistics } from '@/services/cdp/sql/stats/bucketed';
-
 export const OverallStats = async () => {
   // Round to nearest minute for cache consistency
   const now = new Date();
@@ -37,20 +33,7 @@ export const OverallStats = async () => {
   );
   const startDate = subMonths(endDate, 1);
 
-  console.log('[SSR] Calling cached functions directly (bypassing tRPC)');
-
-  // Call cached functions DIRECTLY instead of through tRPC
-  // This ensures unstable_cache is not wrapped by React.cache()
-  await getOverallStatistics({ startDate, endDate });
-  await getOverallStatistics({
-    startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-    endDate: startDate,
-  });
-  await getBucketedStatistics({ startDate, endDate, numBuckets: 32 });
-
-  console.log('[SSR] Direct cache calls complete, now prefetching for React Query');
-
-  // Still prefetch for React Query hydration
+  // Prefetch through tRPC - caching happens inside the query functions
   void api.stats.getOverallStatistics.prefetch({
     startDate,
     endDate,

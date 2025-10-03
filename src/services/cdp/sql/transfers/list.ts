@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import z from 'zod';
 
 import { runBaseSqlQuery } from '../query';
@@ -25,7 +26,7 @@ const outputSchema = z.array(
   z.object({
     sender: ethereumAddressSchema,
     recipient: ethereumAddressSchema,
-    amount: z.coerce.bigint(),
+    amount: z.coerce.number(),
     token_address: ethereumAddressSchema,
     transaction_from: ethereumAddressSchema,
     transaction_hash: ethereumHashSchema,
@@ -34,7 +35,7 @@ const outputSchema = z.array(
   })
 );
 
-export const listFacilitatorTransfers = async (
+const listFacilitatorTransfersUncached = async (
   input: z.input<typeof listFacilitatorTransfersInputSchema>
 ) => {
   const parseResult = listFacilitatorTransfersInputSchema.safeParse(input);
@@ -76,4 +77,63 @@ LIMIT ${limit + 1};`;
     items: result ?? [],
     limit,
   });
+};
+
+const createCacheKey = (
+  input: z.input<typeof listFacilitatorTransfersInputSchema>
+) => {
+  const parsed = listFacilitatorTransfersInputSchema.parse(input);
+
+  // Round dates to nearest minute for stable cache keys
+  const roundDate = (date?: Date) => {
+    if (!date) return undefined;
+    const rounded = new Date(date);
+    rounded.setSeconds(0, 0);
+    return rounded.toISOString();
+  };
+
+  return JSON.stringify({
+    recipient: parsed.recipient,
+    startDate: roundDate(parsed.startDate),
+    endDate: roundDate(parsed.endDate),
+    limit: parsed.limit,
+    facilitators: parsed.facilitators.sort(),
+    tokens: parsed.tokens.sort(),
+    sorting: parsed.sorting,
+  });
+};
+
+export const listFacilitatorTransfers = async (
+  input: z.input<typeof listFacilitatorTransfersInputSchema>
+) => {
+  const cacheKey = createCacheKey(input);
+
+  const result = await unstable_cache(
+    async () => {
+      const data = await listFacilitatorTransfersUncached(input);
+
+      // Convert dates to ISO strings for JSON serialization
+      return {
+        ...data,
+        items: data.items.map(item => ({
+          ...item,
+          block_timestamp: item.block_timestamp.toISOString(),
+        })),
+      };
+    },
+    ['transfers-list', cacheKey],
+    {
+      revalidate: 60,
+      tags: ['transfers'],
+    }
+  )();
+
+  // Convert ISO strings back to Date objects
+  return {
+    ...result,
+    items: result.items.map(item => ({
+      ...item,
+      block_timestamp: new Date(item.block_timestamp),
+    })),
+  };
 };

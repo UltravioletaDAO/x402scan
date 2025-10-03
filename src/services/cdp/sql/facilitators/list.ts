@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import { facilitators } from '@/lib/facilitators';
 import { runBaseSqlQuery } from '../query';
 import { formatDateForSql } from '../lib';
@@ -25,7 +26,7 @@ export const listTopFacilitatorsInputSchema = z.object({
   tokens: z.array(ethereumAddressSchema).default([USDC_ADDRESS]),
 });
 
-export const listTopFacilitators = async (
+const listTopFacilitatorsUncached = async (
   input: z.input<typeof listTopFacilitatorsInputSchema>
 ) => {
   const { startDate, endDate, limit, sorting, tokens } =
@@ -78,15 +79,67 @@ LIMIT ${limit + 1}`;
     sql,
     z.array(
       z.object({
-        sellers: z.coerce.bigint(),
-        buyers: z.coerce.bigint(),
-        tx_count: z.coerce.bigint(),
-        total_amount: z.coerce.bigint(),
+        sellers: z.coerce.number(),
+        buyers: z.coerce.number(),
+        tx_count: z.coerce.number(),
+        total_amount: z.coerce.number(),
         latest_block_timestamp: z.coerce.date(),
-        unique_buyers: z.coerce.bigint(),
+        unique_buyers: z.coerce.number(),
         facilitator_name: z.string(),
       })
     )
   );
   return result;
+};
+
+const createCacheKey = (input: z.input<typeof listTopFacilitatorsInputSchema>) => {
+  const parsed = listTopFacilitatorsInputSchema.parse(input);
+
+  // Round dates to nearest minute for stable cache keys
+  const roundDate = (date?: Date) => {
+    if (!date) return undefined;
+    const rounded = new Date(date);
+    rounded.setSeconds(0, 0);
+    return rounded.toISOString();
+  };
+
+  return JSON.stringify({
+    startDate: roundDate(parsed.startDate),
+    endDate: roundDate(parsed.endDate),
+    limit: parsed.limit,
+    sorting: parsed.sorting,
+    tokens: parsed.tokens.sort(),
+  });
+};
+
+export const listTopFacilitators = async (
+  input: z.input<typeof listTopFacilitatorsInputSchema>
+) => {
+  const cacheKey = createCacheKey(input);
+
+  const result = await unstable_cache(
+    async () => {
+      const data = await listTopFacilitatorsUncached(input);
+      if (!data) return null;
+
+      // Convert dates to ISO strings for JSON serialization
+      return data.map(item => ({
+        ...item,
+        latest_block_timestamp: item.latest_block_timestamp.toISOString(),
+      }));
+    },
+    ['facilitators-list', cacheKey],
+    {
+      revalidate: 60,
+      tags: ['facilitators'],
+    }
+  )();
+
+  if (!result) return null;
+
+  // Convert ISO strings back to Date objects
+  return result.map(item => ({
+    ...item,
+    latest_block_timestamp: new Date(item.latest_block_timestamp),
+  }));
 };

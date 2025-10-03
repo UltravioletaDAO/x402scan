@@ -15,9 +15,6 @@ export const overallStatisticsInputSchema = baseQuerySchema.extend({
 const getOverallStatisticsUncached = async (
   input: z.input<typeof overallStatisticsInputSchema>
 ) => {
-  console.log('[CACHE] getOverallStatisticsUncached EXECUTING - cache miss or expired');
-  const startTime = performance.now();
-
   const parseResult = overallStatisticsInputSchema.safeParse(input);
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);
@@ -68,9 +65,6 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
   }
 
   const data = result[0];
-  const endTime = performance.now();
-  console.log(`[CACHE] getOverallStatisticsUncached took ${(endTime - startTime).toFixed(2)}ms`);
-
   return {
     total_transactions: data.total_transactions,
     total_amount: data.total_amount,
@@ -102,9 +96,7 @@ export const getOverallStatistics = async (
   input: z.input<typeof overallStatisticsInputSchema>
 ) => {
   const cacheKey = createCacheKey(input);
-  console.log('[CACHE] getOverallStatistics called with cache key:', cacheKey);
 
-  const startTime = performance.now();
   const result = await unstable_cache(
     async () => {
       const data = await getOverallStatisticsUncached(input);
@@ -120,9 +112,6 @@ export const getOverallStatistics = async (
       tags: ['statistics'],
     }
   )();
-  const endTime = performance.now();
-
-  console.log(`[CACHE] getOverallStatistics total time: ${(endTime - startTime).toFixed(2)}ms`);
 
   // Convert ISO string back to Date object
   return {
