@@ -17,26 +17,24 @@
 
 ![x402scan screenshot](./preview.png)
 
-
-x402 API resources can be be purchased just-in-time without a prior relationship with the seller using cryptocurrency. x402 is vision for an internet without ads or centralized intermediaries. 
+x402 API resources can be be purchased just-in-time without a prior relationship with the seller using cryptocurrency. x402 is vision for an internet without ads or centralized intermediaries.
 
 x402scan lets you explore the ecosystem of x402 servers, see their transaction volumes and directly access their resources through an embedded wallet.
 
-
-
 ## Development
 
-*Note: We're working on making this easier to spin-up. If you have any trouble in the mean time, please reach out.*
+_Note: We're working on making this easier to spin-up. If you have any trouble in the mean time, please reach out._
 
 Fill out a `.env` with the variables in [env.ts](https://github.com/Merit-Systems/x402scan/blob/main/src/env.ts).
 
 Then install and run.
+
 ```bash
 pnpm install && pnpm dev
 ```
 
-
 ## Contributing
+
 We're actively seeking contributors to help build x402scan. We believe an ecosystem explorer will shed light on the activities happening over x402, build trust, and help standardize interaction patterns to grow the ecosystem massively.
 
 If you run a facilitator and would like to list your discoverable resources, please reach out via issues.
