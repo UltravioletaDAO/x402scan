@@ -50,37 +50,6 @@ export const OverallCharts = () => {
   return (
     <>
       <OverallStatsCard
-        title="Volume"
-        value={formatTokenAmount(BigInt(overallStats.total_amount))}
-        percentageChange={
-          timeframe === ActivityTimeframe.AllTime
-            ? undefined
-            : getPercentageFromBigInt(
-                BigInt(previousOverallStats.total_amount),
-                BigInt(overallStats.total_amount)
-              )
-        }
-        items={{
-          type: 'area',
-          areas: [{ dataKey: 'totalAmount', color: 'var(--color-primary)' }],
-        }}
-        data={chartData}
-        tooltipRows={[
-          {
-            key: 'totalAmount',
-            label: 'Volume',
-            getValue: data =>
-              data.toLocaleString(undefined, {
-                notation: 'compact',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                style: 'currency',
-                currency: 'USD',
-              }),
-          },
-        ]}
-      />
-      <OverallStatsCard
         title="Transactions"
         value={overallStats.total_transactions.toLocaleString(undefined, {
           notation: 'compact',
@@ -109,6 +78,37 @@ export const OverallCharts = () => {
                 notation: 'compact',
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 2,
+              }),
+          },
+        ]}
+      />
+      <OverallStatsCard
+        title="Volume"
+        value={formatTokenAmount(BigInt(overallStats.total_amount))}
+        percentageChange={
+          timeframe === ActivityTimeframe.AllTime
+            ? undefined
+            : getPercentageFromBigInt(
+                BigInt(previousOverallStats.total_amount),
+                BigInt(overallStats.total_amount)
+              )
+        }
+        items={{
+          type: 'area',
+          areas: [{ dataKey: 'totalAmount', color: 'var(--color-primary)' }],
+        }}
+        data={chartData}
+        tooltipRows={[
+          {
+            key: 'totalAmount',
+            label: 'Volume',
+            getValue: data =>
+              data.toLocaleString(undefined, {
+                notation: 'compact',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                style: 'currency',
+                currency: 'USD',
               }),
           },
         ]}
