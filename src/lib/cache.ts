@@ -13,14 +13,15 @@ export const roundDateToMinute = (date?: Date): string | undefined => {
 /**
  * Serialize dates in an object to ISO strings for JSON serialization
  */
-export const serializeDates = <T extends Record<string, any>>(
+export const serializeDates = <T extends Record<string, unknown>>(
   obj: T,
   dateKeys: (keyof T)[]
 ): T => {
   const result = { ...obj };
   for (const key of dateKeys) {
     if (result[key] instanceof Date) {
-      result[key] = result[key].toISOString() as any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      result[key] = (result[key] as Date).toISOString() as any;
     }
   }
   return result;
@@ -29,14 +30,15 @@ export const serializeDates = <T extends Record<string, any>>(
 /**
  * Deserialize ISO strings back to Date objects
  */
-export const deserializeDates = <T extends Record<string, any>>(
+export const deserializeDates = <T extends Record<string, unknown>>(
   obj: T,
   dateKeys: (keyof T)[]
 ): T => {
   const result = { ...obj };
   for (const key of dateKeys) {
     if (typeof result[key] === 'string') {
-      result[key] = new Date(result[key]) as any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
+      result[key] = new Date(result[key] as string) as any;
     }
   }
   return result;
@@ -45,7 +47,7 @@ export const deserializeDates = <T extends Record<string, any>>(
 /**
  * Generic cached query wrapper for arrays of items with dates
  */
-export const createCachedArrayQuery = <TInput, TItem extends Record<string, any>>(
+export const createCachedArrayQuery = <TInput, TItem extends Record<string, unknown>>(
   config: {
     queryFn: (input: TInput) => Promise<TItem[]>;
     cacheKeyPrefix: string;
@@ -79,7 +81,7 @@ export const createCachedArrayQuery = <TInput, TItem extends Record<string, any>
 /**
  * Generic cached query wrapper for single items with dates
  */
-export const createCachedQuery = <TInput, TOutput extends Record<string, any>>(
+export const createCachedQuery = <TInput, TOutput extends Record<string, unknown>>(
   config: {
     queryFn: (input: TInput) => Promise<TOutput>;
     cacheKeyPrefix: string;
@@ -115,8 +117,8 @@ export const createCachedQuery = <TInput, TOutput extends Record<string, any>>(
  */
 export const createCachedPaginatedQuery = <
   TInput,
-  TItem extends Record<string, any>,
-  TPaginated extends { items: TItem[]; [key: string]: any }
+  TItem extends Record<string, unknown>,
+  TPaginated extends { items: TItem[] }
 >(
   config: {
     queryFn: (input: TInput) => Promise<TPaginated>;
@@ -158,8 +160,8 @@ export const createCachedPaginatedQuery = <
  * Create a standardized cache key from input parameters
  * Handles date rounding and array sorting automatically
  */
-export const createStandardCacheKey = (params: Record<string, any>): string => {
-  const normalized: Record<string, any> = {};
+export const createStandardCacheKey = (params: Record<string, unknown>): string => {
+  const normalized: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(params)) {
     if (value === undefined) {
@@ -170,6 +172,7 @@ export const createStandardCacheKey = (params: Record<string, any>): string => {
       normalized[key] = roundDateToMinute(value);
     } else if (Array.isArray(value)) {
       // Sort arrays for consistent keys
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       normalized[key] = [...value].sort();
     } else {
       normalized[key] = value;

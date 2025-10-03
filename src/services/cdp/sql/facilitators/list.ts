@@ -1,10 +1,10 @@
-import { unstable_cache } from 'next/cache';
 import { facilitators } from '@/lib/facilitators';
 import { runBaseSqlQuery } from '../query';
 import { formatDateForSql } from '../lib';
 import z from 'zod';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { USDC_ADDRESS } from '@/lib/utils';
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 
 export const listTopFacilitatorsInputSchema = z.object({
   startDate: z.date().optional(),
@@ -92,54 +92,11 @@ LIMIT ${limit + 1}`;
   return result;
 };
 
-const createCacheKey = (input: z.input<typeof listTopFacilitatorsInputSchema>) => {
-  const parsed = listTopFacilitatorsInputSchema.parse(input);
-
-  // Round dates to nearest minute for stable cache keys
-  const roundDate = (date?: Date) => {
-    if (!date) return undefined;
-    const rounded = new Date(date);
-    rounded.setSeconds(0, 0);
-    return rounded.toISOString();
-  };
-
-  return JSON.stringify({
-    startDate: roundDate(parsed.startDate),
-    endDate: roundDate(parsed.endDate),
-    limit: parsed.limit,
-    sorting: parsed.sorting,
-    tokens: parsed.tokens.sort(),
-  });
-};
-
-export const listTopFacilitators = async (
-  input: z.input<typeof listTopFacilitatorsInputSchema>
-) => {
-  const cacheKey = createCacheKey(input);
-
-  const result = await unstable_cache(
-    async () => {
-      const data = await listTopFacilitatorsUncached(input);
-      if (!data) return null;
-
-      // Convert dates to ISO strings for JSON serialization
-      return data.map(item => ({
-        ...item,
-        latest_block_timestamp: item.latest_block_timestamp.toISOString(),
-      }));
-    },
-    ['facilitators-list', cacheKey],
-    {
-      revalidate: 60,
-      tags: ['facilitators'],
-    }
-  )();
-
-  if (!result) return null;
-
-  // Convert ISO strings back to Date objects
-  return result.map(item => ({
-    ...item,
-    latest_block_timestamp: new Date(item.latest_block_timestamp),
-  }));
-};
+export const listTopFacilitators = createCachedArrayQuery({
+  queryFn: listTopFacilitatorsUncached,
+  cacheKeyPrefix: 'facilitators-list',
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ['latest_block_timestamp'],
+  revalidate: 60,
+  tags: ['facilitators'],
+});

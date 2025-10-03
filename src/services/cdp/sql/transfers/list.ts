@@ -1,4 +1,3 @@
-import { unstable_cache } from 'next/cache';
 import z from 'zod';
 
 import { runBaseSqlQuery } from '../query';
@@ -6,6 +5,7 @@ import { runBaseSqlQuery } from '../query';
 import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
+import { createCachedPaginatedQuery, createStandardCacheKey } from '@/lib/cache';
 
 const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 
@@ -79,61 +79,11 @@ LIMIT ${limit + 1};`;
   });
 };
 
-const createCacheKey = (
-  input: z.input<typeof listFacilitatorTransfersInputSchema>
-) => {
-  const parsed = listFacilitatorTransfersInputSchema.parse(input);
-
-  // Round dates to nearest minute for stable cache keys
-  const roundDate = (date?: Date) => {
-    if (!date) return undefined;
-    const rounded = new Date(date);
-    rounded.setSeconds(0, 0);
-    return rounded.toISOString();
-  };
-
-  return JSON.stringify({
-    recipient: parsed.recipient,
-    startDate: roundDate(parsed.startDate),
-    endDate: roundDate(parsed.endDate),
-    limit: parsed.limit,
-    facilitators: parsed.facilitators.sort(),
-    tokens: parsed.tokens.sort(),
-    sorting: parsed.sorting,
-  });
-};
-
-export const listFacilitatorTransfers = async (
-  input: z.input<typeof listFacilitatorTransfersInputSchema>
-) => {
-  const cacheKey = createCacheKey(input);
-
-  const result = await unstable_cache(
-    async () => {
-      const data = await listFacilitatorTransfersUncached(input);
-
-      // Convert dates to ISO strings for JSON serialization
-      return {
-        ...data,
-        items: data.items.map(item => ({
-          ...item,
-          block_timestamp: item.block_timestamp.toISOString(),
-        })),
-      };
-    },
-    ['transfers-list', cacheKey],
-    {
-      revalidate: 60,
-      tags: ['transfers'],
-    }
-  )();
-
-  // Convert ISO strings back to Date objects
-  return {
-    ...result,
-    items: result.items.map(item => ({
-      ...item,
-      block_timestamp: new Date(item.block_timestamp),
-    })),
-  };
-};
+export const listFacilitatorTransfers = createCachedPaginatedQuery({
+  queryFn: listFacilitatorTransfersUncached,
+  cacheKeyPrefix: 'transfers-list',
+  createCacheKey: (input) => createStandardCacheKey(input),
+  dateFields: ['block_timestamp'],
+  revalidate: 60,
+  tags: ['transfers'],
+});
