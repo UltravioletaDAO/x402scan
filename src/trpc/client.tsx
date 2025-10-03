@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 
-import { QueryClientProvider, type QueryClient } from '@tanstack/react-query';
-
 import {
   httpBatchStreamLink,
   httpLink,
@@ -20,6 +18,7 @@ import { createQueryClient } from './query-client';
 import { env } from '@/env';
 
 import type { AppRouter } from './routers';
+import { QueryClientProvider, type QueryClient } from '@tanstack/react-query';
 
 let clientQueryClientSingleton: QueryClient | undefined = undefined;
 const getQueryClient = () => {

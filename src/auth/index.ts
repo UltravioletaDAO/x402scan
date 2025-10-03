@@ -34,6 +34,7 @@ declare module 'next-auth' {
 const { handlers, auth: uncachedAuth } = NextAuth({
   providers,
   adapter: PrismaAdapter(prisma),
+  trustHost: true,
   callbacks: {
     session: async ({ session, user }) => {
       if (!user.id) {

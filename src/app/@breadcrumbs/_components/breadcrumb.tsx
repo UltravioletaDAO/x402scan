@@ -37,6 +37,7 @@ export const Breadcrumb = <T extends string>({
       href={href}
       className={cn(disabled && 'pointer-events-none')}
       aria-disabled={disabled}
+      prefetch={false}
     >
       <div className="flex items-center gap-2 cursor-pointer">
         {(Fallback !== null || image !== null) && (

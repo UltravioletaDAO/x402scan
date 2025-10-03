@@ -25,7 +25,7 @@ export const Section: React.FC<Props> = ({
 }) => {
   return (
     <div className={cn('flex flex-col gap-6', className)}>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-1">
         <div className="flex justify-between items-center">
           <h1 className="font-bold text-2xl">{title}</h1>
           {actions}

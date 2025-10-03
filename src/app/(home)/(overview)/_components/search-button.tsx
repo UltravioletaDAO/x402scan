@@ -26,9 +26,7 @@ export const SearchButtonContent = ({ onClick }: { onClick?: () => void }) => {
     >
       <div className="flex items-center gap-0 md:gap-2 text-sm">
         <Search className="size-4" />
-        <span className="hidden md:block cl">
-          Search servers, resources, addresses, and more...
-        </span>
+        <span>Search servers, resources, addresses, and more...</span>
       </div>
       <Shortcut className="hidden md:block px-1 bg-muted rounded-md group-hover:bg-transparent transition-colors duration-200">
         ⌘K

@@ -128,7 +128,7 @@ export default function RootLayout({
               >
                 <div className="min-h-screen flex flex-col relative">
                   <LogoContainer>
-                    <Link href="/">
+                    <Link href="/" prefetch={false}>
                       <Logo className="size-auto h-full aspect-square" />
                     </Link>
                   </LogoContainer>

@@ -8,9 +8,8 @@ import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Addresses } from '@/components/ui/address';
 import { Avatar } from '@/components/ui/avatar';
-import { LoadingAreaChart } from '@/components/ui/charts/chart/area';
 
-import { FacilitatorChart } from './chart';
+import { FacilitatorChart, LoadingFacilitatorChart } from './chart';
 import { FacilitatorStats, LoadingFacilitatorStats } from './stats';
 
 import type { Facilitator } from '@/lib/facilitators';
@@ -28,7 +27,7 @@ export const FacilitatorCard: React.FC<Props> = async ({
   overallStats,
 }) => {
   return (
-    <Link href={`/facilitator/${facilitator.id}`}>
+    <Link href={`/facilitator/${facilitator.id}`} prefetch={false}>
       <Card className="grid grid-cols-1 md:grid-cols-7 hover:border-primary hover:bg-card/80 transition-colors">
         <div className="flex flex-col col-span-5">
           <div className="flex items-center gap-2 p-4">
@@ -71,7 +70,7 @@ export const LoadingFacilitatorCard = () => {
             <Skeleton className="w-32 h-3" />
           </div>
         </div>
-        <LoadingAreaChart height={'100%'} />
+        <LoadingFacilitatorChart />
       </div>
       <div className="col-span-2">
         <LoadingFacilitatorStats />
