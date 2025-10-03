@@ -49,13 +49,13 @@ export const OverallCharts = () => {
     <>
       <OverallStatsCard
         title="Volume"
-        value={formatTokenAmount(overallStats.total_amount)}
+        value={formatTokenAmount(BigInt(overallStats.total_amount))}
         percentageChange={
           timeframe === ActivityTimeframe.AllTime
             ? undefined
             : getPercentageFromBigInt(
-                previousOverallStats.total_amount,
-                overallStats.total_amount
+                BigInt(previousOverallStats.total_amount),
+                BigInt(overallStats.total_amount)
               )
         }
         items={{
@@ -80,7 +80,7 @@ export const OverallCharts = () => {
       />
       <OverallStatsCard
         title="Transactions"
-        value={overallStats.total_transactions.toLocaleString(undefined, {
+        value={BigInt(overallStats.total_transactions).toLocaleString(undefined, {
           notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
@@ -89,8 +89,8 @@ export const OverallCharts = () => {
           timeframe === ActivityTimeframe.AllTime
             ? undefined
             : getPercentageFromBigInt(
-                previousOverallStats.total_transactions,
-                overallStats.total_transactions
+                BigInt(previousOverallStats.total_transactions),
+                BigInt(overallStats.total_transactions)
               )
         }
         items={{
@@ -113,7 +113,7 @@ export const OverallCharts = () => {
       />
       <OverallStatsCard
         title="Buyers"
-        value={overallStats.unique_buyers.toLocaleString(undefined, {
+        value={BigInt(overallStats.unique_buyers).toLocaleString(undefined, {
           notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
@@ -122,8 +122,8 @@ export const OverallCharts = () => {
           timeframe === ActivityTimeframe.AllTime
             ? undefined
             : getPercentageFromBigInt(
-                previousOverallStats.unique_buyers,
-                overallStats.unique_buyers
+                BigInt(previousOverallStats.unique_buyers),
+                BigInt(overallStats.unique_buyers)
               )
         }
         items={{
@@ -146,7 +146,7 @@ export const OverallCharts = () => {
       />
       <OverallStatsCard
         title="Sellers"
-        value={overallStats.unique_sellers.toLocaleString(undefined, {
+        value={BigInt(overallStats.unique_sellers).toLocaleString(undefined, {
           notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
@@ -155,8 +155,8 @@ export const OverallCharts = () => {
           timeframe === ActivityTimeframe.AllTime
             ? undefined
             : getPercentageFromBigInt(
-                previousOverallStats.unique_sellers,
-                overallStats.unique_sellers
+                BigInt(previousOverallStats.unique_sellers),
+                BigInt(overallStats.unique_sellers)
               )
         }
         items={{

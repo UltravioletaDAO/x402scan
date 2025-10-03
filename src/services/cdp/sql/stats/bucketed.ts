@@ -20,7 +20,7 @@ export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   numBuckets: z.number().optional().default(48),
 });
 
-export const getBucketedStatistics = async (
+const getBucketedStatisticsUncached = async (
   input: z.input<typeof bucketedStatisticsInputSchema>
 ) => {
   const parseResult = bucketedStatisticsInputSchema.safeParse(input);
@@ -48,13 +48,13 @@ export const getBucketedStatistics = async (
     Math.floor(startTimestamp / bucketSizeSeconds) * bucketSizeSeconds;
 
   // Simple query to get actual data - we'll add zeros in TypeScript
-  const sql = `SELECT 
+  const sql = `SELECT
     toDateTime(toUInt32(toUnixTimestamp(block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}) AS bucket_start,
     COUNT(*) AS total_transactions,
     SUM(parameters['value']::UInt256) AS total_amount,
     COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
     COUNT(DISTINCT parameters['to']::String) AS unique_sellers
-FROM base.events 
+FROM base.events
 WHERE event_signature = 'Transfer(address,address,uint256)'
     AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
     AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
@@ -121,3 +121,5 @@ ORDER BY bucket_start ASC;
 
   return completeTimeSeries;
 };
+
+export const getBucketedStatistics = getBucketedStatisticsUncached;

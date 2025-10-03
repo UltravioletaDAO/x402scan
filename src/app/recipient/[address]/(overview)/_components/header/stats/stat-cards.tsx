@@ -30,17 +30,17 @@ export const StatsCards: React.FC<Props> = async ({ address }) => {
   });
 
   const values = [
-    overallStats.total_transactions.toLocaleString(undefined, {
+    Number(overallStats.total_transactions).toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
       notation: 'compact',
     }),
-    overallStats.unique_buyers.toLocaleString(undefined, {
+    Number(overallStats.unique_buyers).toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
       notation: 'compact',
     }),
-    formatTokenAmount(overallStats.total_amount),
+    formatTokenAmount(BigInt(overallStats.total_amount)),
     formatCompactAgo(overallStats.latest_block_timestamp),
   ];
 

@@ -60,7 +60,7 @@ export const ActivityCharts: React.FC<Props> = ({ address }) => {
           trigger: {
             value: 'total_transactions',
             label: 'Transactions',
-            amount: overallStats.total_transactions.toLocaleString(undefined, {
+            amount: Number(overallStats.total_transactions).toLocaleString(undefined, {
               notation: 'compact',
               minimumFractionDigits: 0,
               maximumFractionDigits: 2,
@@ -92,7 +92,7 @@ export const ActivityCharts: React.FC<Props> = ({ address }) => {
           trigger: {
             value: 'total_amount',
             label: 'Volume',
-            amount: formatTokenAmount(overallStats.total_amount),
+            amount: formatTokenAmount(BigInt(overallStats.total_amount)),
           },
           items: {
             type: 'area',
@@ -122,7 +122,7 @@ export const ActivityCharts: React.FC<Props> = ({ address }) => {
           trigger: {
             value: 'unique_buyers',
             label: 'Buyers',
-            amount: overallStats.unique_buyers.toLocaleString(undefined, {
+            amount: Number(overallStats.unique_buyers).toLocaleString(undefined, {
               notation: 'compact',
               minimumFractionDigits: 0,
               maximumFractionDigits: 2,

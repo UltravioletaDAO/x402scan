@@ -19,7 +19,9 @@ import { firstTransfer } from '@/services/cdp/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 export const OverallStats = async () => {
-  const endDate = new Date();
+  const now = new Date();
+  now.setSeconds(0, 0); // Round to nearest minute for cache consistency
+  const endDate = now;
   const startDate = subMonths(endDate, 1);
 
   void api.stats.getOverallStatistics.prefetch({
