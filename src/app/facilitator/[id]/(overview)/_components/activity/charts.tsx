@@ -43,12 +43,12 @@ export const ActivityCharts: React.FC<Props> = ({ addresses }) => {
     unique_sellers: number;
   }>[] = useMemo(() => {
     return bucketedStats.map(({ bucket_start, ...rest }) => ({
-      total_transactions: Number(rest.total_transactions),
+      total_transactions: rest.total_transactions,
       total_amount: parseFloat(
-        convertTokenAmount(rest.total_amount).toString()
+        convertTokenAmount(BigInt(rest.total_amount)).toString()
       ),
-      unique_buyers: Number(rest.unique_buyers),
-      unique_sellers: Number(rest.unique_sellers),
+      unique_buyers: rest.unique_buyers,
+      unique_sellers: rest.unique_sellers,
       timestamp: format(bucket_start, 'MMM dd HH:mm yyyy'),
     }));
   }, [bucketedStats]);
@@ -60,11 +60,14 @@ export const ActivityCharts: React.FC<Props> = ({ addresses }) => {
           trigger: {
             value: 'total_transactions',
             label: 'Transactions',
-            amount: overallStats.total_transactions.toLocaleString(undefined, {
-              notation: 'compact',
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 2,
-            }),
+            amount: Number(overallStats.total_transactions).toLocaleString(
+              undefined,
+              {
+                notation: 'compact',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+              }
+            ),
           },
           items: {
             type: 'bar',
@@ -92,7 +95,7 @@ export const ActivityCharts: React.FC<Props> = ({ addresses }) => {
           trigger: {
             value: 'total_amount',
             label: 'Volume',
-            amount: formatTokenAmount(overallStats.total_amount),
+            amount: formatTokenAmount(BigInt(overallStats.total_amount)),
           },
           items: {
             type: 'area',
@@ -122,11 +125,14 @@ export const ActivityCharts: React.FC<Props> = ({ addresses }) => {
           trigger: {
             value: 'unique_buyers',
             label: 'Buyers',
-            amount: overallStats.unique_buyers.toLocaleString(undefined, {
-              notation: 'compact',
-              minimumFractionDigits: 0,
-              maximumFractionDigits: 2,
-            }),
+            amount: Number(overallStats.unique_buyers).toLocaleString(
+              undefined,
+              {
+                notation: 'compact',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 2,
+              }
+            ),
           },
           items: {
             type: 'bar',

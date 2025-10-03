@@ -1,7 +1,8 @@
+import { unstable_cache } from 'next/cache';
 import type { ResourceOrigin } from '@prisma/client';
 import { prisma } from './client';
 
-export const getAcceptsAddresses = async () => {
+const getAcceptsAddressesUncached = async () => {
   const accepts = await prisma.accepts.findMany({
     include: {
       resourceRel: {
@@ -32,6 +33,17 @@ export const getAcceptsAddresses = async () => {
     },
     {} as Record<string, Array<ResourceOrigin>>
   );
+};
+
+export const getAcceptsAddresses = async () => {
+  return await unstable_cache(
+    getAcceptsAddressesUncached,
+    ['accepts-addresses'],
+    {
+      revalidate: 300, // 5 minutes - this data doesn't change often
+      tags: ['accepts'],
+    }
+  )();
 };
 
 export const listAccepts = async () => {

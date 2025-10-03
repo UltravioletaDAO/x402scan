@@ -6,6 +6,10 @@ import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
 import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const sellerSortIds = [
   'tx_count',
@@ -23,7 +27,7 @@ export const listTopSellersInputSchema = baseQuerySchema.extend({
   endDate: z.date().optional(),
 });
 
-export const listTopSellers = async (
+const listTopSellersUncached = async (
   input: z.input<typeof listTopSellersInputSchema>,
   pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
 ) => {
@@ -38,10 +42,10 @@ export const listTopSellers = async (
     z.object({
       recipient: ethereumAddressSchema,
       facilitators: z.array(ethereumAddressSchema),
-      tx_count: z.coerce.bigint(),
-      total_amount: z.coerce.bigint(),
+      tx_count: z.coerce.number(),
+      total_amount: z.coerce.number(),
       latest_block_timestamp: z.coerce.date(),
-      unique_buyers: z.coerce.bigint(),
+      unique_buyers: z.coerce.number(),
     })
   );
 
@@ -82,3 +86,24 @@ LIMIT ${limit + 1};
     limit,
   });
 };
+
+const _listTopSellersCached = createCachedPaginatedQuery({
+  queryFn: ({
+    input,
+    pagination,
+  }: {
+    input: z.input<typeof listTopSellersInputSchema>;
+    pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>;
+  }) => listTopSellersUncached(input, pagination),
+  cacheKeyPrefix: 'sellers-list',
+  createCacheKey: ({ input, pagination }) =>
+    createStandardCacheKey({ ...input, limit: pagination.limit }),
+  dateFields: ['latest_block_timestamp'],
+  revalidate: 60,
+  tags: ['sellers'],
+});
+
+export const listTopSellers = async (
+  input: z.input<typeof listTopSellersInputSchema>,
+  pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
+) => _listTopSellersCached({ input, pagination });

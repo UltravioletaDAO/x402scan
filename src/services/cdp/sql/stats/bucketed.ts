@@ -1,11 +1,10 @@
 import z from 'zod';
-
 import { subMonths } from 'date-fns';
 
 import { runBaseSqlQuery } from '../query';
 import { baseQuerySchema, formatDateForSql } from '../lib';
-
 import { ethereumAddressSchema } from '@/lib/schemas';
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -20,7 +19,7 @@ export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   numBuckets: z.number().optional().default(48),
 });
 
-export const getBucketedStatistics = async (
+const getBucketedStatisticsUncached = async (
   input: z.input<typeof bucketedStatisticsInputSchema>
 ) => {
   const parseResult = bucketedStatisticsInputSchema.safeParse(input);
@@ -31,10 +30,10 @@ export const getBucketedStatistics = async (
     parseResult.data;
   const outputSchema = z.object({
     bucket_start: z.coerce.date(),
-    total_transactions: z.coerce.bigint(),
-    total_amount: z.coerce.bigint(),
-    unique_buyers: z.coerce.bigint(),
-    unique_sellers: z.coerce.bigint(),
+    total_transactions: z.coerce.number(),
+    total_amount: z.coerce.number(),
+    unique_buyers: z.coerce.number(),
+    unique_sellers: z.coerce.number(),
   });
 
   // Calculate bucket size in seconds for consistent alignment
@@ -48,13 +47,13 @@ export const getBucketedStatistics = async (
     Math.floor(startTimestamp / bucketSizeSeconds) * bucketSizeSeconds;
 
   // Simple query to get actual data - we'll add zeros in TypeScript
-  const sql = `SELECT 
+  const sql = `SELECT
     toDateTime(toUInt32(toUnixTimestamp(block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}) AS bucket_start,
     COUNT(*) AS total_transactions,
     SUM(parameters['value']::UInt256) AS total_amount,
     COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
     COUNT(DISTINCT parameters['to']::String) AS unique_sellers
-FROM base.events 
+FROM base.events
 WHERE event_signature = 'Transfer(address,address,uint256)'
     AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
     AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
@@ -111,13 +110,22 @@ ORDER BY bucket_start ASC;
       // Add zero values for missing periods
       completeTimeSeries.push({
         bucket_start: bucketStart,
-        total_transactions: BigInt(0),
-        total_amount: BigInt(0),
-        unique_buyers: BigInt(0),
-        unique_sellers: BigInt(0),
+        total_transactions: 0,
+        total_amount: 0,
+        unique_buyers: 0,
+        unique_sellers: 0,
       });
     }
   }
 
   return completeTimeSeries;
 };
+
+export const getBucketedStatistics = createCachedArrayQuery({
+  queryFn: getBucketedStatisticsUncached,
+  cacheKeyPrefix: 'bucketed-statistics',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['bucket_start'],
+  revalidate: 60,
+  tags: ['statistics'],
+});

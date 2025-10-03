@@ -4,6 +4,7 @@ import { formatDateForSql } from '../lib';
 import z from 'zod';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { USDC_ADDRESS } from '@/lib/utils';
+import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 
 export const listTopFacilitatorsInputSchema = z.object({
   startDate: z.date().optional(),
@@ -25,7 +26,7 @@ export const listTopFacilitatorsInputSchema = z.object({
   tokens: z.array(ethereumAddressSchema).default([USDC_ADDRESS]),
 });
 
-export const listTopFacilitators = async (
+const listTopFacilitatorsUncached = async (
   input: z.input<typeof listTopFacilitatorsInputSchema>
 ) => {
   const { startDate, endDate, limit, sorting, tokens } =
@@ -78,15 +79,24 @@ LIMIT ${limit + 1}`;
     sql,
     z.array(
       z.object({
-        sellers: z.coerce.bigint(),
-        buyers: z.coerce.bigint(),
-        tx_count: z.coerce.bigint(),
-        total_amount: z.coerce.bigint(),
+        sellers: z.coerce.number(),
+        buyers: z.coerce.number(),
+        tx_count: z.coerce.number(),
+        total_amount: z.coerce.number(),
         latest_block_timestamp: z.coerce.date(),
-        unique_buyers: z.coerce.bigint(),
+        unique_buyers: z.coerce.number(),
         facilitator_name: z.string(),
       })
     )
   );
-  return result;
+  return result ?? [];
 };
+
+export const listTopFacilitators = createCachedArrayQuery({
+  queryFn: listTopFacilitatorsUncached,
+  cacheKeyPrefix: 'facilitators-list',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['latest_block_timestamp'],
+  revalidate: 60,
+  tags: ['facilitators'],
+});

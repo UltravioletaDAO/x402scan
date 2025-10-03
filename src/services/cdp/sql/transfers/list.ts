@@ -5,6 +5,10 @@ import { runBaseSqlQuery } from '../query';
 import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 
@@ -25,7 +29,7 @@ const outputSchema = z.array(
   z.object({
     sender: ethereumAddressSchema,
     recipient: ethereumAddressSchema,
-    amount: z.coerce.bigint(),
+    amount: z.coerce.number(),
     token_address: ethereumAddressSchema,
     transaction_from: ethereumAddressSchema,
     transaction_hash: ethereumHashSchema,
@@ -34,7 +38,7 @@ const outputSchema = z.array(
   })
 );
 
-export const listFacilitatorTransfers = async (
+const listFacilitatorTransfersUncached = async (
   input: z.input<typeof listFacilitatorTransfersInputSchema>
 ) => {
   const parseResult = listFacilitatorTransfersInputSchema.safeParse(input);
@@ -77,3 +81,12 @@ LIMIT ${limit + 1};`;
     limit,
   });
 };
+
+export const listFacilitatorTransfers = createCachedPaginatedQuery({
+  queryFn: listFacilitatorTransfersUncached,
+  cacheKeyPrefix: 'transfers-list',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['block_timestamp'],
+  revalidate: 60,
+  tags: ['transfers'],
+});

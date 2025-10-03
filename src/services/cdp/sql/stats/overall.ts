@@ -4,6 +4,7 @@ import { runBaseSqlQuery } from '../query';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { baseQuerySchema, formatDateForSql } from '../lib';
+import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 
 export const overallStatisticsInputSchema = baseQuerySchema.extend({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -11,7 +12,7 @@ export const overallStatisticsInputSchema = baseQuerySchema.extend({
   endDate: z.date().optional(),
 });
 
-export const getOverallStatistics = async (
+const getOverallStatisticsUncached = async (
   input: z.input<typeof overallStatisticsInputSchema>
 ) => {
   const parseResult = overallStatisticsInputSchema.safeParse(input);
@@ -21,20 +22,20 @@ export const getOverallStatistics = async (
   const { addresses, startDate, endDate, facilitators, tokens } =
     parseResult.data;
   const outputSchema = z.object({
-    total_transactions: z.coerce.bigint(),
-    total_amount: z.coerce.bigint(),
-    unique_buyers: z.coerce.bigint(),
-    unique_sellers: z.coerce.bigint(),
+    total_transactions: z.coerce.number(),
+    total_amount: z.coerce.number(),
+    unique_buyers: z.coerce.number(),
+    unique_sellers: z.coerce.number(),
     latest_block_timestamp: z.coerce.date(),
   });
 
-  const sql = `SELECT 
+  const sql = `SELECT
     COUNT(*) AS total_transactions,
     SUM(parameters['value']::UInt256) AS total_amount,
     COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
     COUNT(DISTINCT parameters['to']::String) AS unique_sellers,
     max(block_timestamp) AS latest_block_timestamp
-FROM base.events 
+FROM base.events
 WHERE event_signature = 'Transfer(address,address,uint256)'
     AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
     AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
@@ -55,13 +56,29 @@ WHERE event_signature = 'Transfer(address,address,uint256)'
 
   if (!result || result.length === 0) {
     return {
-      total_transactions: 0n,
-      total_amount: 0n,
-      unique_buyers: 0n,
-      unique_sellers: 0n,
+      total_transactions: 0,
+      total_amount: 0,
+      unique_buyers: 0,
+      unique_sellers: 0,
       latest_block_timestamp: new Date(),
     };
   }
 
-  return result[0];
+  const data = result[0];
+  return {
+    total_transactions: data.total_transactions,
+    total_amount: data.total_amount,
+    unique_buyers: data.unique_buyers,
+    unique_sellers: data.unique_sellers,
+    latest_block_timestamp: data.latest_block_timestamp,
+  };
 };
+
+export const getOverallStatistics = createCachedQuery({
+  queryFn: getOverallStatisticsUncached,
+  cacheKeyPrefix: 'overall-statistics',
+  createCacheKey: input => createStandardCacheKey(input),
+  dateFields: ['latest_block_timestamp'],
+  revalidate: 60,
+  tags: ['statistics'],
+});
