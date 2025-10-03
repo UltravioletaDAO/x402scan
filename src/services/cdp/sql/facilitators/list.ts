@@ -89,7 +89,7 @@ LIMIT ${limit + 1}`;
       })
     )
   );
-  return result;
+  return result ?? [];
 };
 
 export const listTopFacilitators = createCachedArrayQuery({

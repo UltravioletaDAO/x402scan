@@ -45,26 +45,26 @@ export const deserializeDates = <T extends Record<string, unknown>>(
 };
 
 /**
- * Generic cached query wrapper for arrays of items with dates
+ * Core cached query wrapper with custom serialization/deserialization
  */
-export const createCachedArrayQuery = <TInput, TItem extends Record<string, unknown>>(
+const createCachedQueryBase = <TInput, TOutput>(
   config: {
-    queryFn: (input: TInput) => Promise<TItem[]>;
+    queryFn: (input: TInput) => Promise<TOutput>;
     cacheKeyPrefix: string;
     createCacheKey: (input: TInput) => string;
-    dateFields: (keyof TItem)[];
+    serialize: (data: TOutput) => TOutput;
+    deserialize: (data: TOutput) => TOutput;
     revalidate?: number;
     tags?: string[];
   }
 ) => {
-  return async (input: TInput): Promise<TItem[]> => {
+  return async (input: TInput): Promise<TOutput> => {
     const cacheKey = config.createCacheKey(input);
 
     const result = await unstable_cache(
       async () => {
         const data = await config.queryFn(input);
-        // Serialize dates to ISO strings
-        return data.map(item => serializeDates(item, config.dateFields));
+        return config.serialize(data);
       },
       [config.cacheKeyPrefix, cacheKey],
       {
@@ -73,8 +73,7 @@ export const createCachedArrayQuery = <TInput, TItem extends Record<string, unkn
       }
     )();
 
-    // Deserialize ISO strings back to Date objects
-    return result.map(item => deserializeDates(item, config.dateFields));
+    return config.deserialize(result);
   };
 };
 
@@ -91,25 +90,31 @@ export const createCachedQuery = <TInput, TOutput extends Record<string, unknown
     tags?: string[];
   }
 ) => {
-  return async (input: TInput): Promise<TOutput> => {
-    const cacheKey = config.createCacheKey(input);
+  return createCachedQueryBase({
+    ...config,
+    serialize: (data) => serializeDates(data, config.dateFields),
+    deserialize: (data) => deserializeDates(data, config.dateFields),
+  });
+};
 
-    const result = await unstable_cache(
-      async () => {
-        const data = await config.queryFn(input);
-        // Serialize dates to ISO strings
-        return serializeDates(data, config.dateFields);
-      },
-      [config.cacheKeyPrefix, cacheKey],
-      {
-        revalidate: config.revalidate ?? 60,
-        tags: config.tags,
-      }
-    )();
-
-    // Deserialize ISO strings back to Date objects
-    return deserializeDates(result, config.dateFields);
-  };
+/**
+ * Generic cached query wrapper for arrays of items with dates
+ */
+export const createCachedArrayQuery = <TInput, TItem extends Record<string, unknown>>(
+  config: {
+    queryFn: (input: TInput) => Promise<TItem[]>;
+    cacheKeyPrefix: string;
+    createCacheKey: (input: TInput) => string;
+    dateFields: (keyof TItem)[];
+    revalidate?: number;
+    tags?: string[];
+  }
+) => {
+  return createCachedQueryBase({
+    ...config,
+    serialize: (data) => data.map(item => serializeDates(item, config.dateFields)),
+    deserialize: (data) => data.map(item => deserializeDates(item, config.dateFields)),
+  });
 };
 
 /**
@@ -129,31 +134,17 @@ export const createCachedPaginatedQuery = <
     tags?: string[];
   }
 ) => {
-  return async (input: TInput): Promise<TPaginated> => {
-    const cacheKey = config.createCacheKey(input);
-
-    const result = await unstable_cache(
-      async () => {
-        const data = await config.queryFn(input);
-        // Serialize dates in items
-        return {
-          ...data,
-          items: data.items.map(item => serializeDates(item, config.dateFields)),
-        };
-      },
-      [config.cacheKeyPrefix, cacheKey],
-      {
-        revalidate: config.revalidate ?? 60,
-        tags: config.tags,
-      }
-    )();
-
-    // Deserialize ISO strings back to Date objects
-    return {
-      ...result,
-      items: result.items.map(item => deserializeDates(item, config.dateFields)),
-    };
-  };
+  return createCachedQueryBase({
+    ...config,
+    serialize: (data) => ({
+      ...data,
+      items: data.items.map(item => serializeDates(item, config.dateFields)),
+    }),
+    deserialize: (data) => ({
+      ...data,
+      items: data.items.map(item => deserializeDates(item, config.dateFields)),
+    }),
+  });
 };
 
 /**
