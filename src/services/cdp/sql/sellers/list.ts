@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import z from 'zod';
 
 import { runBaseSqlQuery } from '../query';
@@ -23,7 +24,7 @@ export const listTopSellersInputSchema = baseQuerySchema.extend({
   endDate: z.date().optional(),
 });
 
-export const listTopSellers = async (
+const listTopSellersUncached = async (
   input: z.input<typeof listTopSellersInputSchema>,
   pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
 ) => {
@@ -38,10 +39,10 @@ export const listTopSellers = async (
     z.object({
       recipient: ethereumAddressSchema,
       facilitators: z.array(ethereumAddressSchema),
-      tx_count: z.coerce.bigint(),
-      total_amount: z.coerce.bigint(),
+      tx_count: z.coerce.number(),
+      total_amount: z.coerce.number(),
       latest_block_timestamp: z.coerce.date(),
-      unique_buyers: z.coerce.bigint(),
+      unique_buyers: z.coerce.number(),
     })
   );
 
@@ -81,4 +82,65 @@ LIMIT ${limit + 1};
     items,
     limit,
   });
+};
+
+const createCacheKey = (
+  input: z.input<typeof listTopSellersInputSchema>,
+  pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
+) => {
+  const parsed = listTopSellersInputSchema.parse(input);
+
+  // Round dates to nearest minute for stable cache keys
+  const roundDate = (date?: Date) => {
+    if (!date) return undefined;
+    const rounded = new Date(date);
+    rounded.setSeconds(0, 0);
+    return rounded.toISOString();
+  };
+
+  return JSON.stringify({
+    sorting: parsed.sorting,
+    addresses: parsed.addresses?.sort(),
+    startDate: roundDate(parsed.startDate),
+    endDate: roundDate(parsed.endDate),
+    facilitators: parsed.facilitators.sort(),
+    tokens: parsed.tokens.sort(),
+    limit: pagination.limit,
+  });
+};
+
+export const listTopSellers = async (
+  input: z.input<typeof listTopSellersInputSchema>,
+  pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
+) => {
+  const cacheKey = createCacheKey(input, pagination);
+
+  const result = await unstable_cache(
+    async () => {
+      const data = await listTopSellersUncached(input, pagination);
+
+      // Convert dates to ISO strings for JSON serialization
+      return {
+        ...data,
+        items: data.items.map(item => ({
+          ...item,
+          latest_block_timestamp: item.latest_block_timestamp.toISOString(),
+        })),
+      };
+    },
+    ['sellers-list', cacheKey],
+    {
+      revalidate: 60,
+      tags: ['sellers'],
+    }
+  )();
+
+  // Convert ISO strings back to Date objects
+  return {
+    ...result,
+    items: result.items.map(item => ({
+      ...item,
+      latest_block_timestamp: new Date(item.latest_block_timestamp),
+    })),
+  };
 };

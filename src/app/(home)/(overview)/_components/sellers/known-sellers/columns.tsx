@@ -149,7 +149,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <div className="text-right font-mono text-xs">
-        {formatTokenAmount(row.original.total_amount)}
+        {formatTokenAmount(BigInt(row.original.total_amount))}
       </div>
     ),
     size: 100, // Fixed width for volume column
