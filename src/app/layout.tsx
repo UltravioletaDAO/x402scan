@@ -17,6 +17,7 @@ import { NavbarAuthButton } from './_components/layout/navbar/auth-button';
 
 import { CDPHooksProvider } from './_contexts/cdp';
 import { SearchProvider } from './_contexts/search/provider';
+import { WagmiProvider } from './_contexts/wagmi';
 
 import { TRPCReactProvider } from '@/trpc/client';
 
@@ -120,35 +121,37 @@ export default function RootLayout({
         <TRPCReactProvider>
           <SearchProvider>
             <CDPHooksProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="light"
-                storageKey="x402scan-theme"
-                enableSystem={true}
-              >
-                <div className="min-h-screen flex flex-col relative">
-                  <LogoContainer>
-                    <Link href="/" prefetch={false}>
-                      <Logo className="size-full aspect-square" />
-                    </Link>
-                  </LogoContainer>
-                  <header className="w-full flex flex-col pt-4 justify-center bg-card">
-                    <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
-                      <div className="pl-8 md:pl-10 flex items-center gap-2 md:gap-3">
-                        {breadcrumbs}
+              <WagmiProvider>
+                <ThemeProvider
+                  attribute="class"
+                  defaultTheme="light"
+                  storageKey="x402scan-theme"
+                  enableSystem={true}
+                >
+                  <div className="min-h-screen flex flex-col relative">
+                    <LogoContainer>
+                      <Link href="/" prefetch={false}>
+                        <Logo className="size-full aspect-square" />
+                      </Link>
+                    </LogoContainer>
+                    <header className="w-full flex flex-col pt-4 justify-center bg-card">
+                      <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
+                        <div className="pl-8 md:pl-10 flex items-center gap-2 md:gap-3">
+                          {breadcrumbs}
+                        </div>
+                        <div className="flex items-center gap-1 md:gap-2">
+                          <NavbarSearchButton />
+                          <NavbarAuthButton />
+                          <AnimatedThemeToggler />
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 md:gap-2">
-                        <NavbarSearchButton />
-                        <NavbarAuthButton />
-                        <AnimatedThemeToggler />
-                      </div>
+                    </header>
+                    <div className="bg-background flex-1 flex flex-col">
+                      {children}
                     </div>
-                  </header>
-                  <div className="bg-background flex-1 flex flex-col">
-                    {children}
                   </div>
-                </div>
-              </ThemeProvider>
+                </ThemeProvider>
+              </WagmiProvider>
             </CDPHooksProvider>
           </SearchProvider>
         </TRPCReactProvider>
