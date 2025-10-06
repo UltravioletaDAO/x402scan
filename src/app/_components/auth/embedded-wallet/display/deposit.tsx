@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import Image from 'next/image';
+
+import { Check, Loader2 } from 'lucide-react';
 
 import { CopyCode } from '@/components/ui/copy-code';
 import { Separator } from '@/components/ui/separator';
 import { MoneyInput } from '@/components/ui/money-input';
 import { Button } from '@/components/ui/button';
+
+import { api } from '@/trpc/client';
 
 import type { User } from '@coinbase/cdp-hooks';
 
@@ -38,7 +42,24 @@ interface OnrampProps {
 }
 
 const Onramp: React.FC<OnrampProps> = ({}) => {
+  const {
+    mutate: createOnrampSession,
+    isPending: isCreatingOnrampSession,
+    isSuccess: isCreatedOnrampSession,
+  } = api.onrampSessions.create.useMutation({
+    onSuccess: url => {
+      window.location.href = url;
+    },
+  });
+
   const [amount, setAmount] = useState(0);
+
+  const handleSubmit = useCallback(() => {
+    createOnrampSession({
+      amount,
+      redirect: window.location.href,
+    });
+  }, [amount, createOnrampSession]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -56,10 +77,27 @@ const Onramp: React.FC<OnrampProps> = ({}) => {
         setAmount={setAmount}
         placeholder="0.00"
         inputClassName="placeholder:text-muted-foreground/60"
-        disabled={true}
       />
-      <Button variant="turbo" disabled={amount === 0}>
-        Coming Soon
+      <Button
+        variant="turbo"
+        disabled={
+          amount === 0 || isCreatingOnrampSession || isCreatedOnrampSession
+        }
+        onClick={handleSubmit}
+      >
+        {isCreatingOnrampSession ? (
+          <>
+            <Loader2 className="size-4 animate-spin" />
+            Creating...
+          </>
+        ) : isCreatedOnrampSession ? (
+          <>
+            <Check className="size-4" />
+            Opening Coinbase...
+          </>
+        ) : (
+          'Onramp'
+        )}
       </Button>
     </div>
   );

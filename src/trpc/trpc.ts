@@ -1,22 +1,32 @@
-import { initTRPC } from '@trpc/server';
 import superjson from 'superjson';
-import type z from 'zod';
 import { ZodError } from 'zod';
+
+import { initTRPC, TRPCError } from '@trpc/server';
+
+import { auth } from '@/auth';
+
 import { infiniteQuerySchema } from '@/lib/pagination';
+
+import type z from 'zod';
+import type { Session } from 'next-auth';
 
 /**
  * Context that is passed to all TRPC procedures
  */
 interface Context {
   headers: Headers;
+  session: Session | null;
 }
 
 /**
  * Create context for each request
  */
 export async function createTRPCContext(headers: Headers): Promise<Context> {
+  const session = await auth();
+
   return {
     headers,
+    session,
   };
 }
 
@@ -64,6 +74,13 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
 // ----------------------------
 
 export const publicProcedure = t.procedure.use(timingMiddleware);
+
+export const protectedProcedure = t.procedure.use(async ({ ctx, next }) => {
+  if (!ctx.session?.user) {
+    throw new TRPCError({ code: 'UNAUTHORIZED' });
+  }
+  return next({ ctx: { ...ctx, session: ctx.session } });
+});
 
 export const infiniteQueryProcedure = <T>(cursorType: z.ZodType<T>) =>
   t.procedure

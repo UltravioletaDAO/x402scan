@@ -66,7 +66,7 @@ export const HeaderCard: React.FC<Props> = async ({ address }) => {
               )}
             </p>
           </div>
-          <HeaderButtons hasOrigins={origins.length > 0} />
+          <HeaderButtons hasOrigins={origins.length > 0} address={address} />
         </div>
         <div className="col-span-2">
           <Suspense fallback={<LoadingOverallRecipientStats />}>

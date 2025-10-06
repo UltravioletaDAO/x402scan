@@ -6,8 +6,6 @@ import { useCurrentUser } from '@coinbase/cdp-hooks';
 export const useBalance = () => {
   const { currentUser } = useCurrentUser();
 
-  console.log(currentUser);
-
   const result = useBalanceWagmi({
     address: currentUser?.evmAccounts?.[0] ?? undefined,
     token: USDC_ADDRESS,

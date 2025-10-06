@@ -1,9 +1,9 @@
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
@@ -19,12 +19,13 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
-  role          Role      @default(user)
-  accounts      Account[]
-  sessions      Session[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role           Role            @default(user)
+  accounts       Account[]
+  sessions       Session[]
+  onrampSessions OnrampSession[]
 }
 
 model Account {
@@ -81,7 +82,6 @@ model Resources {
   originId String
 
   accepts Accepts[]
-
   origin ResourceOrigin @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
 }
 
@@ -144,19 +144,38 @@ model ResourceOrigin {
   updatedAt DateTime @updatedAt
 
   resources Resources[]
-  ogImages OgImage[]
+  ogImages  OgImage[]
 }
 
 model OgImage {
-  id String @id @default(uuid())
-  originId String
-  url String @unique
-  height Int?
-  width Int?
-  title String?
+  id          String  @id @default(uuid())
+  originId    String
+  url         String  @unique
+  height      Int?
+  width       Int?
+  title       String?
   description String?
 
   origin ResourceOrigin @relation(fields: [originId], references: [id], map: "OgImage_origin_fkey")
 
   @@unique([originId, url])
+}
+
+model OnrampSession {
+  id            String   @id @default(uuid())
+  token         String   @unique
+  amount        Int
+  userId        String
+  date          DateTime @default(now())
+  txHash        String?  @unique
+  failureReason String?
+  status SessionStatus @default(ONRAMP_TRANSACTION_STATUS_IN_PROGRESS)
+
+  user   User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum SessionStatus {
+  ONRAMP_TRANSACTION_STATUS_IN_PROGRESS
+  ONRAMP_TRANSACTION_STATUS_SUCCESS
+  ONRAMP_TRANSACTION_STATUS_FAILED
 }
