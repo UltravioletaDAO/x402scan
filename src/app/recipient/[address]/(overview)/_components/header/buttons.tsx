@@ -6,19 +6,23 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { Plus, TestTubeDiagonal } from 'lucide-react';
+import Link from 'next/link';
 
 interface Props {
   hasOrigins: boolean;
+  address: string;
 }
 
-export const HeaderButtons: React.FC<Props> = ({ hasOrigins }) => {
+export const HeaderButtons: React.FC<Props> = ({ hasOrigins, address }) => {
   return (
     <ButtonsContainer>
       {hasOrigins && (
-        <Button variant="turbo">
-          <TestTubeDiagonal className="size-4" />
-          Try Resources
-        </Button>
+        <Link href={`/recipient/${address}/resources`}>
+          <Button variant="turbo">
+            <TestTubeDiagonal className="size-4" />
+            Try Resources
+          </Button>
+        </Link>
       )}
       <Tooltip>
         <TooltipTrigger asChild>

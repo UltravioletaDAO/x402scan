@@ -1,46 +1,25 @@
 import z from 'zod';
 
-import { generateCdpJwt } from '../generate-jwt';
+import { cdpFetch } from '../lib/fetch';
 
 const runBaseSqlQueryInternal = async <T>(
   sql: string,
-  resultSchema: z.ZodSchema<T>
+  outputSchema: z.ZodSchema<T>
 ): Promise<T | null> => {
-  const jwt = await generateCdpJwt({
-    requestMethod: 'POST',
-    requestPath: '/platform/v2/data/query/run',
-  });
-  const response = await fetch(
-    'https://api.cdp.coinbase.com/platform/v2/data/query/run',
+  const data = await cdpFetch(
     {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${jwt}`,
-        'Content-Type': 'application/json',
-      },
+      requestMethod: 'POST',
+      requestPath: '/platform/v2/data/query/run',
+    },
+    z.object({
+      result: outputSchema.nullable(),
+    }),
+    {
       body: JSON.stringify({ sql }),
     }
   );
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `Failed to run SQL query: ${response.status} ${response.statusText} - ${errorText}`
-    );
-  }
-
-  const schema = z.object({
-    result: resultSchema.nullable(),
-  });
-
-  const data = (await response.json()) as z.input<typeof schema>;
-
-  try {
-    return schema.parse(data).result;
-  } catch (error) {
-    console.error('error parsing data', data);
-    throw error;
-  }
+  return data.result;
 };
 
 export async function runBaseSqlQuery<T>(

@@ -88,12 +88,9 @@ export const ResourceFetchProvider: React.FC<Props> = ({
     return acc;
   }, []);
 
-  // Reconstruct nested objects from dot-notation fields
   const reconstructedBody = reconstructNestedObject(
     Object.fromEntries(bodyEntries)
   );
-
-  console.log(maxAmountRequired);
 
   const {
     data: response,

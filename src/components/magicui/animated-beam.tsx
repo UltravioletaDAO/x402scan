@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useId, useState } from 'react';
+import { forwardRef, useEffect, useId, useState } from 'react';
 
 import { motion } from 'motion/react';
+
+import { Card } from '../ui/card';
 
 import { cn } from '@/lib/utils';
 
@@ -30,6 +32,7 @@ interface AnimatedBeamProps {
   isVertical?: boolean;
   repeatDelay?: number;
   beamWidth?: number;
+  isFull?: boolean;
 }
 
 export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
@@ -54,6 +57,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   isVertical = false,
   repeatDelay = 0,
   beamWidth = 10,
+  isFull = false,
 }) => {
   const id = useId();
   const [pathD, setPathD] = useState('');
@@ -212,7 +216,35 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
         strokeOpacity="1"
         strokeLinecap="round"
       />
+      {isFull && (
+        <path
+          d={pathD}
+          stroke={gradientStopColor}
+          strokeWidth={pathWidth * 1.5}
+          strokeLinecap="round"
+          filter={`url(#${id}-glow)`}
+          style={{
+            animation: 'beam-glow-pulse 1.5s ease-in-out infinite',
+            opacity: 0.7,
+          }}
+        />
+      )}
       <defs>
+        {isFull && (
+          <filter
+            id={`${id}-glow`}
+            x="-50%"
+            y="-50%"
+            width="200%"
+            height="200%"
+          >
+            <feGaussianBlur stdDeviation="6" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        )}
         <motion.linearGradient
           className="transform-gpu"
           id={id}
@@ -237,16 +269,52 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
             repeatDelay,
           }}
         >
-          <stop stopColor={gradientStartColor} stopOpacity="0"></stop>
-          <stop stopColor={gradientStartColor}></stop>
-          <stop offset="32.5%" stopColor={gradientStopColor}></stop>
-          <stop
-            offset="100%"
-            stopColor={gradientStopColor}
-            stopOpacity="0"
-          ></stop>
+          {isFull ? (
+            <>
+              <stop
+                offset="0%"
+                stopColor={gradientStartColor}
+                stopOpacity="1"
+              />
+              <stop
+                offset="100%"
+                stopColor={gradientStopColor}
+                stopOpacity="1"
+              />
+            </>
+          ) : (
+            <>
+              <stop stopColor={gradientStartColor} stopOpacity="0"></stop>
+              <stop stopColor={gradientStartColor}></stop>
+              <stop offset="32.5%" stopColor={gradientStopColor}></stop>
+              <stop
+                offset="100%"
+                stopColor={gradientStopColor}
+                stopOpacity="0"
+              ></stop>
+            </>
+          )}
         </motion.linearGradient>
       </defs>
     </svg>
   );
 };
+
+export const Circle = forwardRef<
+  HTMLDivElement,
+  { className?: string; children?: React.ReactNode }
+>(({ className, children }, ref) => {
+  return (
+    <Card
+      ref={ref}
+      className={cn(
+        'bg-card z-10 flex items-center justify-center rounded-full border-2 p-2 shadow-sm',
+        className
+      )}
+    >
+      {children}
+    </Card>
+  );
+});
+
+Circle.displayName = 'Circle';

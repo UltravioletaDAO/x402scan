@@ -20,13 +20,15 @@ export const SearchButtonContent = ({ onClick }: { onClick?: () => void }) => {
       size="lg"
       variant="outline"
       className={cn(
-        'flex md:justify-between items-center gap-0 md:gap-16 text-muted-foreground/80 md:px-2 md:pr-1 w-full bg-card font-normal hover:text-muted-foreground/80 group'
+        'flex justify-start md:justify-between items-center gap-0 md:gap-16 text-muted-foreground/80 px-2 md:px-2 md:pr-1 w-full bg-card font-normal hover:text-muted-foreground/80 group'
       )}
       onClick={onClick}
     >
-      <div className="flex items-center gap-0 md:gap-2 text-sm">
+      <div className="flex items-center gap-1 md:gap-2 text-sm">
         <Search className="size-4" />
-        <span>Search servers, resources, addresses, and more...</span>
+        <span className="text-xs md:text-sm">
+          Search servers, resources, addresses, and more...
+        </span>
       </div>
       <Shortcut className="hidden md:block px-1 bg-muted rounded-md group-hover:bg-transparent transition-colors duration-200">
         ⌘K
