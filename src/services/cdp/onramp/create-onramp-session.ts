@@ -50,7 +50,7 @@ export const createOnrampUrl = async (
   );
 
   const redirectUrl = new URL(redirect);
-  redirectUrl.searchParams.set('onramp_session_token', token);
+  redirectUrl.searchParams.set('onramp_token', token);
 
   const searchParams = new URLSearchParams({
     sessionToken: token,

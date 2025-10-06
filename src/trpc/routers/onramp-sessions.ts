@@ -24,8 +24,8 @@ export const onrampSessionsRouter = createTRPCRouter({
         id: z.string(),
       })
     )
-    .query(async ({ ctx, input }) => {
-      const onrampSession = await getOnrampSessionByToken(input.id);
+    .query(async ({ input: { id } }) => {
+      const onrampSession = await getOnrampSessionByToken(id);
 
       if (!onrampSession) {
         throw new TRPCError({ code: 'NOT_FOUND' });
@@ -39,7 +39,9 @@ export const onrampSessionsRouter = createTRPCRouter({
         return onrampSession;
       }
 
-      const { transactions } = await getOnrampTransactions(ctx.session.user.id);
+      const { transactions } = await getOnrampTransactions(id);
+
+      console.log('transactions', transactions);
 
       const transaction = transactions[0];
 
@@ -51,7 +53,7 @@ export const onrampSessionsRouter = createTRPCRouter({
         status: transaction.status,
         txHash: transaction.tx_hash,
         failureReason:
-          transaction.status === 'ONRAMP_TRANSACTION_STATUS_FAILED'
+          transaction.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
             ? transaction.failure_reason
             : null,
       });

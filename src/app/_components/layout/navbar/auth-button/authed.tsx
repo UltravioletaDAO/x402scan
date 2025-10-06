@@ -11,6 +11,7 @@ import { DisplayEmbeddedWalletDialog } from '@/app/_components/auth/embedded-wal
 import { NavbarUnauthedButton } from './unauthed';
 import { useBalance } from '@/app/_hooks/use-balance';
 import { Skeleton } from '@/components/ui/skeleton';
+import { OnrampSessionDialog } from '@/app/_components/auth/embedded-wallet/onramp-session-dialog';
 
 export const NavbarAuthedButton = () => {
   if (typeof window === 'undefined') {
@@ -33,9 +34,12 @@ const NavbarAuthedButtonInternal = () => {
   }
 
   return (
-    <DisplayEmbeddedWalletDialog user={currentUser}>
-      <NavbarAuthedButtonContent />
-    </DisplayEmbeddedWalletDialog>
+    <>
+      <OnrampSessionDialog />
+      <DisplayEmbeddedWalletDialog user={currentUser}>
+        <NavbarAuthedButtonContent />
+      </DisplayEmbeddedWalletDialog>
+    </>
   );
 };
 

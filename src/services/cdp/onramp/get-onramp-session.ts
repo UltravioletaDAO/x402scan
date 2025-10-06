@@ -8,7 +8,7 @@ const amountSchema = z.object({
   currency: z.string(),
 });
 
-export const onrampTransactionSchema = z.object({
+const onrampTransactionSchema = z.object({
   status: z.enum([
     'ONRAMP_TRANSACTION_STATUS_IN_PROGRESS',
     'ONRAMP_TRANSACTION_STATUS_SUCCESS',
@@ -48,8 +48,6 @@ export const onrampTransactionSchema = z.object({
   partner_user_ref: z.string(),
 });
 
-export type OnrampTransaction = z.infer<typeof onrampTransactionSchema>;
-
 export const getOnrampTransactions = async (partnerUserRef: string) => {
   return cdpFetch(
     {
@@ -60,7 +58,7 @@ export const getOnrampTransactions = async (partnerUserRef: string) => {
     z.object({
       transactions: z.array(onrampTransactionSchema),
       next_page_key: z.string().optional(),
-      total_count: z.number(),
+      total_count: z.coerce.number(),
     })
   );
 };
