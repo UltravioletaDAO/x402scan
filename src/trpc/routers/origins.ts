@@ -3,6 +3,7 @@ import { createTRPCRouter, publicProcedure } from '../trpc';
 import {
   listOriginsByAddress,
   listOriginsWithResources,
+  listOriginsWithResourcesByAddress,
   searchOrigins,
   searchOriginsSchema,
 } from '@/services/db/origin';
@@ -15,11 +16,16 @@ export const originsRouter = createTRPCRouter({
         return await listOriginsByAddress(input);
       }),
 
-    withResources: publicProcedure
-      .input(ethereumAddressSchema)
-      .query(async ({ input }) => {
-        return await listOriginsWithResources(input);
+    withResources: {
+      all: publicProcedure.query(async () => {
+        return await listOriginsWithResources();
       }),
+      byAddress: publicProcedure
+        .input(ethereumAddressSchema)
+        .query(async ({ input }) => {
+          return await listOriginsWithResourcesByAddress(input);
+        }),
+    },
   },
   search: publicProcedure
     .input(searchOriginsSchema)

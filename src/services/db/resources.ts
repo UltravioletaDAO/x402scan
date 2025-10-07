@@ -1,45 +1,82 @@
 import { prisma } from './client';
 
-import type { FacilitatorResource } from '../cdp/facilitator/list-resources';
 import { getOriginFromUrl } from '@/lib/url';
 import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
+import { ethereumAddressSchema } from '@/lib/schemas';
+import type { EnhancedOutputSchema } from '@/lib/x402/schema';
+
+export const upsertResourceSchema = z.object({
+  resource: z.string(),
+  type: z.enum(['http']),
+  x402Version: z.number(),
+  lastUpdated: z.date(),
+  metadata: z.record(z.string(), z.any()).optional(),
+  accepts: z.array(
+    z.object({
+      scheme: z.enum(['exact']),
+      network: z.enum([
+        'base_sepolia',
+        'avalanche_fuji',
+        'base',
+        'sei',
+        'sei_testnet',
+        'avalanche',
+        'iotex',
+        'solana_devnet',
+        'solana',
+      ]),
+      payTo: ethereumAddressSchema,
+      description: z.string(),
+      maxAmountRequired: z.string(),
+      mimeType: z.string(),
+      maxTimeoutSeconds: z.number(),
+      asset: z.string(),
+      outputSchema: z.custom<EnhancedOutputSchema>().optional(),
+      extra: z.record(z.string(), z.any()).optional(),
+    })
+  ),
+});
 
 export const upsertResource = async (
-  facilitatorResource: FacilitatorResource
+  resourceInput: z.input<typeof upsertResourceSchema>
 ) => {
-  const baseAccepts = facilitatorResource.accepts.find(
+  const baseResource = upsertResourceSchema.parse(resourceInput);
+  const baseAccepts = baseResource.accepts.find(
     accept => accept.network === 'base'
   );
-  const origin = getOriginFromUrl(facilitatorResource.resource);
+  const originStr = getOriginFromUrl(baseResource.resource);
   if (!baseAccepts) return;
   return await prisma.$transaction(async tx => {
-    const resource = await tx.resources.upsert({
+    const { origin, ...resource } = await tx.resources.upsert({
       where: {
-        resource: facilitatorResource.resource,
+        resource: baseResource.resource,
       },
       create: {
-        resource: facilitatorResource.resource,
-        type: facilitatorResource.type,
-        x402Version: facilitatorResource.x402Version,
-        lastUpdated: facilitatorResource.lastUpdated,
-        metadata: facilitatorResource.metadata,
+        resource: baseResource.resource,
+        type: baseResource.type,
+        x402Version: baseResource.x402Version,
+        lastUpdated: baseResource.lastUpdated,
+        metadata: baseResource.metadata,
         origin: {
           connect: {
-            origin,
+            origin: originStr,
           },
         },
       },
       update: {
-        type: facilitatorResource.type,
-        x402Version: facilitatorResource.x402Version,
-        lastUpdated: facilitatorResource.lastUpdated,
-        metadata: facilitatorResource.metadata,
+        type: baseResource.type,
+        x402Version: baseResource.x402Version,
+        lastUpdated: baseResource.lastUpdated,
+        metadata: baseResource.metadata,
         origin: {
           connect: {
-            origin,
+            origin: originStr,
           },
         },
+      },
+      include: {
+        origin: true,
       },
     });
 
@@ -81,6 +118,7 @@ export const upsertResource = async (
     return {
       resource,
       accepts,
+      origin,
     };
   });
 };

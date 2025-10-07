@@ -71,8 +71,10 @@ describe('parseX402Response with normalized schemas', () => {
 
     // This should fail because payTo is an empty string
     expect(result.success).toBe(false);
-    expect(result.errors).toBeDefined();
-    expect(result.errors.some(error => error.includes('payTo'))).toBe(true);
+    if (!result.success) {
+      expect(result.errors).toBeDefined();
+      expect(result.errors.some(error => error.includes('payTo'))).toBe(true);
+    }
   });
 
   it('should extract field information from API responses', () => {
@@ -145,14 +147,18 @@ describe('parseX402Response with normalized schemas', () => {
     const result = parseX402Response(invalidResponse);
 
     expect(result.success).toBe(false);
-    expect(result.errors.length).toBeGreaterThan(0);
+    if (!result.success) {
+      expect(result.errors.length).toBeGreaterThan(0);
+    }
   });
 
   it('should handle completely invalid input', () => {
     const result = parseX402Response('not an object');
 
     expect(result.success).toBe(false);
-    expect(result.errors.length).toBeGreaterThan(0);
+    if (!result.success) {
+      expect(result.errors.length).toBeGreaterThan(0);
+    }
   });
 
   it('should handle camelCase and snake_case field names', () => {
@@ -248,6 +254,8 @@ describe('schema validation edge cases', () => {
     const parseResult = parseX402Response(arrayInput);
 
     expect(parseResult.success).toBe(false);
-    expect(parseResult.errors.length).toBeGreaterThan(0);
+    if (!parseResult.success) {
+      expect(parseResult.errors.length).toBeGreaterThan(0);
+    }
   });
 });
