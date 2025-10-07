@@ -26,7 +26,7 @@ export const normalizeX402Fields = (obj: unknown): unknown => {
 /**
  * Normalize accept entry while preserving outputSchema field names
  */
-export const normalizeAcceptEntry = (accept: unknown): unknown => {
+const normalizeAcceptEntry = (accept: unknown): unknown => {
   if (!accept || typeof accept !== 'object' || Array.isArray(accept)) {
     return accept;
   }
@@ -52,7 +52,7 @@ export const normalizeAcceptEntry = (accept: unknown): unknown => {
  * Normalize outputSchema structure (input/output keys and HTTP schema fields)
  * but preserve the actual API field names within queryParams/bodyFields/headerFields
  */
-export const normalizeOutputSchema = (outputSchema: unknown): unknown => {
+const normalizeOutputSchema = (outputSchema: unknown): unknown => {
   if (
     !outputSchema ||
     typeof outputSchema !== 'object' ||
@@ -79,7 +79,7 @@ export const normalizeOutputSchema = (outputSchema: unknown): unknown => {
  * Normalize input schema structure (convert query_params -> queryParams, etc.)
  * but preserve field names within the param/field records
  */
-export const normalizeInputSchema = (input: unknown): unknown => {
+const normalizeInputSchema = (input: unknown): unknown => {
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
     return input;
   }
@@ -108,6 +108,6 @@ export const normalizeInputSchema = (input: unknown): unknown => {
 /**
  * Converts a single snake_case string to camelCase
  */
-export const snakeToCamelCase = (str: string): string => {
+const snakeToCamelCase = (str: string): string => {
   return str.replace(/_([a-z])/g, (_, letter: string) => letter.toUpperCase());
 };

@@ -9,7 +9,3 @@ export const listFacilitatorResources = async (
 ) => {
   return await facilitatorUtils(facilitator).list();
 };
-
-export type FacilitatorResource = Awaited<
-  ReturnType<typeof listFacilitatorResources>
->['items'][number];
