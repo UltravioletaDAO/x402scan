@@ -45,10 +45,10 @@ export const upsertResource = async (
   const baseAccepts = baseResource.accepts.find(
     accept => accept.network === 'base'
   );
-  const origin = getOriginFromUrl(baseResource.resource);
+  const originStr = getOriginFromUrl(baseResource.resource);
   if (!baseAccepts) return;
   return await prisma.$transaction(async tx => {
-    const resource = await tx.resources.upsert({
+    const { origin, ...resource } = await tx.resources.upsert({
       where: {
         resource: baseResource.resource,
       },
@@ -60,7 +60,7 @@ export const upsertResource = async (
         metadata: baseResource.metadata,
         origin: {
           connect: {
-            origin,
+            origin: originStr,
           },
         },
       },
@@ -71,9 +71,12 @@ export const upsertResource = async (
         metadata: baseResource.metadata,
         origin: {
           connect: {
-            origin,
+            origin: originStr,
           },
         },
+      },
+      include: {
+        origin: true,
       },
     });
 
@@ -115,6 +118,7 @@ export const upsertResource = async (
     return {
       resource,
       accepts,
+      origin,
     };
   });
 };

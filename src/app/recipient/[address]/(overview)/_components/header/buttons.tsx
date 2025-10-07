@@ -1,8 +1,11 @@
+import { TestTubeDiagonal } from 'lucide-react';
+
+import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TestTubeDiagonal } from 'lucide-react';
-import Link from 'next/link';
-import { AddResourcesDialog } from './add-resources/dialog';
+
+import { AddResourcesDialog } from '@/app/_components/add-resources';
 
 interface Props {
   hasOrigins: boolean;
