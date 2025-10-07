@@ -11,7 +11,7 @@ interface Props {
 }
 
 const wagmiConfig = createConfig({
-  connectors: [cdpEmbeddedWalletConnector, injected()],
+  connectors: [injected(), cdpEmbeddedWalletConnector],
   chains: [base],
   transports: {
     [base.id]: http(),

@@ -1,5 +1,5 @@
 import { useCurrentUser, useIsInitialized } from '@coinbase/cdp-hooks';
-import { ConnectEmbeddedWalletDialog } from '../../auth/embedded-wallet/connect/dialog';
+import { ConnectEmbeddedWalletDialog } from '../../wallet/connect/dialog';
 import { useWalletClient } from 'wagmi';
 import { Button } from '@/components/ui/button';
 import { Loader2, Play, Wallet } from 'lucide-react';

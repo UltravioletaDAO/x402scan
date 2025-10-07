@@ -6,37 +6,36 @@ import { useCurrentUser, useIsInitialized } from '@coinbase/cdp-hooks';
 
 import { Button } from '@/components/ui/button';
 
-import { DisplayEmbeddedWalletDialog } from '@/app/_components/auth/embedded-wallet/display/dialog';
+import { DisplayEmbeddedWalletDialog } from '@/app/_components/wallet/display/dialog';
 
 import { NavbarUnauthedButton } from './unauthed';
 import { useBalance } from '@/app/_hooks/use-balance';
 import { Skeleton } from '@/components/ui/skeleton';
-import { OnrampSessionDialog } from '@/app/_components/auth/embedded-wallet/onramp-session-dialog';
+import { OnrampSessionDialog } from '@/app/_components/wallet/embedded-wallet/onramp-session-dialog';
+import { useSession } from 'next-auth/react';
+
+import type { Address } from 'viem';
 
 export const NavbarAuthedButton = () => {
-  if (typeof window === 'undefined') {
-    return <NavbarAuthedButtonLoading />;
-  }
-
-  return <NavbarAuthedButtonInternal />;
-};
-
-const NavbarAuthedButtonInternal = () => {
+  const { data: session, status } = useSession();
   const { isInitialized } = useIsInitialized();
   const { currentUser } = useCurrentUser();
 
-  if (!isInitialized) {
+  if (status === 'loading' || !isInitialized) {
     return <NavbarAuthedButtonLoading />;
   }
 
-  if (!currentUser) {
+  if (!session) {
     return <NavbarUnauthedButton />;
   }
 
   return (
     <>
       <OnrampSessionDialog />
-      <DisplayEmbeddedWalletDialog user={currentUser}>
+      <DisplayEmbeddedWalletDialog
+        user={currentUser ?? undefined}
+        address={session.user.id as Address}
+      >
         <NavbarAuthedButtonContent />
       </DisplayEmbeddedWalletDialog>
     </>

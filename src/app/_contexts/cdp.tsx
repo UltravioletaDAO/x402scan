@@ -3,7 +3,14 @@
 import { http } from 'wagmi';
 import { base } from 'wagmi/chains';
 
-import { CDPHooksProvider as CDPHooksProviderBase } from '@coinbase/cdp-hooks';
+import dynamic from 'next/dynamic';
+
+const CDPHooksProviderBase = dynamic(
+  () => import('@coinbase/cdp-hooks').then(mod => mod.CDPHooksProvider),
+  {
+    ssr: false,
+  }
+);
 import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
 
 import { env } from '@/env';
@@ -28,14 +35,6 @@ interface Props {
 }
 
 export const CDPHooksProvider = ({ children }: Props) => {
-  if (typeof window === 'undefined') {
-    return children;
-  }
-
-  if (!env.NEXT_PUBLIC_CDP_PROJECT_ID) {
-    return children;
-  }
-
   return (
     <CDPHooksProviderBase config={cdpConfig}>{children}</CDPHooksProviderBase>
   );

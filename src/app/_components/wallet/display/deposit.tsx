@@ -11,19 +11,13 @@ import { Button } from '@/components/ui/button';
 
 import { api } from '@/trpc/client';
 
-import type { User } from '@coinbase/cdp-hooks';
+import type { Address } from 'viem';
 
 interface Props {
-  user: User;
+  address: Address;
 }
 
-export const Deposit: React.FC<Props> = ({ user }) => {
-  const address = user?.evmAccounts?.[0];
-
-  if (!address) {
-    return <p>There was a problem getting your wallet address</p>;
-  }
-
+export const Deposit: React.FC<Props> = ({ address }) => {
   return (
     <div className="flex flex-col gap-4">
       <Send address={address} />

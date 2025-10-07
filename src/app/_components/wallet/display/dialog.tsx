@@ -13,19 +13,23 @@ import { Logo } from '@/components/logo';
 
 import { EmbeddedWalletContent } from './content';
 
-import type { User } from '@coinbase/cdp-hooks';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowDown, ArrowUp, Wallet } from 'lucide-react';
 import { Deposit } from './deposit';
 import { Withdraw } from './withdraw';
 
+import type { Address } from 'viem';
+import type { User } from '@coinbase/cdp-hooks';
+
 interface Props {
   children: React.ReactNode;
-  user: User;
+  address: Address;
+  user?: User;
 }
 
 export const DisplayEmbeddedWalletDialog: React.FC<Props> = ({
   children,
+  address,
   user,
 }) => {
   return (
@@ -44,9 +48,7 @@ export const DisplayEmbeddedWalletDialog: React.FC<Props> = ({
                   Your Wallet
                 </DialogTitle>
                 <DialogDescription className="hidden">
-                  This is a Coinbase Developer Platform embedded wallet. We do
-                  not have access to your keys or the ability to make
-                  transactions on your behalf.
+                  This is your wallet.
                 </DialogDescription>
               </div>
             </div>
@@ -81,13 +83,13 @@ export const DisplayEmbeddedWalletDialog: React.FC<Props> = ({
             value="wallet"
             className="px-4 w-full overflow-hidden mt-0"
           >
-            <EmbeddedWalletContent user={user} />
+            <EmbeddedWalletContent user={user} address={address} />
           </TabsContent>
           <TabsContent
             value="deposit"
             className="px-4 w-full overflow-hidden mt-0"
           >
-            <Deposit user={user} />
+            <Deposit address={address} />
           </TabsContent>
           <TabsContent
             value="withdraw"
