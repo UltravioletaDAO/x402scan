@@ -38,6 +38,8 @@ export const AddResourcesDialog = () => {
     }[]
   >([]);
 
+  const utils = api.useUtils();
+
   const {
     mutate: addResource,
     isPending,
@@ -45,12 +47,17 @@ export const AddResourcesDialog = () => {
     reset,
   } = api.resources.register.useMutation({
     onSuccess: data => {
+      void utils.resources.list.invalidate();
+      void utils.origins.list.withResources.invalidate();
+      void utils.resources.getResourceByAddress.invalidate(data.accepts.payTo);
+      void utils.origins.list.withResources.byAddress.invalidate(
+        data.accepts.payTo
+      );
+      void utils.sellers.list.bazaar.invalidate();
       toast.success('Resource added successfully');
-      console.log('Resource added successfully', data);
     },
-    onError: e => {
+    onError: () => {
       toast.error('Failed to add resource');
-      console.error('Failed to add resource', e);
     },
   });
 
