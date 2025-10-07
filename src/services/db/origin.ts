@@ -72,7 +72,9 @@ export const upsertOrigin = async (
   });
 };
 
-const listOriginsWhere = (address: string): Prisma.ResourceOriginWhereInput => {
+const listOriginsByAddressWhere = (
+  address: string
+): Prisma.ResourceOriginWhereInput => {
   return {
     resources: {
       some: {
@@ -88,13 +90,25 @@ const listOriginsWhere = (address: string): Prisma.ResourceOriginWhereInput => {
 
 export const listOriginsByAddress = async (address: string) => {
   return await prisma.resourceOrigin.findMany({
-    where: listOriginsWhere(address),
+    where: listOriginsByAddressWhere(address),
   });
 };
 
-export const listOriginsWithResources = async (address: string) => {
+export const listOriginsWithResources = async () => {
+  return await listOriginsWithResourcesInternal();
+};
+
+export const listOriginsWithResourcesByAddress = async (address: string) => {
+  return await listOriginsWithResourcesInternal(
+    listOriginsByAddressWhere(address)
+  );
+};
+
+const listOriginsWithResourcesInternal = async (
+  where?: Prisma.ResourceOriginWhereInput
+) => {
   return await prisma.resourceOrigin.findMany({
-    where: listOriginsWhere(address),
+    where,
     include: {
       resources: {
         include: {

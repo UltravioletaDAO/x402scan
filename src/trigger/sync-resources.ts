@@ -1,11 +1,14 @@
 import { logger, schedules } from '@trigger.dev/sdk/v3';
 
+import type { upsertResourceSchema } from '@/services/db/resources';
 import { upsertResource } from '@/services/db/resources';
 import { listFacilitatorResources } from '@/services/cdp/facilitator/list-resources';
 import { scrapeOg } from '@/services/scraper/og';
 import { scrapeMetadata } from '@/services/scraper/metadata';
 import { upsertOrigin } from '@/services/db/origin';
 import { getOriginFromUrl } from '@/lib/url';
+import type { AcceptsNetwork } from '@prisma/client';
+import type z from 'zod';
 
 export const syncResourcesTask = schedules.task({
   id: 'sync-resources',
@@ -173,7 +176,13 @@ export const syncResourcesTask = schedules.task({
           });
 
           try {
-            await upsertResource(facilitatorResource);
+            await upsertResource({
+              ...facilitatorResource,
+              accepts: facilitatorResource.accepts.map(accept => ({
+                ...accept,
+                network: accept.network.replace('-', '_') as AcceptsNetwork,
+              })) as z.input<typeof upsertResourceSchema>['accepts'],
+            });
             logger.debug('Successfully processed resource', {
               resource: facilitatorResource.resource,
               durationMs: Date.now() - resourceStart,

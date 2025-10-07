@@ -33,8 +33,7 @@ export const useX402Test = (
     retry: false,
   });
 
-  const { data: x402Response, errors: parseErrors } = useMemo(() => {
-    if (!data) return { data: null, errors: [] };
+  const parsedData = useMemo(() => {
     return parseX402Response(data);
   }, [data]);
 
@@ -43,8 +42,8 @@ export const useX402Test = (
     response: data,
     rawResponse: data,
     error: error?.message ?? null,
-    x402Response,
-    parseErrors,
+    x402Response: parsedData.success ? parsedData.data : null,
+    parseErrors: parsedData.success ? [] : parsedData.errors,
     refetch,
   };
 };

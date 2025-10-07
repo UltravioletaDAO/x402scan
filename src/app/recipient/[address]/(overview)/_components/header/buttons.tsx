@@ -1,12 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Plus, TestTubeDiagonal } from 'lucide-react';
+import { TestTubeDiagonal } from 'lucide-react';
 import Link from 'next/link';
+import { AddResourcesDialog } from './add-resources/dialog';
 
 interface Props {
   hasOrigins: boolean;
@@ -24,15 +20,7 @@ export const HeaderButtons: React.FC<Props> = ({ hasOrigins, address }) => {
           </Button>
         </Link>
       )}
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="outline" className="cursor-not-allowed opacity-50">
-            <Plus className="size-4" />
-            Add Resources
-          </Button>
-        </TooltipTrigger>
-        <TooltipContent side="bottom">Coming Soon</TooltipContent>
-      </Tooltip>
+      <AddResourcesDialog />
     </ButtonsContainer>
   );
 };
