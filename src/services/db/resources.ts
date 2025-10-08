@@ -10,7 +10,7 @@ export const upsertResourceSchema = z.object({
   resource: z.string(),
   type: z.enum(['http']),
   x402Version: z.number(),
-  lastUpdated: z.date(),
+  lastUpdated: z.coerce.date(),
   metadata: z.record(z.string(), z.any()).optional(),
   accepts: z.array(
     z.object({
