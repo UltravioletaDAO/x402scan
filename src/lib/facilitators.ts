@@ -42,7 +42,7 @@ export const facilitators = [
   payAiFacilitator,
 ] satisfies Facilitator[];
 
-export type FacilitatorId = (typeof facilitators)[number]['id'];
+type FacilitatorId = (typeof facilitators)[number]['id'];
 export type FacilitatorName = (typeof facilitators)[number]['name'];
 export type FacilitatorAddress =
   (typeof facilitators)[number]['addresses'][number];

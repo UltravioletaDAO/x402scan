@@ -186,8 +186,8 @@ export const OverallCharts = () => {
 export const LoadingOverallCharts = () => {
   return (
     <>
-      <LoadingOverallStatsCard type="area" title="Volume" />
       <LoadingOverallStatsCard type="bar" title="Transactions" />
+      <LoadingOverallStatsCard type="area" title="Volume" />
       <LoadingOverallStatsCard type="bar" title="Buyers" />
       <LoadingOverallStatsCard type="bar" title="Sellers" />
     </>

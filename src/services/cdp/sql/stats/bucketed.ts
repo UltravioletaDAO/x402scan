@@ -57,6 +57,7 @@ FROM base.events
 WHERE event_signature = 'Transfer(address,address,uint256)'
     AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
     AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
+    AND parameters['value']::UInt256 < 1000000000
     ${
       addresses
         ? `AND parameters['to']::String IN (${addresses
