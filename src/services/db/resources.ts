@@ -59,8 +59,13 @@ export const upsertResource = async (
         lastUpdated: baseResource.lastUpdated,
         metadata: baseResource.metadata,
         origin: {
-          connect: {
-            origin: originStr,
+          connectOrCreate: {
+            where: {
+              origin: originStr,
+            },
+            create: {
+              origin: originStr,
+            },
           },
         },
       },
