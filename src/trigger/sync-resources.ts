@@ -3,12 +3,11 @@ import { logger, schedules } from '@trigger.dev/sdk/v3';
 import type { upsertResourceSchema } from '@/services/db/resources';
 import { upsertResource } from '@/services/db/resources';
 import { listFacilitatorResources } from '@/services/cdp/facilitator/list-resources';
-import { scrapeOg } from '@/services/scraper/og';
-import { scrapeMetadata } from '@/services/scraper/metadata';
 import { upsertOrigin } from '@/services/db/origin';
 import { getOriginFromUrl } from '@/lib/url';
 import type { AcceptsNetwork } from '@prisma/client';
 import type z from 'zod';
+import { scrapeOriginData } from '@/services/scraper';
 
 export const syncResourcesTask = schedules.task({
   id: 'sync-resources',
@@ -82,24 +81,11 @@ export const syncResourcesTask = schedules.task({
 
           try {
             // Scrape OG and metadata in parallel
-            const [og, metadata] = await Promise.all([
-              scrapeOg(origin).catch(error => {
-                logger.warn('Failed to scrape OG data', {
-                  origin,
-                  error:
-                    error instanceof Error ? error.message : 'Unknown error',
-                });
-                return null;
-              }),
-              scrapeMetadata(origin).catch(error => {
-                logger.warn('Failed to scrape metadata', {
-                  origin,
-                  error:
-                    error instanceof Error ? error.message : 'Unknown error',
-                });
-                return null;
-              }),
-            ]);
+            const {
+              og,
+              metadata,
+              origin: scrapedOrigin,
+            } = await scrapeOriginData(origin);
 
             // Prepare origin data
             const originData = {
@@ -109,7 +95,7 @@ export const syncResourcesTask = schedules.task({
               favicon:
                 og?.favicon &&
                 (og.favicon.startsWith('/')
-                  ? origin.replace(/\/$/, '') + og.favicon
+                  ? scrapedOrigin.replace(/\/$/, '') + og.favicon
                   : og.favicon),
               ogImages:
                 og?.ogImage?.map(image => ({

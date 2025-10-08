@@ -13,6 +13,9 @@ import { TRPCError } from '@trpc/server';
 import { EnhancedX402ResponseSchema } from '@/lib/x402/schema';
 import type { AcceptsNetwork } from '@prisma/client';
 import { formatTokenAmount } from '@/lib/token';
+import { getOriginFromUrl } from '@/lib/url';
+import { scrapeOriginData } from '@/services/scraper';
+import { upsertOrigin } from '@/services/db/origin';
 
 export const resourcesRouter = createTRPCRouter({
   list: {
@@ -71,6 +74,33 @@ export const resourcesRouter = createTRPCRouter({
         if (!data.success) {
           continue;
         }
+
+        const origin = getOriginFromUrl(input.url);
+
+        const {
+          og,
+          metadata,
+          origin: scrapedOrigin,
+        } = await scrapeOriginData(origin);
+
+        await upsertOrigin({
+          origin: origin,
+          title: metadata?.title ?? og?.ogTitle,
+          description: metadata?.description ?? og?.ogDescription,
+          favicon:
+            og?.favicon &&
+            (og.favicon.startsWith('/')
+              ? scrapedOrigin.replace(/\/$/, '') + og.favicon
+              : og.favicon),
+          ogImages:
+            og?.ogImage?.map(image => ({
+              url: image.url,
+              height: image.height,
+              width: image.width,
+              title: og.ogTitle,
+              description: og.ogDescription,
+            })) ?? [],
+        });
 
         // upsert the resource
         const resource = await upsertResource({
