@@ -14,14 +14,19 @@ type FacilitatorKey = `${FacilitatorName}-${'transactions' | 'amount'}`;
 export const FacilitatorsChart = () => {
   const { startDate, endDate } = useTimeRangeContext();
 
-  const [data] = api.facilitators.bucketedStatistics.useSuspenseQuery({
-    numBuckets: 48,
+  const [bucketedFacilitatorData] =
+    api.facilitators.bucketedStatistics.useSuspenseQuery({
+      numBuckets: 48,
+      startDate,
+      endDate,
+    });
+  const [overallData] = api.stats.getOverallStatistics.useSuspenseQuery({
     startDate,
     endDate,
   });
 
-  const chartData: ChartData<Record<FacilitatorKey, number>>[] = data.map(
-    item => ({
+  const chartData: ChartData<Record<FacilitatorKey, number>>[] =
+    bucketedFacilitatorData.map(item => ({
       timestamp: item.bucket_start.toISOString(),
       ...Object.entries(item.facilitators).reduce(
         (acc, [facilitator_name, facilitator]) => ({
@@ -31,8 +36,7 @@ export const FacilitatorsChart = () => {
         }),
         {} as Record<FacilitatorKey, number>
       ),
-    })
-  );
+    }));
 
   return (
     <MultiCharts
@@ -42,7 +46,7 @@ export const FacilitatorsChart = () => {
           trigger: {
             label: 'Transactions',
             value: 'transactions',
-            amount: '100',
+            amount: overallData.total_transactions.toLocaleString(),
           },
           items: {
             type: 'bar',
@@ -65,7 +69,7 @@ export const FacilitatorsChart = () => {
           trigger: {
             label: 'Amount',
             value: 'amount',
-            amount: '100',
+            amount: formatTokenAmount(BigInt(overallData.total_amount)),
           },
           items: {
             type: 'bar',

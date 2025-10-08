@@ -14,11 +14,19 @@ import { ActivityTimeframe } from '@/types/timeframes';
 
 export default async function FacilitatorsPage() {
   const endDate = new Date();
-  const startDate = subDays(endDate, 7);
+  const startDate = subDays(endDate, ActivityTimeframe.ThirtyDays);
 
-  await api.facilitators.bucketedStatistics.prefetch({
-    numBuckets: 48,
-  });
+  await Promise.all([
+    api.facilitators.bucketedStatistics.prefetch({
+      numBuckets: 48,
+      startDate,
+      endDate,
+    }),
+    api.stats.getOverallStatistics.prefetch({
+      startDate,
+      endDate,
+    }),
+  ]);
 
   return (
     <HydrateClient>
