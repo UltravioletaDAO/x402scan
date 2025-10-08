@@ -4,7 +4,7 @@ import { unstable_cache } from 'next/cache';
  * Global cache duration in minutes
  * This should match the interval used for date rounding to prevent cache fragmentation
  */
-export const CACHE_DURATION_MINUTES = 5;
+const CACHE_DURATION_MINUTES = 5;
 const CACHE_DURATION_SECONDS = CACHE_DURATION_MINUTES * 60;
 
 /**
