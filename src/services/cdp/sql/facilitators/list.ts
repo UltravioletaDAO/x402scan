@@ -105,6 +105,6 @@ export const listTopFacilitators = createCachedArrayQuery({
   cacheKeyPrefix: 'facilitators-list',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['latest_block_timestamp'],
-  revalidate: 60,
+
   tags: ['facilitators'],
 });

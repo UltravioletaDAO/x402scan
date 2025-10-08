@@ -91,6 +91,6 @@ export const listFacilitatorTransfers = createCachedPaginatedQuery({
   cacheKeyPrefix: 'transfers-list',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['block_timestamp'],
-  revalidate: 60,
+
   tags: ['transfers'],
 });

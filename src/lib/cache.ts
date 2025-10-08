@@ -1,12 +1,24 @@
 import { unstable_cache } from 'next/cache';
 
 /**
- * Round a date to the nearest minute for stable cache keys
+ * Global cache duration in minutes
+ * This should match the interval used for date rounding to prevent cache fragmentation
  */
-const roundDateToMinute = (date?: Date): string | undefined => {
+const CACHE_DURATION_MINUTES = 5;
+const CACHE_DURATION_SECONDS = CACHE_DURATION_MINUTES * 60;
+
+/**
+ * Round a date to the nearest cache interval for stable cache keys
+ */
+const roundDateToInterval = (date?: Date): string | undefined => {
   if (!date) return undefined;
   const rounded = new Date(date);
-  rounded.setSeconds(0, 0);
+  rounded.setMinutes(
+    Math.floor(rounded.getMinutes() / CACHE_DURATION_MINUTES) *
+      CACHE_DURATION_MINUTES,
+    0,
+    0
+  );
   return rounded.toISOString();
 };
 
@@ -66,7 +78,7 @@ const createCachedQueryBase = <TInput, TOutput>(config: {
       },
       [config.cacheKeyPrefix, cacheKey],
       {
-        revalidate: config.revalidate ?? 60,
+        revalidate: config.revalidate ?? CACHE_DURATION_SECONDS,
         tags: config.tags,
       }
     )();
@@ -161,8 +173,8 @@ export const createStandardCacheKey = (
       // Skip undefined values
       continue;
     } else if (value instanceof Date) {
-      // Round dates to nearest minute
-      normalized[key] = roundDateToMinute(value);
+      // Round dates to nearest cache interval
+      normalized[key] = roundDateToInterval(value);
     } else if (Array.isArray(value)) {
       // Sort arrays for consistent keys
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
