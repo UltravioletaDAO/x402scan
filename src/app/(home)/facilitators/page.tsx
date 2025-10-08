@@ -11,6 +11,12 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/cdp/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
+import {
+  FacilitatorsTable,
+  LoadingFacilitatorsTable,
+} from './_components/facilitators';
+import { FacilitatorsSortingProvider } from '@/app/_contexts/sorting/facilitators/provider';
+import { defaultFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/default';
 
 export default async function FacilitatorsPage() {
   const endDate = new Date();
@@ -26,6 +32,10 @@ export default async function FacilitatorsPage() {
       startDate,
       endDate,
     }),
+    api.facilitators.list.prefetch({
+      startDate,
+      endDate,
+    }),
   ]);
 
   return (
@@ -36,18 +46,25 @@ export default async function FacilitatorsPage() {
         initialEndDate={endDate}
         initialTimeframe={ActivityTimeframe.ThirtyDays}
       >
-        <Heading
-          title="Facilitators"
-          description="Top facilitators processing x402 transactions"
-          actions={<RangeSelector />}
-        />
-        <Body>
-          <Card className="overflow-hidden">
-            <Suspense fallback={<LoadingFacilitatorsChart />}>
-              <FacilitatorsChart />
+        <FacilitatorsSortingProvider
+          initialSorting={defaultFacilitatorsSorting}
+        >
+          <Heading
+            title="Facilitators"
+            description="Top facilitators processing x402 transactions"
+            actions={<RangeSelector />}
+          />
+          <Body>
+            <Card className="overflow-hidden">
+              <Suspense fallback={<LoadingFacilitatorsChart />}>
+                <FacilitatorsChart />
+              </Suspense>
+            </Card>
+            <Suspense fallback={<LoadingFacilitatorsTable />}>
+              <FacilitatorsTable />
             </Suspense>
-          </Card>
-        </Body>
+          </Body>
+        </FacilitatorsSortingProvider>
       </TimeRangeProvider>
     </HydrateClient>
   );

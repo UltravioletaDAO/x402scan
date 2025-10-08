@@ -11,6 +11,7 @@ export interface TooltipRowProps<
   getValue: (data: T[K]) => string;
   labelClassName?: string;
   valueClassName?: string;
+  dotColor?: string;
 }
 
 export type ChartData<T extends Record<string, number>> = {

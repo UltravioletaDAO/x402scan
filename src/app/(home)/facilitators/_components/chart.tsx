@@ -57,12 +57,13 @@ export const FacilitatorsChart = () => {
             })),
             solid: true,
           },
-          tooltipRows: facilitators.toReversed().map(f => ({
+          tooltipRows: facilitators.map(f => ({
             key: `${f.name}-transactions` as FacilitatorKey,
             label: f.name,
             getValue: (data: number) => data.toLocaleString(),
             labelClassName: 'text-xs font-mono',
             valueClassName: 'text-xs font-mono',
+            dotColor: f.color,
           })),
         },
         {
@@ -80,12 +81,13 @@ export const FacilitatorsChart = () => {
             })),
             solid: true,
           },
-          tooltipRows: facilitators.toReversed().map(f => ({
+          tooltipRows: facilitators.map(f => ({
             key: `${f.name}-amount` as FacilitatorKey,
             label: f.name,
             getValue: (data: number) => formatTokenAmount(BigInt(data)),
             labelClassName: 'text-xs font-mono',
             valueClassName: 'text-xs font-mono',
+            dotColor: f.color,
           })),
         },
       ]}

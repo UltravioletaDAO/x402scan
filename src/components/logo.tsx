@@ -19,7 +19,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
         {...props}
       >
         <Image
-          src="/logo.png"
+          src="/logo.svg"
           alt="x402scan Logo"
           width={200}
           height={200}
@@ -27,7 +27,7 @@ export const Logo = React.forwardRef<HTMLDivElement, LogoProps>(
           priority={priority}
         />
         <Image
-          src="/logo.png"
+          src="/logo.svg"
           alt="x402scan Logo"
           width={200}
           height={200}

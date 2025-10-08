@@ -24,7 +24,7 @@ const x402rsFacilitator = {
   image: '/x402rs.png',
   link: 'https://x402.rs',
   addresses: ['0xd8dfc729cbd05381647eb5540d756f4f8ad63eec'],
-  color: 'var(--color-red-500)',
+  color: 'var(--color-orange-600)',
 } satisfies Facilitator;
 
 const payAiFacilitator = {
@@ -33,7 +33,7 @@ const payAiFacilitator = {
   image: '/payai.png',
   link: 'https://payai.network',
   addresses: ['0xc6699d2aada6c36dfea5c248dd70f9cb0235cb63'],
-  color: 'var(--color-green-500)',
+  color: 'var(--color-purple-600)',
 } satisfies Facilitator;
 
 export const facilitators = [
@@ -46,6 +46,10 @@ export type FacilitatorId = (typeof facilitators)[number]['id'];
 export type FacilitatorName = (typeof facilitators)[number]['name'];
 export type FacilitatorAddress =
   (typeof facilitators)[number]['addresses'][number];
+
+export const facilitatorNameMap = new Map<FacilitatorName, Facilitator>(
+  facilitators.map(f => [f.name, f])
+);
 
 export const facilitatorIdMap = new Map<FacilitatorId, Facilitator>(
   facilitators.map(f => [f.id, f])

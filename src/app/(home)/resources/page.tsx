@@ -10,7 +10,7 @@ export default async function ResourcesPage() {
     <div>
       <Heading
         title="All Resources"
-        description="x402 resources registered on x402Scan. Coinbase Bazaar resources are automatically registered."
+        description="x402 resources registered on x402scan. Coinbase Bazaar resources are automatically registered."
         actions={<AddResourcesDialog />}
       />
       <Body>

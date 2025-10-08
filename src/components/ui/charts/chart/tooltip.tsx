@@ -39,14 +39,23 @@ const TooltipRow = <T extends Record<string, number>, K extends keyof T>({
   value,
   labelClassName,
   valueClassName,
+  dotColor,
 }: TooltipRowProps<T, K> & {
   value: string;
 }) => {
   return (
     <div className="flex justify-between w-full gap-4 px-2">
-      <p className={cn('text-xs text-muted-foreground', labelClassName)}>
-        {label}
-      </p>
+      <div className="flex items-center gap-2">
+        {dotColor && (
+          <div
+            className="size-2 rounded-full"
+            style={{ backgroundColor: dotColor }}
+          />
+        )}
+        <p className={cn('text-xs text-muted-foreground', labelClassName)}>
+          {label}
+        </p>
+      </div>
       <p
         className={cn(
           'text-xs text-muted-foreground font-medium',
