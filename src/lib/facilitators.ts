@@ -42,10 +42,15 @@ export const facilitators = [
   payAiFacilitator,
 ] satisfies Facilitator[];
 
+export type FacilitatorId = (typeof facilitators)[number]['id'];
 export type FacilitatorName = (typeof facilitators)[number]['name'];
+export type FacilitatorAddress =
+  (typeof facilitators)[number]['addresses'][number];
 
-export const facilitatorIdMap = new Map(facilitators.map(f => [f.id, f]));
+export const facilitatorIdMap = new Map<FacilitatorId, Facilitator>(
+  facilitators.map(f => [f.id, f])
+);
 
-export const facilitatorAddressMap = new Map(
+export const facilitatorAddressMap = new Map<FacilitatorAddress, Facilitator>(
   facilitators.flatMap(f => f.addresses.map(a => [a, f]))
 );

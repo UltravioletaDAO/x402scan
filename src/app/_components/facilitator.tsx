@@ -3,11 +3,12 @@ import Image from 'next/image';
 import { Address } from '@/components/ui/address';
 import { facilitatorAddressMap } from '@/lib/facilitators';
 
-import type { Address as AddressType } from 'viem';
 import { cn } from '@/lib/utils';
 
+import type { FacilitatorAddress } from '@/lib/facilitators';
+
 interface Props {
-  address: AddressType;
+  address: FacilitatorAddress;
   className?: string;
 }
 
@@ -33,7 +34,7 @@ export const Facilitator: React.FC<Props> = ({ address, className }) => {
 };
 
 interface FacilitatorsProps {
-  addresses: AddressType[];
+  addresses: FacilitatorAddress[];
   className?: string;
 }
 

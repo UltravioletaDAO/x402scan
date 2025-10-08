@@ -1,6 +1,10 @@
 import z from 'zod';
 import { runBaseSqlQuery } from '../query';
-import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
+import {
+  ethereumAddressSchema,
+  ethereumHashSchema,
+  facilitatorAddressSchema,
+} from '@/lib/schemas';
 import { baseQuerySchema } from '../lib';
 
 export const getTransactionInputSchema = baseQuerySchema.extend({
@@ -12,7 +16,7 @@ const outputSchema = z.object({
   timestamp: z.coerce.date(),
   transaction_hash: ethereumHashSchema,
   transaction_index: z.coerce.bigint(),
-  from_address: ethereumAddressSchema,
+  from_address: facilitatorAddressSchema,
   to_address: ethereumAddressSchema,
   gas: z.coerce.bigint(),
   gas_price: z.coerce.bigint(),
