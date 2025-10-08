@@ -127,6 +127,6 @@ export const getBucketedStatistics = createCachedArrayQuery({
   cacheKeyPrefix: 'bucketed-statistics',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['bucket_start'],
-  revalidate: 60,
+
   tags: ['statistics'],
 });

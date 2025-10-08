@@ -133,6 +133,6 @@ export const getBucketedFacilitatorsStatistics = createCachedArrayQuery({
   cacheKeyPrefix: 'bucketed-facilitators-statistics',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['bucket_start'],
-  revalidate: 60,
+
   tags: ['facilitators-statistics'],
 });

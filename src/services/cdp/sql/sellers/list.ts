@@ -99,7 +99,7 @@ const _listTopSellersCached = createCachedPaginatedQuery({
   createCacheKey: ({ input, pagination }) =>
     createStandardCacheKey({ ...input, limit: pagination.limit }),
   dateFields: ['latest_block_timestamp'],
-  revalidate: 60,
+
   tags: ['sellers'],
 });
 
