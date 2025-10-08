@@ -29,7 +29,5 @@ export async function signInWithEthereum({
     message: JSON.stringify(message),
     signedMessage: await signMessage(message.prepareMessage()),
     email,
-    redirect: true,
-    redirectTo: '/',
   });
 }

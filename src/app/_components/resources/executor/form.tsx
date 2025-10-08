@@ -13,8 +13,11 @@ import {
 
 import { useResourceFetch } from './contexts/fetch/hook';
 import type { FieldDefinition } from '@/types/x402';
+import { useResourceCheck } from './contexts/resource-check/hook';
 
 export function Form() {
+  const { response: x402Response } = useResourceCheck();
+
   const {
     queryFields,
     bodyFields,
@@ -31,6 +34,11 @@ export function Form() {
 
   return (
     <CardContent className="flex flex-col gap-4 p-4 border-t">
+      {x402Response?.accepts?.[0]?.description && (
+        <h3 className="text-sm font-medium text-muted-foreground">
+          {x402Response.accepts[0].description}
+        </h3>
+      )}
       {!hasQueryFields && !hasBodyFields ? (
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">

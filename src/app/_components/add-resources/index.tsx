@@ -88,7 +88,7 @@ export const AddResourcesDialog = () => {
           <DialogDescription>
             {data
               ? 'This resource is registered on and available throughout x402scan.'
-              : 'Know of an x402 resource that isn&apos;t listed? Add it here.'}
+              : "Know of an x402 resource that isn't listed? Add it here."}
           </DialogDescription>
         </DialogHeader>
         {data ? (

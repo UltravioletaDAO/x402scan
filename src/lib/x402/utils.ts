@@ -97,6 +97,12 @@ const normalizeInputSchema = (input: unknown): unknown => {
       result.bodyType = value;
     } else if (key === 'header_fields') {
       result.headerFields = value; // Preserve field names within
+    } else if (key === 'body' && !result.bodyFields) {
+      result.bodyFields = value;
+    } else if (key === 'query' && !result.queryParams) {
+      result.queryParams = value;
+    } else if (key === 'headers' && !result.headerFields) {
+      result.headerFields = value;
     } else {
       result[key] = value;
     }
