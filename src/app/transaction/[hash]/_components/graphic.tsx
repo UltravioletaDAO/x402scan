@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -17,11 +18,11 @@ import { formatTokenAmount } from '@/lib/token';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 
 import type { Address as AddressType } from 'viem';
-import Link from 'next/link';
+import type { FacilitatorAddress } from '@/lib/facilitators';
 
 interface Props {
   buyerAddress: AddressType;
-  facilitatorAddress: AddressType;
+  facilitatorAddress: FacilitatorAddress;
   sellerAddress: AddressType;
   amount: bigint;
 }

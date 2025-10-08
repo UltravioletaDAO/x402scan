@@ -36,7 +36,7 @@ export const StatsCards: React.FC<Props> = async ({ stats }) => {
       maximumFractionDigits: 2,
       notation: 'compact',
     }),
-    stats.sellers.toLocaleString(undefined, {
+    stats.unique_sellers.toLocaleString(undefined, {
       minimumFractionDigits: 0,
       maximumFractionDigits: 2,
       notation: 'compact',

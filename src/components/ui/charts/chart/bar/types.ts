@@ -7,4 +7,5 @@ export interface BarChartProps<T extends Record<string, number>>
   extends ChartProps<T> {
   bars: Array<Bar<T>>;
   stacked?: boolean;
+  solid?: boolean;
 }

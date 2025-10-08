@@ -24,10 +24,10 @@ export const ConnectEmbeddedWalletDialog = ({ children }: AuthModalProps) => {
           <Logo className="size-16" />
           <div className="flex flex-col gap-2">
             <DialogTitle className="text-primary text-xl">
-              Sign in to x402Scan
+              Sign in to x402scan
             </DialogTitle>
             <DialogDescription className="hidden">
-              Sign in to your account to get started with x402Scan.
+              Sign in to your account to get started with x402scan.
             </DialogDescription>
           </div>
         </DialogHeader>

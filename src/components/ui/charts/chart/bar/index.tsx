@@ -19,6 +19,7 @@ export const BaseBarChart = <
   height = 350,
   stacked = true,
   margin = { top: 4, right: 6, left: 6, bottom: 0 },
+  solid = false,
 }: BarChartProps<T>) => {
   return (
     <BaseChart
@@ -28,21 +29,24 @@ export const BaseBarChart = <
       tooltipRows={tooltipRows}
       margin={margin}
     >
-      <defs>
-        {bars.map(({ dataKey, color }) => (
-          <linearGradient
-            key={dataKey as string}
-            id={`${dataKey as string}-gradient`}
-            x1="0"
-            y1="0"
-            x2="0"
-            y2="1"
-          >
-            <stop offset="0%" stopColor={color} stopOpacity={0.3} />
-            <stop offset="100%" stopColor={color} stopOpacity={0} />
-          </linearGradient>
-        ))}
-      </defs>
+      {!solid && (
+        <defs>
+          {bars.map(({ dataKey, color }) => (
+            <linearGradient
+              key={dataKey as string}
+              id={`${dataKey as string}-gradient`}
+              x1="0"
+              y1="0"
+              x2="0"
+              y2="1"
+            >
+              <stop offset="0%" stopColor={color} stopOpacity={0.3} />
+              <stop offset="100%" stopColor={color} stopOpacity={0} />
+            </linearGradient>
+          ))}
+        </defs>
+      )}
+
       {/* eslint-disable-next-line @typescript-eslint/no-unused-vars */}
       {bars.map(({ dataKey, color, ref, ...barProps }, index) => {
         return (
@@ -51,7 +55,8 @@ export const BaseBarChart = <
             isAnimationActive={index === bars.length - 1}
             dataKey={dataKey as string}
             stackId={stacked ? '1' : index.toString()}
-            fill={`url(#${dataKey as string}-gradient)`}
+            fill={solid ? color : `url(#${dataKey as string}-gradient)`}
+            fillOpacity={solid ? 0.2 : undefined}
             stroke={color}
             strokeWidth={0.5}
             radius={
