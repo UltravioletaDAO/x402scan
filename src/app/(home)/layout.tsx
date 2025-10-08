@@ -25,6 +25,10 @@ export default function HomeLayout({
             label: 'Resources',
             href: '/resources',
           },
+          {
+            label: 'Ecosystem',
+            href: '/ecosystem',
+          },
         ]}
       />
       <div className="flex flex-col py-6 md:py-8 flex-1">{children}</div>
