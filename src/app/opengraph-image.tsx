@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og';
-import { logoBase64 } from './logo-base64';
 
 export const runtime = 'edge';
 
@@ -72,7 +71,7 @@ export default async function Image() {
             }}
           >
             <img
-              src={logoBase64}
+              src={'https://x402scan.com/logo.svg'}
               width="72"
               height="72"
               alt="x402scan logo"
