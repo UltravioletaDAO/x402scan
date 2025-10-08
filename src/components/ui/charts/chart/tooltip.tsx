@@ -20,13 +20,15 @@ export const TooltipContent = <T extends Record<string, number>>({
       <TooltipDate date={new Date(data.timestamp)} />
       <Separator />
       <div className="py-2">
-        {rows.map(row => (
-          <TooltipRow
-            {...row}
-            key={row.key as string}
-            value={row.getValue(data[row.key])}
-          />
-        ))}
+        {rows
+          .filter(row => row.key in data)
+          .map(row => (
+            <TooltipRow
+              {...row}
+              key={row.key as string}
+              value={row.getValue(data[row.key])}
+            />
+          ))}
       </div>
     </Card>
   );

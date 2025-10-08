@@ -25,7 +25,9 @@ export const Heading: React.FC<HeadingProps> = ({
         {icon}
         <div className="flex flex-col gap-3 text-left">
           {typeof title === 'string' ? (
-            <h1 className="text-2xl md:text-4xl font-bold">{title}</h1>
+            <h1 className="text-2xl md:text-4xl font-bold font-mono">
+              {title}
+            </h1>
           ) : (
             title
           )}

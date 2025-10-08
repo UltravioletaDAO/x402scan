@@ -1,0 +1,46 @@
+import { Body, Heading } from '@/app/_components/layout/page-utils';
+import { Card } from '@/components/ui/card';
+import { api, HydrateClient } from '@/trpc/server';
+import { Suspense } from 'react';
+import {
+  FacilitatorsChart,
+  LoadingFacilitatorsChart,
+} from './_components/chart';
+import { subDays } from 'date-fns';
+import { RangeSelector } from '@/app/_contexts/time-range/component';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { firstTransfer } from '@/services/cdp/facilitator/constants';
+import { ActivityTimeframe } from '@/types/timeframes';
+
+export default async function FacilitatorsPage() {
+  const endDate = new Date();
+  const startDate = subDays(endDate, 7);
+
+  await api.facilitators.bucketedStatistics.prefetch({
+    numBuckets: 48,
+  });
+
+  return (
+    <HydrateClient>
+      <TimeRangeProvider
+        creationDate={firstTransfer}
+        initialStartDate={startDate}
+        initialEndDate={endDate}
+        initialTimeframe={ActivityTimeframe.ThirtyDays}
+      >
+        <Heading
+          title="Facilitators"
+          description="Top facilitators processing x402 transactions"
+          actions={<RangeSelector />}
+        />
+        <Body>
+          <Card className="overflow-hidden">
+            <Suspense fallback={<LoadingFacilitatorsChart />}>
+              <FacilitatorsChart />
+            </Suspense>
+          </Card>
+        </Body>
+      </TimeRangeProvider>
+    </HydrateClient>
+  );
+}

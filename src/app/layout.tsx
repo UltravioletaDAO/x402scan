@@ -25,6 +25,8 @@ import { env } from '@/env';
 import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -140,6 +142,21 @@ export default function RootLayout({
                       <div className="flex items-center gap-1 md:gap-2">
                         <NavbarSearchButton />
                         <NavbarAuthButton />
+                        <a
+                          href="https://github.com/Merit-Systems/x402scan"
+                          target="_blank"
+                        >
+                          <Button variant="outline" size={'navbar'}>
+                            <Image
+                              src="/github.png"
+                              alt="GitHub"
+                              width={16}
+                              height={16}
+                              className="size-4"
+                            />
+                            <span className="hidden md:block">Contribute</span>
+                          </Button>
+                        </a>
                         <AnimatedThemeToggler />
                       </div>
                     </div>
