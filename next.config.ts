@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'x402.org',
+        hostname: 'www.x402.org',
       },
     ],
   },
