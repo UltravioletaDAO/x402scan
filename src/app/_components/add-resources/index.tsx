@@ -27,9 +27,13 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { Favicon } from '@/components/favicon';
+import { useSearchParams } from 'next/navigation';
 
 export const AddResourcesDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const [isOpen, setIsOpen] = useState(
+    searchParams.get('add_resources') === 'true'
+  );
   const [url, setUrl] = useState('');
   const [headers, setHeaders] = useState<
     {
