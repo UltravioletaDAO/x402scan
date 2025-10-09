@@ -17,6 +17,7 @@ export const env = createEnv({
       .enum(['development', 'production'])
       .default('development'),
     NEXT_PUBLIC_CDP_PROJECT_ID: z.string().optional(),
+    NEXT_PUBLIC_CDP_APP_ID: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
   },
@@ -28,6 +29,7 @@ export const env = createEnv({
         : 'http://localhost:3000',
     NEXT_PUBLIC_NODE_ENV: process.env.NODE_ENV ?? 'development',
     NEXT_PUBLIC_CDP_PROJECT_ID: process.env.NEXT_PUBLIC_CDP_PROJECT_ID,
+    NEXT_PUBLIC_CDP_APP_ID: process.env.NEXT_PUBLIC_CDP_APP_ID,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
   },

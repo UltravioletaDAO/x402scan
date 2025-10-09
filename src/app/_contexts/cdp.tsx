@@ -14,10 +14,15 @@ const CDPHooksProviderBase = dynamic(
 import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
 
 import { env } from '@/env';
+import type { Config } from '@coinbase/cdp-hooks';
 
-const cdpConfig = {
-  projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID ?? '',
-  ethereum: {},
+const cdpConfig: Config = {
+  projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID!,
+  ethereum: {
+    createOnLogin: 'eoa' as const,
+  },
+  solana: {},
+  debugging: true,
 };
 
 export const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
