@@ -8,9 +8,9 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-import type { ParsedX402Response } from '@/lib/x402/schema';
-
 import { cn } from '@/lib/utils';
+
+import type { ParsedX402Response } from '@/lib/x402/schema';
 
 interface Props {
   response: ParsedX402Response;
@@ -20,7 +20,7 @@ export const Status: React.FC<Props> = ({ response }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Dot response={response} />
+        <Dot />
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -41,14 +41,12 @@ export const Status: React.FC<Props> = ({ response }) => {
 
 interface DotProps {
   onClick?: () => void;
-  response: ParsedX402Response;
 }
 
-const Dot: React.FC<DotProps> = ({ onClick, response }) => {
+const Dot: React.FC<DotProps> = ({ onClick }) => {
   const statusColor = useMemo(() => {
-    if (response.error || !response) return 'bg-red-500';
     return 'bg-green-600';
-  }, [response]);
+  }, []);
 
   return (
     <div
