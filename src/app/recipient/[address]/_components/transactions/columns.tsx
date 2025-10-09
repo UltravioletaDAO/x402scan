@@ -28,8 +28,29 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         className="text-xs block text-left"
       />
     ),
-    size: 300,
+    size: 150,
     loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
+  },
+  {
+    accessorKey: 'amount',
+    header: () => (
+      <HeaderCell
+        Icon={DollarSign}
+        label="Amount"
+        className="mx-auto"
+        sorting={{
+          sortContext: TransfersSortingContext,
+          sortKey: 'amount',
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center font-mono text-xs">
+        {formatTokenAmount(BigInt(row.original.amount))}
+      </div>
+    ),
+    size: 150, // Fixed width for buyers count
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
     accessorKey: 'transaction_hash',
@@ -47,7 +68,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         />
       </Link>
     ),
-    size: 300,
+    size: 150,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -56,7 +77,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell
         Icon={Calendar}
         label="Timestamp"
-        className="mx-auto"
+        className="ml-auto"
         sorting={{
           sortContext: TransfersSortingContext,
           sortKey: 'block_timestamp',
@@ -64,32 +85,11 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="text-right font-mono text-xs">
         {formatCompactAgo(row.original.block_timestamp)}
       </div>
     ),
-    size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
-  },
-  {
-    accessorKey: 'amount',
-    header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Amount"
-        className="ml-auto"
-        sorting={{
-          sortContext: TransfersSortingContext,
-          sortKey: 'amount',
-        }}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="text-right font-mono text-xs">
-        {formatTokenAmount(BigInt(row.original.amount))}
-      </div>
-    ),
-    size: 100, // Fixed width for buyers count
+    size: 150,
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];

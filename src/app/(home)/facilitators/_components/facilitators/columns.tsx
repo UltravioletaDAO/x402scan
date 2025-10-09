@@ -51,7 +51,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         />
       </Link>
     ),
-    size: 300,
+    size: 250,
     loading: () => (
       <div className="flex items-center gap-1">
         <Skeleton className="size-4 rounded-full" />
