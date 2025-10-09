@@ -63,7 +63,7 @@ export const Withdraw: React.FC = () => {
         },
         onError: error => {
           toast.error('Failed to send USDC', {
-            description: error.cause as string,
+            description: error.message,
           });
         },
       }
