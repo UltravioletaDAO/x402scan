@@ -5,26 +5,35 @@ import { Button } from '@/components/ui/button';
 import { useWriteContract } from 'wagmi';
 import { useCallback, useState } from 'react';
 import { ethereumAddressSchema } from '@/lib/schemas';
-import { erc20Abi } from 'viem';
+import { erc20Abi, parseUnits } from 'viem';
 import { USDC_ADDRESS } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Check, Loader2, Wallet } from 'lucide-react';
 import { useBalance } from '@/app/_hooks/use-balance';
-import { useQueryClient } from '@tanstack/react-query';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useEthBalance } from '@/app/_hooks/use-eth-balance';
 
 export const Withdraw: React.FC = () => {
   const [amount, setAmount] = useState(0);
   const [address, setAddress] = useState('');
 
-  const queryClient = useQueryClient();
-  const { queryKey, isLoading: isBalanceLoading, data: balance } = useBalance();
+  const {
+    data: ethBalance,
+    isLoading: isEthBalanceLoading,
+    refetch: refetchEthBalance,
+  } = useEthBalance();
+  const {
+    isLoading: isBalanceLoading,
+    data: balance,
+    refetch: refetchBalance,
+  } = useBalance();
 
   const {
     writeContract,
     isPending: isSending,
     isSuccess: isSent,
+    reset: resetSending,
   } = useWriteContract();
 
   const handleSubmit = useCallback(async () => {
@@ -39,19 +48,34 @@ export const Withdraw: React.FC = () => {
         address: USDC_ADDRESS,
         abi: erc20Abi,
         functionName: 'transfer',
-        args: [parsedAddress, BigInt(amount) * 10n ** 6n],
+        args: [parsedAddress, parseUnits(amount.toString(), 6)],
       },
       {
         onSuccess: () => {
-          toast.success('USDC sent');
-          void queryClient.invalidateQueries({ queryKey });
+          toast.success(`${amount} USDC sent`);
+          void refetchBalance();
+          void refetchEthBalance();
+          setAmount(0);
+          setAddress('');
+          setTimeout(() => {
+            resetSending();
+          }, 2000);
         },
-        onError: () => {
-          toast.error('Failed to send USDC');
+        onError: error => {
+          toast.error('Failed to send USDC', {
+            description: error.message,
+          });
         },
       }
     );
-  }, [address, amount, writeContract, queryClient, queryKey]);
+  }, [
+    address,
+    amount,
+    writeContract,
+    refetchBalance,
+    refetchEthBalance,
+    resetSending,
+  ]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -83,6 +107,7 @@ export const Withdraw: React.FC = () => {
           inputClassName="placeholder:text-muted-foreground/60"
           isBalanceMax
           showMaxButton
+          decimalPlaces={6}
         />
       </div>
       <div className="flex flex-col gap-1">
@@ -94,7 +119,12 @@ export const Withdraw: React.FC = () => {
           className="border-2 shadow-none placeholder:text-muted-foreground/60 font-mono"
         />
       </div>
-
+      {!isEthBalanceLoading && ethBalance === 0 && (
+        <p className="text-yellow-600 bg-yellow-600/10 p-2 rounded-md text-xs">
+          Insufficient gas to pay for this transaction. Please add some ETH to
+          your wallet.
+        </p>
+      )}
       <Button
         variant="turbo"
         disabled={
@@ -103,7 +133,9 @@ export const Withdraw: React.FC = () => {
           !ethereumAddressSchema.safeParse(address).success ||
           isSending ||
           !balance ||
-          balance < amount
+          balance < amount ||
+          isEthBalanceLoading ||
+          !ethBalance
         }
         onClick={handleSubmit}
       >

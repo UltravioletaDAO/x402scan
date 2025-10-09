@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -17,11 +18,11 @@ import { formatTokenAmount } from '@/lib/token';
 import { useIsMobile } from '@/hooks/use-is-mobile';
 
 import type { Address as AddressType } from 'viem';
-import Link from 'next/link';
+import type { FacilitatorAddress } from '@/lib/facilitators';
 
 interface Props {
   buyerAddress: AddressType;
-  facilitatorAddress: AddressType;
+  facilitatorAddress: FacilitatorAddress;
   sellerAddress: AddressType;
   amount: bigint;
 }
@@ -73,7 +74,11 @@ export const TransactionGraphic: React.FC<Props> = ({
         </CardContent>
       </Card>
 
-      <Link href={`/recipient/${sellerAddress}`} className={cardClassName}>
+      <Link
+        href={`/recipient/${sellerAddress}`}
+        className={cardClassName}
+        prefetch={false}
+      >
         <Card className="w-full overflow-hidden" ref={sellerRef}>
           <CardHeader className="p-2 bg-muted border-b flex flex-row items-center justify-between space-y-0">
             <CardTitle className="text-base">Seller</CardTitle>

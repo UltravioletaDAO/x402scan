@@ -3,11 +3,12 @@ import Image from 'next/image';
 import { Address } from '@/components/ui/address';
 import { facilitatorAddressMap } from '@/lib/facilitators';
 
-import type { Address as AddressType } from 'viem';
 import { cn } from '@/lib/utils';
 
+import type { FacilitatorAddress } from '@/lib/facilitators';
+
 interface Props {
-  address: AddressType;
+  address: FacilitatorAddress;
   className?: string;
 }
 
@@ -27,13 +28,13 @@ export const Facilitator: React.FC<Props> = ({ address, className }) => {
         height={16}
         className="rounded-md"
       />
-      <p className="text-xs font-semibold">{facilitator.name}</p>
+      <p className="text-[10px] md:text-xs font-semibold">{facilitator.name}</p>
     </div>
   );
 };
 
 interface FacilitatorsProps {
-  addresses: AddressType[];
+  addresses: FacilitatorAddress[];
   className?: string;
 }
 
@@ -65,7 +66,9 @@ export const Facilitators: React.FC<FacilitatorsProps> = ({
           );
         })}
       </div>
-      <p className="text-xs font-semibold">{addresses.length} facilitators</p>
+      <p className="text-[10px] md:text-xs font-semibold">
+        {addresses.length} facilitators
+      </p>
     </div>
   );
 };

@@ -17,6 +17,7 @@ interface TabProps<T extends Record<string, number>> {
     | {
         type: 'bar';
         bars: BarChartProps<T>['bars'];
+        solid?: boolean;
       }
     | {
         type: 'area';
@@ -55,6 +56,7 @@ export const MultiCharts = <T extends Record<string, number>>({
               bars={items.bars}
               tooltipRows={tooltipRows}
               height={height}
+              solid={items.solid}
             />
           ) : (
             <BaseAreaChart

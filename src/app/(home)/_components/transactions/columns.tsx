@@ -37,22 +37,29 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         />
       </Link>
     ),
-    size: 300,
+    size: 200,
     loading: () => <SellerSkeleton />,
   },
   {
-    accessorKey: 'facilitator',
+    accessorKey: 'amount',
     header: () => (
-      <HeaderCell Icon={Server} label="Facilitator" className="justify-start" />
-    ),
-    cell: ({ row }) => (
-      <Facilitator
-        address={row.original.transaction_from}
-        className="mr-auto justify-start"
+      <HeaderCell
+        Icon={DollarSign}
+        label="Amount"
+        className="mx-auto"
+        sorting={{
+          sortContext: TransfersSortingContext,
+          sortKey: 'amount',
+        }}
       />
     ),
-    size: 150,
-    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
+    cell: ({ row }) => (
+      <div className="text-center font-mono text-xs">
+        {formatTokenAmount(BigInt(row.original.amount))}
+      </div>
+    ),
+    size: 100, // Fixed width for buyers count
+    loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
   {
     accessorKey: 'sender',
@@ -107,24 +114,17 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
-    accessorKey: 'amount',
+    accessorKey: 'facilitator',
     header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Amount"
-        className="ml-auto"
-        sorting={{
-          sortContext: TransfersSortingContext,
-          sortKey: 'amount',
-        }}
-      />
+      <HeaderCell Icon={Server} label="Facilitator" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <div className="text-right font-mono text-xs">
-        {formatTokenAmount(BigInt(row.original.amount))}
-      </div>
+      <Facilitator
+        address={row.original.transaction_from}
+        className="mx-auto justify-center"
+      />
     ),
-    size: 150, // Fixed width for buyers count
-    loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
+    size: 150,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
 ];

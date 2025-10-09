@@ -1,11 +1,28 @@
+import z from 'zod';
+
+import { TRPCError } from '@trpc/server';
+
+import { createTRPCRouter, publicProcedure } from '../trpc';
+
+import { scrapeOriginData } from '@/services/scraper';
 import {
   getResourceByAddress,
   listResources,
   searchResources,
   searchResourcesSchema,
+  upsertResource,
 } from '@/services/db/resources';
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { upsertOrigin } from '@/services/db/origin';
+import { upsertResourceResponse } from '@/services/db/resource-responses';
+
 import { ethereumAddressSchema } from '@/lib/schemas';
+import { parseX402Response } from '@/lib/x402/schema';
+import { formatTokenAmount } from '@/lib/token';
+import { getOriginFromUrl } from '@/lib/url';
+
+import { Methods } from '@/types/x402';
+
+import type { AcceptsNetwork } from '@prisma/client';
 
 export const resourcesRouter = createTRPCRouter({
   list: {
@@ -33,5 +50,99 @@ export const resourcesRouter = createTRPCRouter({
     .input(searchResourcesSchema)
     .query(async ({ input }) => {
       return await searchResources(input);
+    }),
+
+  register: publicProcedure
+    .input(
+      z.object({
+        url: z.url(),
+        headers: z.record(z.string(), z.string()).optional(),
+        body: z.object().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      for (const method of [Methods.GET, Methods.POST]) {
+        // ping resource
+        const response = await fetch(input.url, {
+          method,
+          headers: input.headers,
+          body: input.body ? JSON.stringify(input.body) : undefined,
+        });
+
+        // if it doesn't respond with a 402, return error
+        if (response.status !== 402) {
+          continue;
+        }
+
+        // parse the response
+        const parsedResponse = parseX402Response(await response.json());
+        if (!parsedResponse.success) {
+          continue;
+        }
+
+        const origin = getOriginFromUrl(input.url);
+
+        const {
+          og,
+          metadata,
+          origin: scrapedOrigin,
+        } = await scrapeOriginData(origin);
+
+        await upsertOrigin({
+          origin: origin,
+          title: metadata?.title ?? og?.ogTitle,
+          description: metadata?.description ?? og?.ogDescription,
+          favicon:
+            og?.favicon &&
+            (og.favicon.startsWith('/')
+              ? scrapedOrigin.replace(/\/$/, '') + og.favicon
+              : og.favicon),
+          ogImages:
+            og?.ogImage?.map(image => ({
+              url: image.url,
+              height: image.height,
+              width: image.width,
+              title: og.ogTitle,
+              description: og.ogDescription,
+            })) ?? [],
+        });
+
+        // upsert the resource
+        const resource = await upsertResource({
+          resource: input.url.toString(),
+          type: 'http',
+          x402Version: parsedResponse.data.x402Version,
+          lastUpdated: new Date(),
+          accepts:
+            parsedResponse.data.accepts?.map(accept => ({
+              ...accept,
+              network: accept.network.replace('-', '_') as AcceptsNetwork,
+              maxAmountRequired: accept.maxAmountRequired,
+              outputSchema: accept.outputSchema,
+              extra: accept.extra,
+            })) ?? [],
+        });
+
+        if (!resource) {
+          continue;
+        }
+
+        await upsertResourceResponse(resource.resource.id, parsedResponse.data);
+
+        return {
+          ...resource,
+          accepts: {
+            ...resource.accepts,
+            maxAmountRequired: formatTokenAmount(
+              resource.accepts.maxAmountRequired
+            ),
+          },
+        };
+      }
+
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Resource did not respond with a valid x402 response',
+      });
     }),
 });

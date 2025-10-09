@@ -120,9 +120,9 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
               </CommandGroup> */}
             </>
           )}
-          {origins?.length && (
+          {(origins?.length ?? 0) > 0 && (
             <CommandGroup heading="Origins">
-              {origins.map(origin => (
+              {origins?.map(origin => (
                 <CommandItem
                   key={origin.id}
                   value={origin.origin}
@@ -146,9 +146,9 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
               ))}
             </CommandGroup>
           )}
-          {resources?.length && (
+          {(resources?.length ?? 0) > 0 && (
             <CommandGroup heading="Resources">
-              {resources.map(resource => (
+              {resources?.map(resource => (
                 <CommandItem
                   key={resource.id}
                   value={resource.resource}

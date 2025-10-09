@@ -1,7 +1,7 @@
 import z from 'zod';
 
 import { runBaseSqlQuery } from '../query';
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { ethereumAddressSchema, facilitatorAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
@@ -41,7 +41,7 @@ const listTopSellersUncached = async (
   const outputSchema = z.array(
     z.object({
       recipient: ethereumAddressSchema,
-      facilitators: z.array(ethereumAddressSchema),
+      facilitators: z.array(facilitatorAddressSchema),
       tx_count: z.coerce.number(),
       total_amount: z.coerce.number(),
       latest_block_timestamp: z.coerce.date(),
@@ -99,7 +99,7 @@ const _listTopSellersCached = createCachedPaginatedQuery({
   createCacheKey: ({ input, pagination }) =>
     createStandardCacheKey({ ...input, limit: pagination.limit }),
   dateFields: ['latest_block_timestamp'],
-  revalidate: 60,
+
   tags: ['sellers'],
 });
 

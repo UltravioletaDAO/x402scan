@@ -10,7 +10,6 @@
     "tw-animate-css",
     "@trigger.dev/build",
     "tailwindcss",
-    "tsx",
     "postcss"
   ],
   "ignore": [

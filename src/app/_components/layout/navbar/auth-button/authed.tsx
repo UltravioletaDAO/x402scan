@@ -12,14 +12,18 @@ import { NavbarUnauthedButton } from './unauthed';
 import { useBalance } from '@/app/_hooks/use-balance';
 import { Skeleton } from '@/components/ui/skeleton';
 import { OnrampSessionDialog } from '@/app/_components/wallet/embedded-wallet/onramp-session-dialog';
-import { useSession } from 'next-auth/react';
 
 import type { Address } from 'viem';
+import { useSession } from 'next-auth/react';
 
 export const NavbarAuthedButton = () => {
-  const { data: session, status } = useSession();
+  return <NavbarAuthedButtonInternal />;
+};
+
+const NavbarAuthedButtonInternal = () => {
   const { isInitialized } = useIsInitialized();
   const { currentUser } = useCurrentUser();
+  const { data: session, status } = useSession();
 
   if (status === 'loading' || !isInitialized) {
     return <NavbarAuthedButtonLoading />;

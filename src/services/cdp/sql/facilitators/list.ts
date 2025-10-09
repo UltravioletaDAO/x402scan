@@ -1,28 +1,30 @@
-import { facilitators } from '@/lib/facilitators';
+import type { FacilitatorName } from '@/lib/facilitators';
+import { facilitatorNameMap, facilitators } from '@/lib/facilitators';
 import { runBaseSqlQuery } from '../query';
-import { formatDateForSql } from '../lib';
+import { formatDateForSql, sortingSchema } from '../lib';
 import z from 'zod';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { USDC_ADDRESS } from '@/lib/utils';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 
+const listTopFacilitatorsSortIds = [
+  'tx_count',
+  'total_amount',
+  'latest_block_timestamp',
+  'unique_buyers',
+  'unique_sellers',
+] as const;
+
+export type FacilitatorsSortId = (typeof listTopFacilitatorsSortIds)[number];
+
 export const listTopFacilitatorsInputSchema = z.object({
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   limit: z.number().default(100),
-  sorting: z
-    .array(
-      z.object({
-        id: z.enum([
-          'tx_count',
-          'total_amount',
-          'latest_block_timestamp',
-          'unique_buyers',
-        ]),
-        desc: z.boolean(),
-      })
-    )
-    .default([{ id: 'tx_count', desc: true }]),
+  sorting: sortingSchema(listTopFacilitatorsSortIds).default({
+    id: 'tx_count',
+    desc: true,
+  }),
   tokens: z.array(ethereumAddressSchema).default([USDC_ADDRESS]),
 });
 
@@ -33,12 +35,11 @@ const listTopFacilitatorsUncached = async (
     listTopFacilitatorsInputSchema.parse(input);
 
   const sql = `SELECT 
-    COUNT(DISTINCT parameters['to']::String) AS sellers,
-    COUNT(DISTINCT parameters['from']::String) AS buyers,
+    COUNT(DISTINCT parameters['to']::String) AS unique_sellers,
+    COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
     COUNT(*) AS tx_count, 
     SUM(parameters['value']::UInt256) AS total_amount,
     max(block_timestamp) AS latest_block_timestamp,
-    COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
     CASE
     ${facilitators
       .map(
@@ -73,23 +74,30 @@ GROUP BY
       .join('\n        ')}
     ELSE 'Unknown'
     END
-ORDER BY ${sorting.map(s => `${s.id} ${s.desc ? 'DESC' : 'ASC'}`).join(', ')} 
+ORDER BY ${sorting.id} ${sorting.desc ? 'DESC' : 'ASC'} 
 LIMIT ${limit + 1}`;
   const result = await runBaseSqlQuery(
     sql,
     z.array(
       z.object({
-        sellers: z.coerce.number(),
-        buyers: z.coerce.number(),
+        unique_sellers: z.coerce.number(),
+        unique_buyers: z.coerce.number(),
         tx_count: z.coerce.number(),
         total_amount: z.coerce.number(),
         latest_block_timestamp: z.coerce.date(),
-        unique_buyers: z.coerce.number(),
-        facilitator_name: z.string(),
+        facilitator_name: z.string().transform(v => v as FacilitatorName),
       })
     )
   );
-  return result ?? [];
+
+  if (!result) {
+    return [];
+  }
+
+  return result.map(r => ({
+    ...r,
+    facilitator: facilitatorNameMap.get(r.facilitator_name)!,
+  }));
 };
 
 export const listTopFacilitators = createCachedArrayQuery({
@@ -97,6 +105,6 @@ export const listTopFacilitators = createCachedArrayQuery({
   cacheKeyPrefix: 'facilitators-list',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['latest_block_timestamp'],
-  revalidate: 60,
+
   tags: ['facilitators'],
 });

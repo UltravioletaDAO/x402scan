@@ -14,6 +14,25 @@ const CDPHooksProviderBase = dynamic(
 import { createCDPEmbeddedWalletConnector } from '@coinbase/cdp-wagmi';
 
 import { env } from '@/env';
+import type { Config } from '@coinbase/cdp-hooks';
+
+const cdpConfig: Config = {
+  projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID!,
+  ethereum: {
+    createOnLogin: 'eoa' as const,
+  },
+  solana: {},
+};
+
+export const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
+  cdpConfig,
+  providerConfig: {
+    chains: [base],
+    transports: {
+      [base.id]: http(),
+    },
+  },
+});
 
 const cdpConfig = {
   projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID ?? '',

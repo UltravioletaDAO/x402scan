@@ -18,8 +18,16 @@ export default function HomeLayout({
             href: '/transactions',
           },
           {
+            label: 'Facilitators',
+            href: '/facilitators',
+          },
+          {
             label: 'Resources',
             href: '/resources',
+          },
+          {
+            label: 'Ecosystem',
+            href: '/ecosystem',
           },
         ]}
       />

@@ -79,6 +79,6 @@ export const getOverallStatistics = createCachedQuery({
   cacheKeyPrefix: 'overall-statistics',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['latest_block_timestamp'],
-  revalidate: 60,
+
   tags: ['statistics'],
 });

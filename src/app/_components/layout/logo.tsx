@@ -20,7 +20,7 @@ export const LogoContainer = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <motion.div
-      className="left-2 md:left-6 z-50 shrink-0"
+      className="left-2 md:left-6 z-50 shrink-0 p-1 bg-card rounded-md"
       style={{
         height: size,
         width: size,

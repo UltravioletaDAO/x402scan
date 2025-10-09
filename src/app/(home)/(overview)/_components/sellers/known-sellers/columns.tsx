@@ -9,6 +9,8 @@ import {
   Users,
 } from 'lucide-react';
 
+import Link from 'next/link';
+
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
@@ -33,28 +35,18 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
     cell: ({ row }) => (
-      <Origins
-        origins={row.original.origins}
-        address={row.original.recipient}
-      />
+      <Link href={`/recipient/${row.original.recipient}`} prefetch={false}>
+        <Origins
+          origins={row.original.origins}
+          address={row.original.recipient}
+          disableCopy
+        />
+      </Link>
     ),
-    size: 400,
+    size: 225,
     loading: () => <OriginsSkeleton />,
   },
-  {
-    accessorKey: 'facilitators',
-    header: () => (
-      <HeaderCell Icon={Server} label="Facilitator" className="mr-auto" />
-    ),
-    cell: ({ row }) => (
-      <Facilitators
-        addresses={row.original.facilitators}
-        className="mr-auto justify-start"
-      />
-    ),
-    size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
-  },
+
   {
     accessorKey: 'chart',
     header: () => (
@@ -90,6 +82,27 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
+    accessorKey: 'total_amount',
+    header: () => (
+      <HeaderCell
+        Icon={DollarSign}
+        label="Volume"
+        className="mx-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'total_amount',
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center font-mono text-xs">
+        {formatTokenAmount(BigInt(row.original.total_amount))}
+      </div>
+    ),
+    size: 100, // Fixed width for volume column
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
     accessorKey: 'unique_buyers',
     header: () => (
       <HeaderCell
@@ -119,11 +132,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     header: () => (
       <HeaderCell
         Icon={Calendar}
-        label="Last Used"
+        label="Latest"
         sorting={{
           sortContext: SellersSortingContext,
           sortKey: 'latest_block_timestamp',
         }}
+        className="mx-auto"
       />
     ),
     cell: ({ row }) => (
@@ -134,25 +148,19 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     size: 100, // Fixed width for timestamp
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
+
   {
-    accessorKey: 'total_amount',
+    accessorKey: 'facilitators',
     header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Volume"
-        className="ml-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'total_amount',
-        }}
-      />
+      <HeaderCell Icon={Server} label="Facilitator" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <div className="text-right font-mono text-xs">
-        {formatTokenAmount(BigInt(row.original.total_amount))}
-      </div>
+      <Facilitators
+        addresses={row.original.facilitators}
+        className="mx-auto justify-center"
+      />
     ),
-    size: 100, // Fixed width for volume column
-    loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
 ];

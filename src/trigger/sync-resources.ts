@@ -1,16 +1,18 @@
 import { logger, schedules } from '@trigger.dev/sdk/v3';
 
+import type { upsertResourceSchema } from '@/services/db/resources';
 import { upsertResource } from '@/services/db/resources';
 import { listFacilitatorResources } from '@/services/cdp/facilitator/list-resources';
-import { scrapeOg } from '@/services/scraper/og';
-import { scrapeMetadata } from '@/services/scraper/metadata';
 import { upsertOrigin } from '@/services/db/origin';
 import { getOriginFromUrl } from '@/lib/url';
+import type { AcceptsNetwork } from '@prisma/client';
+import type z from 'zod';
+import { scrapeOriginData } from '@/services/scraper';
 
 export const syncResourcesTask = schedules.task({
   id: 'sync-resources',
-  // Every 5 minutes
-  cron: '*/5 * * * *',
+  // Every 1 minute
+  cron: '*/1 * * * *',
   // Set maxDuration to prevent tasks from running indefinitely
   maxDuration: 600, // 10 minutes max execution time
   retry: {
@@ -79,24 +81,11 @@ export const syncResourcesTask = schedules.task({
 
           try {
             // Scrape OG and metadata in parallel
-            const [og, metadata] = await Promise.all([
-              scrapeOg(origin).catch(error => {
-                logger.warn('Failed to scrape OG data', {
-                  origin,
-                  error:
-                    error instanceof Error ? error.message : 'Unknown error',
-                });
-                return null;
-              }),
-              scrapeMetadata(origin).catch(error => {
-                logger.warn('Failed to scrape metadata', {
-                  origin,
-                  error:
-                    error instanceof Error ? error.message : 'Unknown error',
-                });
-                return null;
-              }),
-            ]);
+            const {
+              og,
+              metadata,
+              origin: scrapedOrigin,
+            } = await scrapeOriginData(origin);
 
             // Prepare origin data
             const originData = {
@@ -106,7 +95,7 @@ export const syncResourcesTask = schedules.task({
               favicon:
                 og?.favicon &&
                 (og.favicon.startsWith('/')
-                  ? origin.replace(/\/$/, '') + og.favicon
+                  ? scrapedOrigin.replace(/\/$/, '') + og.favicon
                   : og.favicon),
               ogImages:
                 og?.ogImage?.map(image => ({
@@ -173,7 +162,13 @@ export const syncResourcesTask = schedules.task({
           });
 
           try {
-            await upsertResource(facilitatorResource);
+            await upsertResource({
+              ...facilitatorResource,
+              accepts: facilitatorResource.accepts.map(accept => ({
+                ...accept,
+                network: accept.network.replace('-', '_') as AcceptsNetwork,
+              })) as z.input<typeof upsertResourceSchema>['accepts'],
+            });
             logger.debug('Successfully processed resource', {
               resource: facilitatorResource.resource,
               durationMs: Date.now() - resourceStart,

@@ -5,7 +5,7 @@ import type { PaginatedResponse } from '@/types/pagination';
 export const infiniteQuerySchema = <T>(cursorType: z.ZodType<T>) =>
   z.object({
     cursor: cursorType.optional(),
-    limit: z.number().optional().default(10),
+    limit: z.number().optional().default(100),
   });
 
 interface ToPaginatedResponseParams<T> {

@@ -25,16 +25,28 @@ x402scan lets you explore the ecosystem of x402 servers, see their transaction v
 
 _Note: We're working on making this easier to spin-up. If you have any trouble in the mean time, please reach out._
 
-Fill out a `.env` with the variables in [env.ts](https://github.com/Merit-Systems/x402scan/blob/main/src/env.ts).
+Fill out a `.env.example` with the variables in [env.ts](https://github.com/Merit-Systems/x402scan/blob/main/src/env.ts).
 
 Then install and run.
 
 ```bash
-pnpm install && pnpm dev
+pnpm install && pnpm next:dev
 ```
+
+### Trigger.dev
+
+We use [Trigger.dev](https://trigger.dev/) to periodically sync resources and resource schemas into the database.
+
+Create a Trigger.dev project and connect it via `trigger.config.ts` if you want to sync resources and schemas.
 
 ## Contributing
 
 We're actively seeking contributors to help build x402scan. We believe an ecosystem explorer will shed light on the activities happening over x402, build trust, and help standardize interaction patterns to grow the ecosystem massively.
 
-If you run a facilitator and would like to list your discoverable resources, please reach out via issues.
+### Add Resources
+
+If you know if a resource that is not yet listed, you can add it by visiting https://www.x402scan.com/resources?add_resources=true and submitting the URL. If the URL returns a valid x402 schema, it be added to the resources list automatically.
+
+### Add Facilitators
+
+If you know of another facilitator that are not listed, you can add it to [`src/lib/facilitators`](https://github.com/Merit-Systems/x402scan/blob/main/src/lib/facilitators.ts) and the dashboard will automatically update.

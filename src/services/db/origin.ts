@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from './client';
 
 import { z } from 'zod';
+import { parseX402Response } from '@/lib/x402/schema';
 
 const ogImageSchema = z.object({
   url: z.url(),
@@ -72,7 +73,9 @@ export const upsertOrigin = async (
   });
 };
 
-const listOriginsWhere = (address: string): Prisma.ResourceOriginWhereInput => {
+const listOriginsByAddressWhere = (
+  address: string
+): Prisma.ResourceOriginWhereInput => {
   return {
     resources: {
       some: {
@@ -88,20 +91,80 @@ const listOriginsWhere = (address: string): Prisma.ResourceOriginWhereInput => {
 
 export const listOriginsByAddress = async (address: string) => {
   return await prisma.resourceOrigin.findMany({
-    where: listOriginsWhere(address),
+    where: listOriginsByAddressWhere(address),
   });
 };
 
-export const listOriginsWithResources = async (address: string) => {
+export const listOriginsWithResources = async () => {
+  const origins = await listOriginsWithResourcesInternal({
+    resources: {
+      some: {
+        response: {
+          isNot: null,
+        },
+      },
+    },
+  });
+  return origins
+    .map(origin => ({
+      ...origin,
+      resources: origin.resources
+        .map(resource => {
+          const response = parseX402Response(resource.response?.response);
+          console.log(response);
+          return {
+            ...resource,
+            ...response,
+          };
+        })
+        .filter(response => response.success),
+    }))
+    .filter(origin => origin.resources.length > 0);
+};
+
+export const listOriginsWithResourcesByAddress = async (address: string) => {
+  const origins = await listOriginsWithResourcesInternal(
+    listOriginsByAddressWhere(address)
+  );
+  return origins
+    .map(origin => ({
+      ...origin,
+      resources: origin.resources
+        .map(resource => {
+          const response = parseX402Response(resource.response?.response);
+          return {
+            ...resource,
+            ...response,
+          };
+        })
+        .filter(response => response.success === true),
+    }))
+    .filter(origin => origin.resources.length > 0);
+};
+
+const listOriginsWithResourcesInternal = async (
+  where?: Prisma.ResourceOriginWhereInput
+) => {
   return await prisma.resourceOrigin.findMany({
-    where: listOriginsWhere(address),
+    where,
     include: {
       resources: {
         include: {
           accepts: true,
+          response: true,
+        },
+        where: {
+          response: {
+            isNot: null,
+          },
         },
       },
       ogImages: true,
+    },
+    orderBy: {
+      resources: {
+        _count: 'desc',
+      },
     },
   });
 };
