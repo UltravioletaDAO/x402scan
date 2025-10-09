@@ -27,6 +27,7 @@ export const ResourcesByOrigin: React.FC<Props> = ({
                     resource.accepts[0].outputSchema
                   )}
                   className="bg-transparent"
+                  response={resource.data}
                 />
               </div>
             ))}

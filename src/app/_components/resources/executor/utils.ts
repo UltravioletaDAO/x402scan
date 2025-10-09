@@ -1,6 +1,6 @@
-import type { Methods } from '@/types/x402';
+import { Methods } from '@/types/x402';
 
-export function getBazaarMethod(outputSchema: unknown): Methods | undefined {
+export function getBazaarMethod(outputSchema: unknown): Methods {
   if (
     typeof outputSchema === 'object' &&
     outputSchema &&
@@ -11,5 +11,5 @@ export function getBazaarMethod(outputSchema: unknown): Methods | undefined {
       return (input as { method: Methods }).method;
     }
   }
-  return undefined;
+  return Methods.GET;
 }

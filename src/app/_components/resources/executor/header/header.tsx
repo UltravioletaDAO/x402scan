@@ -2,21 +2,19 @@
 
 import { Method } from './method';
 import { FetchButton } from './fetch-button';
-
-import { useResourceCheck } from '../contexts/resource-check/hook';
+import { Status } from './status';
 
 import type { Resources } from '@prisma/client';
-import { Status } from './status';
+import type { Methods } from '@/types/x402';
+import type { ParsedX402Response } from '@/lib/x402/schema';
 
 interface Props {
   resource: Resources;
+  method: Methods;
+  response: ParsedX402Response;
 }
 
-export const Header: React.FC<Props> = ({ resource }) => {
-  const { rawResponse, method, error, parseErrors } = useResourceCheck();
-
-  const hasError = Boolean(error) || parseErrors.length > 0;
-
+export const Header: React.FC<Props> = ({ resource, method, response }) => {
   return (
     <>
       <div className="flex md:items-center justify-between flex-col md:flex-row gap-4 md:gap-0">
@@ -25,9 +23,9 @@ export const Header: React.FC<Props> = ({ resource }) => {
           <span className="font-mono text-sm truncate">
             {resource.resource}
           </span>
-          <Status />
+          <Status response={response} />
         </div>
-        {Boolean(rawResponse) && !hasError && <FetchButton />}
+        <FetchButton />
       </div>
     </>
   );

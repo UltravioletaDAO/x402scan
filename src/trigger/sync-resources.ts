@@ -11,8 +11,8 @@ import { scrapeOriginData } from '@/services/scraper';
 
 export const syncResourcesTask = schedules.task({
   id: 'sync-resources',
-  // Every 5 minutes
-  cron: '*/5 * * * *',
+  // Every 1 minute
+  cron: '*/1 * * * *',
   // Set maxDuration to prevent tasks from running indefinitely
   maxDuration: 600, // 10 minutes max execution time
   retry: {

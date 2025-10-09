@@ -6,44 +6,57 @@ import { Header } from './header/header';
 import { Form } from './form';
 
 import { cn } from '@/lib/utils';
-import type { Methods } from '@/types/x402';
-import { ResourceExecutorProvider } from './contexts/resource-check/provider';
-import { useResourceCheck } from './contexts/resource-check/hook';
 
-import type { Resources } from '@prisma/client';
 import { ResourceFetchProvider } from './contexts/fetch/provider';
+
+import type { Methods } from '@/types/x402';
+import type { Resources } from '@prisma/client';
+import type { ParsedX402Response } from '@/lib/x402/schema';
 
 interface Props {
   resource: Resources;
-  bazaarMethod?: Methods;
+  response: ParsedX402Response;
+  bazaarMethod: Methods;
   className?: string;
 }
 
 export const ResourceExecutor: React.FC<Props> = ({
   resource,
+  response,
   bazaarMethod,
   className,
 }) => {
   return (
-    <ResourceExecutorProvider
+    <ResourceFetchWrapper
+      response={response}
+      bazaarMethod={bazaarMethod}
       resource={resource.resource}
-      method={bazaarMethod}
     >
-      <ResourceFetchWrapper>
-        <Card className={cn(className, 'overflow-hidden')}>
-          <CardHeader className="bg-muted px-4 py-2">
-            <Header resource={resource} />
-          </CardHeader>
-          <FormWrapper />
-        </Card>
-      </ResourceFetchWrapper>
-    </ResourceExecutorProvider>
+      <Card className={cn(className, 'overflow-hidden')}>
+        <CardHeader className="bg-muted px-4 py-2">
+          <Header
+            resource={resource}
+            method={bazaarMethod}
+            response={response}
+          />
+        </CardHeader>
+        <Form x402Response={response} />
+      </Card>
+    </ResourceFetchWrapper>
   );
 };
 
-function ResourceFetchWrapper({ children }: { children: React.ReactNode }) {
-  const { response } = useResourceCheck();
-
+function ResourceFetchWrapper({
+  children,
+  response,
+  bazaarMethod,
+  resource,
+}: {
+  children: React.ReactNode;
+  response: ParsedX402Response;
+  bazaarMethod: Methods;
+  resource: string;
+}) {
   if (!response) return children;
 
   const accept = response?.accepts?.[0];
@@ -60,16 +73,11 @@ function ResourceFetchWrapper({ children }: { children: React.ReactNode }) {
     <ResourceFetchProvider
       inputSchema={inputSchema}
       maxAmountRequired={maxAmountRequired}
+      method={bazaarMethod}
+      resource={resource}
+      x402Response={response}
     >
       {children}
     </ResourceFetchProvider>
   );
-}
-
-function FormWrapper() {
-  const { response } = useResourceCheck();
-
-  if (!response) return null;
-
-  return <Form />;
 }

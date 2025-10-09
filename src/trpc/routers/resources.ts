@@ -1,3 +1,10 @@
+import z from 'zod';
+
+import { TRPCError } from '@trpc/server';
+
+import { createTRPCRouter, publicProcedure } from '../trpc';
+
+import { scrapeOriginData } from '@/services/scraper';
 import {
   getResourceByAddress,
   listResources,
@@ -5,17 +12,17 @@ import {
   searchResourcesSchema,
   upsertResource,
 } from '@/services/db/resources';
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { upsertOrigin } from '@/services/db/origin';
+import { upsertResourceResponse } from '@/services/db/resource-responses';
+
 import { ethereumAddressSchema } from '@/lib/schemas';
-import z from 'zod';
-import { Methods } from '@/types/x402';
-import { TRPCError } from '@trpc/server';
-import { EnhancedX402ResponseSchema } from '@/lib/x402/schema';
-import type { AcceptsNetwork } from '@prisma/client';
+import { parseX402Response } from '@/lib/x402/schema';
 import { formatTokenAmount } from '@/lib/token';
 import { getOriginFromUrl } from '@/lib/url';
-import { scrapeOriginData } from '@/services/scraper';
-import { upsertOrigin } from '@/services/db/origin';
+
+import { Methods } from '@/types/x402';
+
+import type { AcceptsNetwork } from '@prisma/client';
 
 export const resourcesRouter = createTRPCRouter({
   list: {
@@ -68,10 +75,8 @@ export const resourcesRouter = createTRPCRouter({
         }
 
         // parse the response
-        const data = EnhancedX402ResponseSchema.safeParse(
-          await response.json()
-        );
-        if (!data.success) {
+        const parsedResponse = parseX402Response(await response.json());
+        if (!parsedResponse.success) {
           continue;
         }
 
@@ -106,10 +111,10 @@ export const resourcesRouter = createTRPCRouter({
         const resource = await upsertResource({
           resource: input.url.toString(),
           type: 'http',
-          x402Version: data.data.x402Version,
+          x402Version: parsedResponse.data.x402Version,
           lastUpdated: new Date(),
           accepts:
-            data.data.accepts?.map(accept => ({
+            parsedResponse.data.accepts?.map(accept => ({
               ...accept,
               network: accept.network.replace('-', '_') as AcceptsNetwork,
               maxAmountRequired: accept.maxAmountRequired,
@@ -121,6 +126,8 @@ export const resourcesRouter = createTRPCRouter({
         if (!resource) {
           continue;
         }
+
+        await upsertResourceResponse(resource.resource.id, parsedResponse.data);
 
         return {
           ...resource,
