@@ -14,10 +14,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { OnrampSessionDialog } from '@/app/_components/auth/embedded-wallet/onramp-session-dialog';
 
 export const NavbarAuthedButton = () => {
-  if (typeof window === 'undefined') {
-    return <NavbarAuthedButtonLoading />;
-  }
-
   return <NavbarAuthedButtonInternal />;
 };
 
