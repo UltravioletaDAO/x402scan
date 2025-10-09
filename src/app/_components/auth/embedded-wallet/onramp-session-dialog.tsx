@@ -37,9 +37,7 @@ export const OnrampSessionDialog: React.FC = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    console.log('searchParams', searchParams.get('onramp_token'));
     if (searchParams.get('onramp_token')) {
-      console.log('searchParams', searchParams.get('onramp_token'));
       setSessionToken(searchParams.get('onramp_token') ?? null);
       setIsSessionDialogOpen(true);
     }

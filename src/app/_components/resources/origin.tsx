@@ -28,7 +28,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
           )}
         >
           <Favicon url={origin.favicon} className="size-6" />
-          <CardTitle className="font-bold text-lg">
+          <CardTitle className="font-bold text-base md:text-lg">
             {new URL(origin.origin).hostname}
           </CardTitle>
         </CardHeader>
@@ -37,13 +37,16 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
             <div className="flex flex-col gap-2 p-4">
               <div>
                 <h3
-                  className={cn('font-medium', !origin.title && 'opacity-60')}
+                  className={cn(
+                    'font-medium text-sm md:text-base',
+                    !origin.title && 'opacity-60'
+                  )}
                 >
                   {origin.title ?? 'No Title'}
                 </h3>
                 <p
                   className={cn(
-                    'text-sm text-muted-foreground',
+                    'text-xs md:text-sm text-muted-foreground',
                     !origin.description && 'text-muted-foreground/60'
                   )}
                 >

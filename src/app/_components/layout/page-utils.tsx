@@ -20,7 +20,7 @@ export const Heading: React.FC<HeadingProps> = ({
   actions,
 }) => {
   return (
-    <HeadingContainer className="flex items-center justify-between gap-4">
+    <HeadingContainer className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div className="flex items-center gap-4 shrink-0 flex-1">
         {icon}
         <div className="flex flex-col gap-1 md:gap-3 text-left">
