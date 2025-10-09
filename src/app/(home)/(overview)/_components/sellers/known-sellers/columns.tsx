@@ -38,23 +38,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         address={row.original.recipient}
       />
     ),
-    size: 400,
+    size: 300,
     loading: () => <OriginsSkeleton />,
   },
-  {
-    accessorKey: 'facilitators',
-    header: () => (
-      <HeaderCell Icon={Server} label="Facilitator" className="mr-auto" />
-    ),
-    cell: ({ row }) => (
-      <Facilitators
-        addresses={row.original.facilitators}
-        className="mr-auto justify-start"
-      />
-    ),
-    size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
-  },
+
   {
     accessorKey: 'chart',
     header: () => (
@@ -87,6 +74,27 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
     size: 100, // Fixed width for transaction count
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
+    accessorKey: 'total_amount',
+    header: () => (
+      <HeaderCell
+        Icon={DollarSign}
+        label="Volume"
+        className="mx-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'total_amount',
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center font-mono text-xs">
+        {formatTokenAmount(BigInt(row.original.total_amount))}
+      </div>
+    ),
+    size: 100, // Fixed width for volume column
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -134,25 +142,19 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     size: 100, // Fixed width for timestamp
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
+
   {
-    accessorKey: 'total_amount',
+    accessorKey: 'facilitators',
     header: () => (
-      <HeaderCell
-        Icon={DollarSign}
-        label="Volume"
-        className="ml-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'total_amount',
-        }}
-      />
+      <HeaderCell Icon={Server} label="Facilitator" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <div className="text-right font-mono text-xs">
-        {formatTokenAmount(BigInt(row.original.total_amount))}
-      </div>
+      <Facilitators
+        addresses={row.original.facilitators}
+        className="mx-auto justify-start"
+      />
     ),
-    size: 100, // Fixed width for volume column
-    loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
 ];

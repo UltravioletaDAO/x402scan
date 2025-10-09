@@ -33,8 +33,8 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
           </CardTitle>
         </CardHeader>
         {hasMetadata && (
-          <CardContent className="flex flex-row items-start justify-between gap-2 pt-4">
-            <div className="flex flex-col gap-2">
+          <CardContent className="flex flex-row items-start justify-between gap-2 p-0">
+            <div className="flex flex-col gap-2 p-4">
               <div>
                 <h3
                   className={cn('font-medium', !origin.title && 'opacity-60')}
@@ -55,7 +55,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
         )}
       </div>
       {origin.ogImages.length > 0 && (
-        <div className="h-36 border-l flex items-center justify-center bg-muted p-4">
+        <div className="h-24 md:h-36 border-l hidden md:flex items-center justify-center bg-muted p-4">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={origin.ogImages[0].url}

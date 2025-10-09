@@ -94,7 +94,7 @@ const Dot: React.FC<DotProps> = ({ onClick }) => {
   return (
     <div
       className={cn(
-        'w-3 h-3 rounded-full',
+        'w-3 h-3 rounded-full shrink-0',
         statusColor,
         hasResponse && 'cursor-pointer'
       )}

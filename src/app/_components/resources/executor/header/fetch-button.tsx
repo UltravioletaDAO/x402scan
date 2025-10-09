@@ -18,7 +18,7 @@ export const FetchButton = () => {
   if (!walletClient || !currentUser) {
     return (
       <ConnectEmbeddedWalletDialog>
-        <Button variant="ghost" size="sm" className="size-fit py-0 px-1">
+        <Button variant="ghost" size="sm" className="size-fit p-0 md:px-1">
           <Wallet className="size-4" />
           Connect Wallet
         </Button>
@@ -30,7 +30,7 @@ export const FetchButton = () => {
     <Button
       variant="primaryGhost"
       size="sm"
-      className="size-fit py-0 px-1"
+      className="size-fit p-0 md:px-1"
       disabled={
         isPending ||
         !allRequiredFieldsFilled ||

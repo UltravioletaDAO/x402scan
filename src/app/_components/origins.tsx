@@ -122,10 +122,12 @@ interface OriginsContainerProps {
 
 const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 w-full overflow-hidden">
       <Icon className="size-6" />
-      <div>
-        <div className="text-sm font-mono font-semibold">{title}</div>
+      <div className="flex-1 overflow-hidden">
+        <div className="text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap">
+          {title}
+        </div>
         <div>{address}</div>
       </div>
     </div>

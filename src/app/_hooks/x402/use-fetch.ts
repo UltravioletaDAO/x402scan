@@ -27,7 +27,7 @@ export const useX402Fetch = <TData = unknown>(
       const fetchWithPayment = wrapFetchWithPayment(
         fetchWithProxyHeader,
         walletClient as unknown as Parameters<typeof wrapFetchWithPayment>[1],
-        value
+        1000000000000n
       );
 
       const response = await fetchWithPayment(PROXY_ENDPOINT, init);
