@@ -12,14 +12,14 @@ importers:
         specifier: ^2.10.0
         version: 2.10.0(@prisma/client@6.16.2(prisma@6.16.2(magicast@0.3.5)(typescript@5.9.2))(typescript@5.9.2))
       '@coinbase/cdp-hooks':
-        specifier: ^0.0.39
-        version: 0.0.39(@coinbase/cdp-core@0.0.39(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.11))(react@19.1.0)
+        specifier: ^0.0.42
+        version: 0.0.42(@coinbase/cdp-core@0.0.39(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.11))(react@19.1.0)
       '@coinbase/cdp-sdk':
-        specifier: ^1.38.2
-        version: 1.38.2(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2)(utf-8-validate@5.0.10)
+        specifier: ^1.38.3
+        version: 1.38.3(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2)(utf-8-validate@5.0.10)
       '@coinbase/cdp-wagmi':
-        specifier: ^0.0.39
-        version: 0.0.39(@coinbase/cdp-core@0.0.39(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.11))(@tanstack/react-query@5.90.2(react@19.1.0))(react@19.1.0)(viem@2.37.9(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))(wagmi@2.17.5(@tanstack/query-core@5.90.2)(@tanstack/react-query@5.90.2(react@19.1.0))(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.37.9(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))(zod@4.1.11))
+        specifier: ^0.0.42
+        version: 0.0.42(@coinbase/cdp-core@0.0.39(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.11))(@tanstack/react-query@5.90.2(react@19.1.0))(react@19.1.0)(viem@2.37.9(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))(wagmi@2.17.5(@tanstack/query-core@5.90.2)(@tanstack/react-query@5.90.2(react@19.1.0))(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.37.9(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))(zod@4.1.11))
       '@coinbase/x402':
         specifier: ^0.6.4
         version: 0.6.4(@solana/sysvars@2.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2))(@tanstack/query-core@5.90.2)(@tanstack/react-query@5.90.2(react@19.1.0))(@types/react@19.1.13)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
@@ -341,19 +341,19 @@ packages:
       expo-secure-store:
         optional: true
 
-  '@coinbase/cdp-hooks@0.0.39':
-    resolution: {integrity: sha512-LZH7lDEbpFSbPC7JtGJbD9lZrGd2rjQcveKYF/Xt71dpZDCxMqtWIhuWNqBlSdngJphCXoL7xpSUmkFMzagcUQ==}
+  '@coinbase/cdp-hooks@0.0.42':
+    resolution: {integrity: sha512-jxIt7wwvEeesJKJufNOmbT3O1xcZHXxQBMpS0xZW1gdd//Yf4g+PPa4tvmO+0ZfMxUb0cvnpyGN3U/X3bunk7g==}
     peerDependencies:
-      '@coinbase/cdp-core': ^0.0.39
+      '@coinbase/cdp-core': ^0.0.42
       react: '>=18.2.0'
 
-  '@coinbase/cdp-sdk@1.38.2':
-    resolution: {integrity: sha512-S7+xKeZGGi+zc1PotTeQ5Pvn5a0e4ikT+iMm8pPfPjObNlDEUKLei4cmRHON1wXgql0oDXn30YKTo1LQWxXvDw==}
+  '@coinbase/cdp-sdk@1.38.3':
+    resolution: {integrity: sha512-W5KtVdxSAJjpC0ASYI6sTOXjFZMXdiL5R2e/gmn3pvhxIoKTpuRqc5O05D5pId7/y5SXwu41QcX7oqDWf0Sgbg==}
 
-  '@coinbase/cdp-wagmi@0.0.39':
-    resolution: {integrity: sha512-WQPrzxcxKUigVXz5h6c/Rs70T9eWYe2q1CRlJVug8UbDHINe24X4P/bCJ/pgUxCvn1Y0q0MsYEqtNQiQn19w5w==}
+  '@coinbase/cdp-wagmi@0.0.42':
+    resolution: {integrity: sha512-3SgeuG9XjJp3nsDJZp0jhSqTLNIiNyGIuQ5dzKd3Da2BRiSp3JE+YiXVUedAs/yplfLecvCIiwYPkHzuoqH1fw==}
     peerDependencies:
-      '@coinbase/cdp-core': ^0.0.39
+      '@coinbase/cdp-core': ^0.0.42
       '@tanstack/react-query': ^5.0.0
       react: '>=18.2.0'
       viem: ^2.33.0
@@ -6937,12 +6937,12 @@ snapshots:
       - utf-8-validate
       - zod
 
-  '@coinbase/cdp-hooks@0.0.39(@coinbase/cdp-core@0.0.39(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.11))(react@19.1.0)':
+  '@coinbase/cdp-hooks@0.0.42(@coinbase/cdp-core@0.0.39(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.11))(react@19.1.0)':
     dependencies:
       '@coinbase/cdp-core': 0.0.39(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.11)
       react: 19.1.0
 
-  '@coinbase/cdp-sdk@1.38.2(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2)(utf-8-validate@5.0.10)':
+  '@coinbase/cdp-sdk@1.38.3(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2)(utf-8-validate@5.0.10)':
     dependencies:
       '@solana/spl-token': 0.4.14(@solana/web3.js@1.98.4(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10))(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2)(utf-8-validate@5.0.10)
       '@solana/web3.js': 1.98.4(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)
@@ -6962,7 +6962,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@coinbase/cdp-wagmi@0.0.39(@coinbase/cdp-core@0.0.39(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.11))(@tanstack/react-query@5.90.2(react@19.1.0))(react@19.1.0)(viem@2.37.9(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))(wagmi@2.17.5(@tanstack/query-core@5.90.2)(@tanstack/react-query@5.90.2(react@19.1.0))(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.37.9(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))(zod@4.1.11))':
+  '@coinbase/cdp-wagmi@0.0.42(@coinbase/cdp-core@0.0.39(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.11))(@tanstack/react-query@5.90.2(react@19.1.0))(react@19.1.0)(viem@2.37.9(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))(wagmi@2.17.5(@tanstack/query-core@5.90.2)(@tanstack/react-query@5.90.2(react@19.1.0))(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(viem@2.37.9(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@4.1.11))(zod@4.1.11))':
     dependencies:
       '@coinbase/cdp-core': 0.0.39(@types/react@19.1.13)(bufferutil@4.0.9)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(use-sync-external-store@1.4.0(react@19.1.0))(utf-8-validate@5.0.10)(zod@4.1.11)
       '@tanstack/react-query': 5.90.2(react@19.1.0)
@@ -7026,7 +7026,7 @@ snapshots:
 
   '@coinbase/x402@0.6.4(@solana/sysvars@2.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2))(@tanstack/query-core@5.90.2)(@tanstack/react-query@5.90.2(react@19.1.0))(@types/react@19.1.13)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))':
     dependencies:
-      '@coinbase/cdp-sdk': 1.38.2(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2)(utf-8-validate@5.0.10)
+      '@coinbase/cdp-sdk': 1.38.3(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2)(utf-8-validate@5.0.10)
       viem: 2.37.9(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
       x402: 0.6.1(@solana/sysvars@2.3.0(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.9.2))(@tanstack/query-core@5.90.2)(@tanstack/react-query@5.90.2(react@19.1.0))(@types/react@19.1.13)(bufferutil@4.0.9)(fastestsmallesttextencoderdecoder@1.0.22)(immer@10.1.3)(react@19.1.0)(typescript@5.9.2)(utf-8-validate@5.0.10)(ws@8.18.3(bufferutil@4.0.9)(utf-8-validate@5.0.10))
       zod: 3.25.76
