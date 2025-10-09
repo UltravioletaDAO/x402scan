@@ -13,11 +13,13 @@ import {
 
 import { useResourceFetch } from './contexts/fetch/hook';
 import type { FieldDefinition } from '@/types/x402';
-import { useResourceCheck } from './contexts/resource-check/hook';
+import type { ParsedX402Response } from '@/lib/x402/schema';
 
-export function Form() {
-  const { response: x402Response } = useResourceCheck();
+interface Props {
+  x402Response: ParsedX402Response;
+}
 
+export function Form({ x402Response }: Props) {
   const {
     queryFields,
     bodyFields,

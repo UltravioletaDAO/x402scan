@@ -6,6 +6,8 @@ import { AddResourcesDialog } from '@/app/_components/add-resources';
 export default async function ResourcesPage() {
   const resources = await api.origins.list.withResources.all();
 
+  console.log(resources);
+
   return (
     <div>
       <Heading

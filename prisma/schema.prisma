@@ -82,6 +82,7 @@ model Resources {
   originId String
 
   accepts Accepts[]
+  response ResourceResponse?
   origin ResourceOrigin @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
 }
 
@@ -145,6 +146,14 @@ model ResourceOrigin {
 
   resources Resources[]
   ogImages  OgImage[]
+}
+
+model ResourceResponse {
+  id          String  @id @default(uuid())
+  resourceId  String  @unique
+  response    Json
+
+  resource Resources @relation(fields: [resourceId], references: [id])
 }
 
 model OgImage {

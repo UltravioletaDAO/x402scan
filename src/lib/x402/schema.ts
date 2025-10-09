@@ -43,7 +43,7 @@ const EnhancedOutputSchema = z3.object({
 
 export type EnhancedOutputSchema = z3.infer<typeof EnhancedOutputSchema>;
 
-export const EnhancedX402ResponseSchema = x402ResponseSchema
+const EnhancedX402ResponseSchema = x402ResponseSchema
   .omit({
     error: true,
     accepts: true,

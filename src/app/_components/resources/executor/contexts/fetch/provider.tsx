@@ -4,10 +4,8 @@ import { ResourceFetchContext } from './context';
 
 import { useX402Fetch } from '@/app/_hooks/x402/use-fetch';
 
-import { useResourceCheck } from '../resource-check/hook';
-
 import type { ParsedX402Response } from '@/lib/x402/schema';
-import type { FieldDefinition } from '@/types/x402';
+import type { FieldDefinition, Methods } from '@/types/x402';
 
 type Accept = NonNullable<ParsedX402Response['accepts']>[number];
 
@@ -15,15 +13,18 @@ interface Props {
   children: React.ReactNode;
   inputSchema: NonNullable<Accept['outputSchema']>['input'];
   maxAmountRequired: bigint;
+  method: Methods;
+  resource: string;
+  x402Response: ParsedX402Response;
 }
 
 export const ResourceFetchProvider: React.FC<Props> = ({
   children,
   inputSchema,
   maxAmountRequired,
+  method,
+  resource,
 }) => {
-  const { resource, method } = useResourceCheck();
-
   const queryFields = useMemo(
     () => getFields(inputSchema.queryParams),
     [inputSchema]
