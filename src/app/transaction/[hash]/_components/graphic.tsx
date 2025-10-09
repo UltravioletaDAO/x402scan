@@ -74,7 +74,11 @@ export const TransactionGraphic: React.FC<Props> = ({
         </CardContent>
       </Card>
 
-      <Link href={`/recipient/${sellerAddress}`} className={cardClassName}>
+      <Link
+        href={`/recipient/${sellerAddress}`}
+        className={cardClassName}
+        prefetch={false}
+      >
         <Card className="w-full overflow-hidden" ref={sellerRef}>
           <CardHeader className="p-2 bg-muted border-b flex flex-row items-center justify-between space-y-0">
             <CardTitle className="text-base">Seller</CardTitle>

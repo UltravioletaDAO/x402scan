@@ -35,7 +35,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
     cell: ({ row }) => (
-      <Link href={`/recipient/${row.original.recipient}`}>
+      <Link href={`/recipient/${row.original.recipient}`} prefetch={false}>
         <Origins
           origins={row.original.origins}
           address={row.original.recipient}
