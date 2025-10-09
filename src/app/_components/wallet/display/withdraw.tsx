@@ -36,6 +36,8 @@ export const Withdraw: React.FC = () => {
     reset: resetSending,
   } = useWriteContract();
 
+  console.log(parseUnits(amount.toString(), 6));
+
   const handleSubmit = useCallback(async () => {
     const parseResult = ethereumAddressSchema.safeParse(address);
     if (!parseResult.success) {

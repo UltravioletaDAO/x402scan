@@ -4,32 +4,34 @@ import { Wallet } from 'lucide-react';
 
 import { useCurrentUser, useIsInitialized } from '@coinbase/cdp-hooks';
 
+import { useAccount } from 'wagmi';
+
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { DisplayEmbeddedWalletDialog } from '@/app/_components/wallet/display/dialog';
-
-import { NavbarUnauthedButton } from './unauthed';
-import { useBalance } from '@/app/_hooks/use-balance';
-import { Skeleton } from '@/components/ui/skeleton';
 import { OnrampSessionDialog } from '@/app/_components/wallet/embedded-wallet/onramp-session-dialog';
 
-import type { Address } from 'viem';
-import { useSession } from 'next-auth/react';
+import { useBalance } from '@/app/_hooks/use-balance';
+
+import { NavbarUnauthedButton } from './unauthed';
 
 export const NavbarAuthedButton = () => {
   return <NavbarAuthedButtonInternal />;
 };
 
 const NavbarAuthedButtonInternal = () => {
-  const { isInitialized } = useIsInitialized();
+  const { address } = useAccount();
   const { currentUser } = useCurrentUser();
-  const { data: session, status } = useSession();
+  const { isInitialized } = useIsInitialized();
 
-  if (status === 'loading' || !isInitialized) {
+  console.log('address', address);
+
+  if (!isInitialized) {
     return <NavbarAuthedButtonLoading />;
   }
 
-  if (!session) {
+  if (!address) {
     return <NavbarUnauthedButton />;
   }
 
@@ -37,8 +39,8 @@ const NavbarAuthedButtonInternal = () => {
     <>
       <OnrampSessionDialog />
       <DisplayEmbeddedWalletDialog
+        address={address}
         user={currentUser ?? undefined}
-        address={session.user.id as Address}
       >
         <NavbarAuthedButtonContent />
       </DisplayEmbeddedWalletDialog>

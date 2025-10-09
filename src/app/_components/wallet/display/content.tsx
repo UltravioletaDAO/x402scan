@@ -1,6 +1,10 @@
 'use client';
 
-import { useSignOut } from '@coinbase/cdp-hooks';
+import {
+  useCurrentUser,
+  useIsInitialized,
+  useSignOut,
+} from '@coinbase/cdp-hooks';
 import { signOut } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
@@ -14,6 +18,7 @@ import { Loader2 } from 'lucide-react';
 
 import type { User } from '@coinbase/cdp-hooks';
 import type { Address } from 'viem';
+import { useDisconnect } from 'wagmi';
 
 interface Props {
   address: Address;
@@ -23,11 +28,19 @@ interface Props {
 export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
   const { data: balance, isLoading } = useBalance();
 
+  const { isInitialized } = useIsInitialized();
+  const { currentUser } = useCurrentUser();
   const { signOut: signOutWallet } = useSignOut();
+
+  const { disconnectAsync } = useDisconnect();
 
   const { mutateAsync: handleSignOut, isPending: isSigningOut } = useMutation({
     mutationFn: async () => {
-      await signOutWallet();
+      if (isInitialized && currentUser) {
+        await signOutWallet();
+      } else {
+        await disconnectAsync();
+      }
       await signOut();
     },
   });
@@ -62,11 +75,15 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
           value={user.authenticationMethods.sms.phoneNumber}
         />
       )}
-      <Button onClick={() => handleSignOut()} className="w-full">
+      <Button
+        onClick={() => handleSignOut()}
+        className="w-full"
+        disabled={!isInitialized || isSigningOut}
+      >
         {isSigningOut ? (
           <Loader2 className="size-4 animate-spin" />
         ) : (
-          'Sign Out'
+          'Disconnect'
         )}
       </Button>
     </div>

@@ -24,8 +24,6 @@ interface AuthModalProps {
 export const ConnectEmbeddedWalletDialog = ({ children }: AuthModalProps) => {
   const account = useAccount();
 
-  console.log('account', account);
-
   const { currentUser } = useCurrentUser();
 
   const { signMessageAsync } = useSignMessage();

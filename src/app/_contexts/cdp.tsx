@@ -34,21 +34,6 @@ export const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
   },
 });
 
-const cdpConfig = {
-  projectId: env.NEXT_PUBLIC_CDP_PROJECT_ID ?? '',
-  ethereum: {},
-};
-
-export const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
-  cdpConfig,
-  providerConfig: {
-    chains: [base],
-    transports: {
-      [base.id]: http(),
-    },
-  },
-});
-
 interface Props {
   children: React.ReactNode;
 }
