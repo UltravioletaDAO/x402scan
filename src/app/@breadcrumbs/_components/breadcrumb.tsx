@@ -20,6 +20,7 @@ interface Props<T extends string> {
   mobileHideImage?: boolean;
   disabled?: boolean;
   textClassName?: string;
+  className?: string;
 }
 
 export const Breadcrumb = <T extends string>({
@@ -31,11 +32,12 @@ export const Breadcrumb = <T extends string>({
   mobileHideImage = false,
   mobileHideText = false,
   disabled = false,
+  className,
 }: Props<T>) => {
   return (
     <Link
       href={href}
-      className={cn(disabled && 'pointer-events-none')}
+      className={cn(disabled && 'pointer-events-none', className)}
       aria-disabled={disabled}
       prefetch={false}
     >

@@ -9,6 +9,8 @@ import {
   Users,
 } from 'lucide-react';
 
+import Link from 'next/link';
+
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
@@ -33,12 +35,15 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
     cell: ({ row }) => (
-      <Origins
-        origins={row.original.origins}
-        address={row.original.recipient}
-      />
+      <Link href={`/recipient/${row.original.recipient}`}>
+        <Origins
+          origins={row.original.origins}
+          address={row.original.recipient}
+          disableCopy
+        />
+      </Link>
     ),
-    size: 300,
+    size: 225,
     loading: () => <OriginsSkeleton />,
   },
 
@@ -127,11 +132,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     header: () => (
       <HeaderCell
         Icon={Calendar}
-        label="Last Used"
+        label="Latest"
         sorting={{
           sortContext: SellersSortingContext,
           sortKey: 'latest_block_timestamp',
         }}
+        className="mx-auto"
       />
     ),
     cell: ({ row }) => (
@@ -151,7 +157,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     cell: ({ row }) => (
       <Facilitators
         addresses={row.original.facilitators}
-        className="mx-auto justify-start"
+        className="mx-auto justify-center"
       />
     ),
     size: 100,

@@ -18,16 +18,15 @@ export default async function RecipientPage({
         image={null}
         name="Server"
         Fallback={Server}
-        mobileHideImage
-        disabled
       />
-      <Separator />
+      <Separator className="hidden md:block" />
       <Breadcrumb
         href={`/recipient/${address}`}
         image={null}
         name={formatAddress(address)}
         Fallback={Wallet}
         mobileHideImage
+        className="hidden md:block"
       />
       {children}
     </>

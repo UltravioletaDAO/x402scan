@@ -17,14 +17,13 @@ export default async function RecipientPage({
   }
   return (
     <>
-      <Separator />
+      <Separator className="hidden md:block" />
       <Breadcrumb
         href={`/facilitator/${id}`}
         image={null}
         name="Facilitator"
         Fallback={Server}
-        mobileHideImage
-        disabled
+        className="hidden md:block"
       />
       <Separator />
       <Breadcrumb
@@ -32,7 +31,6 @@ export default async function RecipientPage({
         image={facilitator.image}
         name={facilitator.name}
         Fallback={Wallet}
-        mobileHideImage
       />
       {children}
     </>

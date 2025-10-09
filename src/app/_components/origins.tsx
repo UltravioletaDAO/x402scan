@@ -16,9 +16,10 @@ import type { ResourceOrigin } from '@prisma/client';
 interface Props {
   address: string;
   origins: ResourceOrigin[];
+  disableCopy?: boolean;
 }
 
-export const Origins: React.FC<Props> = ({ origins, address }) => {
+export const Origins: React.FC<Props> = ({ origins, address, disableCopy }) => {
   if (!origins || origins.length === 0) {
     return <Address address={address} />;
   }
@@ -37,7 +38,12 @@ export const Origins: React.FC<Props> = ({ origins, address }) => {
         }
         title={new URL(origin.origin).hostname}
         address={
-          <Address address={address} className="border-none p-0" hideTooltip />
+          <Address
+            address={address}
+            className="border-none p-0 text-[10px] md:text-xs"
+            hideTooltip
+            disableCopy={disableCopy}
+          />
         }
       />
     );
@@ -94,7 +100,7 @@ export const Origin: React.FC<OriginProps> = ({ origin, addresses }) => {
       address={
         <Addresses
           addresses={addresses}
-          className="border-none p-0"
+          className="border-none p-0 text-[10px] md:text-xs"
           hideTooltip
         />
       }
@@ -125,7 +131,7 @@ const OriginsContainer = ({ Icon, title, address }: OriginsContainerProps) => {
     <div className="flex items-center gap-2 w-full overflow-hidden">
       <Icon className="size-6" />
       <div className="flex-1 overflow-hidden">
-        <div className="text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap">
+        <div className="text-xs md:text-sm font-mono font-semibold overflow-hidden text-ellipsis whitespace-nowrap">
           {title}
         </div>
         <div>{address}</div>

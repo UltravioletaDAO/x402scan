@@ -8,8 +8,8 @@ export const NavbarUnauthedButton = () => {
   return (
     <ConnectEmbeddedWalletDialog>
       <Button size="navbar" variant="outline">
+        <Wallet className="size-4" />
         <span className="hidden md:block">Sign In</span>
-        <Wallet className="size-4 md:hidden" />
       </Button>
     </ConnectEmbeddedWalletDialog>
   );
