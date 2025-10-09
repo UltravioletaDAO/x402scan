@@ -22,7 +22,6 @@ const cdpConfig: Config = {
     createOnLogin: 'eoa' as const,
   },
   solana: {},
-  debugging: true,
 };
 
 export const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
