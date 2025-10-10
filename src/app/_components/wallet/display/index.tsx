@@ -21,17 +21,19 @@ import type { User } from '@coinbase/cdp-hooks';
 interface Props {
   address: Address;
   user?: User;
+  defaultTab?: 'wallet' | 'deposit' | 'withdraw';
 }
 
 export const DisplayWalletDialogContent: React.FC<Props> = ({
   address,
   user,
+  defaultTab = 'wallet',
 }) => {
   return (
     <div className="w-full overflow-hidden flex flex-col gap-4">
       <Tabs
         className="w-full overflow-hidden flex flex-col gap-6"
-        defaultValue="wallet"
+        defaultValue={defaultTab}
       >
         <DialogHeader className=" gap-2 bg-muted">
           <div className="flex flex-row gap-2 items-center p-4">

@@ -50,6 +50,7 @@ const NoSessionContent = () => {
         address: address!,
         chainId: 8453,
         signMessage: message => signMessageAsync({ message }),
+        redirectTo: `${window.location.href}?onramp=true`,
       });
     },
   });
