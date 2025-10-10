@@ -8,6 +8,9 @@ import { LatestTransactions } from './_components/latest-transactions';
 import { TopFacilitators } from './_components/top-facilitators';
 import { Logo } from '@/components/logo';
 import { Banner } from './_components/banner';
+import { AddResourcesDialog } from '@/app/_components/add-resources';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
 export default async function Home() {
   return (
@@ -27,7 +30,19 @@ export default async function Home() {
             The x402 analytics dashboard and block explorer
           </p>
         </div>
-        <SearchButton />
+        <div className="flex flex-col md:flex-row items-center gap-2">
+          <SearchButton />
+          <AddResourcesDialog>
+            <Button
+              variant="turbo"
+              className="shrink-0 w-full md:w-fit px-4"
+              size="lg"
+            >
+              <Plus className="size-4" />
+              Register Resource
+            </Button>
+          </AddResourcesDialog>
+        </div>
       </HeadingContainer>
       <Body>
         <OverallStats />

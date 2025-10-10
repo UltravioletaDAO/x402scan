@@ -20,7 +20,7 @@ export const SearchButtonContent = ({ onClick }: { onClick?: () => void }) => {
       size="lg"
       variant="outline"
       className={cn(
-        'flex justify-start md:justify-between items-center gap-0 md:gap-16 text-muted-foreground/80 px-2 md:px-2 md:pr-1 w-full bg-card font-normal hover:text-muted-foreground/80 group'
+        'flex justify-start md:justify-between items-center gap-0 md:gap-16 text-muted-foreground/80 px-2 md:px-2 md:pr-1 w-full md:w-auto md:flex-1 font-normal hover:text-muted-foreground/80 group bg-transparent'
       )}
       onClick={onClick}
     >
