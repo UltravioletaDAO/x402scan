@@ -42,7 +42,7 @@ const aurraCloudFacilitator = {
   image: '/aurracloud.png',
   link: 'https://x402-facilitator.aurracloud.com',
   addresses: ['0x222c4367a2950f3b53af260e111fc3060b0983ff'],
-  color: 'var(--color-blue-600)',
+  color: 'var(--color-yellow-600)',
 } satisfies Facilitator;
 
 export const facilitators = [
