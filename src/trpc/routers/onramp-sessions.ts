@@ -41,8 +41,6 @@ export const onrampSessionsRouter = createTRPCRouter({
 
       const { transactions } = await getOnrampTransactions(id);
 
-      console.log('transactions', transactions);
-
       const transaction = transactions[0];
 
       if (!transaction) {

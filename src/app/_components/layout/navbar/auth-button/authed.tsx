@@ -25,8 +25,6 @@ const NavbarAuthedButtonInternal = () => {
   const { currentUser } = useCurrentUser();
   const { isInitialized } = useIsInitialized();
 
-  console.log('address', address);
-
   if (!isInitialized) {
     return <NavbarAuthedButtonLoading />;
   }

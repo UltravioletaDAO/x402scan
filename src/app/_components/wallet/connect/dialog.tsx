@@ -13,7 +13,7 @@ import { ConnectEmbeddedWalletForm } from './embedded';
 import { Separator } from '@/components/ui/separator';
 import { useEffect } from 'react';
 import { signInWithEthereum } from '@/auth/providers/siwe/sign-in';
-import { useAccount, useSignMessage } from 'wagmi';
+import { useAccount, useConnect, useSignMessage } from 'wagmi';
 import { useCurrentUser } from '@coinbase/cdp-hooks';
 import { ConnectEOAForm } from './eoa';
 
@@ -27,6 +27,14 @@ export const ConnectEmbeddedWalletDialog = ({ children }: AuthModalProps) => {
   const { currentUser } = useCurrentUser();
 
   const { signMessageAsync } = useSignMessage();
+
+  const { connectors } = useConnect();
+
+  const filteredConnectors = connectors.filter(
+    connector =>
+      connector.type === 'injected' &&
+      !['injected', 'cdp-embedded-wallet'].includes(connector.id)
+  );
 
   useEffect(() => {
     if (account.address) {
@@ -49,19 +57,26 @@ export const ConnectEmbeddedWalletDialog = ({ children }: AuthModalProps) => {
           <Logo className="size-16" />
           <div className="flex flex-col gap-2">
             <DialogTitle className="text-primary text-xl">
-              Connect Wallet
+              {filteredConnectors.length > 0
+                ? 'Connect Wallet'
+                : 'Create Wallet'}
             </DialogTitle>
             <DialogDescription className="hidden">
               Connect your wallet to use on-chain functionality.
             </DialogDescription>
           </div>
         </DialogHeader>
-        <ConnectEOAForm />
-        <div className="flex items-center gap-2">
-          <Separator className="flex-1" />
-          <p className="text-muted-foreground text-xs">or</p>
-          <Separator className="flex-1" />
-        </div>
+        {filteredConnectors.length > 0 && (
+          <>
+            <ConnectEOAForm />
+            <div className="flex items-center gap-2">
+              <Separator className="flex-1" />
+              <p className="text-muted-foreground text-xs">or</p>
+              <Separator className="flex-1" />
+            </div>
+          </>
+        )}
+
         <ConnectEmbeddedWalletForm />
       </DialogContent>
     </Dialog>
