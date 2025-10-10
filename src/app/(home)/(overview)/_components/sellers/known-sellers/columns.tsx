@@ -30,15 +30,15 @@ type ColumnType = RouterOutputs['sellers']['list']['bazaar']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
-    accessorKey: 'recipient',
+    accessorKey: 'recipients',
     header: () => (
       <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
     cell: ({ row }) => (
-      <Link href={`/recipient/${row.original.recipient}`} prefetch={false}>
+      <Link href={`/recipient/${row.original.recipients[0]}`} prefetch={false}>
         <Origins
           origins={row.original.origins}
-          address={row.original.recipient}
+          addresses={row.original.recipients}
           disableCopy
         />
       </Link>
@@ -52,7 +52,9 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     header: () => (
       <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
     ),
-    cell: ({ row }) => <KnownSellerChart address={row.original.recipient} />,
+    cell: ({ row }) => (
+      <KnownSellerChart address={row.original.recipients[0]} />
+    ),
     size: 100,
     loading: () => <LoadingKnownSellerChart />,
   },

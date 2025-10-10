@@ -7,9 +7,10 @@ import { Address } from '@/components/ui/address';
 import { Origins } from '@/app/_components/origins';
 import { api } from '@/trpc/client';
 import { cn } from '@/lib/utils';
+import type { Address as ViemAddress } from 'viem';
 
 interface Props {
-  address: string;
+  address: ViemAddress;
   disableCopy?: boolean;
   addressClassName?: string;
 }
@@ -40,7 +41,7 @@ export const Seller: React.FC<Props> = ({
     );
   }
 
-  return <Origins origins={origins} address={address} />;
+  return <Origins origins={origins} addresses={[address]} />;
 };
 
 export const SellerSkeleton = () => {

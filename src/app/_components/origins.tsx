@@ -12,16 +12,27 @@ import { Address, Addresses } from '@/components/ui/address';
 import { cn } from '@/lib/utils';
 
 import type { ResourceOrigin } from '@prisma/client';
+import type { Address as ViemAddress } from 'viem';
 
 interface Props {
-  address: string;
+  addresses: ViemAddress[];
   origins: ResourceOrigin[];
   disableCopy?: boolean;
 }
 
-export const Origins: React.FC<Props> = ({ origins, address, disableCopy }) => {
+export const Origins: React.FC<Props> = ({
+  origins,
+  addresses,
+  disableCopy,
+}) => {
   if (!origins || origins.length === 0) {
-    return <Address address={address} />;
+    if (addresses.length === 0) {
+      return null;
+    }
+    if (addresses.length === 1) {
+      return <Address address={addresses[0]} disableCopy={disableCopy} />;
+    }
+    return <Addresses addresses={addresses} disableCopy={disableCopy} />;
   }
 
   if (origins.length === 1) {
@@ -38,12 +49,11 @@ export const Origins: React.FC<Props> = ({ origins, address, disableCopy }) => {
         }
         title={new URL(origin.origin).hostname}
         address={
-          <Address
-            address={address}
-            className="border-none p-0 text-[10px] md:text-xs"
-            hideTooltip
-            disableCopy={disableCopy}
-          />
+          addresses.length === 0 ? null : addresses.length === 1 ? (
+            <Address address={addresses[0]} disableCopy={disableCopy} />
+          ) : (
+            <Addresses addresses={addresses} />
+          )
         }
       />
     );
@@ -74,7 +84,11 @@ export const Origins: React.FC<Props> = ({ origins, address, disableCopy }) => {
         </Tooltip>
       }
       address={
-        <Address address={address} className="border-none p-0" hideTooltip />
+        addresses.length === 0 ? null : addresses.length === 1 ? (
+          <Address address={addresses[0]} disableCopy={disableCopy} />
+        ) : (
+          <Addresses addresses={addresses} disableCopy={disableCopy} />
+        )
       }
     />
   );
@@ -83,9 +97,14 @@ export const Origins: React.FC<Props> = ({ origins, address, disableCopy }) => {
 interface OriginProps {
   origin: ResourceOrigin;
   addresses: string[];
+  disableCopy?: boolean;
 }
 
-export const Origin: React.FC<OriginProps> = ({ origin, addresses }) => {
+export const Origin: React.FC<OriginProps> = ({
+  origin,
+  addresses,
+  disableCopy,
+}) => {
   return (
     <OriginsContainer
       Icon={({ className }) =>
@@ -102,6 +121,7 @@ export const Origin: React.FC<OriginProps> = ({ origin, addresses }) => {
           addresses={addresses}
           className="border-none p-0 text-[10px] md:text-xs"
           hideTooltip
+          disableCopy={disableCopy}
         />
       }
     />
