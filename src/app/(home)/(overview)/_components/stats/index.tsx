@@ -14,7 +14,7 @@ import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 
 import { api, HydrateClient } from '@/trpc/server';
 
-import { firstTransfer } from '@/services/cdp/facilitator/constants';
+import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
