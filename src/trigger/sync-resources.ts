@@ -2,12 +2,13 @@ import { logger, schedules } from '@trigger.dev/sdk/v3';
 
 import type { upsertResourceSchema } from '@/services/db/resources';
 import { upsertResource } from '@/services/db/resources';
-import { listFacilitatorResources } from '@/services/cdp/facilitator/list-resources';
+import { listFacilitatorResources } from '@/services/facilitator/list-resources';
 import { upsertOrigin } from '@/services/db/origin';
 import { getOriginFromUrl } from '@/lib/url';
 import type { AcceptsNetwork } from '@prisma/client';
 import type z from 'zod';
 import { scrapeOriginData } from '@/services/scraper';
+import { facilitators } from '@/services/facilitator/facilitators';
 
 export const syncResourcesTask = schedules.task({
   id: 'sync-resources',
@@ -32,13 +33,28 @@ export const syncResourcesTask = schedules.task({
     try {
       // Step 1: Fetch facilitator resources
       logger.info('Fetching facilitator resources from CDP');
-      const resources = await listFacilitatorResources();
+      const resources = (
+        await Promise.all(
+          facilitators.map(facilitator =>
+            listFacilitatorResources(facilitator)
+              .then(resources => resources.items)
+              .catch(error => {
+                logger.error('Failed to fetch facilitator resources', {
+                  facilitator: facilitator.url,
+                  error:
+                    error instanceof Error ? error.message : 'Unknown error',
+                });
+                return [];
+              })
+          )
+        )
+      ).flat();
       logger.info('Successfully fetched facilitator resources', {
-        totalResources: resources.items.length,
+        totalResources: resources.length,
         durationMs: Date.now() - startTime,
       });
 
-      if (resources.items.length === 0) {
+      if (resources.length === 0) {
         logger.warn('No resources found from facilitator');
         return {
           success: true,
@@ -52,7 +68,7 @@ export const syncResourcesTask = schedules.task({
       // Step 2: Extract unique origins
       logger.info('Extracting unique origins from resources');
       const origins = new Set<string>();
-      for (const resource of resources.items) {
+      for (const resource of resources) {
         try {
           const origin = getOriginFromUrl(resource.resource);
           origins.add(origin);
@@ -155,7 +171,7 @@ export const syncResourcesTask = schedules.task({
       const resourceProcessingStart = Date.now();
 
       const resourceResults = await Promise.allSettled(
-        resources.items.map(async facilitatorResource => {
+        resources.map(async facilitatorResource => {
           const resourceStart = Date.now();
           logger.debug('Processing resource', {
             resource: facilitatorResource.resource,
@@ -202,7 +218,7 @@ export const syncResourcesTask = schedules.task({
       const failedResources = resourceResults.length - successfulResources;
 
       logger.info('Completed resource processing', {
-        totalResources: resources.items.length,
+        totalResources: resources.length,
         successful: successfulResources,
         failed: failedResources,
         durationMs: Date.now() - resourceProcessingStart,

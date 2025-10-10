@@ -11,7 +11,7 @@ import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/defau
 import { Section } from '@/app/(home)/(overview)/_components/utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
-import { firstTransfer } from '@/services/cdp/facilitator/constants';
+import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 

@@ -14,7 +14,7 @@ import { facilitatorIdMap } from '@/lib/facilitators';
 import { subMonths } from 'date-fns';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { ActivityTimeframe } from '@/types/timeframes';
-import { firstTransfer } from '@/services/cdp/facilitator/constants';
+import { firstTransfer } from '@/services/facilitator/constants';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 
