@@ -94,10 +94,12 @@ LIMIT ${limit + 1}`;
     return [];
   }
 
-  return result.map(r => ({
-    ...r,
-    facilitator: facilitatorNameMap.get(r.facilitator_name)!,
-  }));
+  return result
+    .map(r => ({
+      ...r,
+      facilitator: facilitatorNameMap.get(r.facilitator_name)!,
+    }))
+    .slice(0, limit);
 };
 
 export const listTopFacilitators = createCachedArrayQuery({
