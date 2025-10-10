@@ -5,4 +5,3 @@ export async function GET() {
   const origins = await listOriginsWithResources();
   return NextResponse.json(origins);
 }
-
