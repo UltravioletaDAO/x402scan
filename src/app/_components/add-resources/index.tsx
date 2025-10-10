@@ -29,7 +29,11 @@ import {
 import { Favicon } from '@/components/favicon';
 import { useSearchParams } from 'next/navigation';
 
-export const AddResourcesDialog = () => {
+interface Props {
+  children?: React.ReactNode;
+}
+
+export const AddResourcesDialog = ({ children }: Props) => {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(
     searchParams.get('add_resources') === 'true'
@@ -81,17 +85,19 @@ export const AddResourcesDialog = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Plus className="size-4" />
-          Add Resources
-        </Button>
+        {children ?? (
+          <Button variant="outline">
+            <Plus className="size-4" />
+            Add Resources
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="p-0 overflow-hidden gap-0">
         <DialogHeader className="bg-muted border-b p-4">
           <DialogTitle>{data ? 'Resource Added' : 'Add Resource'}</DialogTitle>
           <DialogDescription>
             {data
-              ? 'This resource is registered on and available throughout x402scan.'
+              ? 'This resource is now registered on and available throughout x402scan.'
               : "Know of an x402 resource that isn't listed? Add it here."}
           </DialogDescription>
         </DialogHeader>
