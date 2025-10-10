@@ -12,7 +12,6 @@ import { OnrampSessionDialog } from '@/app/_components/wallet/onramp-session-dia
 import { useBalance } from '@/app/_hooks/use-balance';
 
 import { WalletDialog } from '../../wallet/dialog';
-import { formatTokenAmount } from '@/lib/token';
 
 export const NavbarAuthButton = () => {
   const { address } = useAccount();

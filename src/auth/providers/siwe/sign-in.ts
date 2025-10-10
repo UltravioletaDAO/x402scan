@@ -28,6 +28,6 @@ export async function signInWithEthereum({
   await signIn(SIWE_PROVIDER_ID, {
     message: JSON.stringify(message),
     signedMessage: await signMessage(message.prepareMessage()),
-    email,
+    ...(email ? { email } : {}),
   });
 }
