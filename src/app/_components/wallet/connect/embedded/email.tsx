@@ -66,10 +66,7 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
           value={email}
           onChange={e => setEmail(e.target.value)}
           disabled={isSigningIn}
-          className={cn(
-            'h-fit py-4 md:text-base',
-            signInError && 'border-destructive'
-          )}
+          className={cn(signInError && 'border-destructive')}
         />
         {signInError && (
           <p className="text-sm text-red-500">{signInError.message}</p>
@@ -78,7 +75,7 @@ export const EmbeddedWalletEmail: React.FC<Props> = ({ setFlowId }) => {
       <Button
         onClick={handleSignIn}
         disabled={isSigningIn || !z.email().safeParse(email).success}
-        className="user-message h-12 md:h-12 w-full"
+        className="w-full"
         variant={'turbo'}
       >
         {isSigningIn ? (
