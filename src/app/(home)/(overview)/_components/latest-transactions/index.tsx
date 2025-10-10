@@ -11,7 +11,7 @@ import { Section } from '../utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { subMonths } from 'date-fns';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
-import { firstTransfer } from '@/services/cdp/facilitator/constants';
+import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 export const LatestTransactions = async () => {

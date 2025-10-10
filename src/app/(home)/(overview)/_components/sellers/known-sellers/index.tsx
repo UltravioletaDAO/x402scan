@@ -14,7 +14,7 @@ import { SellersSortingProvider } from '../../../../../_contexts/sorting/sellers
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 
-import { firstTransfer } from '@/services/cdp/facilitator/constants';
+import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
