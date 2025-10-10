@@ -173,9 +173,6 @@ export default function RootLayout({
                           {children}
                         </div>
                       </div>
-                      <div className="bg-background flex-1 flex flex-col">
-                        {children}
-                      </div>
                     </ThemeProvider>
                   </PostHogProvider>
                 </WagmiProvider>
