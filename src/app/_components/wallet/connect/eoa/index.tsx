@@ -6,8 +6,18 @@ import type { Connector } from 'wagmi';
 import { useConnect } from 'wagmi';
 import { base } from 'wagmi/chains';
 
-export const ConnectEOAForm = () => {
-  const { connectors, connectAsync, isPending } = useConnect();
+export const ConnectEOAForm = ({ connectors }: { connectors: Connector[] }) => {
+  return (
+    <div className="flex flex-col gap-2">
+      {connectors.map(connector => (
+        <ConnectEOAButton key={connector.id} connector={connector} />
+      ))}
+    </div>
+  );
+};
+
+const ConnectEOAButton = ({ connector }: { connector: Connector }) => {
+  const { connectAsync, isPending } = useConnect();
 
   const onConnect = useCallback(
     async (connector: Connector) => {
@@ -27,32 +37,19 @@ export const ConnectEOAForm = () => {
     [connectAsync]
   );
 
-  const filteredConnectors = connectors.filter(
-    connector =>
-      connector.type === 'injected' &&
-      !['injected', 'cdp-embedded-wallet'].includes(connector.id)
-  );
-
   return (
-    <div className="flex flex-col gap-2">
-      {connectors
-        .filter(
-          connector =>
-            connector.type === 'injected' &&
-            !['injected', 'cdp-embedded-wallet'].includes(connector.id)
-        )
-        .map(connector => (
-          <Button
-            key={connector.id}
-            variant="outline"
-            className="user-message w-full"
-            onClick={() => onConnect(connector)}
-            disabled={isPending}
-          >
-            {connector.icon && <img src={connector.icon} className="size-4" />}
-            {connector.name}
-          </Button>
-        ))}
-    </div>
+    <Button
+      variant="outline"
+      className="user-message w-full"
+      onClick={() => onConnect(connector)}
+      disabled={isPending}
+    >
+      {connector.icon && !isPending && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={connector.icon} alt={connector.name} className="size-4" />
+      )}
+      {isPending && <Loader2 className="size-4 animate-spin" />}
+      {connector.name}
+    </Button>
   );
 };

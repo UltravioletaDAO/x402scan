@@ -68,7 +68,7 @@ export const ConnectEmbeddedWalletDialog = ({ children }: AuthModalProps) => {
         </DialogHeader>
         {filteredConnectors.length > 0 && (
           <>
-            <ConnectEOAForm />
+            <ConnectEOAForm connectors={filteredConnectors} />
             <div className="flex items-center gap-2">
               <Separator className="flex-1" />
               <p className="text-muted-foreground text-xs">or</p>
