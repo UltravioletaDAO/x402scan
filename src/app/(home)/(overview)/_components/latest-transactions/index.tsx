@@ -64,6 +64,7 @@ const LatestTransactionsTableContainer = ({
       title="Transactions"
       description="x402 requests made through known facilitators"
       actions={<RangeSelector />}
+      href="/transactions"
     >
       {children}
     </Section>

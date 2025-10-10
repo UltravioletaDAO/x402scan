@@ -53,6 +53,7 @@ const Container = ({ children }: { children: React.ReactNode }) => {
       title="Top Facilitators"
       description="Analytics on facilitators processing x402 transfers"
       className="gap-4"
+      href="/facilitators"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {children}
