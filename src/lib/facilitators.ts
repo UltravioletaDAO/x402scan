@@ -36,10 +36,20 @@ const payAiFacilitator = {
   color: 'var(--color-purple-600)',
 } satisfies Facilitator;
 
+const aurraCloudFacilitator = {
+  id: 'aurracloud',
+  name: 'AurraCloud' as const,
+  image: '/aurracloud.png',
+  link: 'https://x402-facilitator.aurracloud.com',
+  addresses: ['0x222c4367a2950F3B53Af260E111FC3060b0983fF'],
+  color: 'var(--color-blue-600)',
+} satisfies Facilitator;
+
 export const facilitators = [
   coinbaseFacilitator,
   x402rsFacilitator,
   payAiFacilitator,
+  aurraCloudFacilitator,
 ] satisfies Facilitator[];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];
