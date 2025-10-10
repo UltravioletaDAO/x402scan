@@ -5,7 +5,7 @@ import {
   useIsInitialized,
   useSignOut,
 } from '@coinbase/cdp-hooks';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
 
@@ -28,6 +28,8 @@ interface Props {
 export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
   const { data: balance, isLoading } = useBalance();
 
+  const { data: session, status } = useSession();
+
   const { isInitialized } = useIsInitialized();
   const { currentUser } = useCurrentUser();
   const { signOut: signOutWallet } = useSignOut();
@@ -41,7 +43,9 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
       } else {
         await disconnectAsync();
       }
-      await signOut();
+      if (session) {
+        await signOut();
+      }
     },
   });
 
@@ -78,7 +82,7 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
       <Button
         onClick={() => handleSignOut()}
         className="w-full"
-        disabled={!isInitialized || isSigningOut}
+        disabled={!isInitialized || isSigningOut || status === 'loading'}
       >
         {isSigningOut ? (
           <Loader2 className="size-4 animate-spin" />
