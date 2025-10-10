@@ -1,13 +1,12 @@
 import { USDC_ADDRESS } from '@/lib/utils';
-import { useBalance as useBalanceWagmi } from 'wagmi';
+import { useAccount, useBalance as useBalanceWagmi } from 'wagmi';
 import { base } from 'viem/chains';
-import { useCurrentUser } from '@coinbase/cdp-hooks';
 
 export const useBalance = () => {
-  const { currentUser } = useCurrentUser();
+  const { address } = useAccount();
 
   const result = useBalanceWagmi({
-    address: currentUser?.evmAccounts?.[0] ?? undefined,
+    address: address ?? undefined,
     token: USDC_ADDRESS,
     chainId: base.id,
   });

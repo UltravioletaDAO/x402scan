@@ -6,7 +6,9 @@ import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider } from 'next-themes';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
+import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/logo';
 import { AnimatedThemeToggler } from '@/components/magicui/animated-theme-toggler';
 import { Toaster } from '@/components/ui/sonner';
@@ -17,6 +19,8 @@ import { NavbarAuthButton } from './_components/layout/navbar/auth-button';
 
 import { CDPHooksProvider } from './_contexts/cdp';
 import { SearchProvider } from './_contexts/search/provider';
+import { WagmiProvider } from './_contexts/wagmi';
+import { PostHogProvider } from './_contexts/posthog';
 
 import { TRPCReactProvider } from '@/trpc/client';
 
@@ -25,10 +29,7 @@ import { env } from '@/env';
 import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { PostHogProvider } from './_contexts/posthog';
-import { WagmiProvider } from './_contexts/wagmi';
+import { SessionProvider } from 'next-auth/react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -121,62 +122,67 @@ export default function RootLayout({
         <Toaster />
         <SpeedInsights />
         <Analytics />
-        <TRPCReactProvider>
-          <SearchProvider>
-            <CDPHooksProvider>
-              <WagmiProvider>
-                <PostHogProvider>
-                  <ThemeProvider
-                    attribute="class"
-                    defaultTheme="light"
-                    storageKey="x402scan-theme"
-                    enableSystem={true}
-                  >
-                    <div className="min-h-screen flex flex-col relative">
-                      <LogoContainer>
-                        <Link href="/" prefetch={false}>
-                          <Logo className="size-full aspect-square" />
-                        </Link>
-                      </LogoContainer>
-                      <header className="w-full flex flex-col pt-4 justify-center bg-card">
-                        <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
-                          <div className="pl-8 md:pl-8 flex items-center gap-2 md:gap-3">
-                            {breadcrumbs}
+        <SessionProvider>
+          <TRPCReactProvider>
+            <SearchProvider>
+              <CDPHooksProvider>
+                <WagmiProvider>
+                  <PostHogProvider>
+                    <ThemeProvider
+                      attribute="class"
+                      defaultTheme="light"
+                      storageKey="x402scan-theme"
+                      enableSystem={true}
+                    >
+                      <div className="min-h-screen flex flex-col relative">
+                        <LogoContainer>
+                          <Link href="/" prefetch={false}>
+                            <Logo className="size-full aspect-square" />
+                          </Link>
+                        </LogoContainer>
+                        <header className="w-full flex flex-col pt-4 justify-center bg-card">
+                          <div className="flex items-center justify-between w-full px-2 md:px-6 pb-0 md:pb-0 h-10">
+                            <div className="pl-8 md:pl-8 flex items-center gap-2 md:gap-3">
+                              {breadcrumbs}
+                            </div>
+                            <div className="flex items-center gap-1 md:gap-2">
+                              <NavbarSearchButton />
+                              <NavbarAuthButton />
+                              <a
+                                href="https://github.com/Merit-Systems/x402scan"
+                                target="_blank"
+                              >
+                                <Button variant="outline" size={'navbar'}>
+                                  <Image
+                                    src="/github.png"
+                                    alt="GitHub"
+                                    width={16}
+                                    height={16}
+                                    className="size-4"
+                                  />
+                                  <span className="hidden md:block">
+                                    Contribute
+                                  </span>
+                                </Button>
+                              </a>
+                              <AnimatedThemeToggler />
+                            </div>
                           </div>
-                          <div className="flex items-center gap-1 md:gap-2">
-                            <NavbarSearchButton />
-                            <NavbarAuthButton />
-                            <a
-                              href="https://github.com/Merit-Systems/x402scan"
-                              target="_blank"
-                            >
-                              <Button variant="outline" size={'navbar'}>
-                                <Image
-                                  src="/github.png"
-                                  alt="GitHub"
-                                  width={16}
-                                  height={16}
-                                  className="size-4"
-                                />
-                                <span className="hidden md:block">
-                                  Contribute
-                                </span>
-                              </Button>
-                            </a>
-                            <AnimatedThemeToggler />
-                          </div>
+                        </header>
+                        <div className="bg-background flex-1 flex flex-col">
+                          {children}
                         </div>
-                      </header>
+                      </div>
                       <div className="bg-background flex-1 flex flex-col">
                         {children}
                       </div>
-                    </div>
-                  </ThemeProvider>
-                </PostHogProvider>
-              </WagmiProvider>
-            </CDPHooksProvider>
-          </SearchProvider>
-        </TRPCReactProvider>
+                    </ThemeProvider>
+                  </PostHogProvider>
+                </WagmiProvider>
+              </CDPHooksProvider>
+            </SearchProvider>
+          </TRPCReactProvider>
+        </SessionProvider>
       </body>
     </html>
   );

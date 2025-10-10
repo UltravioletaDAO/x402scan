@@ -7,6 +7,7 @@ interface SignInWithEthereumOptions {
   chainId: number;
   signMessage: (message: string) => Promise<string>;
   email?: string;
+  redirectTo?: string;
 }
 
 export async function signInWithEthereum({
@@ -14,6 +15,7 @@ export async function signInWithEthereum({
   chainId,
   signMessage,
   email,
+  redirectTo,
 }: SignInWithEthereumOptions) {
   const message = new SiweMessage({
     domain: window.location.host,
@@ -28,6 +30,7 @@ export async function signInWithEthereum({
   await signIn(SIWE_PROVIDER_ID, {
     message: JSON.stringify(message),
     signedMessage: await signMessage(message.prepareMessage()),
-    email,
+    ...(email ? { email } : {}),
+    ...(redirectTo ? { redirectTo } : {}),
   });
 }

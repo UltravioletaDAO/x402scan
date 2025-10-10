@@ -111,7 +111,6 @@ export const listOriginsWithResources = async () => {
       resources: origin.resources
         .map(resource => {
           const response = parseX402Response(resource.response?.response);
-          console.log(response);
           return {
             ...resource,
             ...response,

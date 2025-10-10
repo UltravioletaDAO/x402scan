@@ -1,30 +1,46 @@
 'use client';
 
-import { useSignOut } from '@coinbase/cdp-hooks';
+import {
+  useCurrentUser,
+  useIsInitialized,
+  useSignOut,
+} from '@coinbase/cdp-hooks';
 import { signOut } from 'next-auth/react';
 
 import { Button } from '@/components/ui/button';
 
 import { useBalance } from '@/app/_hooks/use-balance';
 
-import type { User } from '@coinbase/cdp-hooks';
 import { CopyCode } from '@/components/ui/copy-code';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMutation } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 
+import type { User } from '@coinbase/cdp-hooks';
+import type { Address } from 'viem';
+import { useDisconnect } from 'wagmi';
+
 interface Props {
-  user: User;
+  address: Address;
+  user?: User;
 }
 
-export const EmbeddedWalletContent: React.FC<Props> = ({ user }) => {
+export const EmbeddedWalletContent: React.FC<Props> = ({ user, address }) => {
   const { data: balance, isLoading } = useBalance();
 
+  const { isInitialized } = useIsInitialized();
+  const { currentUser } = useCurrentUser();
   const { signOut: signOutWallet } = useSignOut();
+
+  const { disconnectAsync } = useDisconnect();
 
   const { mutateAsync: handleSignOut, isPending: isSigningOut } = useMutation({
     mutationFn: async () => {
-      await signOutWallet();
+      if (isInitialized && currentUser) {
+        await signOutWallet();
+      } else {
+        await disconnectAsync();
+      }
       await signOut();
     },
   });
@@ -41,34 +57,33 @@ export const EmbeddedWalletContent: React.FC<Props> = ({ user }) => {
           )
         }
       />
-      {user.evmAccounts && user.evmAccounts.length > 0 && (
-        <ItemContainer
-          label="Address"
-          value={
-            <CopyCode
-              code={user.evmAccounts[0]}
-              toastMessage="Address copied to clipboard"
-            />
-          }
-        />
-      )}
+      <ItemContainer
+        label="Address"
+        value={
+          <CopyCode code={address} toastMessage="Address copied to clipboard" />
+        }
+      />
       {user?.authenticationMethods.email?.email && (
         <AuthenticationMethod
           label="Email"
           value={user.authenticationMethods.email.email}
         />
       )}
-      {user.authenticationMethods.sms?.phoneNumber && (
+      {user?.authenticationMethods.sms?.phoneNumber && (
         <AuthenticationMethod
           label="Phone Number"
           value={user.authenticationMethods.sms.phoneNumber}
         />
       )}
-      <Button onClick={() => handleSignOut()} className="w-full">
+      <Button
+        onClick={() => handleSignOut()}
+        className="w-full"
+        disabled={!isInitialized || isSigningOut}
+      >
         {isSigningOut ? (
           <Loader2 className="size-4 animate-spin" />
         ) : (
-          'Sign Out'
+          'Disconnect'
         )}
       </Button>
     </div>
