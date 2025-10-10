@@ -77,7 +77,7 @@ export const Addresses = ({
     <Tooltip>
       <TooltipTrigger
         className={cn(
-          'cursor-pointer hover:bg-muted hover:text-muted-foreground rounded-md transition-colors',
+          'cursor-pointer hover:bg-muted hover:text-muted-foreground rounded-md transition-colors text-xs font-mono',
           className
         )}
       >
