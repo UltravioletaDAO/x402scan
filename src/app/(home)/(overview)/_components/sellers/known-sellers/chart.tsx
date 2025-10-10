@@ -9,15 +9,15 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { api } from '@/trpc/client';
 
 interface Props {
-  address: string;
+  addresses: string[];
 }
 
-export const KnownSellerChart = ({ address }: Props) => {
+export const KnownSellerChart = ({ addresses }: Props) => {
   const { startDate, endDate } = useTimeRangeContext();
 
   const { data: bucketedStats, isLoading } =
     api.stats.getBucketedStatistics.useQuery({
-      addresses: [address],
+      addresses,
       startDate,
       endDate,
       numBuckets: 48,
