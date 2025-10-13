@@ -10,7 +10,7 @@ type FacilitatorResource = Awaited<
   ReturnType<typeof listFacilitatorResources>
 >['items'][number];
 
-export const listFacilitatorResources = async (
+const listFacilitatorResources = async (
   facilitator: FacilitatorConfig,
   config?: ListDiscoveryResourcesRequest
 ) => {
