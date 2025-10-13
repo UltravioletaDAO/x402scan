@@ -1,6 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from '../trpc';
 
 import { acceptsRouter } from './accepts';
+import { availableToolsRouter } from './available-tools';
 import { facilitatorsRouter } from './facilitators';
 import { onrampSessionsRouter } from './onramp-sessions';
 import { originsRouter } from './origins';
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   transfers: transfersRouter,
   facilitators: facilitatorsRouter,
   onrampSessions: onrampSessionsRouter,
+  availableTools: availableToolsRouter,
 });
 
 export type AppRouter = typeof appRouter;
