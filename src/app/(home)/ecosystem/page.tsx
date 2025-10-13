@@ -2,11 +2,9 @@ import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ecosystemCategories } from '@/lib/ecosystem/schema';
 import { EcosystemList } from './_components/list';
-import { useEcosystemItems } from '@/lib/ecosystem/hooks';
+import { EcosystemItems } from '@/lib/ecosystem/constants';
 
 export default function EcosystemPage() {
-  const ecosystemItems = useEcosystemItems();
-
   return (
     <div>
       <Heading
@@ -26,12 +24,12 @@ export default function EcosystemPage() {
             ))}
           </TabsList>
           <TabsContent value="all">
-            <EcosystemList items={ecosystemItems} showBadge />
+            <EcosystemList items={EcosystemItems} showBadge />
           </TabsContent>
           {ecosystemCategories.map(category => (
             <TabsContent key={category} value={category}>
               <EcosystemList
-                items={ecosystemItems.filter(
+                items={EcosystemItems.filter(
                   item => item.category === category
                 )}
               />
