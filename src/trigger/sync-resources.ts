@@ -2,7 +2,7 @@ import { logger, schedules } from '@trigger.dev/sdk/v3';
 
 import type { upsertResourceSchema } from '@/services/db/resources';
 import { upsertResource } from '@/services/db/resources';
-import { listFacilitatorResources } from '@/services/facilitator/list-resources';
+import { listAllFacilitatorResources } from '@/services/facilitator/list-resources';
 import { upsertOrigin } from '@/services/db/origin';
 import { getOriginFromUrl } from '@/lib/url';
 import type { AcceptsNetwork } from '@prisma/client';
@@ -36,16 +36,13 @@ export const syncResourcesTask = schedules.task({
       const resources = (
         await Promise.all(
           facilitators.map(facilitator =>
-            listFacilitatorResources(facilitator)
-              .then(resources => resources.items)
-              .catch(error => {
-                logger.error('Failed to fetch facilitator resources', {
-                  facilitator: facilitator.url,
-                  error:
-                    error instanceof Error ? error.message : 'Unknown error',
-                });
-                return [];
-              })
+            listAllFacilitatorResources(facilitator).catch(error => {
+              logger.error('Failed to fetch facilitator resources', {
+                facilitator: facilitator.url,
+                error: error instanceof Error ? error.message : 'Unknown error',
+              });
+              return [];
+            })
           )
         )
       ).flat();
@@ -53,6 +50,8 @@ export const syncResourcesTask = schedules.task({
         totalResources: resources.length,
         durationMs: Date.now() - startTime,
       });
+
+      console.log('resources', resources);
 
       if (resources.length === 0) {
         logger.warn('No resources found from facilitator');
