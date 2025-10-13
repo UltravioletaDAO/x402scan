@@ -4,12 +4,11 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "dev": "concurrently \"pnpm trigger:dev\" \"pnpm next:dev\"",
+    "dev": "next dev --turbopack",
     "build": "prisma migrate deploy && next build --turbopack",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
-    "next:dev": "NODE_OPTIONS='--trace-warnings' next dev --turbopack",
     "db:migrate:dev": "prisma migrate dev",
     "db:migrate:prod": "prisma migrate deploy",
     "db:push": "prisma db push",
