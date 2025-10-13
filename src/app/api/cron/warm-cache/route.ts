@@ -4,11 +4,15 @@ import { api } from '@/trpc/server';
 import { defaultSellersSorting } from '@/app/_contexts/sorting/sellers/default';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 
-/**
- * Cache warming endpoint for homepage queries
- * Should be called every 5 minutes via cron to keep cache fresh
- */
-export async function GET() {
+import type { NextRequest } from 'next/server';
+import { checkCronSecret } from '@/lib/cron';
+
+export async function GET(request: NextRequest) {
+  const cronCheck = checkCronSecret(request);
+  if (cronCheck) {
+    return cronCheck;
+  }
+
   try {
     const endDate = new Date();
     const startDate = subMonths(endDate, 1);
