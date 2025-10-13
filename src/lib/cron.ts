@@ -13,7 +13,7 @@ export const checkCronSecret = (request: NextRequest) => {
   if (authHeader !== `Bearer ${env.CRON_SECRET}`) {
     return NextResponse.json(
       {
-        success: false,
+        success: false as const,
         error: 'Unauthorized',
       },
       { status: 401 }

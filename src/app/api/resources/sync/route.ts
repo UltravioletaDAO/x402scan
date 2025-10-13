@@ -44,12 +44,15 @@ export const GET = async (request: NextRequest) => {
 
     if (resources.length === 0) {
       console.warn('No resources found from facilitator');
-      return {
-        success: true,
-        message: 'No resources to sync',
-        resourcesProcessed: 0,
-        originsProcessed: 0,
-      };
+      return NextResponse.json(
+        {
+          success: true as const,
+          message: 'No resources to sync',
+          resourcesProcessed: 0,
+          originsProcessed: 0,
+        },
+        { status: 200 }
+      );
     }
 
     // Step 2: Extract unique origins
@@ -214,7 +217,7 @@ export const GET = async (request: NextRequest) => {
     // Final summary
     const totalDuration = Date.now() - resourceProcessingStart;
     const result = {
-      success: true,
+      success: true as const,
       message: `Sync completed successfully`,
       resourcesProcessed: successfulResources,
       resourcesFailed: failedResources,
@@ -222,19 +225,15 @@ export const GET = async (request: NextRequest) => {
       originsFailed: failedOrigins,
       durationMs: totalDuration,
     };
-    return NextResponse.json(result);
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    const errorResult = {
-      success: false,
-      message: 'Sync task failed with error',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
-
-    console.error('Resource sync task failed', {
-      ...errorResult,
-      stack: error instanceof Error ? error.stack : undefined,
-    });
-
-    throw error;
+    return NextResponse.json(
+      {
+        success: false as const,
+        message: 'Sync task failed with error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      },
+      { status: 500 }
+    );
   }
 };

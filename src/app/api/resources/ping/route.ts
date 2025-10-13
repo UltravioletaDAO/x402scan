@@ -11,41 +11,29 @@ export const GET = async (request: NextRequest) => {
     return cronCheck;
   }
 
-  const startTime = Date.now();
-  console.info('Starting resource ping task', {
-    timestamp: new Date().toISOString(),
-    lastTimestamp: new Date().toISOString(),
-    scheduleId: 'ping-resources',
-  });
-
   try {
     // Step 1: Fetch all resources from database
     console.info('Fetching all resources from database');
     const resources = await listResources();
     console.info('Successfully fetched resources', {
       totalResources: resources.length,
-      durationMs: Date.now() - startTime,
     });
 
     if (resources.length === 0) {
       console.warn('No resources found in database');
-      return {
-        success: true,
-        message: 'No resources to ping',
-        resourcesPinged: 0,
-        durationMs: Date.now() - startTime,
-      };
+      return NextResponse.json(
+        {
+          success: true as const,
+          message: 'No resources to ping',
+          resourcesPinged: 0,
+        },
+        { status: 200 }
+      );
     }
-
-    // Step 2: Ping all resources and store responses
-    console.info('Starting resource ping processing');
 
     const pingResults = await Promise.allSettled(
       resources.map(async resource => {
         for (const method of ['GET', 'POST']) {
-          console.info('pinging resource', {
-            method,
-          });
           const response = await fetch(resource.resource, {
             method,
             headers: {
@@ -59,10 +47,6 @@ export const GET = async (request: NextRequest) => {
             try {
               const parsedResponse = parseX402Response(await response.json());
               if (parsedResponse.success) {
-                console.info('resource responded with valid x402 response', {
-                  resource: resource.resource,
-                  status,
-                });
                 await upsertResourceResponse(resource.id, parsedResponse.data);
                 return {
                   resource: resource.resource,
@@ -93,7 +77,7 @@ export const GET = async (request: NextRequest) => {
     );
 
     return NextResponse.json({
-      success: true,
+      success: true as const,
       message: 'Resource ping task completed',
       validX402Responses: pingResults.filter(
         result => result.status === 'fulfilled' && result.value?.isValid402
@@ -111,15 +95,12 @@ export const GET = async (request: NextRequest) => {
       resourcesNotPinged: pingResults.filter(
         result => result.status === 'fulfilled' && !result.value?.success
       ).length,
-      durationMs: Date.now() - startTime,
     });
   } catch (error) {
-    const totalDuration = Date.now() - startTime;
     const errorResult = {
-      success: false,
+      success: false as const,
       message: 'Ping task failed with error',
       error: error instanceof Error ? error.message : 'Unknown error',
-      durationMs: totalDuration,
     };
 
     console.error('Resource ping task failed', {
