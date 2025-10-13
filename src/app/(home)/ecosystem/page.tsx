@@ -2,9 +2,11 @@ import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ecosystemCategories } from '@/lib/ecosystem/schema';
 import { EcosystemList } from './_components/list';
-import { ecosystemItems } from '@/lib/ecosystem/list';
+import { useEcosystemItems } from '@/lib/ecosystem/hooks';
 
 export default function EcosystemPage() {
+  const ecosystemItems = useEcosystemItems();
+
   return (
     <div>
       <Heading
