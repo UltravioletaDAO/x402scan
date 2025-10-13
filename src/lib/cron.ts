@@ -5,7 +5,7 @@ import { env } from '@/env';
 import type { NextRequest } from 'next/server';
 
 export const checkCronSecret = (request: NextRequest) => {
-  if (env.NEXT_PUBLIC_NODE_ENV !== 'production') {
+  if (env.NEXT_PUBLIC_NODE_ENV === 'development') {
     return;
   }
 
