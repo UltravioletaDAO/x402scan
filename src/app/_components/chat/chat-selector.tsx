@@ -11,23 +11,59 @@ import { formatDistanceToNow } from 'date-fns';
 
 interface ChatSelectorProps {
   currentChatId?: string;
-  onNewChat: () => void;
 }
 
-export const ChatSelector = ({ currentChatId, onNewChat }: ChatSelectorProps) => {
+export const ChatSelector = ({ currentChatId }: ChatSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const utils = api.useUtils();
   
-  const { data: chats, refetch } = api.chats.getUserChats.useQuery();
+  const { data: chats } = api.chats.getUserChats.useQuery();
+
+  const createChatMutation = api.chats.createChat.useMutation({
+    onSuccess: (newChat) => {
+      // Optimistically update the cache
+      utils.chats.getUserChats.setData(undefined, (old) => {
+        if (!old) return [newChat];
+        return [newChat, ...old];
+      });
+      
+      // Navigate to the new chat
+      void router.push(`/chat/${newChat.id}`);
+    },
+  });
 
   const deleteChatMutation = api.chats.deleteChat.useMutation({
-    onSuccess: () => {
-      void refetch();
-      // If we deleted the current chat, navigate to new chat
-      const deletedChat = chats?.find(chat => chat.id === currentChatId);
-      if (deletedChat) {
-        onNewChat();
+    onMutate: async ({ chatId }) => {
+      // Cancel outgoing refetches
+      await utils.chats.getUserChats.cancel();
+      
+      // Snapshot the previous value
+      const previousChats = utils.chats.getUserChats.getData();
+      
+      // Optimistically update the cache
+      utils.chats.getUserChats.setData(undefined, (old) => {
+        if (!old) return [];
+        return old.filter(chat => chat.id !== chatId);
+      });
+      
+      return { previousChats };
+    },
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousChats) {
+        utils.chats.getUserChats.setData(undefined, context.previousChats);
       }
+    },
+    onSuccess: (_, { chatId }) => {
+      // If we deleted the current chat, navigate to new chat
+      if (chatId === currentChatId) {
+        handleNewChat();
+      }
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure consistency
+      void utils.chats.getUserChats.invalidate();
     },
   });
 
@@ -37,7 +73,7 @@ export const ChatSelector = ({ currentChatId, onNewChat }: ChatSelectorProps) =>
   };
 
   const handleNewChat = () => {
-    onNewChat();
+    createChatMutation.mutate({ title: 'New Chat' });    
     setIsOpen(false);
   };
 
@@ -70,6 +106,7 @@ export const ChatSelector = ({ currentChatId, onNewChat }: ChatSelectorProps) =>
             variant="outline"
             size="sm"
             onClick={handleNewChat}
+            disabled={createChatMutation.isPending}
             title="New Chat"
           >
             <Plus className="h-4 w-4" />

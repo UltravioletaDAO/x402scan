@@ -27,17 +27,17 @@ export async function POST(request: Request) {
 
 
   const toolsToCallWith = await getSelectedTools(toAccount(walletClient) as Signer, selectedTools);
-  // always save the incoming messages to the database
-  await Promise.all(messages.map(async (message) => {
-    return createMessage({
-      role: message.role,
-      parts: JSON.stringify(message.parts),
+  // Only save the newest user message to the database, onFinish
+  // will save the rest.
+  const lastMessage = messages[messages.length - 1];
+  await createMessage({
+      role: lastMessage.role,
+      parts: JSON.stringify(lastMessage.parts),
       attachments: {},
       chat: {
         connect: { id: chatId }
       }
     });
-  }));
   
   const result = await InvokeAgent(model, toAccount(walletClient) as Signer, messages, toolsToCallWith);
 

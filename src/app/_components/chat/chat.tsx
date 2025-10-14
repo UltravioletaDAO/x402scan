@@ -76,8 +76,7 @@ const ChatContent = ({
         <div className="flex-shrink-0 bg-background border-b">
           <div className="mx-auto max-w-3xl px-6 py-4">
             <ChatSelector 
-              currentChatId={currentChatId ?? undefined} 
-              onNewChat={createNewChat}
+              currentChatId={currentChatId ?? undefined}
             />
           </div>
         </div>
@@ -123,7 +122,6 @@ const Chat = ({ serverData, chatId }: ChatProps) => {
   const createNewChat = () => {
     router.push('/chat');
   };
-  console.log("chatMessages", serverData.chatMessages);
   return (
     <ChatContent
       currentChatId={chatId}

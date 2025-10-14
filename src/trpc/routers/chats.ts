@@ -69,6 +69,24 @@ export const chatsRouter = createTRPCRouter({
       return await updateChat(input.chatId, updateData);
     }),
 
+  // Create a new chat
+  createChat: protectedProcedure
+    .input(z.object({
+      title: z.string().min(1).max(255).optional(),
+      visibility: z.nativeEnum(ChatVisibility).optional().default('private'),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const defaultTitle = input.title ?? 'New Chat';
+      
+      return await createChat({
+        title: defaultTitle,
+        visibility: input.visibility,
+        user: {
+          connect: { id: ctx.session.user.id }
+        }
+      });
+    }),
+
   // Delete a chat
   deleteChat: protectedProcedure
     .input(z.object({ chatId: z.string() }))
