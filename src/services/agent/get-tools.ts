@@ -235,13 +235,16 @@ export async function createX402AITools(
           const queryParams = new URLSearchParams();
           for (const [key, value] of Object.entries(params)) {
             if (value !== undefined && value !== null) {
-              queryParams.append(key, JSON.stringify(value));
+              if (typeof value === 'object') {
+                queryParams.append(key, JSON.stringify(value));
+              } else if (typeof value === 'number') {
+                queryParams.append(key, String(value));
+              } else {
+                queryParams.append(key, String(value));
+              }
             }
           }
-          const queryString = queryParams.toString();
-          if (queryString) {
-            url = `${toolDef.resource}?${queryString}`;
-          }
+          url = `${toolDef.resource}?${queryParams.toString()}`;
         }
         // For POST/PUT/PATCH/DELETE: send as JSON body
         else {
