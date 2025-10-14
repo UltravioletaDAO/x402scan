@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-import { AlertTriangle, ChevronDown, Plus, X } from 'lucide-react';
+import { AlertTriangle, ChevronDown, Eye, Plus, X } from 'lucide-react';
 
 import z from 'zod';
 
@@ -30,6 +30,14 @@ import {
 } from '@/components/ui/card';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export const RegisterResourceForm = () => {
   const [url, setUrl] = useState('');
@@ -91,7 +99,7 @@ export const RegisterResourceForm = () => {
       </CardHeader>
       <CardContent>
         {data && !data.error ? (
-          <div className="flex flex-col gap-1 overflow-hidden w-full max-w-full">
+          <div className="flex flex-col gap-4 overflow-hidden w-full max-w-full">
             <div className="flex flex-col gap-2 bg-muted p-4 rounded-md">
               <div className="flex gap-4 justify-between overflow-hidden w-full max-w-full bg-muted rounded-md">
                 <div className="flex items-center gap-2 flex-1 overflow-hidden max-w-full">
@@ -100,7 +108,8 @@ export const RegisterResourceForm = () => {
                     className="size-4 rounded-md"
                   />
                   <h1 className="font-bold flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
-                    {data.resource.origin.title}
+                    {data.resource.origin.title ??
+                      new URL(data.resource.origin.origin).hostname}
                   </h1>
                 </div>
                 <p className="text-lg text-primary font-bold">
@@ -116,15 +125,40 @@ export const RegisterResourceForm = () => {
 
             {data.enhancedParseWarnings && (
               <div className="flex flex-col gap-1 bg-yellow-600/10 rounded-md border-yellow-600/60 border">
-                <div className="border-b p-4 border-b-yellow-600/60 flex items-center gap-2">
-                  <AlertTriangle className="size-6 text-yellow-600" />
-                  <div>
-                    <h2 className="font-semibold">Added with Parse Warnings</h2>
-                    <p className="text-sm text-muted-foreground">
-                      The resource was added successfully, but is not available
-                      for use because the output schema is not properly typed.
-                    </p>
+                <div className="border-b p-4 border-b-yellow-600/60 flex items-center justify-between gap-2">
+                  <div className="flex flex-row gap-2 items-center">
+                    <AlertTriangle className="size-6 text-yellow-600" />
+                    <div>
+                      <h2 className="font-semibold">
+                        Added with Parse Warnings
+                      </h2>
+                      <p className="text-sm text-muted-foreground">
+                        The resource was added successfully, but is not
+                        available for use because the output schema is not
+                        properly typed.
+                      </p>
+                    </div>
                   </div>
+                  <Dialog>
+                    <DialogTrigger>
+                      <Button variant="ghost">
+                        <Eye className="size-4" />
+                        See Response
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Invalid x402 Response</DialogTitle>
+                        <DialogDescription>
+                          The route responded with a 402, but the response body
+                          was not properly typed.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-4 rounded-md max-h-48 overflow-auto">
+                        {JSON.stringify(data.response, null, 2)}
+                      </pre>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 <ul className="list-disc list-inside text-sm text-muted-foreground p-4">
                   {data.enhancedParseWarnings.map(warning => (
@@ -219,31 +253,56 @@ export const RegisterResourceForm = () => {
                 <div className="flex flex-col gap-1 bg-red-600/10 rounded-md border-red-600/60 border">
                   <div
                     className={cn(
-                      'p-4 flex items-center gap-2',
+                      'flex justify-between items-center gap-2 p-4',
                       data.parseErrorData && 'border-b border-b-red-600/60'
                     )}
                   >
-                    <AlertTriangle className="size-6 text-red-600" />
-                    <div>
-                      <h2 className="font-semibold">
-                        {data.type === 'parseErrors'
-                          ? 'Invalid x402 Response'
-                          : 'No 402 Response'}
-                      </h2>
-                      <p className="text-sm text-muted-foreground">
-                        {data.type === 'parseErrors'
-                          ? 'The route responded with a 402, but the response body was not properly typed.'
-                          : 'The route did not respond with a 402.'}
-                      </p>
+                    <div className={cn('flex items-center gap-2')}>
+                      <AlertTriangle className="size-6 text-red-600" />
+                      <div>
+                        <h2 className="font-semibold">
+                          {data.type === 'parseErrors'
+                            ? 'Invalid x402 Response'
+                            : 'No 402 Response'}
+                        </h2>
+                        <p className="text-sm text-muted-foreground">
+                          {data.type === 'parseErrors'
+                            ? 'The route responded with a 402, but the response body was not properly typed.'
+                            : 'The route did not respond with a 402.'}
+                        </p>
+                      </div>
                     </div>
                     {data.parseErrorData && (
-                      <ul className="list-disc list-inside text-sm text-muted-foreground p-4">
-                        {data.parseErrorData.parseErrors.map(warning => (
-                          <li key={warning}>{warning}</li>
-                        ))}
-                      </ul>
+                      <Dialog>
+                        <DialogTrigger>
+                          <Button variant="ghost">
+                            <Eye className="size-4" />
+                            See Response
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Invalid x402 Response</DialogTitle>
+                            <DialogDescription>
+                              The route responded with a 402, but the response
+                              body was not properly typed.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <pre className="text-xs font-mono whitespace-pre-wrap bg-muted p-4 rounded-md max-h-48 overflow-auto">
+                            {JSON.stringify(data.parseErrorData.data, null, 2)}
+                          </pre>
+                        </DialogContent>
+                      </Dialog>
                     )}
                   </div>
+
+                  {data.parseErrorData && (
+                    <ul className="list-disc list-inside text-sm text-muted-foreground p-4">
+                      {data.parseErrorData.parseErrors.map(warning => (
+                        <li key={warning}>{warning}</li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
               </div>
             )}
