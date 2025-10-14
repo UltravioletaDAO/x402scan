@@ -9,25 +9,21 @@ import {
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 
-export type SourcesProps = ComponentProps<'div'>;
-
-export const Sources = ({ className, ...props }: SourcesProps) => (
+const Sources = ({ className, ...props }: ComponentProps<'div'>) => (
   <Collapsible
     className={cn('not-prose mb-4 text-primary text-xs', className)}
     {...props}
   />
 );
 
-export type SourcesTriggerProps = ComponentProps<typeof CollapsibleTrigger> & {
-  count: number;
-};
-
-export const SourcesTrigger = ({
+const SourcesTrigger = ({
   className,
   count,
   children,
   ...props
-}: SourcesTriggerProps) => (
+}: ComponentProps<typeof CollapsibleTrigger> & {
+  count: number;
+}) => (
   <CollapsibleTrigger
     className={cn('flex items-center gap-2', className)}
     {...props}
@@ -41,12 +37,10 @@ export const SourcesTrigger = ({
   </CollapsibleTrigger>
 );
 
-export type SourcesContentProps = ComponentProps<typeof CollapsibleContent>;
-
-export const SourcesContent = ({
+const SourcesContent = ({
   className,
   ...props
-}: SourcesContentProps) => (
+}: ComponentProps<typeof CollapsibleContent>) => (
   <CollapsibleContent
     className={cn(
       'mt-3 flex w-fit flex-col gap-2',
@@ -57,9 +51,7 @@ export const SourcesContent = ({
   />
 );
 
-export type SourceProps = ComponentProps<'a'>;
-
-export const Source = ({ href, title, children, ...props }: SourceProps) => (
+const Source = ({ href, title, children, ...props }: ComponentProps<'a'>) => (
   <a
     className="flex items-center gap-2"
     href={href}
@@ -75,3 +67,5 @@ export const Source = ({ href, title, children, ...props }: SourceProps) => (
     )}
   </a>
 );
+
+export { Sources, SourcesTrigger, SourcesContent, Source };

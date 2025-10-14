@@ -1,7 +1,8 @@
 import { createPaymentHeader, selectPaymentRequirements } from 'x402/client';
-import { PaymentRequirementsSchema, Signer } from 'x402/types';
+import { PaymentRequirementsSchema } from 'x402/types';
+import type { Signer } from 'x402/types';
 
-async function getPaymentHeaderFromBody(body: any, walletClient: Signer) {
+async function getPaymentHeaderFromBody(body: unknown, walletClient: Signer) {
   const { x402Version, accepts } = body as {
     x402Version: number;
     accepts: unknown[];
@@ -23,14 +24,16 @@ async function getPaymentHeaderFromBody(body: any, walletClient: Signer) {
 }
 
 export function fetchWithX402Payment(
-  fetch: any,
+  fetch: typeof globalThis.fetch,
   walletClient: Signer
 ): typeof fetch {
-  return async (input: URL, init?: RequestInit) => {
-    const headers: Record<string, any> = { ...init?.headers };
+  return async (input: string | URL | Request, init?: RequestInit) => {
+    const headers: Record<string, string> = { 
+      ...(init?.headers as Record<string, string> || {})
+    };
 
-    delete headers['Authorization'];
-    delete headers['authorization'];
+    delete headers.Authorization;
+    delete headers.authorization;
 
     const response = await fetch(input, {
       ...init,
@@ -38,7 +41,7 @@ export function fetchWithX402Payment(
     });
 
     if (response.status === 402) {
-      const paymentRequiredJson = await response.json();
+      const paymentRequiredJson = await response.json() as unknown;
       const paymentHeader = await getPaymentHeaderFromBody(
         paymentRequiredJson,
         walletClient

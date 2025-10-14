@@ -79,11 +79,9 @@ const LoaderIcon = ({ size = 16 }: LoaderIconProps) => (
   </svg>
 );
 
-export type LoaderProps = HTMLAttributes<HTMLDivElement> & {
+const Loader = ({ className, size = 16, ...props }: HTMLAttributes<HTMLDivElement> & {
   size?: number;
-};
-
-export const Loader = ({ className, size = 16, ...props }: LoaderProps) => (
+}) => (
   <div
     className={cn(
       'inline-flex animate-spin items-center justify-center',
@@ -94,3 +92,5 @@ export const Loader = ({ className, size = 16, ...props }: LoaderProps) => (
     <LoaderIcon size={size} />
   </div>
 );
+
+export { Loader };

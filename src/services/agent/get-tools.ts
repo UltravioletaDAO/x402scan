@@ -3,8 +3,8 @@ import { z } from 'zod3';
 import {
   HTTPRequestStructureSchema,
   PaymentRequirementsSchema,
-  Signer,
 } from 'x402/types';
+import type { Signer } from 'x402/types';
 import { fetchWithX402Payment } from './fetch';
 
 const FieldDefSchema: z.ZodTypeAny = z.lazy(() =>
@@ -32,7 +32,9 @@ const EnhancedOutputSchema = z.object({
     queryParams: true,
     bodyFields: true,
     headerFields: true,
+    type: true, // Remove the strict type requirement
   }).extend({
+    type: z.string().optional(), // Allow any string type, not just "http"
     queryParams: z.record(FieldDefSchema).optional(),
     bodyFields: z.record(FieldDefSchema).optional(),
     headerFields: z.record(FieldDefSchema).optional(),
@@ -67,11 +69,11 @@ const X402ApiResponseSchema = z.object({
   json: z.array(X402OriginSchema),
 });
 
-export async function fetchX402Resources() {
+async function fetchX402Resources() {
   const response = await fetch(
     'https://www.x402scan.com/api/v1/list-resources'
   );
-  const data = await response.json();
+  const data: unknown = await response.json();
   const parsedData = X402ApiResponseSchema.parse(data);
   return parsedData.json;
 }
@@ -93,9 +95,9 @@ type InputSchema = {
   headerFields?: Record<string, FieldDef>;
 };
 
-type OutputSchema = Record<string, any>;
+type OutputSchema = Record<string, unknown>;
 
-export interface X402ToolDefinition {
+interface X402ToolDefinition {
   resource: string;
   description: string;
   inputSchema: InputSchema;
@@ -103,28 +105,6 @@ export interface X402ToolDefinition {
   network: string;
   payTo: string;
   maxAmountRequired: string;
-}
-
-export async function getAllTools() {
-  const tools = await fetchX402Resources();
-
-  const resourceMap = new Map<string, any[]>();
-
-  for (const tool of tools) {
-    for (const x402Response of tool.resources) {
-      if (x402Response.accepts) {
-        for (const accept of x402Response.accepts) {
-          const existing = resourceMap.get(accept.resource) || [];
-          if (accept.outputSchema) {
-            existing.push(accept.outputSchema);
-          }
-          resourceMap.set(accept.resource, existing);
-        }
-      }
-    }
-  }
-
-  return tools;
 }
 
 function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
@@ -149,7 +129,7 @@ function fieldDefToZodType(fieldDef: FieldDef): z.ZodTypeAny {
           }
           zodType = z.object(shape);
         } else {
-          zodType = z.record(z.any());
+          zodType = z.record(z.unknown());
         }
         break;
       case 'array':
@@ -230,7 +210,7 @@ export async function createX402AITools(
   walletClient: Signer
 ): Promise<Record<string, Tool>> {
   const toolDefinitions = await generateX402Tools();
-  const aiTools: Record<string, any> = {};
+  const aiTools: Record<string, unknown> = {};
 
   for (const toolDef of toolDefinitions) {
     const urlParts = new URL(toolDef.resource);
@@ -246,16 +226,16 @@ export async function createX402AITools(
     aiTools[toolName] = {
       description: `${toolDef.description} (Paid API - ${toolDef.maxAmountRequired} on ${toolDef.network})`,
       inputSchema: parametersSchema,
-      execute: async (params: Record<string, any>) => {
+      execute: async (params: Record<string, unknown>) => {
         let url = toolDef.resource;
-        let requestInit: RequestInit = { method };
+        const requestInit: RequestInit = { method };
 
         // For GET/HEAD/OPTIONS: append query params to URL
         if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
           const queryParams = new URLSearchParams();
           for (const [key, value] of Object.entries(params)) {
             if (value !== undefined && value !== null) {
-              queryParams.append(key, String(value));
+              queryParams.append(key, JSON.stringify(value));
             }
           }
           const queryString = queryParams.toString();
@@ -274,7 +254,7 @@ export async function createX402AITools(
           url,
           requestInit
         );
-        const data = await response.json();
+        const data: unknown = await response.json();
         return data;
       },
     };

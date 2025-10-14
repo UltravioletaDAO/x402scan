@@ -1,299 +1,145 @@
 'use client';
 
-import { useChat } from '@ai-sdk/react';
-import { CopyIcon, MessageSquare } from 'lucide-react';
-import { Fragment, useEffect, useState } from 'react';
-import { Action, Actions } from '@/app/_components/chat/ai-elements/actions';
-import {
-  Conversation,
-  ConversationContent,
-  ConversationEmptyState,
-  ConversationScrollButton,
-} from '@/app/_components/chat/ai-elements/conversation';
-import { Loader } from '@/app/_components/chat/ai-elements/loader';
-import { Message, MessageContent } from '@/app/_components/chat/ai-elements/message';
-import {
-  PromptInput,
-  PromptInputModelSelect,
-  PromptInputModelSelectContent,
-  PromptInputModelSelectItem,
-  PromptInputModelSelectTrigger,
-  PromptInputModelSelectValue,
-  PromptInputSubmit,
-  PromptInputTextarea,
-  PromptInputToolbar,
-  PromptInputTools,
-} from '@/app/_components/chat/ai-elements/prompt-input';
-import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningTrigger,
-} from '@/app/_components/chat/ai-elements/reasoning';
-import { Response } from '@/app/_components/chat/ai-elements/response';
-import {
-  Tool,
-  ToolContent,
-  ToolHeader,
-  ToolOutput,
-  ToolInput,
-} from '@/app/_components/chat/ai-elements/tool';
-import {
-  Source,
-  Sources,
-  SourcesContent,
-  SourcesTrigger,
-} from '@/app/_components/chat/ai-elements/sources';
-import { Suggestion, Suggestions } from '@/app/_components/chat/ai-elements/suggestion';
-import { ToolSelector } from '@/app/_components/chat/tool-selector';
-import { useAccount } from 'wagmi';
-import { useSession } from 'next-auth/react';
 import { VerifyWalletModal } from '@/app/_components/chat/verify-wallet-modal';
 import { FundWalletModal } from '@/app/_components/chat/fund-wallet-modal';
-import { PromptInputButton } from '@/app/_components/chat/ai-elements/prompt-input';
-import { Wallet } from 'lucide-react';
-import { api } from '@/trpc/client';
-import { isToolUIPart, ToolUIPart } from 'ai';
+import { ChatSelector } from '@/app/_components/chat/chat-selector';
+import { Messages } from '@/app/_components/chat/messages';
+import { PromptInputSection } from '@/app/_components/chat/prompt-input-section';
+import { useChat } from '@ai-sdk/react';
+import { useChatSubmission } from '@/app/_hooks/use-chat-submission';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import type { ServerChatData } from '@/lib/server-data';
+import type { Chat } from '@prisma/client';
+import type { UIMessage } from 'ai';
 
-const models = [
-  {
-    name: 'GPT 4o',
-    value: 'gpt-4o',
-  },
-  {
-    name: 'GPT 5',
-    value: 'gpt-5',
-  },
-];
+export type ChatStatus = 'streaming' | 'submitted' | 'awaiting-message' | 'ready' | 'error';
 
-const suggestions = [
-  'Can you explain how to play tennis?',
-  'Write me a code snippet of how to use the vercel ai sdk to create a chatbot',
-];
+interface ChatProps {
+  serverData: ServerChatData;
+  chatId?: string;
+}
 
-const Chat = () => {
-  const [input, setInput] = useState('');
-  const [model, setModel] = useState<string>(models[0].value);
-  const [selectedTools, setSelectedTools] = useState<string[]>([]);
-  const { messages, sendMessage, status } = useChat();
-  const { status: authStatus } = useSession();
-  const isAuthed = authStatus === 'authenticated';
-  const [showVerify, setShowVerify] = useState(false);
-  const [showFund, setShowFund] = useState(false);
+interface ChatContentProps {
+  currentChatId: string | undefined;
+  createNewChat: () => void;
+  currentChat: Chat | undefined;
+  chatMessages: UIMessage[];
+  isAuthed: boolean;
+  showVerify: boolean;
+  setShowVerify: (show: boolean) => void;
+  usdcBalance: number | undefined;
+  showFund: boolean;
+  setShowFund: (show: boolean) => void;
+}
 
-  const { address } = useAccount();
+const ChatContent = ({
+  currentChatId,
+  createNewChat,
+  currentChat,
+  chatMessages,
+  isAuthed,
+  showVerify,
+  setShowVerify,
+  usdcBalance,
+  showFund,
+  setShowFund,
+}: ChatContentProps) => {
 
-  const { data: usdcBalance } = api.serverWallet.usdcBaseBalance.useQuery(undefined, {
-    enabled: isAuthed,
-  });
-  useEffect(() => {
-    if (authStatus === 'unauthenticated') {
-      setShowVerify(true);
-    } else if (authStatus === 'authenticated') {
-      setShowVerify(false);
-    }
-  }, [authStatus, address]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isAuthed) {
-      return;
-    }
-    if (input.trim()) {
-      sendMessage(
-        { text: input },
-        {
-          body: {
-            model: model,
-            selectedTools: selectedTools,
-          },
-        }
-      );
-      setInput('');
-    }
-  };
-
-  const handleSuggestionClick = (suggestion: string) => {
-    if (!isAuthed) {
-      return;
-    }
-    sendMessage(
-      { text: suggestion },
-      {
-        body: {
-          model: model,
-          selectedTools: selectedTools,
-        },
-      }
-    );
-  };
-
+    // AI SDK useChat hook - initialized with latest messages from backend
+    const { messages, sendMessage, status } = useChat({ 
+      messages: chatMessages 
+    });
+    
+    // Chat submission logic
+    const {
+      input,
+      setInput,
+      model,
+      setModel,
+      selectedTools,
+      setSelectedTools,
+      handleSubmit,
+      handleSuggestionClick,
+    } = useChatSubmission({
+      isAuthed,
+      currentChat,
+      sendMessage: (message, options) => {
+        void sendMessage(message, options);
+      },
+    });
+  
   return (
-    <div className="mx-auto flex h-full max-w-4xl flex-col p-6">
-      <div className="flex h-full min-h-0 flex-col">
-        <Conversation className="relative min-h-0 w-full flex-1 overflow-hidden">
-          <ConversationContent>
-            {messages.length === 0 ? (
-              <ConversationEmptyState
-                icon={<MessageSquare className="size-12" />}
-                title="No messages yet"
-                description="Start a conversation to see messages here"
-              />
-            ) : (
-              messages.map(message => (
-                <div key={message.id}>
-                  {message.role === 'assistant' &&
-                    message.parts.filter(part => part.type === 'source-url')
-                      .length > 0 && (
-                      <Sources>
-                        <SourcesTrigger
-                          count={
-                            message.parts.filter(
-                              part => part.type === 'source-url'
-                            ).length
-                          }
-                        />
-                        {message.parts
-                          .filter(part => part.type === 'source-url')
-                          .map((part, i) => (
-                            <SourcesContent key={`${message.id}-${i}`}>
-                              <Source
-                                key={`${message.id}-${i}`}
-                                href={part.url}
-                                title={part.url}
-                              />
-                            </SourcesContent>
-                          ))}
-                      </Sources>
-                    )}
-                  {message.parts.map((part, i) => {
-                    if (isToolUIPart(part)) {
-                      return (
-                        <Tool key={`${message.id}-${i}`} defaultOpen={false}>
-                          <ToolHeader type={part.type} state={part.state} />
-                          <ToolContent>
-                            <ToolInput input={part.input} />
-                            <ToolOutput
-                              output={JSON.stringify(part.output)}
-                              errorText={part.errorText}
-                            />
-                          </ToolContent>
-                        </Tool>
-                      );
-                    } else {
-                    switch (part.type) {
-                      case 'text':
-                        return (
-                          <Fragment key={`${message.id}-${i}`}>
-                            <Message from={message.role}>
-                              <MessageContent>
-                                <Response key={`${message.id}-${i}`}>
-                                  {part.text}
-                                </Response>
-                              </MessageContent>
-                            </Message>
-                            {message.role === 'assistant' &&
-                              i === messages.length - 1 && (
-                                <Actions className="mt-2">
-                                  <Action
-                                    onClick={() =>
-                                      navigator.clipboard.writeText(part.text)
-                                    }
-                                    label="Copy"
-                                  >
-                                    <CopyIcon className="size-3" />
-                                  </Action>
-                                </Actions>
-                              )}
-                          </Fragment>
-                        );
-                      case 'reasoning':
-                        return (
-                          <Reasoning
-                            key={`${message.id}-${i}`}
-                            className="w-full"
-                            isStreaming={
-                              status === 'streaming' &&
-                              i === message.parts.length - 1 &&
-                              message.id === messages.at(-1)?.id
-                            }
-                          >
-                            <ReasoningTrigger />
-                            <ReasoningContent>{part.text}</ReasoningContent>
-                          </Reasoning>
-                        );
-                      default:
-                        return null;
-                    }
-                    }
-                  })}
-                </div>
-              ))
-            )}
-            {status === 'submitted' && <Loader />}
-          </ConversationContent>
-          <ConversationScrollButton />
-        </Conversation>
-        <Suggestions>
-          {suggestions.map(suggestion => (
-            <Suggestion
-              key={suggestion}
-              onClick={handleSuggestionClick}
-              suggestion={suggestion}
+    <div className="flex h-full flex-col">
+      {/* Fixed top navigation */}
+      {isAuthed && (
+        <div className="flex-shrink-0 bg-background border-b">
+          <div className="mx-auto max-w-4xl px-6 py-4">
+            <ChatSelector 
+              currentChatId={currentChatId ?? undefined} 
+              onNewChat={createNewChat}
             />
-          ))}
-        </Suggestions>
-
-        <PromptInput onSubmit={handleSubmit} className="mt-4 flex-shrink-0">
-          <PromptInputTextarea
-            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value)}
-            value={input}
-            disabled={!isAuthed}
-            placeholder={isAuthed ? undefined : 'Sign in to chat'}
-          />
-          <PromptInputToolbar>
-            <PromptInputTools className={!isAuthed ? 'pointer-events-none opacity-50' : undefined}>
-              <PromptInputModelSelect
-                onValueChange={value => {
-                  setModel(value);
-                }}
-                value={model}
-              >
-                <PromptInputModelSelectTrigger disabled={!isAuthed}>
-                  <PromptInputModelSelectValue />
-                </PromptInputModelSelectTrigger>
-                <PromptInputModelSelectContent>
-                  {models.map(model => (
-                    <PromptInputModelSelectItem
-                      key={model.value}
-                      value={model.value}
-                    >
-                      {model.name}
-                    </PromptInputModelSelectItem>
-                  ))}
-                </PromptInputModelSelectContent>
-              </PromptInputModelSelect>
-              <PromptInputButton
-                onClick={() => setShowFund(true)}
-                disabled={!isAuthed}
-                aria-label="Fund wallet"
-              >
-                <Wallet className="size-4" />
-                ${usdcBalance?.toPrecision(3)} USDC
-              </PromptInputButton>
-              <ToolSelector
-                selectedTools={selectedTools}
-                onToolsChange={setSelectedTools}
-              />
-            </PromptInputTools>
-            <PromptInputSubmit disabled={!input || !isAuthed} status={status} />
-          </PromptInputToolbar>
-        </PromptInput>
-        <VerifyWalletModal open={!isAuthed && showVerify} onOpenChange={setShowVerify} />
-        {isAuthed && (
-          <FundWalletModal open={showFund} onOpenChange={setShowFund} />
-        )}
+          </div>
+        </div>
+      )}
+      
+      {/* Scrollable messages area - takes remaining space */}
+      <div className="flex-1 overflow-hidden">
+        <div className="mx-auto h-full max-w-4xl px-6">
+          <Messages messages={messages} status={status} />
+        </div>
       </div>
+      
+      {/* Fixed bottom prompt area */}
+      <div className="flex-shrink-0 bg-background border-t">
+        <div className="mx-auto max-w-4xl p-6">
+          <PromptInputSection
+            input={input}
+            setInput={setInput}
+            handleSubmit={handleSubmit}
+            handleSuggestionClick={handleSuggestionClick}
+            isAuthed={isAuthed}
+            model={model}
+            setModel={setModel}
+            selectedTools={selectedTools}
+            setSelectedTools={setSelectedTools}
+            usdcBalance={usdcBalance}
+            setShowFund={setShowFund}
+            status={status}
+          />
+        </div>
+      </div>
+      
+      <VerifyWalletModal open={!isAuthed && showVerify} onOpenChange={setShowVerify} />
+      {isAuthed && (
+        <FundWalletModal open={showFund} onOpenChange={setShowFund} />
+      )}
     </div>
+  );
+};
+
+const Chat = ({ serverData, chatId }: ChatProps) => {
+  const [showFund, setShowFund] = useState(false);
+  const [showVerify, setShowVerify] = useState(!serverData.isAuthed);
+  const router = useRouter();
+  
+  const createNewChat = () => {
+    router.push('/chat');
+  };
+  console.log("chatMessages", serverData.chatMessages);
+  return (
+    <ChatContent
+      currentChatId={chatId}
+      createNewChat={createNewChat}
+      currentChat={serverData.currentChat ?? undefined}
+      chatMessages={serverData.chatMessages}
+      isAuthed={serverData.isAuthed}
+      showVerify={showVerify}
+      setShowVerify={setShowVerify}
+      usdcBalance={serverData.usdcBalance ?? undefined}
+      showFund={showFund}
+      setShowFund={setShowFund}
+    />
   );
 };
 

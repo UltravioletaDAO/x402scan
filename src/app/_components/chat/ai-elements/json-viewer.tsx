@@ -25,7 +25,6 @@ const JsonNode = ({ data, keyName, depth = 0, defaultCollapsed = true }: JsonNod
   };
 
   const renderPrimitiveValue = (value: JsonValue) => {
-    const type = getValueType(value);
     
     if (value === null) {
       return <span className="text-muted-foreground">null</span>;
@@ -43,7 +42,7 @@ const JsonNode = ({ data, keyName, depth = 0, defaultCollapsed = true }: JsonNod
       return <span className="text-purple-600 dark:text-purple-400">{value.toString()}</span>;
     }
     
-    return <span>{String(value)}</span>;
+    return <span>{value !== null && value !== undefined ? JSON.stringify(value) : 'null'}</span>;
   };
 
   const renderCollapsedPreview = (value: JsonValue): string => {
@@ -61,11 +60,11 @@ const JsonNode = ({ data, keyName, depth = 0, defaultCollapsed = true }: JsonNod
     return '';
   };
 
-  const type = getValueType(data);
+  const valueType = getValueType(data);
 
-  if (type === 'array' || type === 'object') {
+  if (valueType === 'array' || valueType === 'object') {
     const isArray = Array.isArray(data);
-    const items = isArray ? (data as JsonArray) : Object.entries(data as JsonObject);
+    const items = isArray ? data : Object.entries(data as JsonObject);
     const isEmpty = isArray ? data.length === 0 : Object.keys(data as JsonObject).length === 0;
     const openBracket = isArray ? '[' : '{';
     const closeBracket = isArray ? ']' : '}';
@@ -110,7 +109,7 @@ const JsonNode = ({ data, keyName, depth = 0, defaultCollapsed = true }: JsonNod
             {!isCollapsed && !isEmpty && (
               <div className="mt-1">
                 {isArray
-                  ? (items as JsonArray).map((item, index) => (
+                  ? items.map((item, index) => (
                       <JsonNode
                         key={index}
                         data={item}

@@ -1,6 +1,7 @@
 import { USDC_ADDRESS } from "@/lib/utils";
 import { convertTokenAmount } from "@/lib/token";
-import { CdpClient, EvmServerAccount } from "@coinbase/cdp-sdk";
+import { CdpClient } from "@coinbase/cdp-sdk";
+import type { EvmServerAccount } from "@coinbase/cdp-sdk";
 import { getOrCreateWalletNameFromUserId } from "@/services/db/wallet-name";
 
 const cdpClient = new CdpClient();

@@ -1,8 +1,8 @@
 import { createX402OpenAI } from '@merit-systems/ai-x402/server';
-import { stepCountIs, streamText, UIMessage, convertToModelMessages } from 'ai';
-import { Signer } from 'x402-fetch';
+import { stepCountIs, streamText, convertToModelMessages } from 'ai';
+import type { UIMessage, Tool } from 'ai';
+import type { Signer } from 'x402-fetch';
 import { createX402AITools } from './get-tools';
-import { Tool } from 'ai';
 
 export const getSelectedTools = async (
   walletClient: Signer,

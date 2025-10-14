@@ -10,20 +10,13 @@ import {
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
-export type ActionsProps = ComponentProps<'div'>;
-
-export const Actions = ({ className, children, ...props }: ActionsProps) => (
+const Actions = ({ className, children, ...props }: ComponentProps<'div'>) => (
   <div className={cn('flex items-center gap-1', className)} {...props}>
     {children}
   </div>
 );
 
-export type ActionProps = ComponentProps<typeof Button> & {
-  tooltip?: string;
-  label?: string;
-};
-
-export const Action = ({
+const Action = ({
   tooltip,
   children,
   label,
@@ -31,7 +24,10 @@ export const Action = ({
   variant = 'ghost',
   size = 'sm',
   ...props
-}: ActionProps) => {
+}: ComponentProps<typeof Button> & {
+  tooltip?: string;
+  label?: string;
+}) => {
   const button = (
     <Button
       className={cn(
@@ -44,7 +40,7 @@ export const Action = ({
       {...props}
     >
       {children}
-      <span className="sr-only">{label || tooltip}</span>
+      <span className="sr-only">{label ?? tooltip}</span>
     </Button>
   );
 
@@ -63,3 +59,5 @@ export const Action = ({
 
   return button;
 };
+
+export { Actions, Action };

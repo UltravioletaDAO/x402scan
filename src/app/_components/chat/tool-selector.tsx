@@ -31,7 +31,7 @@ export function ToolSelector({ selectedTools, onToolsChange }: ToolSelectorProps
     }
   };
 
-  const filteredTools = (tools || []).filter((tool: {
+  const filteredTools = (tools ?? []).filter((tool: {
     name: string;
     description: string;
     resource: string;

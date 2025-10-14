@@ -2,6 +2,7 @@ import { createCallerFactory, createTRPCRouter } from '../trpc';
 
 import { acceptsRouter } from './accepts';
 import { availableToolsRouter } from './available-tools';
+import { chatsRouter } from './chats';
 import { facilitatorsRouter } from './facilitators';
 import { onrampSessionsRouter } from './onramp-sessions';
 import { originsRouter } from './origins';
@@ -14,6 +15,7 @@ import { serverWalletRouter } from './server-wallet';
 
 export const appRouter = createTRPCRouter({
   accepts: acceptsRouter,
+  chats: chatsRouter,
   stats: statisticsRouter,
   sellers: sellersRouter,
   resources: resourcesRouter,
@@ -22,7 +24,7 @@ export const appRouter = createTRPCRouter({
   transfers: transfersRouter,
   facilitators: facilitatorsRouter,
   onrampSessions: onrampSessionsRouter,
-  availableTools: availableToolsRouter,
+  availableTools: availableToolsRouter,  
   serverWallet: serverWalletRouter,
 });
 

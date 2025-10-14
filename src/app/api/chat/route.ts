@@ -2,25 +2,58 @@ import { InvokeAgent } from '@/services/agent/core';
 import { getOrCreateWalletFromUserId } from '@/services/cdp/server-wallet/get-or-create';
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { Signer } from 'x402/types';
-import { UIMessage } from '@ai-sdk/react';
-import type { ModelMessage, Tool } from 'ai';
+import type { Signer } from 'x402/types';
+import type { UIMessage } from '@ai-sdk/react';
 import { toAccount } from 'viem/accounts';
 import { getSelectedTools } from '@/services/agent/core';
+import { createMessage } from '@/services/db/chats';
 export async function POST(request: Request) {
   
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  console.log(session.user.id);
+  
   const walletClient = await getOrCreateWalletFromUserId(session.user.id);
 
-  const { model, selectedTools, messages }: { model: string, selectedTools: string[], messages: UIMessage[] } = await request.json();
+  const requestBody = await request.json() as {
+    model: string;
+    selectedTools: string[];
+    messages: UIMessage[];
+    chatId: string;
+  };
+  
+  const { model, selectedTools, messages, chatId } = requestBody;
+
 
   const toolsToCallWith = await getSelectedTools(toAccount(walletClient) as Signer, selectedTools);
-
+  // always save the incoming messages to the database
+  await Promise.all(messages.map(async (message) => {
+    return createMessage({
+      role: message.role,
+      parts: JSON.stringify(message.parts),
+      attachments: {},
+      chat: {
+        connect: { id: chatId }
+      }
+    });
+  }));
   
   const result = await InvokeAgent(model, toAccount(walletClient) as Signer, messages, toolsToCallWith);
-  return result.toUIMessageStreamResponse();
-}
+
+  // save the result to the database
+
+
+  return result.toUIMessageStreamResponse({
+    onFinish: async (message) => {
+      for (const msg of message.messages) {
+        await createMessage({
+          role: msg.role,
+          parts: JSON.stringify(msg.parts),
+          attachments: {},
+          chat: { connect: { id: chatId } }
+        });
+      }
+    }
+  });
+  }

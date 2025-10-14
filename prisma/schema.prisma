@@ -27,6 +27,7 @@ model User {
   sessions       Session[]
   onrampSessions OnrampSession[]
   serverWallet   ServerWallet?
+  chats          Chat[]
 }
 
 model Account {
@@ -198,4 +199,34 @@ model ServerWallet {
   updatedAt  DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum ChatVisibility {
+  public
+  private
+}
+
+model Chat {
+  id          String         @id @default(uuid())
+  createdAt   DateTime       @default(now())
+  title       String
+  userId      String
+  visibility  ChatVisibility @default(private)
+  lastContext Json?
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages Message[]
+}
+
+model Message {
+  id          String   @id @default(uuid()) @map("Message_v2")
+  chatId      String
+  role        String
+  parts       Json
+  attachments Json
+  createdAt   DateTime @default(now())
+
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+
+  @@map("Message_v2")
 }

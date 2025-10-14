@@ -7,9 +7,7 @@ import { StickToBottom, useStickToBottomContext } from 'use-stick-to-bottom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-export type ConversationProps = ComponentProps<typeof StickToBottom>;
-
-export const Conversation = ({ className, ...props }: ConversationProps) => (
+const Conversation = ({ className, ...props }: ComponentProps<typeof StickToBottom>) => (
   <StickToBottom
     className={cn('relative flex-1 overflow-y-auto', className)}
     initial="smooth"
@@ -19,31 +17,25 @@ export const Conversation = ({ className, ...props }: ConversationProps) => (
   />
 );
 
-export type ConversationContentProps = ComponentProps<
-  typeof StickToBottom.Content
->;
-
-export const ConversationContent = ({
+const ConversationContent = ({
   className,
   ...props
-}: ConversationContentProps) => (
+}: ComponentProps<typeof StickToBottom.Content>) => (
   <StickToBottom.Content className={cn('p-4', className)} {...props} />
 );
 
-export type ConversationEmptyStateProps = ComponentProps<'div'> & {
-  title?: string;
-  description?: string;
-  icon?: React.ReactNode;
-};
-
-export const ConversationEmptyState = ({
+const ConversationEmptyState = ({
   className,
   title = 'No messages yet',
   description = 'Start a conversation to see messages here',
   icon,
   children,
   ...props
-}: ConversationEmptyStateProps) => (
+}: ComponentProps<'div'> & {
+  title?: string;
+  description?: string;
+  icon?: React.ReactNode;
+}) => (
   <div
     className={cn(
       'flex size-full flex-col items-center justify-center gap-3 p-8 text-center',
@@ -65,16 +57,14 @@ export const ConversationEmptyState = ({
   </div>
 );
 
-export type ConversationScrollButtonProps = ComponentProps<typeof Button>;
-
-export const ConversationScrollButton = ({
+const ConversationScrollButton = ({
   className,
   ...props
-}: ConversationScrollButtonProps) => {
+}: ComponentProps<typeof Button>) => {
   const { isAtBottom, scrollToBottom } = useStickToBottomContext();
 
-  const handleScrollToBottom = useCallback(() => {
-    scrollToBottom();
+  const handleScrollToBottom = useCallback(async () => {
+    await scrollToBottom();
   }, [scrollToBottom]);
 
   return (
@@ -95,3 +85,5 @@ export const ConversationScrollButton = ({
     )
   );
 };
+
+export { Conversation, ConversationContent, ConversationEmptyState, ConversationScrollButton };

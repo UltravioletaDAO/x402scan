@@ -2,12 +2,8 @@
 
 import type { ToolUIPart } from 'ai';
 import {
-  CheckCircleIcon,
   ChevronDownIcon,
-  CircleIcon,
-  ClockIcon,
   WrenchIcon,
-  XCircleIcon,
 } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import {
@@ -19,27 +15,26 @@ import { cn } from '@/lib/utils';
 import { CodeBlock } from './code-block';
 import { JsonViewer } from './json-viewer';
 
-export type ToolProps = ComponentProps<typeof Collapsible>;
+type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
+type JsonObject = { [key: string]: JsonValue };
+type JsonArray = JsonValue[];
 
-export const Tool = ({ className, ...props }: ToolProps) => (
+const Tool = ({ className, ...props }: ComponentProps<typeof Collapsible>) => (
   <Collapsible
     className={cn('not-prose mb-4 w-full rounded-md border', className)}
     {...props}
   />
 );
 
-export type ToolHeaderProps = {
+const ToolHeader = ({
+  className,
+  type,
+  ...props
+}: {
   type: ToolUIPart['type'];
   state: ToolUIPart['state'];
   className?: string;
-};
-
-export const ToolHeader = ({
-  className,
-  type,
-  state,
-  ...props
-}: ToolHeaderProps) => (
+}) => (
   <CollapsibleTrigger
     className={cn(
       'flex w-full items-center justify-between gap-4 p-3',
@@ -55,9 +50,7 @@ export const ToolHeader = ({
   </CollapsibleTrigger>
 );
 
-export type ToolContentProps = ComponentProps<typeof CollapsibleContent>;
-
-export const ToolContent = ({ className, ...props }: ToolContentProps) => (
+const ToolContent = ({ className, ...props }: ComponentProps<typeof CollapsibleContent>) => (
   <CollapsibleContent
     className={cn(
       'data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in',
@@ -67,11 +60,9 @@ export const ToolContent = ({ className, ...props }: ToolContentProps) => (
   />
 );
 
-export type ToolInputProps = ComponentProps<'div'> & {
+const ToolInput = ({ className, input, ...props }: ComponentProps<'div'> & {
   input: ToolUIPart['input'];
-};
-
-export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
+}) => (
   <div className={cn('space-y-2 overflow-hidden p-4', className)} {...props}>
     <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
       Parameters
@@ -82,17 +73,15 @@ export const ToolInput = ({ className, input, ...props }: ToolInputProps) => (
   </div>
 );
 
-export type ToolOutputProps = ComponentProps<'div'> & {
-  output: ReactNode;
-  errorText: ToolUIPart['errorText'];
-};
-
-export const ToolOutput = ({
+const ToolOutput = ({
   className,
   output,
   errorText,
   ...props
-}: ToolOutputProps) => {
+}: ComponentProps<'div'> & {
+  output: ReactNode;
+  errorText: ToolUIPart['errorText'];
+}) => {
   if (!(output || errorText)) {
     return null;
   }
@@ -105,7 +94,7 @@ export const ToolOutput = ({
     const trimmed = output.trim();
     if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
       try {
-        return { raw: output, parsed: JSON.parse(trimmed) };
+        return { raw: output, parsed: JSON.parse(trimmed) as JsonValue };
       } catch {
         return { raw: output, parsed: null };
       }
@@ -114,7 +103,8 @@ export const ToolOutput = ({
     return { raw: output, parsed: null };
   };
 
-  const { raw, parsed } = output ? parseOutput(output) : { raw: null, parsed: null };
+  const result = output ? parseOutput(output) : { raw: null, parsed: null };
+  const { raw, parsed } = result;
 
   return (
     <div className={cn('space-y-2 p-4', className)} {...props}>
@@ -136,3 +126,5 @@ export const ToolOutput = ({
     </div>
   );
 };
+
+export { Tool, ToolHeader, ToolContent, ToolInput, ToolOutput };

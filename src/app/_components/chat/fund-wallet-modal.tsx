@@ -6,7 +6,6 @@ import { useSession } from 'next-auth/react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Wallet } from 'lucide-react';
-import { codeToHtml } from 'shiki';
 import { api } from '@/trpc/client';
 import { Address } from '@/components/ui/address';
 
@@ -31,8 +30,8 @@ export function FundWalletModal(props: FundWalletModalProps) {
 
   const isControlled = typeof props.open === 'boolean' && typeof props.onOpenChange === 'function';
   const [internalOpen, setInternalOpen] = useState(false);
-  const open = isControlled ? (props.open as boolean) : internalOpen;
-  const setOpen = isControlled ? (props.onOpenChange as (open: boolean) => void) : setInternalOpen;
+  const open = isControlled ? props.open! : internalOpen;
+  const setOpen = isControlled ? props.onOpenChange! : setInternalOpen;
 
   const dismissed = useMemo(() => {
     if (typeof window === 'undefined') return true;

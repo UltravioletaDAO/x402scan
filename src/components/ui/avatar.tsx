@@ -3,7 +3,6 @@ import React from 'react';
 import { User } from 'lucide-react';
 
 import * as AvatarPrimitive from '@radix-ui/react-avatar';
-import { AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 
 import { cn } from '@/lib/utils';
 
@@ -34,6 +33,3 @@ export const Avatar: React.FC<Props> = ({ src, fallback, className }) => {
     </AvatarPrimitive.Avatar>
   );
 };
-
-
-export { AvatarFallback, AvatarImage };
