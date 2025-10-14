@@ -8,6 +8,6 @@ interface ChatPageProps {
 export default async function ChatPage({ params }: ChatPageProps) {
   const { id } = await params;
   const serverData = await getServerChatData(id);
-  
+
   return <Chat serverData={serverData} chatId={id} />;
 }

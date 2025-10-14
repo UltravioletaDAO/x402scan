@@ -19,7 +19,10 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 
-const PromptInput = ({ className, ...props }: HTMLAttributes<HTMLFormElement>) => (
+const PromptInput = ({
+  className,
+  ...props
+}: HTMLAttributes<HTMLFormElement>) => (
   <form
     className={cn(
       'w-full divide-y overflow-hidden rounded-xl border bg-background shadow-sm',

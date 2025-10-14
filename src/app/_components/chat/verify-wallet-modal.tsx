@@ -1,6 +1,12 @@
 'use client';
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Loader2, Wallet } from 'lucide-react';
 import { useAccount, useSignMessage } from 'wagmi';
@@ -12,7 +18,10 @@ interface VerifyWalletModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function VerifyWalletModal({ open, onOpenChange }: VerifyWalletModalProps) {
+export function VerifyWalletModal({
+  open,
+  onOpenChange,
+}: VerifyWalletModalProps) {
   const { address } = useAccount();
   const { signMessageAsync } = useSignMessage();
 
@@ -32,14 +41,12 @@ export function VerifyWalletModal({ open, onOpenChange }: VerifyWalletModalProps
         <DialogHeader>
           <DialogTitle>Verify your wallet</DialogTitle>
           <DialogDescription>
-            Please sign a message to verify you own this wallet before you use the chat.
+            Please sign a message to verify you own this wallet before you use
+            the chat.
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
-          <Button
-            onClick={() => handleVerify()}
-            disabled={isVerifying}
-          >
+          <Button onClick={() => handleVerify()} disabled={isVerifying}>
             {isVerifying ? (
               <>
                 <Loader2 className="size-4 animate-spin" />
@@ -57,5 +64,3 @@ export function VerifyWalletModal({ open, onOpenChange }: VerifyWalletModalProps
     </Dialog>
   );
 }
-
-

@@ -13,14 +13,16 @@ neonConfig.webSocketConstructor = ws;
 
 const connectionString = `${env.POSTGRES_PRISMA_URL}`;
 
-const globalForPrisma = global as unknown as { 
+const globalForPrisma = global as unknown as {
   prisma: PrismaClient;
   neonAdapter: PrismaNeon;
 };
 
 // Cache the adapter globally to prevent multiple instances
-const adapter = globalForPrisma.neonAdapter || new PrismaNeon({ connectionString });
-if (process.env.NODE_ENV !== 'production') globalForPrisma.neonAdapter = adapter;
+const adapter =
+  globalForPrisma.neonAdapter || new PrismaNeon({ connectionString });
+if (process.env.NODE_ENV !== 'production')
+  globalForPrisma.neonAdapter = adapter;
 
 export const prisma = globalForPrisma.prisma || new PrismaClient({ adapter });
 

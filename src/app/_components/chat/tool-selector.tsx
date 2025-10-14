@@ -18,7 +18,10 @@ interface ToolSelectorProps {
   onToolsChange: (tools: string[]) => void;
 }
 
-export function ToolSelector({ selectedTools, onToolsChange }: ToolSelectorProps) {
+export function ToolSelector({
+  selectedTools,
+  onToolsChange,
+}: ToolSelectorProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const { data: tools, isLoading } = api.availableTools.list.useQuery();
@@ -31,20 +34,22 @@ export function ToolSelector({ selectedTools, onToolsChange }: ToolSelectorProps
     }
   };
 
-  const filteredTools = (tools ?? []).filter((tool: {
-    name: string;
-    description: string;
-    resource: string;
-    network: string;
-    maxAmountRequired: string;
-  }) => {
-    const q = query.trim().toLowerCase();
-    if (!q) return true;
-    return (
-      tool.name.toLowerCase().includes(q) ||
-      tool.description.toLowerCase().includes(q)
-    );
-  });
+  const filteredTools = (tools ?? []).filter(
+    (tool: {
+      name: string;
+      description: string;
+      resource: string;
+      network: string;
+      maxAmountRequired: string;
+    }) => {
+      const q = query.trim().toLowerCase();
+      if (!q) return true;
+      return (
+        tool.name.toLowerCase().includes(q) ||
+        tool.description.toLowerCase().includes(q)
+      );
+    }
+  );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -67,7 +72,7 @@ export function ToolSelector({ selectedTools, onToolsChange }: ToolSelectorProps
             <div className="ml-auto w-full max-w-sm">
               <Input
                 value={query}
-                onChange={(e) => setQuery(e.target.value)}
+                onChange={e => setQuery(e.target.value)}
                 placeholder="Search by name or description"
                 aria-label="Search tools"
                 className="h-8"
@@ -82,34 +87,38 @@ export function ToolSelector({ selectedTools, onToolsChange }: ToolSelectorProps
             </div>
           ) : filteredTools && filteredTools.length > 0 ? (
             <div className="space-y-3 px-6 sm:px-0 mr-1">
-              {filteredTools.map((tool: {
-                name: string;
-                description: string;
-                resource: string;
-                network: string;
-                maxAmountRequired: string;
-              }) => (
-                <label
-                  key={tool.resource}
-                  className="flex cursor-pointer items-start gap-4 rounded-lg border p-4 transition-colors hover:bg-accent"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedTools.includes(tool.name)}
-                    onChange={() => toggleTool(tool.name)}
-                    className="mt-1 size-4 cursor-pointer rounded border-gray-300"
-                  />
-                  <div className="flex-1 space-y-2">
-                    <div className="font-medium leading-none">{tool.name}</div>
-                    <div className="text-sm leading-relaxed text-muted-foreground">
-                      {tool.description}
+              {filteredTools.map(
+                (tool: {
+                  name: string;
+                  description: string;
+                  resource: string;
+                  network: string;
+                  maxAmountRequired: string;
+                }) => (
+                  <label
+                    key={tool.resource}
+                    className="flex cursor-pointer items-start gap-4 rounded-lg border p-4 transition-colors hover:bg-accent"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedTools.includes(tool.name)}
+                      onChange={() => toggleTool(tool.name)}
+                      className="mt-1 size-4 cursor-pointer rounded border-gray-300"
+                    />
+                    <div className="flex-1 space-y-2">
+                      <div className="font-medium leading-none">
+                        {tool.name}
+                      </div>
+                      <div className="text-sm leading-relaxed text-muted-foreground">
+                        {tool.description}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {tool.maxAmountRequired} on {tool.network}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">
-                      {tool.maxAmountRequired} on {tool.network}
-                    </div>
-                  </div>
-                </label>
-              ))}
+                  </label>
+                )
+              )}
             </div>
           ) : (
             <div className="p-8 text-center text-sm text-muted-foreground">
@@ -121,4 +130,3 @@ export function ToolSelector({ selectedTools, onToolsChange }: ToolSelectorProps
     </Dialog>
   );
 }
-

@@ -4,7 +4,7 @@ import { api } from '@/trpc/server';
 
 export default async function ChatPage() {
   const session = await auth();
-  
+
   // If not authenticated, redirect to home
   if (!session?.user?.id) {
     redirect('/');
@@ -13,9 +13,8 @@ export default async function ChatPage() {
   // Create a new chat and redirect to it
   const newChat = await api.chats.getOrCreateChat({
     title: 'New Chat',
-    visibility: 'private'
+    visibility: 'private',
   });
 
   redirect(`/chat/${newChat.id}`);
 }
-

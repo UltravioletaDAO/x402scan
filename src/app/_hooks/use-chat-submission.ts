@@ -18,8 +18,8 @@ interface UseChatSubmissionProps {
   ) => void;
 }
 
-export function useChatSubmission({ 
-  isAuthed, 
+export function useChatSubmission({
+  isAuthed,
   currentChat,
   sendMessage,
 }: UseChatSubmissionProps) {
@@ -31,7 +31,7 @@ export function useChatSubmission({
     if (!isAuthed) {
       return;
     }
-    
+
     if (!text.trim()) {
       return;
     }

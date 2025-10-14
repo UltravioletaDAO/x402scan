@@ -2,7 +2,11 @@ import type { UIMessage } from 'ai';
 import type { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-const Message = ({ className, from, ...props }: HTMLAttributes<HTMLDivElement> & {
+const Message = ({
+  className,
+  from,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & {
   from: UIMessage['role'];
 }) => (
   <div

@@ -60,13 +60,14 @@ export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
 
 export const USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 
-
-
 export function convertToUIMessages(messages: Message[]): UIMessage[] {
-  return messages.map((message) => ({
+  return messages.map(message => ({
     id: message.id,
     role: message.role as 'user' | 'assistant' | 'system',
-    parts: JSON.parse(message.parts as string) as UIMessagePart<UIDataTypes, UITools>[],
+    parts: JSON.parse(message.parts as string) as UIMessagePart<
+      UIDataTypes,
+      UITools
+    >[],
     metadata: {
       createdAt: formatISO(message.createdAt),
     },

@@ -61,4 +61,3 @@ export const createMessage = async (data: Prisma.MessageCreateInput) => {
     data,
   });
 };
-

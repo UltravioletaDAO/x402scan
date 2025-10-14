@@ -10,7 +10,10 @@ import {
   ConversationScrollButton,
 } from '@/app/_components/chat/ai-elements/conversation';
 import { Loader } from '@/app/_components/chat/ai-elements/loader';
-import { Message, MessageContent } from '@/app/_components/chat/ai-elements/message';
+import {
+  Message,
+  MessageContent,
+} from '@/app/_components/chat/ai-elements/message';
 import {
   Reasoning,
   ReasoningContent,
@@ -41,8 +44,8 @@ interface MessagesProps {
 
 export const Messages = ({ messages, status }: MessagesProps) => {
   return (
-      <Conversation className="h-80% w-full max-w-4xl mx-auto">
-        <ConversationContent>
+    <Conversation className="h-80% w-full max-w-4xl mx-auto">
+      <ConversationContent>
         {messages.length === 0 ? (
           <ConversationEmptyState
             icon={<MessageSquare className="size-12" />}
@@ -58,9 +61,8 @@ export const Messages = ({ messages, status }: MessagesProps) => {
                   <Sources>
                     <SourcesTrigger
                       count={
-                        message.parts.filter(
-                          part => part.type === 'source-url'
-                        ).length
+                        message.parts.filter(part => part.type === 'source-url')
+                          .length
                       }
                     />
                     {message.parts
@@ -146,4 +148,3 @@ export const Messages = ({ messages, status }: MessagesProps) => {
     </Conversation>
   );
 };
-

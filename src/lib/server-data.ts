@@ -12,10 +12,12 @@ export interface ServerChatData {
   userChats: Chat[];
 }
 
-export async function getServerChatData(chatId?: string): Promise<ServerChatData> {
+export async function getServerChatData(
+  chatId?: string
+): Promise<ServerChatData> {
   const session = await auth();
   const isAuthed = !!session?.user?.id;
-  
+
   if (!isAuthed) {
     return {
       currentChat: null,
@@ -27,19 +29,19 @@ export async function getServerChatData(chatId?: string): Promise<ServerChatData
   }
 
   const userId = session.user.id;
-  
+
   // Fetch data in parallel
   const [currentChat, userChats, usdcBalance] = await Promise.all([
     // Get or create chat using TRPC
-    api.chats.getOrCreateChat({ 
-      chatId, 
+    api.chats.getOrCreateChat({
+      chatId,
       title: 'New Chat',
-      visibility: 'private'
+      visibility: 'private',
     }),
     // Get user's chats using TRPC
     api.chats.getUserChats(),
     // Get wallet balance
-    api.serverWallet.usdcBaseBalance(), 
+    api.serverWallet.usdcBaseBalance(),
   ]);
 
   // Verify chat ownership if chatId was provided
@@ -47,7 +49,9 @@ export async function getServerChatData(chatId?: string): Promise<ServerChatData
     throw new Error('Chat not found or access denied');
   }
 
-  const chatMessages = currentChat?.messages ? convertToUIMessages(currentChat.messages) : [];
+  const chatMessages = currentChat?.messages
+    ? convertToUIMessages(currentChat.messages)
+    : [];
 
   return {
     currentChat,

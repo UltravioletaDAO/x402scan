@@ -13,7 +13,12 @@ import type { ServerChatData } from '@/lib/server-data';
 import type { Chat } from '@prisma/client';
 import type { UIMessage } from 'ai';
 
-export type ChatStatus = 'streaming' | 'submitted' | 'awaiting-message' | 'ready' | 'error';
+export type ChatStatus =
+  | 'streaming'
+  | 'submitted'
+  | 'awaiting-message'
+  | 'ready'
+  | 'error';
 
 interface ChatProps {
   serverData: ServerChatData;
@@ -47,30 +52,29 @@ const ChatContent = ({
   isNavigating,
   setIsNavigating,
 }: ChatContentProps) => {
+  // AI SDK useChat hook - initialized with latest messages from backend
+  const { messages, sendMessage, status } = useChat({
+    messages: chatMessages,
+  });
 
-    // AI SDK useChat hook - initialized with latest messages from backend
-    const { messages, sendMessage, status } = useChat({ 
-      messages: chatMessages 
-    });
-    
-    // Chat submission logic
-    const {
-      input,
-      setInput,
-      model,
-      setModel,
-      selectedTools,
-      setSelectedTools,
-      handleSubmit,
-      handleSuggestionClick,
-    } = useChatSubmission({
-      isAuthed,
-      currentChat,
-      sendMessage: (message, options) => {
-        void sendMessage(message, options);
-      },
-    });
-  
+  // Chat submission logic
+  const {
+    input,
+    setInput,
+    model,
+    setModel,
+    selectedTools,
+    setSelectedTools,
+    handleSubmit,
+    handleSuggestionClick,
+  } = useChatSubmission({
+    isAuthed,
+    currentChat,
+    sendMessage: (message, options) => {
+      void sendMessage(message, options);
+    },
+  });
+
   // Show loading skeleton when navigating between chats
   if (isNavigating) {
     return <ChatLoadingSkeleton />;
@@ -82,18 +86,17 @@ const ChatContent = ({
       {isAuthed && (
         <div className="flex-shrink-0 bg-background border-b">
           <div className="mx-auto max-w-3xl px-6 py-4">
-            <ChatSelector 
+            <ChatSelector
               currentChatId={currentChatId ?? undefined}
               onNavigationStart={() => setIsNavigating(true)}
             />
           </div>
         </div>
       )}
-      
-      {/* Scrollable messages area - takes remaining space */}
-        <Messages messages={messages} status={status} />
 
-      
+      {/* Scrollable messages area - takes remaining space */}
+      <Messages messages={messages} status={status} />
+
       {/* Fixed bottom prompt area */}
       <div className="flex-shrink-0 bg-background border-t">
         <div className="mx-auto max-w-3xl p-6">
@@ -113,8 +116,11 @@ const ChatContent = ({
           />
         </div>
       </div>
-      
-      <VerifyWalletModal open={!isAuthed && showVerify} onOpenChange={setShowVerify} />
+
+      <VerifyWalletModal
+        open={!isAuthed && showVerify}
+        onOpenChange={setShowVerify}
+      />
       {isAuthed && (
         <FundWalletModal open={showFund} onOpenChange={setShowFund} />
       )}
@@ -126,7 +132,7 @@ const Chat = ({ serverData, chatId }: ChatProps) => {
   const [showFund, setShowFund] = useState(false);
   const [showVerify, setShowVerify] = useState(!serverData.isAuthed);
   const [isNavigating, setIsNavigating] = useState(false);
-  
+
   return (
     <ChatContent
       currentChatId={chatId}

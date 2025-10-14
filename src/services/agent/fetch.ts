@@ -28,8 +28,8 @@ export function fetchWithX402Payment(
   walletClient: Signer
 ): typeof fetch {
   return async (input: string | URL | Request, init?: RequestInit) => {
-    const headers: Record<string, string> = { 
-      ...(init?.headers as Record<string, string> || {})
+    const headers: Record<string, string> = {
+      ...((init?.headers as Record<string, string>) || {}),
     };
 
     delete headers.Authorization;
@@ -41,7 +41,7 @@ export function fetchWithX402Payment(
     });
 
     if (response.status === 402) {
-      const paymentRequiredJson = await response.json() as unknown;
+      const paymentRequiredJson = (await response.json()) as unknown;
       const paymentHeader = await getPaymentHeaderFromBody(
         paymentRequiredJson,
         walletClient

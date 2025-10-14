@@ -19,5 +19,3 @@ export const serverWalletRouter = createTRPCRouter({
     return await getUSDCBaseBalanceFromUserId(ctx.session.user.id);
   }),
 });
-
-

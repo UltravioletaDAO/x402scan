@@ -1,8 +1,9 @@
 import { prisma } from './client';
 import { v4 as uuidv4 } from 'uuid';
 
-
-export const getOrCreateWalletNameFromUserId = async (userId: string): Promise<string> => {
+export const getOrCreateWalletNameFromUserId = async (
+  userId: string
+): Promise<string> => {
   const result = await prisma.serverWallet.upsert({
     where: { userId },
     update: {},

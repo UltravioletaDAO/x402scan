@@ -18,43 +18,47 @@ export const chatsRouter = createTRPCRouter({
 
   // Get or create a chat - unified endpoint
   getOrCreateChat: protectedProcedure
-    .input(z.object({
-      chatId: z.string().optional(),
-      title: z.string().min(1).max(255).optional(),
-      visibility: z.nativeEnum(Visibility).optional().default('private'),
-    }))
+    .input(
+      z.object({
+        chatId: z.string().optional(),
+        title: z.string().min(1).max(255).optional(),
+        visibility: z.nativeEnum(Visibility).optional().default('private'),
+      })
+    )
     .query(async ({ input, ctx }) => {
       // If chatId is provided, get existing chat
       if (input.chatId) {
         const chat = await getChatById(input.chatId);
-        
+
         // Ensure user owns this chat
         if (!chat || chat.userId !== ctx.session.user.id) {
           throw new Error('Chat not found or access denied');
         }
-        
+
         return chat;
       }
-      
+
       // Otherwise create a new chat with default title
       const defaultTitle = input.title ?? 'New Chat';
-      
+
       return await createChat({
         title: defaultTitle,
         visibility: input.visibility,
         user: {
-          connect: { id: ctx.session.user.id }
-        }
+          connect: { id: ctx.session.user.id },
+        },
       });
     }),
 
   // Update chat (mainly for title changes)
   updateChat: protectedProcedure
-    .input(z.object({
-      chatId: z.string(),
-      title: z.string().min(1).max(255).optional(),
-      visibility: z.nativeEnum(Visibility).optional(),
-    }))
+    .input(
+      z.object({
+        chatId: z.string(),
+        title: z.string().min(1).max(255).optional(),
+        visibility: z.nativeEnum(Visibility).optional(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       // Verify ownership
       const existingChat = await getChatById(input.chatId);
@@ -71,19 +75,21 @@ export const chatsRouter = createTRPCRouter({
 
   // Create a new chat
   createChat: protectedProcedure
-    .input(z.object({
-      title: z.string().min(1).max(255).optional(),
-      visibility: z.nativeEnum(Visibility).optional().default('private'),
-    }))
+    .input(
+      z.object({
+        title: z.string().min(1).max(255).optional(),
+        visibility: z.nativeEnum(Visibility).optional().default('private'),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       const defaultTitle = input.title ?? 'New Chat';
-      
+
       return await createChat({
         title: defaultTitle,
         visibility: input.visibility,
         user: {
-          connect: { id: ctx.session.user.id }
-        }
+          connect: { id: ctx.session.user.id },
+        },
       });
     }),
 
@@ -102,12 +108,14 @@ export const chatsRouter = createTRPCRouter({
 
   // Add a message to a chat
   addMessage: protectedProcedure
-    .input(z.object({
-      chatId: z.string(),
-      role: z.string(),
-      parts: z.unknown(),
-      attachments: z.unknown().optional().default({}),
-    }))
+    .input(
+      z.object({
+        chatId: z.string(),
+        role: z.string(),
+        parts: z.unknown(),
+        attachments: z.unknown().optional().default({}),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
       // Verify chat ownership
       const chat = await getChatById(input.chatId);
@@ -120,8 +128,8 @@ export const chatsRouter = createTRPCRouter({
         parts: input.parts as string,
         attachments: input.attachments as object,
         chat: {
-          connect: { id: input.chatId }
-        }
+          connect: { id: input.chatId },
+        },
       });
     }),
 });

@@ -24,7 +24,7 @@ export const appRouter = createTRPCRouter({
   transfers: transfersRouter,
   facilitators: facilitatorsRouter,
   onrampSessions: onrampSessionsRouter,
-  availableTools: availableToolsRouter,  
+  availableTools: availableToolsRouter,
   serverWallet: serverWalletRouter,
 });
 

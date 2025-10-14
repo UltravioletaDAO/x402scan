@@ -5,7 +5,11 @@ import { useRouter } from 'next/navigation';
 import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { api } from '@/trpc/client';
 import { ChevronDown, MessageSquare, Plus, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -15,13 +19,16 @@ interface ChatSelectorProps {
   onNavigationStart?: () => void;
 }
 
-export const ChatSelector = ({ currentChatId, onNavigationStart }: ChatSelectorProps) => {
+export const ChatSelector = ({
+  currentChatId,
+  onNavigationStart,
+}: ChatSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
   const utils = api.useUtils();
-  
+
   const { data: chats } = api.chats.getUserChats.useQuery();
 
   // Reset navigation state when pathname changes (navigation completed)
@@ -30,13 +37,13 @@ export const ChatSelector = ({ currentChatId, onNavigationStart }: ChatSelectorP
   }, [pathname]);
 
   const createChatMutation = api.chats.createChat.useMutation({
-    onSuccess: (newChat) => {
+    onSuccess: newChat => {
       // Optimistically update the cache
-      utils.chats.getUserChats.setData(undefined, (old) => {
+      utils.chats.getUserChats.setData(undefined, old => {
         if (!old) return [newChat];
         return [newChat, ...old];
       });
-      
+
       // Navigate to the new chat
       void router.push(`/chat/${newChat.id}`);
     },
@@ -46,16 +53,16 @@ export const ChatSelector = ({ currentChatId, onNavigationStart }: ChatSelectorP
     onMutate: async ({ chatId }) => {
       // Cancel outgoing refetches
       await utils.chats.getUserChats.cancel();
-      
+
       // Snapshot the previous value
       const previousChats = utils.chats.getUserChats.getData();
-      
+
       // Optimistically update the cache
-      utils.chats.getUserChats.setData(undefined, (old) => {
+      utils.chats.getUserChats.setData(undefined, old => {
         if (!old) return [];
         return old.filter(chat => chat.id !== chatId);
       });
-      
+
       return { previousChats };
     },
     onError: (err, variables, context) => {
@@ -88,7 +95,7 @@ export const ChatSelector = ({ currentChatId, onNavigationStart }: ChatSelectorP
   const handleNewChat = () => {
     setIsNavigating(true);
     onNavigationStart?.();
-    createChatMutation.mutate({ title: 'New Chat' });    
+    createChatMutation.mutate({ title: 'New Chat' });
     setIsOpen(false);
   };
 
@@ -116,7 +123,7 @@ export const ChatSelector = ({ currentChatId, onNavigationStart }: ChatSelectorP
               <ChevronDown className="h-4 w-4" />
             </Button>
           </CollapsibleTrigger>
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -136,7 +143,7 @@ export const ChatSelector = ({ currentChatId, onNavigationStart }: ChatSelectorP
               </div>
             ) : (
               <div className="space-y-1">
-                {chats?.map((chat) => (
+                {chats?.map(chat => (
                   <div
                     key={chat.id}
                     className={`flex items-center justify-between p-2 rounded cursor-pointer hover:bg-muted ${
@@ -149,7 +156,11 @@ export const ChatSelector = ({ currentChatId, onNavigationStart }: ChatSelectorP
                       <div className="text-sm text-muted-foreground">
                         {chat.messages.length > 0 && (
                           <>
-                            Last message: {formatDistanceToNow(new Date(chat.messages[0].createdAt))} ago
+                            Last message:{' '}
+                            {formatDistanceToNow(
+                              new Date(chat.messages[0].createdAt)
+                            )}{' '}
+                            ago
                           </>
                         )}
                       </div>
@@ -157,7 +168,7 @@ export const ChatSelector = ({ currentChatId, onNavigationStart }: ChatSelectorP
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={(e) => handleDeleteChat(chat.id, e)}
+                      onClick={e => handleDeleteChat(chat.id, e)}
                       disabled={deleteChatMutation.isPending}
                     >
                       <Trash2 className="h-4 w-4" />

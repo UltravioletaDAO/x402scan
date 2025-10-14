@@ -7,7 +7,10 @@ import { StickToBottom, useStickToBottomContext } from 'use-stick-to-bottom';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-const Conversation = ({ className, ...props }: ComponentProps<typeof StickToBottom>) => (
+const Conversation = ({
+  className,
+  ...props
+}: ComponentProps<typeof StickToBottom>) => (
   <StickToBottom
     className={cn('relative h-full overflow-y-auto', className)}
     initial="smooth"
@@ -86,4 +89,9 @@ const ConversationScrollButton = ({
   );
 };
 
-export { Conversation, ConversationContent, ConversationEmptyState, ConversationScrollButton };
+export {
+  Conversation,
+  ConversationContent,
+  ConversationEmptyState,
+  ConversationScrollButton,
+};

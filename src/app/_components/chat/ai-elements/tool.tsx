@@ -1,10 +1,7 @@
 'use client';
 
 import type { ToolUIPart } from 'ai';
-import {
-  ChevronDownIcon,
-  WrenchIcon,
-} from 'lucide-react';
+import { ChevronDownIcon, WrenchIcon } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import {
   Collapsible,
@@ -50,7 +47,10 @@ const ToolHeader = ({
   </CollapsibleTrigger>
 );
 
-const ToolContent = ({ className, ...props }: ComponentProps<typeof CollapsibleContent>) => (
+const ToolContent = ({
+  className,
+  ...props
+}: ComponentProps<typeof CollapsibleContent>) => (
   <CollapsibleContent
     className={cn(
       'data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in',
@@ -60,7 +60,11 @@ const ToolContent = ({ className, ...props }: ComponentProps<typeof CollapsibleC
   />
 );
 
-const ToolInput = ({ className, input, ...props }: ComponentProps<'div'> & {
+const ToolInput = ({
+  className,
+  input,
+  ...props
+}: ComponentProps<'div'> & {
   input: ToolUIPart['input'];
 }) => (
   <div className={cn('space-y-2 overflow-hidden p-4', className)} {...props}>
@@ -90,7 +94,7 @@ const ToolOutput = ({
     if (typeof output !== 'string') {
       return { raw: output, parsed: null };
     }
-    
+
     const trimmed = output.trim();
     if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
       try {
@@ -99,7 +103,7 @@ const ToolOutput = ({
         return { raw: output, parsed: null };
       }
     }
-    
+
     return { raw: output, parsed: null };
   };
 

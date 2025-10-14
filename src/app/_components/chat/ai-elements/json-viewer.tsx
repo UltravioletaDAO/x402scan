@@ -15,7 +15,12 @@ interface JsonNodeProps {
   defaultCollapsed?: boolean;
 }
 
-const JsonNode = ({ data, keyName, depth = 0, defaultCollapsed = true }: JsonNodeProps) => {
+const JsonNode = ({
+  data,
+  keyName,
+  depth = 0,
+  defaultCollapsed = true,
+}: JsonNodeProps) => {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed && depth > 0);
 
   const getValueType = (value: JsonValue): string => {
@@ -25,24 +30,35 @@ const JsonNode = ({ data, keyName, depth = 0, defaultCollapsed = true }: JsonNod
   };
 
   const renderPrimitiveValue = (value: JsonValue) => {
-    
     if (value === null) {
       return <span className="text-muted-foreground">null</span>;
     }
-    
+
     if (typeof value === 'string') {
-      return <span className="text-green-600 dark:text-green-400">&quot;{value}&quot;</span>;
+      return (
+        <span className="text-green-600 dark:text-green-400">
+          &quot;{value}&quot;
+        </span>
+      );
     }
-    
+
     if (typeof value === 'number') {
       return <span className="text-blue-600 dark:text-blue-400">{value}</span>;
     }
-    
+
     if (typeof value === 'boolean') {
-      return <span className="text-purple-600 dark:text-purple-400">{value.toString()}</span>;
+      return (
+        <span className="text-purple-600 dark:text-purple-400">
+          {value.toString()}
+        </span>
+      );
     }
-    
-    return <span>{value !== null && value !== undefined ? JSON.stringify(value) : 'null'}</span>;
+
+    return (
+      <span>
+        {value !== null && value !== undefined ? JSON.stringify(value) : 'null'}
+      </span>
+    );
   };
 
   const renderCollapsedPreview = (value: JsonValue): string => {
@@ -50,13 +66,13 @@ const JsonNode = ({ data, keyName, depth = 0, defaultCollapsed = true }: JsonNod
       if (value.length === 0) return '[]';
       return `[${value.length}]`;
     }
-    
+
     if (typeof value === 'object' && value !== null) {
       const keys = Object.keys(value);
       if (keys.length === 0) return '{}';
       return `{${keys.length}}`;
     }
-    
+
     return '';
   };
 
@@ -65,7 +81,9 @@ const JsonNode = ({ data, keyName, depth = 0, defaultCollapsed = true }: JsonNod
   if (valueType === 'array' || valueType === 'object') {
     const isArray = Array.isArray(data);
     const items = isArray ? data : Object.entries(data as JsonObject);
-    const isEmpty = isArray ? data.length === 0 : Object.keys(data as JsonObject).length === 0;
+    const isEmpty = isArray
+      ? data.length === 0
+      : Object.keys(data as JsonObject).length === 0;
     const openBracket = isArray ? '[' : '{';
     const closeBracket = isArray ? ']' : '}';
 
@@ -86,7 +104,7 @@ const JsonNode = ({ data, keyName, depth = 0, defaultCollapsed = true }: JsonNod
             </button>
           )}
           {isEmpty && <span className="w-4" />}
-          
+
           <div className="flex-1">
             <span className="flex items-baseline gap-1">
               {keyName && (
@@ -137,7 +155,12 @@ const JsonNode = ({ data, keyName, depth = 0, defaultCollapsed = true }: JsonNod
   }
 
   return (
-    <div className={cn('font-mono text-xs flex items-baseline gap-1', depth > 0 && 'ml-4')}>
+    <div
+      className={cn(
+        'font-mono text-xs flex items-baseline gap-1',
+        depth > 0 && 'ml-4'
+      )}
+    >
       <span className="w-4" />
       {keyName && (
         <>
@@ -156,11 +179,14 @@ interface JsonViewerProps {
   className?: string;
 }
 
-export const JsonViewer = ({ data, defaultCollapsed = true, className }: JsonViewerProps) => {
+export const JsonViewer = ({
+  data,
+  defaultCollapsed = true,
+  className,
+}: JsonViewerProps) => {
   return (
     <div className={cn('p-3 overflow-auto', className)}>
       <JsonNode data={data} depth={0} defaultCollapsed={defaultCollapsed} />
     </div>
   );
 };
-

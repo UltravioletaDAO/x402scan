@@ -14,7 +14,10 @@ import {
   PromptInputTools,
   PromptInputButton,
 } from '@/app/_components/chat/ai-elements/prompt-input';
-import { Suggestion, Suggestions } from '@/app/_components/chat/ai-elements/suggestion';
+import {
+  Suggestion,
+  Suggestions,
+} from '@/app/_components/chat/ai-elements/suggestion';
 import { ToolSelector } from '@/app/_components/chat/tool-selector';
 import type { ChatStatus } from '@/app/_components/chat/chat';
 
@@ -76,13 +79,17 @@ export const PromptInputSection = ({
 
       <PromptInput onSubmit={handleSubmit} className="mt-4">
         <PromptInputTextarea
-          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInput(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+            setInput(e.target.value)
+          }
           value={input}
           disabled={!isAuthed}
           placeholder={isAuthed ? undefined : 'Sign in to chat'}
         />
         <PromptInputToolbar>
-          <PromptInputTools className={!isAuthed ? 'pointer-events-none opacity-50' : undefined}>
+          <PromptInputTools
+            className={!isAuthed ? 'pointer-events-none opacity-50' : undefined}
+          >
             <PromptInputModelSelect
               onValueChange={value => {
                 setModel(value);
@@ -108,18 +115,16 @@ export const PromptInputSection = ({
               disabled={!isAuthed}
               aria-label="Fund wallet"
             >
-              <Wallet className="size-4" />
-              ${usdcBalance?.toPrecision(3)} USDC
+              <Wallet className="size-4" />${usdcBalance?.toPrecision(3)} USDC
             </PromptInputButton>
             <ToolSelector
               selectedTools={selectedTools}
               onToolsChange={setSelectedTools}
             />
           </PromptInputTools>
-          <PromptInputSubmit disabled={!input || !isAuthed}  />
+          <PromptInputSubmit disabled={!input || !isAuthed} />
         </PromptInputToolbar>
       </PromptInput>
     </div>
   );
 };
-

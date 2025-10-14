@@ -79,7 +79,11 @@ const LoaderIcon = ({ size = 16 }: LoaderIconProps) => (
   </svg>
 );
 
-const Loader = ({ className, size = 16, ...props }: HTMLAttributes<HTMLDivElement> & {
+const Loader = ({
+  className,
+  size = 16,
+  ...props
+}: HTMLAttributes<HTMLDivElement> & {
   size?: number;
 }) => (
   <div
