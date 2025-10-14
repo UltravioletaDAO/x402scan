@@ -7,7 +7,6 @@ import { Messages } from '@/app/_components/chat/messages';
 import { PromptInputSection } from '@/app/_components/chat/prompt-input-section';
 import { useChat } from '@ai-sdk/react';
 import { useChatSubmission } from '@/app/_hooks/use-chat-submission';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type { ServerChatData } from '@/lib/server-data';
 import type { Chat } from '@prisma/client';
@@ -22,7 +21,6 @@ interface ChatProps {
 
 interface ChatContentProps {
   currentChatId: string | undefined;
-  createNewChat: () => void;
   currentChat: Chat | undefined;
   chatMessages: UIMessage[];
   isAuthed: boolean;
@@ -35,7 +33,6 @@ interface ChatContentProps {
 
 const ChatContent = ({
   currentChatId,
-  createNewChat,
   currentChat,
   chatMessages,
   isAuthed,
@@ -117,15 +114,9 @@ const ChatContent = ({
 const Chat = ({ serverData, chatId }: ChatProps) => {
   const [showFund, setShowFund] = useState(false);
   const [showVerify, setShowVerify] = useState(!serverData.isAuthed);
-  const router = useRouter();
-  
-  const createNewChat = () => {
-    router.push('/chat');
-  };
   return (
     <ChatContent
       currentChatId={chatId}
-      createNewChat={createNewChat}
       currentChat={serverData.currentChat ?? undefined}
       chatMessages={serverData.chatMessages}
       isAuthed={serverData.isAuthed}
