@@ -10,7 +10,6 @@ import {
   XCircleIcon,
 } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
-import { Badge } from '@/app/_components/chat/ui/badge';
 import {
   Collapsible,
   CollapsibleContent,
@@ -18,6 +17,7 @@ import {
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import { CodeBlock } from './code-block';
+import { JsonViewer } from './json-viewer';
 
 export type ToolProps = ComponentProps<typeof Collapsible>;
 
@@ -32,29 +32,6 @@ export type ToolHeaderProps = {
   type: ToolUIPart['type'];
   state: ToolUIPart['state'];
   className?: string;
-};
-
-const getStatusBadge = (status: ToolUIPart['state']) => {
-  const labels = {
-    'input-streaming': 'Pending',
-    'input-available': 'Running',
-    'output-available': 'Completed',
-    'output-error': 'Error',
-  } as const;
-
-  const icons = {
-    'input-streaming': <CircleIcon className="size-4" />,
-    'input-available': <ClockIcon className="size-4 animate-pulse" />,
-    'output-available': <CheckCircleIcon className="size-4 text-green-600" />,
-    'output-error': <XCircleIcon className="size-4 text-red-600" />,
-  } as const;
-
-  return (
-    <Badge className="gap-1.5 rounded-full text-xs" variant="secondary">
-      {icons[status]}
-      {labels[status]}
-    </Badge>
-  );
 };
 
 export const ToolHeader = ({
@@ -73,7 +50,6 @@ export const ToolHeader = ({
     <div className="flex items-center gap-2">
       <WrenchIcon className="size-4 text-muted-foreground" />
       <span className="font-medium text-sm">{type}</span>
-      {getStatusBadge(state)}
     </div>
     <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
   </CollapsibleTrigger>
@@ -121,6 +97,25 @@ export const ToolOutput = ({
     return null;
   }
 
+  const parseOutput = (output: ReactNode) => {
+    if (typeof output !== 'string') {
+      return { raw: output, parsed: null };
+    }
+    
+    const trimmed = output.trim();
+    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+      try {
+        return { raw: output, parsed: JSON.parse(trimmed) };
+      } catch {
+        return { raw: output, parsed: null };
+      }
+    }
+    
+    return { raw: output, parsed: null };
+  };
+
+  const { raw, parsed } = output ? parseOutput(output) : { raw: null, parsed: null };
+
   return (
     <div className={cn('space-y-2 p-4', className)} {...props}>
       <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
@@ -134,8 +129,9 @@ export const ToolOutput = ({
             : 'bg-muted/50 text-foreground'
         )}
       >
-        {errorText && <div>{errorText}</div>}
-        {output && <div>{output}</div>}
+        {errorText && <div className="p-3">{errorText}</div>}
+        {parsed && <JsonViewer data={parsed} defaultCollapsed={true} />}
+        {!parsed && raw && <div className="p-3">{raw}</div>}
       </div>
     </div>
   );

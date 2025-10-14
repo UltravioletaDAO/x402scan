@@ -2,8 +2,7 @@
 
 import { useChat } from '@ai-sdk/react';
 import { CopyIcon, MessageSquare } from 'lucide-react';
-import { Fragment, useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { Fragment, useEffect, useState } from 'react';
 import { Action, Actions } from '@/app/_components/chat/ai-elements/actions';
 import {
   Conversation,
@@ -32,6 +31,13 @@ import {
 } from '@/app/_components/chat/ai-elements/reasoning';
 import { Response } from '@/app/_components/chat/ai-elements/response';
 import {
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolOutput,
+  ToolInput,
+} from '@/app/_components/chat/ai-elements/tool';
+import {
   Source,
   Sources,
   SourcesContent,
@@ -39,6 +45,14 @@ import {
 } from '@/app/_components/chat/ai-elements/sources';
 import { Suggestion, Suggestions } from '@/app/_components/chat/ai-elements/suggestion';
 import { ToolSelector } from '@/app/_components/chat/tool-selector';
+import { useAccount } from 'wagmi';
+import { useSession } from 'next-auth/react';
+import { VerifyWalletModal } from '@/app/_components/chat/verify-wallet-modal';
+import { FundWalletModal } from '@/app/_components/chat/fund-wallet-modal';
+import { PromptInputButton } from '@/app/_components/chat/ai-elements/prompt-input';
+import { Wallet } from 'lucide-react';
+import { api } from '@/trpc/client';
+import { isToolUIPart, ToolUIPart } from 'ai';
 
 const models = [
   {
@@ -54,7 +68,6 @@ const models = [
 const suggestions = [
   'Can you explain how to play tennis?',
   'Write me a code snippet of how to use the vercel ai sdk to create a chatbot',
-  'How do I make a really good fish taco?',
 ];
 
 const Chat = () => {
@@ -63,8 +76,22 @@ const Chat = () => {
   const [selectedTools, setSelectedTools] = useState<string[]>([]);
   const { messages, sendMessage, status } = useChat();
   const { status: authStatus } = useSession();
-  console.log(authStatus);
   const isAuthed = authStatus === 'authenticated';
+  const [showVerify, setShowVerify] = useState(false);
+  const [showFund, setShowFund] = useState(false);
+
+  const { address } = useAccount();
+
+  const { data: usdcBalance } = api.serverWallet.usdcBaseBalance.useQuery(undefined, {
+    enabled: isAuthed,
+  });
+  useEffect(() => {
+    if (authStatus === 'unauthenticated') {
+      setShowVerify(true);
+    } else if (authStatus === 'authenticated') {
+      setShowVerify(false);
+    }
+  }, [authStatus, address]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -139,6 +166,20 @@ const Chat = () => {
                       </Sources>
                     )}
                   {message.parts.map((part, i) => {
+                    if (isToolUIPart(part)) {
+                      return (
+                        <Tool key={`${message.id}-${i}`} defaultOpen={false}>
+                          <ToolHeader type={part.type} state={part.state} />
+                          <ToolContent>
+                            <ToolInput input={part.input} />
+                            <ToolOutput
+                              output={JSON.stringify(part.output)}
+                              errorText={part.errorText}
+                            />
+                          </ToolContent>
+                        </Tool>
+                      );
+                    } else {
                     switch (part.type) {
                       case 'text':
                         return (
@@ -182,6 +223,7 @@ const Chat = () => {
                         );
                       default:
                         return null;
+                    }
                     }
                   })}
                 </div>
@@ -230,6 +272,14 @@ const Chat = () => {
                   ))}
                 </PromptInputModelSelectContent>
               </PromptInputModelSelect>
+              <PromptInputButton
+                onClick={() => setShowFund(true)}
+                disabled={!isAuthed}
+                aria-label="Fund wallet"
+              >
+                <Wallet className="size-4" />
+                ${usdcBalance?.toPrecision(3)} USDC
+              </PromptInputButton>
               <ToolSelector
                 selectedTools={selectedTools}
                 onToolsChange={setSelectedTools}
@@ -238,6 +288,10 @@ const Chat = () => {
             <PromptInputSubmit disabled={!input || !isAuthed} status={status} />
           </PromptInputToolbar>
         </PromptInput>
+        <VerifyWalletModal open={!isAuthed && showVerify} onOpenChange={setShowVerify} />
+        {isAuthed && (
+          <FundWalletModal open={showFund} onOpenChange={setShowFund} />
+        )}
       </div>
     </div>
   );

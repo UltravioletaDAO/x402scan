@@ -4,12 +4,7 @@ import { Signer } from 'x402-fetch';
 import { createX402AITools } from './get-tools';
 import { Tool } from 'ai';
 
-const listAllTools = async (walletClient: Signer) => {
-  const tools = await createX402AITools(walletClient);
-  return tools;
-};
-
-const getSelectedTools = async (
+export const getSelectedTools = async (
   walletClient: Signer,
   tools: string[]
 ): Promise<Record<string, Tool>> => {

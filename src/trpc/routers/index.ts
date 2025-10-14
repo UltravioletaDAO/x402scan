@@ -10,6 +10,7 @@ import { sellersRouter } from './sellers';
 import { statisticsRouter } from './statistics';
 import { transactionsRouter } from './transactions';
 import { transfersRouter } from './transfers';
+import { serverWalletRouter } from './server-wallet';
 
 export const appRouter = createTRPCRouter({
   accepts: acceptsRouter,
@@ -22,6 +23,7 @@ export const appRouter = createTRPCRouter({
   facilitators: facilitatorsRouter,
   onrampSessions: onrampSessionsRouter,
   availableTools: availableToolsRouter,
+  serverWallet: serverWalletRouter,
 });
 
 export type AppRouter = typeof appRouter;
