@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { Chat } from '@prisma/client';
+import type { UseAgentConfigurationReturn } from './use-agent-configuration';
 
 interface UseChatSubmissionProps {
   isAuthed: boolean;
@@ -16,16 +17,33 @@ interface UseChatSubmissionProps {
       };
     }
   ) => void;
+  agentConfig?: UseAgentConfigurationReturn;
 }
 
 export function useChatSubmission({
   isAuthed,
   currentChat,
   sendMessage,
+  agentConfig,
 }: UseChatSubmissionProps) {
   const [input, setInput] = useState('');
-  const [model, setModel] = useState<string>('gpt-4o');
-  const [selectedTools, setSelectedTools] = useState<string[]>([]);
+
+  // Get model and tools directly from agentConfig
+  const model = agentConfig?.currentAgent?.model ?? 'gpt-4o';
+  const selectedTools = agentConfig?.currentAgent?.tools ?? [];
+
+  // When model or tools change, update the agent configuration
+  const handleSetModel = (newModel: string) => {
+    if (agentConfig) {
+      agentConfig.updateLocalAgent({ model: newModel });
+    }
+  };
+
+  const handleSetSelectedTools = (newTools: string[]) => {
+    if (agentConfig) {
+      agentConfig.updateLocalAgent({ tools: newTools });
+    }
+  };
 
   const sendChatMessage = (text: string) => {
     if (!isAuthed) {
@@ -56,18 +74,13 @@ export function useChatSubmission({
     setInput('');
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    sendChatMessage(suggestion);
-  };
-
   return {
     input,
     setInput,
     model,
-    setModel,
+    setModel: handleSetModel,
     selectedTools,
-    setSelectedTools,
+    setSelectedTools: handleSetSelectedTools,
     handleSubmit,
-    handleSuggestionClick,
   };
 }

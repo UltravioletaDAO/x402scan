@@ -14,10 +14,6 @@ import {
   PromptInputTools,
   PromptInputButton,
 } from '@/app/_components/chat/ai-elements/prompt-input';
-import {
-  Suggestion,
-  Suggestions,
-} from '@/app/_components/chat/ai-elements/suggestion';
 import { ToolSelector } from '@/app/_components/chat/tool-selector';
 import type { ChatStatus } from '@/app/_components/chat/chat';
 
@@ -32,16 +28,10 @@ const models = [
   },
 ];
 
-const suggestions = [
-  'Can you explain how to play tennis?',
-  'Write me a code snippet of how to use the vercel ai sdk to create a chatbot',
-];
-
 interface PromptInputSectionProps {
   input: string;
   setInput: (value: string) => void;
   handleSubmit: (e: React.FormEvent) => void;
-  handleSuggestionClick: (suggestion: string) => void;
   isAuthed: boolean;
   model: string;
   setModel: (value: string) => void;
@@ -56,7 +46,6 @@ export const PromptInputSection = ({
   input,
   setInput,
   handleSubmit,
-  handleSuggestionClick,
   isAuthed,
   model,
   setModel,
@@ -67,15 +56,6 @@ export const PromptInputSection = ({
 }: PromptInputSectionProps) => {
   return (
     <div>
-      <Suggestions>
-        {suggestions.map(suggestion => (
-          <Suggestion
-            key={suggestion}
-            onClick={handleSuggestionClick}
-            suggestion={suggestion}
-          />
-        ))}
-      </Suggestions>
 
       <PromptInput onSubmit={handleSubmit} className="mt-4">
         <PromptInputTextarea

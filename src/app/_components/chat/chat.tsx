@@ -3,11 +3,13 @@
 import { VerifyWalletModal } from '@/app/_components/chat/verify-wallet-modal';
 import { FundWalletModal } from '@/app/_components/chat/fund-wallet-modal';
 import { ChatSelector } from '@/app/_components/chat/chat-selector';
+import { AgentSelector } from '@/app/_components/chat/agent-selector';
 import { Messages } from '@/app/_components/chat/messages';
 import { PromptInputSection } from '@/app/_components/chat/prompt-input-section';
 import { ChatLoadingSkeleton } from '@/app/_components/chat/chat-loading-skeleton';
 import { useChat } from '@ai-sdk/react';
 import { useChatSubmission } from '@/app/_hooks/use-chat-submission';
+import { useAgentConfiguration } from '@/app/_hooks/use-agent-configuration';
 import { useState } from 'react';
 import type { ServerChatData } from '@/lib/server-data';
 import type { Chat } from '@prisma/client';
@@ -52,6 +54,9 @@ const ChatContent = ({
   isNavigating,
   setIsNavigating,
 }: ChatContentProps) => {
+  // Agent configuration hook
+  const agentConfig = useAgentConfiguration();
+
   // AI SDK useChat hook - initialized with latest messages from backend
   const { messages, sendMessage, status } = useChat({
     messages: chatMessages,
@@ -66,13 +71,13 @@ const ChatContent = ({
     selectedTools,
     setSelectedTools,
     handleSubmit,
-    handleSuggestionClick,
   } = useChatSubmission({
     isAuthed,
     currentChat,
     sendMessage: (message, options) => {
       void sendMessage(message, options);
     },
+    agentConfig,
   });
 
   // Show loading skeleton when navigating between chats
@@ -85,11 +90,15 @@ const ChatContent = ({
       {/* Fixed top navigation */}
       {isAuthed && (
         <div className="flex-shrink-0 bg-background border-b">
-          <div className="mx-auto max-w-3xl px-6 py-4">
+          <div className="mx-auto max-w-3xl px-6 py-4 space-y-3">
             <ChatSelector
               currentChatId={currentChatId ?? undefined}
               onNavigationStart={() => setIsNavigating(true)}
             />
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-muted-foreground">Agent:</span>
+              <AgentSelector agentConfig={agentConfig} />
+            </div>
           </div>
         </div>
       )}
@@ -104,7 +113,6 @@ const ChatContent = ({
             input={input}
             setInput={setInput}
             handleSubmit={handleSubmit}
-            handleSuggestionClick={handleSuggestionClick}
             isAuthed={isAuthed}
             model={model}
             setModel={setModel}

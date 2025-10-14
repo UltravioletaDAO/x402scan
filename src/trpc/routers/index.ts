@@ -1,6 +1,7 @@
 import { createCallerFactory, createTRPCRouter } from '../trpc';
 
 import { acceptsRouter } from './accepts';
+import { agentConfigurationsRouter } from './agent-configurations';
 import { availableToolsRouter } from './available-tools';
 import { chatsRouter } from './chats';
 import { facilitatorsRouter } from './facilitators';
@@ -15,6 +16,7 @@ import { serverWalletRouter } from './server-wallet';
 
 export const appRouter = createTRPCRouter({
   accepts: acceptsRouter,
+  agentConfigurations: agentConfigurationsRouter,
   chats: chatsRouter,
   stats: statisticsRouter,
   sellers: sellersRouter,
