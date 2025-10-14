@@ -32,7 +32,7 @@ export default async function Home() {
         </div>
         <div className="flex flex-col md:flex-row items-center gap-2">
           <SearchButton />
-          <Link href="/resources/register">
+          <Link href="/resources/register" className="w-full md:w-fit">
             <Button
               variant="turbo"
               className="shrink-0 w-full md:w-fit px-4"
