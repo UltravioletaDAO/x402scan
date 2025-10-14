@@ -2,7 +2,9 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from './client';
 
 // AgentConfiguration CRUD operations
-export const createAgentConfiguration = async (data: Prisma.AgentConfigurationCreateInput) => {
+export const createAgentConfiguration = async (
+  data: Prisma.AgentConfigurationCreateInput
+) => {
   return await prisma.agentConfiguration.create({
     data,
     include: {
@@ -48,7 +50,10 @@ export const getAgentConfigurationsByUserId = async (userId: string) => {
   });
 };
 
-export const updateAgentConfiguration = async (id: string, data: Prisma.AgentConfigurationUpdateInput) => {
+export const updateAgentConfiguration = async (
+  id: string,
+  data: Prisma.AgentConfigurationUpdateInput
+) => {
   return await prisma.agentConfiguration.update({
     where: { id },
     data,
@@ -64,47 +69,47 @@ export const updateAgentConfiguration = async (id: string, data: Prisma.AgentCon
   });
 };
 
-export const deleteAgentConfiguration = async (id: string) => {
-  return await prisma.agentConfiguration.delete({
-    where: { id },
-  });
-};
+// export const deleteAgentConfiguration = async (id: string) => {
+//   return await prisma.agentConfiguration.delete({
+//     where: { id },
+//   });
+// };
 
 // Additional utility functions
-export const getPublicAgentConfigurations = async () => {
-  return await prisma.agentConfiguration.findMany({
-    where: { visibility: 'public' },
-    orderBy: { createdAt: 'desc' },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-    },
-  });
-};
+// export const getPublicAgentConfigurations = async () => {
+//   return await prisma.agentConfiguration.findMany({
+//     where: { visibility: 'public' },
+//     orderBy: { createdAt: 'desc' },
+//     include: {
+//       user: {
+//         select: {
+//           id: true,
+//           name: true,
+//           email: true,
+//         },
+//       },
+//     },
+//   });
+// };
 
-export const getAgentConfigurationsByUserIdAndVisibility = async (
-  userId: string,
-  visibility: 'public' | 'private'
-) => {
-  return await prisma.agentConfiguration.findMany({
-    where: { 
-      userId,
-      visibility 
-    },
-    orderBy: { createdAt: 'desc' },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-        },
-      },
-    },
-  });
-};
+// export const getAgentConfigurationsByUserIdAndVisibility = async (
+//   userId: string,
+//   visibility: 'public' | 'private'
+// ) => {
+//   return await prisma.agentConfiguration.findMany({
+//     where: {
+//       userId,
+//       visibility,
+//     },
+//     orderBy: { createdAt: 'desc' },
+//     include: {
+//       user: {
+//         select: {
+//           id: true,
+//           name: true,
+//           email: true,
+//         },
+//       },
+//     },
+//   });
+// };
