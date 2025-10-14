@@ -8,7 +8,7 @@ import {
   deleteChat,
   createMessage,
 } from '@/services/db/chats';
-import { ChatVisibility } from '@prisma/client';
+import { Visibility } from '@prisma/client';
 
 export const chatsRouter = createTRPCRouter({
   // Get all chats for the current user
@@ -21,7 +21,7 @@ export const chatsRouter = createTRPCRouter({
     .input(z.object({
       chatId: z.string().optional(),
       title: z.string().min(1).max(255).optional(),
-      visibility: z.nativeEnum(ChatVisibility).optional().default('private'),
+      visibility: z.nativeEnum(Visibility).optional().default('private'),
     }))
     .query(async ({ input, ctx }) => {
       // If chatId is provided, get existing chat
@@ -53,7 +53,7 @@ export const chatsRouter = createTRPCRouter({
     .input(z.object({
       chatId: z.string(),
       title: z.string().min(1).max(255).optional(),
-      visibility: z.nativeEnum(ChatVisibility).optional(),
+      visibility: z.nativeEnum(Visibility).optional(),
     }))
     .mutation(async ({ input, ctx }) => {
       // Verify ownership
@@ -62,7 +62,7 @@ export const chatsRouter = createTRPCRouter({
         throw new Error('Chat not found or access denied');
       }
 
-      const updateData: { title?: string; visibility?: ChatVisibility } = {};
+      const updateData: { title?: string; visibility?: Visibility } = {};
       if (input.title) updateData.title = input.title;
       if (input.visibility) updateData.visibility = input.visibility;
 
@@ -73,7 +73,7 @@ export const chatsRouter = createTRPCRouter({
   createChat: protectedProcedure
     .input(z.object({
       title: z.string().min(1).max(255).optional(),
-      visibility: z.nativeEnum(ChatVisibility).optional().default('private'),
+      visibility: z.nativeEnum(Visibility).optional().default('private'),
     }))
     .mutation(async ({ input, ctx }) => {
       const defaultTitle = input.title ?? 'New Chat';

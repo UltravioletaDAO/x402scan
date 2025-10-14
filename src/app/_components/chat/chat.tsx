@@ -5,6 +5,7 @@ import { FundWalletModal } from '@/app/_components/chat/fund-wallet-modal';
 import { ChatSelector } from '@/app/_components/chat/chat-selector';
 import { Messages } from '@/app/_components/chat/messages';
 import { PromptInputSection } from '@/app/_components/chat/prompt-input-section';
+import { ChatLoadingSkeleton } from '@/app/_components/chat/chat-loading-skeleton';
 import { useChat } from '@ai-sdk/react';
 import { useChatSubmission } from '@/app/_hooks/use-chat-submission';
 import { useState } from 'react';
@@ -29,6 +30,8 @@ interface ChatContentProps {
   usdcBalance: number | undefined;
   showFund: boolean;
   setShowFund: (show: boolean) => void;
+  isNavigating: boolean;
+  setIsNavigating: (navigating: boolean) => void;
 }
 
 const ChatContent = ({
@@ -41,6 +44,8 @@ const ChatContent = ({
   usdcBalance,
   showFund,
   setShowFund,
+  isNavigating,
+  setIsNavigating,
 }: ChatContentProps) => {
 
     // AI SDK useChat hook - initialized with latest messages from backend
@@ -66,6 +71,11 @@ const ChatContent = ({
       },
     });
   
+  // Show loading skeleton when navigating between chats
+  if (isNavigating) {
+    return <ChatLoadingSkeleton />;
+  }
+
   return (
     <div className="flex h-full flex-col">
       {/* Fixed top navigation */}
@@ -74,6 +84,7 @@ const ChatContent = ({
           <div className="mx-auto max-w-3xl px-6 py-4">
             <ChatSelector 
               currentChatId={currentChatId ?? undefined}
+              onNavigationStart={() => setIsNavigating(true)}
             />
           </div>
         </div>
@@ -114,6 +125,8 @@ const ChatContent = ({
 const Chat = ({ serverData, chatId }: ChatProps) => {
   const [showFund, setShowFund] = useState(false);
   const [showVerify, setShowVerify] = useState(!serverData.isAuthed);
+  const [isNavigating, setIsNavigating] = useState(false);
+  
   return (
     <ChatContent
       currentChatId={chatId}
@@ -125,6 +138,8 @@ const Chat = ({ serverData, chatId }: ChatProps) => {
       usdcBalance={serverData.usdcBalance ?? undefined}
       showFund={showFund}
       setShowFund={setShowFund}
+      isNavigating={isNavigating}
+      setIsNavigating={setIsNavigating}
     />
   );
 };
