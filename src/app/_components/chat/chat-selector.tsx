@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -24,17 +23,10 @@ export const ChatSelector = ({
   onNavigationStart,
 }: ChatSelectorProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
   const router = useRouter();
-  const pathname = usePathname();
   const utils = api.useUtils();
 
   const { data: chats } = api.chats.getUserChats.useQuery();
-
-  // Reset navigation state when pathname changes (navigation completed)
-  useEffect(() => {
-    setIsNavigating(false);
-  }, [pathname]);
 
   const createChatMutation = api.chats.createChat.useMutation({
     onSuccess: newChat => {
@@ -85,7 +77,6 @@ export const ChatSelector = ({
 
   const handleChatSelect = (chatId: string) => {
     if (chatId !== currentChatId) {
-      setIsNavigating(true);
       onNavigationStart?.();
     }
     void router.push(`/chat/${chatId}`);
@@ -93,7 +84,6 @@ export const ChatSelector = ({
   };
 
   const handleNewChat = () => {
-    setIsNavigating(true);
     onNavigationStart?.();
     createChatMutation.mutate({ title: 'New Chat' });
     setIsOpen(false);
