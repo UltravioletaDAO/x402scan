@@ -74,7 +74,7 @@ const ChatContent = ({
       {/* Fixed top navigation */}
       {isAuthed && (
         <div className="flex-shrink-0 bg-background border-b">
-          <div className="mx-auto max-w-4xl px-6 py-4">
+          <div className="mx-auto max-w-3xl px-6 py-4">
             <ChatSelector 
               currentChatId={currentChatId ?? undefined} 
               onNewChat={createNewChat}
@@ -84,15 +84,12 @@ const ChatContent = ({
       )}
       
       {/* Scrollable messages area - takes remaining space */}
-      <div className="flex-1 overflow-hidden">
-        <div className="mx-auto h-full max-w-4xl px-6">
-          <Messages messages={messages} status={status} />
-        </div>
-      </div>
+        <Messages messages={messages} status={status} />
+
       
       {/* Fixed bottom prompt area */}
       <div className="flex-shrink-0 bg-background border-t">
-        <div className="mx-auto max-w-4xl p-6">
+        <div className="mx-auto max-w-3xl p-6">
           <PromptInputSection
             input={input}
             setInput={setInput}

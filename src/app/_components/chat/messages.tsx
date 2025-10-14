@@ -41,8 +41,8 @@ interface MessagesProps {
 
 export const Messages = ({ messages, status }: MessagesProps) => {
   return (
-    <Conversation className="relative h-full w-full overflow-hidden">
-      <ConversationContent>
+      <Conversation className="h-80% w-full max-w-4xl mx-auto">
+        <ConversationContent>
         {messages.length === 0 ? (
           <ConversationEmptyState
             icon={<MessageSquare className="size-12" />}
