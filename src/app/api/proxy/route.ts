@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { after, NextResponse, type NextRequest } from 'next/server';
 
 const RESPONSE_HEADER_BLOCKLIST = new Set([
   'content-encoding',
@@ -57,6 +57,15 @@ async function proxy(request: NextRequest) {
       }
     });
     responseHeaders.set('url', targetUrl.toString());
+
+    // after(() => {
+
+    //   createResourceInvocation({
+    //     statusCode: upstreamResponse.status,
+    //     statusText: upstreamResponse.statusText,
+    //     response: upstreamResponse.body,
+    //   });
+    // });
 
     return new NextResponse(upstreamResponse.body, {
       status: upstreamResponse.status,
