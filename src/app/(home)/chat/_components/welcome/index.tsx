@@ -44,7 +44,7 @@ export const Welcome = () => {
   );
 };
 
-export const SignInButton = () => {
+const SignInButton = () => {
   const { signIn, isPending } = useSignIn();
 
   return (

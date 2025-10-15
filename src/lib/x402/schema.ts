@@ -28,8 +28,6 @@ const FieldDefSchema: z3.ZodTypeAny = z3.lazy(() =>
   )
 );
 
-export type FieldDef = z3.infer<typeof FieldDefSchema>;
-
 export const enhancedOutputSchema = z3.object({
   input: HTTPRequestStructureSchema.omit({
     queryParams: true,

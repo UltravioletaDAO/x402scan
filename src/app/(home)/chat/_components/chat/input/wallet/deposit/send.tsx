@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useState } from 'react';
+import React, { useState } from 'react';
 
 import { Check, Loader2, Wallet } from 'lucide-react';
 
@@ -47,7 +47,7 @@ export const Send: React.FC<Props> = ({ address }) => {
 
   const utils = api.useUtils();
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = () => {
     writeContract(
       {
         address: USDC_ADDRESS,
@@ -73,14 +73,7 @@ export const Send: React.FC<Props> = ({ address }) => {
         },
       }
     );
-  }, [
-    address,
-    amount,
-    writeContract,
-    refetchBalance,
-    refetchEthBalance,
-    resetSending,
-  ]);
+  };
 
   return (
     <div className="flex flex-col gap-2">

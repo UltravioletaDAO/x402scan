@@ -14,30 +14,34 @@ export interface AgentConfigurationState {
 
 export interface UseAgentConfigurationReturn {
   // Data
-  configurations: Array<{
-    id: string;
-    userId: string;
-    model: string;
-    tools: string[];
-    systemPrompt: string;
-    visibility: Visibility;
-    createdAt: Date;
-    updatedAt: Date;
-  }> | undefined;
+  configurations:
+    | Array<{
+        id: string;
+        userId: string;
+        model: string;
+        tools: string[];
+        systemPrompt: string;
+        visibility: Visibility;
+        createdAt: Date;
+        updatedAt: Date;
+      }>
+    | undefined;
   isLoadingConfigurations: boolean;
-  
+
   // Current agent state
   currentAgent: AgentConfigurationState | null;
   isDirty: boolean;
-  
+
   // Methods
   selectAgent: (id: string | null) => void;
   updateLocalAgent: (updates: Partial<AgentConfigurationState>) => void;
   saveAgent: () => Promise<void>;
-  createNewAgent: (config: Omit<AgentConfigurationState, 'id'>) => Promise<void>;
+  createNewAgent: (
+    config: Omit<AgentConfigurationState, 'id'>
+  ) => Promise<void>;
   deleteAgent: (id: string) => Promise<void>;
   resetToSaved: () => void;
-  
+
   // UI state
   isSaving: boolean;
   saveError: string | null;
@@ -51,8 +55,11 @@ const DEFAULT_AGENT: Omit<AgentConfigurationState, 'id'> = {
 };
 
 export const useAgentConfiguration = (): UseAgentConfigurationReturn => {
-  const [currentAgent, setCurrentAgent] = useState<AgentConfigurationState | null>(null);
-  const [savedAgent, setSavedAgent] = useState<AgentConfigurationState | null>(null);
+  const [currentAgent, setCurrentAgent] =
+    useState<AgentConfigurationState | null>(null);
+  const [savedAgent, setSavedAgent] = useState<AgentConfigurationState | null>(
+    null
+  );
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -93,7 +100,7 @@ export const useAgentConfiguration = (): UseAgentConfigurationReturn => {
         return;
       }
 
-      const config = configurations?.find((c) => c.id === id);
+      const config = configurations?.find(c => c.id === id);
       if (config) {
         const agentState: AgentConfigurationState = {
           id: config.id,
@@ -111,16 +118,19 @@ export const useAgentConfiguration = (): UseAgentConfigurationReturn => {
   );
 
   // Update local agent state (marks as dirty)
-  const updateLocalAgent = useCallback((updates: Partial<AgentConfigurationState>) => {
-    setCurrentAgent((prev) => {
-      if (!prev) {
-        // If no current agent, create a new one with defaults
-        return { ...DEFAULT_AGENT, ...updates };
-      }
-      return { ...prev, ...updates };
-    });
-    setIsDirty(true);
-  }, []);
+  const updateLocalAgent = useCallback(
+    (updates: Partial<AgentConfigurationState>) => {
+      setCurrentAgent(prev => {
+        if (!prev) {
+          // If no current agent, create a new one with defaults
+          return { ...DEFAULT_AGENT, ...updates };
+        }
+        return { ...prev, ...updates };
+      });
+      setIsDirty(true);
+    },
+    []
+  );
 
   // Save agent (create or update)
   const saveAgent = useCallback(async () => {
@@ -241,4 +251,3 @@ export const useAgentConfiguration = (): UseAgentConfigurationReturn => {
     saveError,
   };
 };
-

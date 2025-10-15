@@ -46,7 +46,7 @@ export function AgentConfigurationModal({
   onSave,
   mode,
 }: AgentConfigurationModalProps) {
-  const [name, setName] = useState('');
+  const [, setName] = useState('');
   const [model, setModel] = useState<string>('gpt-4o');
   const [tools, setTools] = useState<string[]>([]);
   const [systemPrompt, setSystemPrompt] = useState(
