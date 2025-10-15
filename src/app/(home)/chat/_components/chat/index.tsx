@@ -1,17 +1,19 @@
 'use client';
 
+import { useState } from 'react';
+
 import { useChat } from '@ai-sdk/react';
+
+import { toast } from 'sonner';
 
 import { Messages } from './messages';
 import { PromptInputSection } from './input';
 
-import { useChatSubmission } from '@/app/_hooks/use-chat-submission';
-import { useAgentConfiguration } from '@/app/_hooks/use-agent-configuration';
+import { api } from '@/trpc/client';
 
 import { convertToUIMessages } from '@/lib/utils';
+
 import type { Message } from '@prisma/client';
-import { toast } from 'sonner';
-import { api } from '@/trpc/client';
 
 interface Props {
   id: string;
@@ -20,8 +22,6 @@ interface Props {
 }
 
 export const Chat: React.FC<Props> = ({ id, initialMessages }) => {
-  const agentConfig = useAgentConfiguration();
-
   const utils = api.useUtils();
 
   const { messages, sendMessage, status } = useChat({
@@ -35,19 +35,33 @@ export const Chat: React.FC<Props> = ({ id, initialMessages }) => {
     },
   });
 
-  const {
-    input,
-    setInput,
-    model,
-    setModel,
-    selectedTools,
-    setSelectedTools,
-    handleSubmit,
-  } = useChatSubmission({
-    id,
-    sendMessage,
-    agentConfig,
-  });
+  const [input, setInput] = useState('');
+  const [model, setModel] = useState('gpt-4o');
+  const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
+
+  const sendChatMessage = (text: string) => {
+    if (!text.trim()) {
+      toast.error('Please enter a message');
+      return;
+    }
+    window.history.replaceState({}, '', `/chat/${id}`);
+    void sendMessage(
+      { text },
+      {
+        body: {
+          model,
+          selectedResourceIds,
+          chatId: id,
+        },
+      }
+    );
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendChatMessage(input);
+    setInput('');
+  };
 
   return (
     <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
@@ -60,8 +74,14 @@ export const Chat: React.FC<Props> = ({ id, initialMessages }) => {
             handleSubmit={handleSubmit}
             model={model}
             setModel={setModel}
-            selectedTools={selectedTools}
-            setSelectedTools={setSelectedTools}
+            selectedResourceIds={selectedResourceIds}
+            onSelectResource={resourceId =>
+              setSelectedResourceIds(prev =>
+                prev.includes(resourceId)
+                  ? prev.filter(id => id !== resourceId)
+                  : [...prev, resourceId]
+              )
+            }
             status={status}
           />
         </div>

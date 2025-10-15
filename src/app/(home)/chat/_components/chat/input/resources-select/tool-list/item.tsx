@@ -1,39 +1,34 @@
 import { CommandItem as BaseCommandItem } from '@/components/ui/command';
 
-import { cn } from '@/lib/utils';
 import { Favicon } from '@/components/favicon';
+
+import { cn } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
+
+import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
   isSelected: boolean;
-  favicon: string | null;
-  resource: string;
-  price: bigint;
-  description: string;
-  addTool: (resource: string) => void;
-  removeTool: (resource: string) => void;
+  resource: RouterOutputs['availableTools']['list'][number];
+  onSelectResource: (resourceId: string) => void;
 }
 
-export const ToolItem: React.FC<Props> = ({
+export const ResourceItem: React.FC<Props> = ({
   resource,
   isSelected,
-  favicon,
-  price,
-  description,
-  addTool,
-  removeTool,
+  onSelectResource,
 }) => {
   return (
     <BaseCommandItem
-      onSelect={() => (isSelected ? removeTool(resource) : addTool(resource))}
+      onSelect={() => onSelectResource(resource.id)}
       className="flex items-center justify-between gap-2 rounded-none px-3"
-      value={resource}
+      value={resource.resource}
     >
       <div className="flex items-center gap-2 flex-1 overflow-hidden">
         <div
           className={cn('rounded-md overflow-hidden relative shrink-0 size-6')}
         >
-          <Favicon url={favicon} className="size-full" />
+          <Favicon url={resource.origin.favicon} className="size-full" />
         </div>
 
         <div className="flex flex-1 flex-col items-start gap-0 overflow-hidden">
@@ -43,15 +38,15 @@ export const ToolItem: React.FC<Props> = ({
               isSelected && 'text-primary'
             )}
           >
-            {resource}
+            {resource.resource}
           </h3>
           <p className="text-[10px] text-muted-foreground line-clamp-2">
-            {description}
+            {resource.description}
           </p>
         </div>
       </div>
       <p className="text-xs text-primary font-bold">
-        {formatTokenAmount(price)}
+        {formatTokenAmount(BigInt(resource.maxAmountRequired))}
       </p>
     </BaseCommandItem>
   );

@@ -20,20 +20,21 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 interface Props {
-  tools: string[];
-  addTool: (tool: string) => void;
-  removeTool: (id: string) => void;
+  resourceIds: string[];
+  onSelectResource: (resourceId: string) => void;
 }
 
-export const ToolSelect: React.FC<Props> = ({ tools, addTool, removeTool }) => {
+export const ToolSelect: React.FC<Props> = ({
+  resourceIds,
+  onSelectResource,
+}) => {
   const isMobile = useIsMobile();
 
   const content = (
     <div className={cn('w-full max-w-full')}>
       <ToolList
-        selectedTools={tools}
-        onAddTool={addTool}
-        onRemoveTool={removeTool}
+        selectedResourceIds={resourceIds}
+        onSelectResource={onSelectResource}
         gradientClassName="md:from-popover"
       />
     </div>
@@ -42,9 +43,9 @@ export const ToolSelect: React.FC<Props> = ({ tools, addTool, removeTool }) => {
   const trigger = (
     <Button variant="outline" size="sm">
       <span className="text-xs">
-        {tools.length > 0
-          ? `${tools.length} tool${tools.length > 1 ? 's' : ''}`
-          : 'Select tools'}
+        {resourceIds.length > 0
+          ? `${resourceIds.length} Tool${resourceIds.length > 1 ? 's' : ''}`
+          : 'Select Tools'}
       </span>
     </Button>
   );
@@ -55,9 +56,9 @@ export const ToolSelect: React.FC<Props> = ({ tools, addTool, removeTool }) => {
         <DrawerTrigger asChild>{trigger}</DrawerTrigger>
         <DrawerContent className="p-0">
           <DrawerHeader className="items-start px-3 pb-3">
-            <DrawerTitle className="text-lg">Toolkit Selector</DrawerTitle>
+            <DrawerTitle className="text-lg">Tools Selector</DrawerTitle>
             <DrawerDescription>
-              Add tools to give the model more capabilities
+              Add x402 tools to give your agent more capabilities
             </DrawerDescription>
           </DrawerHeader>
           {content}

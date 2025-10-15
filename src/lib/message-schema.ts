@@ -1,5 +1,5 @@
-import type { JSONValue } from 'ai';
 import { z } from 'zod';
+import type { JSONValue } from 'ai';
 
 // SharedV2ProviderMetadata is Record<string, Record<string, JSONValue>>
 const providerMetadataSchema = z.record(
@@ -121,16 +121,9 @@ const messagePartSchema = z.union([
   stepStartPartSchema,
 ]);
 
-const messageSchema = z.object({
+export const messageSchema = z.object({
   id: z.string(),
   role: z.enum(['system', 'user', 'assistant']),
   metadata: z.optional(z.unknown()),
   parts: z.array(messagePartSchema),
-});
-
-export const chatRequestBodySchema = z.object({
-  model: z.string(),
-  selectedTools: z.array(z.string()),
-  messages: z.array(messageSchema),
-  chatId: z.string(),
 });

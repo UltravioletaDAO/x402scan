@@ -11,30 +11,30 @@ import {
 import { ModelSelect } from './model-select';
 
 import { WalletButton } from './wallet';
-import { ToolSelect } from './tool-select';
+import { ToolSelect } from './resources-select';
 
 import type { ChatStatus } from 'ai';
 
-interface PromptInputSectionProps {
+interface Props {
   input: string;
   setInput: (value: string) => void;
   handleSubmit: (e: React.FormEvent) => void;
   model: string;
   setModel: (value: string) => void;
-  selectedTools: string[];
-  setSelectedTools: (value: string[]) => void;
+  selectedResourceIds: string[];
+  onSelectResource: (resourceId: string) => void;
   status: ChatStatus;
 }
 
-export const PromptInputSection = ({
+export const PromptInputSection: React.FC<Props> = ({
   input,
   setInput,
   handleSubmit,
   model,
   setModel,
-  selectedTools,
-  setSelectedTools,
-}: PromptInputSectionProps) => {
+  selectedResourceIds,
+  onSelectResource,
+}) => {
   return (
     <PromptInput onSubmit={handleSubmit}>
       <PromptInputTextarea
@@ -47,11 +47,8 @@ export const PromptInputSection = ({
         <PromptInputTools>
           <ModelSelect model={model} setModel={setModel} />
           <ToolSelect
-            tools={selectedTools}
-            addTool={tool => setSelectedTools([...selectedTools, tool])}
-            removeTool={tool =>
-              setSelectedTools(selectedTools.filter(t => t !== tool))
-            }
+            resourceIds={selectedResourceIds}
+            onSelectResource={onSelectResource}
           />
           <WalletButton />
         </PromptInputTools>

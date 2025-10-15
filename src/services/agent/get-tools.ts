@@ -93,8 +93,10 @@ function inputSchemaToZodSchema(inputSchema: EnhancedOutputSchema['input']) {
   return z.object(shape);
 }
 
-export async function generateX402Tools() {
-  const resources = await listResources();
+export async function generateX402Tools(resourceIds?: string[]) {
+  const resources = await listResources(
+    resourceIds ? { id: { in: resourceIds } } : undefined
+  );
   const toolDefinitions: (EnhancedAcceptsSchema & {
     id: string;
     outputSchema: EnhancedOutputSchema;
@@ -128,10 +130,11 @@ export async function generateX402Tools() {
 }
 
 export async function createX402AITools(
+  resourceIds: string[],
   walletClient: Signer
 ): Promise<Record<string, Tool>> {
-  const toolDefinitions = await generateX402Tools();
-  const aiTools: Record<string, unknown> = {};
+  const toolDefinitions = await generateX402Tools(resourceIds);
+  const aiTools: Record<string, Tool> = {};
 
   for (const toolDef of toolDefinitions) {
     const urlParts = new URL(toolDef.resource);
@@ -185,5 +188,5 @@ export async function createX402AITools(
     };
   }
 
-  return aiTools as Record<string, Tool>;
+  return aiTools;
 }

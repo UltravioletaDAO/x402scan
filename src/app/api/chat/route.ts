@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+import { z } from 'zod';
+
 import type { LanguageModel, UIMessage } from 'ai';
 import {
   convertToModelMessages,
@@ -23,11 +25,18 @@ import {
 
 import { auth } from '@/auth';
 
-import { chatRequestBodySchema } from './schema';
-
 import { createX402AITools } from '@/services/agent/get-tools';
 
+import { messageSchema } from '@/lib/message-schema';
+
 import type { NextRequest } from 'next/server';
+
+const bodySchema = z.object({
+  model: z.string(),
+  resourceIds: z.array(z.uuid()),
+  messages: z.array(messageSchema),
+  chatId: z.string(),
+});
 
 export async function POST(request: NextRequest) {
   const session = await auth();
@@ -36,13 +45,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const requestBody = chatRequestBodySchema.safeParse(await request.json());
+  const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
     return NextResponse.json({ error: requestBody.error }, { status: 400 });
   }
 
-  const { model, selectedTools, messages, chatId } = requestBody.data;
+  const { model, resourceIds, messages, chatId } = requestBody.data;
 
   const chat = await getChat(chatId, session.user.id);
 
@@ -101,10 +110,7 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const allTools = await createX402AITools(signer);
-  const tools = Object.fromEntries(
-    selectedTools.map(tool => [tool, allTools[tool]])
-  );
+  const tools = await createX402AITools(resourceIds, signer);
 
   const result = streamText({
     model: openai(model),

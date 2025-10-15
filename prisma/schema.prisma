@@ -22,13 +22,14 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  role           Role            @default(user)
-  accounts       Account[]
-  sessions       Session[]
-  onrampSessions OnrampSession[]
-  serverWallets   ServerWallet[]
-  chats          Chat[]
-  agentConfigurations AgentConfiguration[]
+  role                    Role                     @default(user)
+  accounts                Account[]
+  sessions                Session[]
+  onrampSessions          OnrampSession[]
+  serverWallets           ServerWallet[]
+  chats                   Chat[]
+  agentConfigurations     AgentConfiguration[]
+  agentConfigurationUsers AgentConfigurationUser[]
 }
 
 model Account {
@@ -84,9 +85,10 @@ model Resources {
 
   originId String
 
-  accepts  Accepts[]
-  response ResourceResponse?
-  origin   ResourceOrigin    @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
+  accepts                     Accepts[]
+  response                    ResourceResponse?
+  origin                      ResourceOrigin               @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
+  agentConfigurationResources AgentConfigurationResource[]
 }
 
 enum AcceptsScheme {
@@ -198,12 +200,12 @@ enum ServerWalletType {
 }
 
 model ServerWallet {
-  id         String   @id @default(uuid())
-  userId     String   
-  walletName String   @unique
+  id         String           @id @default(uuid())
+  userId     String
+  walletName String           @unique
   type       ServerWalletType @default(CHAT)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
@@ -214,8 +216,8 @@ enum Visibility {
 }
 
 model Chat {
-  id          String         @id @default(uuid())
-  createdAt   DateTime       @default(now())
+  id          String     @id @default(uuid())
+  createdAt   DateTime   @default(now())
   title       String
   userId      String
   visibility  Visibility @default(private)
@@ -239,16 +241,40 @@ model Message {
 }
 
 model AgentConfiguration {
-  id          String   @id @default(uuid())
-  userId      String
-  model       String
-  tools       String[]
+  id           String     @id @default(uuid())
+  ownerId      String
+  name         String
+  model        String?
   systemPrompt String
-  visibility  Visibility @default(private)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  visibility   Visibility @default(private)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  owner     User                         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  users     AgentConfigurationUser[]
+  resources AgentConfigurationResource[]
 
   @@map("AgentConfiguration")
+}
+
+model AgentConfigurationResource {
+  id                   String @id @default(uuid())
+  resourceId           String
+  agentConfigurationId String
+
+  resource           Resources          @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade)
+
+  @@map("AgentConfigurationResource")
+}
+
+model AgentConfigurationUser {
+  id                   String @id @default(uuid())
+  userId               String
+  agentConfigurationId String
+
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade)
+
+  @@map("AgentUser")
 }
