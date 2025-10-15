@@ -48,7 +48,11 @@ export async function POST(request: NextRequest) {
   const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
-    return NextResponse.json({ error: requestBody.error }, { status: 400 });
+    console.error(requestBody.error);
+    return NextResponse.json(
+      { error: 'Invalid request body' },
+      { status: 400 }
+    );
   }
 
   const { model, resourceIds, messages, chatId } = requestBody.data;
@@ -111,6 +115,8 @@ export async function POST(request: NextRequest) {
   }
 
   const tools = await createX402AITools(resourceIds, signer);
+
+  console.log('tools', tools);
 
   const result = streamText({
     model: openai(model),

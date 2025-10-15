@@ -30,6 +30,7 @@ export const Chat: React.FC<Props> = ({ id, initialMessages }) => {
       toast.error(error.message);
     },
     onFinish: () => {
+      window.history.replaceState({}, '', `/chat/${id}`);
       void utils.chats.getUserChats.invalidate();
       void utils.serverWallet.usdcBaseBalance.invalidate();
     },
@@ -44,13 +45,12 @@ export const Chat: React.FC<Props> = ({ id, initialMessages }) => {
       toast.error('Please enter a message');
       return;
     }
-    window.history.replaceState({}, '', `/chat/${id}`);
     void sendMessage(
       { text },
       {
         body: {
           model,
-          selectedResourceIds,
+          resourceIds: selectedResourceIds,
           chatId: id,
         },
       }

@@ -83,8 +83,7 @@ export const ToolList: React.FC<Props> = ({
           <CommandGroup className="p-0" heading="Available">
             {resources
               .filter(
-                resource =>
-                  !selectedResourceIds.some(t => t === resource.resource)
+                resource => !selectedResourceIds.some(t => t === resource.id)
               )
               .map(resource => {
                 return (

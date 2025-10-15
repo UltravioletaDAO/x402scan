@@ -118,7 +118,7 @@ export async function generateX402Tools(resourceIds?: string[]) {
           continue;
         }
         toolDefinitions.push({
-          id: accept.id,
+          id: resource.id,
           ...parsedAccept.data,
           origin: resource.origin,
         });
