@@ -1,4 +1,8 @@
+import { registerResource } from '@/lib/resources';
+import { createResourceInvocation } from '@/services/db/resource-invocation';
 import { after, NextResponse, type NextRequest } from 'next/server';
+
+import { Prisma } from '@prisma/client';
 
 const RESPONSE_HEADER_BLOCKLIST = new Set([
   'content-encoding',
@@ -29,11 +33,19 @@ async function proxy(request: NextRequest) {
     );
   }
 
+  const clonedRequest = request.clone();
+
   const upstreamHeaders = new Headers();
   request.headers.forEach((value, key) => {
     if (!REQUEST_HEADER_BLOCKLIST.has(key.toLowerCase())) {
       upstreamHeaders.set(key, value);
     }
+  });
+
+  // Log all of the upstream headers before sending the request.
+  const upstreamHeadersObj: Record<string, string> = {};
+  upstreamHeaders.forEach((value, key) => {
+    upstreamHeadersObj[key] = value;
   });
 
   const method = request.method.toUpperCase();
@@ -58,14 +70,48 @@ async function proxy(request: NextRequest) {
     });
     responseHeaders.set('url', targetUrl.toString());
 
-    // after(() => {
+    const clonedUpstreamResponse = upstreamResponse.clone();
 
-    //   createResourceInvocation({
-    //     statusCode: upstreamResponse.status,
-    //     statusText: upstreamResponse.statusText,
-    //     response: upstreamResponse.body,
-    //   });
-    // });
+    after(async () => {
+      if (clonedUpstreamResponse.status === 402) {
+        await registerResource(
+          targetUrl.toString(),
+          await clonedUpstreamResponse.json()
+        );
+      } else {
+        const cleanedTargetUrl = (() => {
+          const urlObj = new URL(targetUrl.toString());
+          urlObj.search = '';
+          return urlObj.toString();
+        })();
+        await createResourceInvocation({
+          statusCode: clonedUpstreamResponse.status,
+          statusText: clonedUpstreamResponse.statusText,
+          method,
+          url: targetUrl.toString(),
+          requestContentType: request.headers.get('content-type') ?? '',
+          resource: {
+            connect: {
+              resource: cleanedTargetUrl,
+            },
+          },
+          responseContentType:
+            clonedUpstreamResponse.headers.get('content-type') ?? '',
+          ...(request.nextUrl.searchParams.get('share_data') === 'true'
+            ? {
+                requestBody: await extractRequestBody(clonedRequest),
+                requestHeaders: Object.fromEntries(clonedRequest.headers),
+                responseBody: await extractResponseBody(
+                  clonedUpstreamResponse.clone()
+                ),
+                responseHeaders: Object.fromEntries(
+                  clonedUpstreamResponse.headers
+                ),
+              }
+            : {}),
+        });
+      }
+    });
 
     return new NextResponse(upstreamResponse.body, {
       status: upstreamResponse.status,
@@ -84,3 +130,56 @@ export const POST = proxy;
 export const PUT = proxy;
 export const PATCH = proxy;
 export const DELETE = proxy;
+
+const extractRequestBody = async (request: Request) => {
+  const contentType = request.headers.get('content-type') ?? '';
+  if (contentType.includes('application/json')) {
+    return (await request.json()) as Prisma.InputJsonValue;
+  } else if (contentType.includes('application/x-www-form-urlencoded')) {
+    const formData = await request.formData();
+    return Object.fromEntries(formData.entries()) as Prisma.InputJsonValue;
+  } else if (contentType.includes('multipart/form-data')) {
+    const formData = await request.formData();
+    return Object.fromEntries(formData.entries()) as Prisma.InputJsonValue;
+  } else if (contentType.includes('text/')) {
+    return (await request.text()) as Prisma.InputJsonValue;
+  }
+  return Prisma.JsonNull;
+};
+
+const extractResponseBody = async (response: Response) => {
+  const contentType = response.headers.get('content-type') ?? '';
+
+  if (contentType.includes('application/json')) {
+    try {
+      return (await response.json()) as Prisma.InputJsonValue;
+    } catch {
+      return Prisma.JsonNull;
+    }
+  } else if (contentType.includes('text/')) {
+    try {
+      return await response.text();
+    } catch {
+      return Prisma.JsonNull;
+    }
+  } else if (contentType.includes('application/octet-stream')) {
+    try {
+      const arrayBuffer = await response.arrayBuffer();
+      // Convert ArrayBuffer to a base64-encoded string for JsonValue compatibility
+      return {
+        type: 'Buffer',
+        data: Array.from(new Uint8Array(arrayBuffer)),
+      };
+    } catch {
+      return Prisma.JsonNull;
+    }
+  } else if (contentType) {
+    try {
+      return await response.text();
+    } catch {
+      return Prisma.JsonNull;
+    }
+  }
+
+  return Prisma.JsonNull;
+};

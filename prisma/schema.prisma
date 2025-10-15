@@ -163,16 +163,19 @@ model ResourceResponse {
 }
 
 model ResourceInvocation {
-  id         String   @id @default(uuid())
-  resourceId String?
-  statusCode Int
-  statusText String
-  response   Json
-  method     String
-  url        String
-  request    Json
-  headers    Json
-  createdAt  DateTime @default(now())
+  id              String   @id @default(uuid())
+  resourceId      String?
+  statusCode      Int
+  statusText      String
+  method          String
+  url             String
+  requestContentType String
+  responseContentType String
+  responseHeaders Json?
+  responseBody    Json?
+  requestHeaders  Json?
+  requestBody     Json?
+  createdAt       DateTime @default(now())
 
   resource Resources? @relation(fields: [resourceId], references: [id])
 }
