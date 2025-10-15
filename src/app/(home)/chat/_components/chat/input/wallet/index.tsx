@@ -1,6 +1,6 @@
 import { ArrowDown, ArrowUp, Wallet } from 'lucide-react';
 
-import { PromptInputButton } from '@/components/ui/ai-elements/prompt-input';
+import { PromptInputButton } from '@/components/ai-elements/prompt-input';
 import {
   Dialog,
   DialogContent,

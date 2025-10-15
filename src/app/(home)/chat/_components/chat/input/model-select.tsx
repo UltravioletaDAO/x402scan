@@ -4,7 +4,7 @@ import {
   PromptInputModelSelectItem,
   PromptInputModelSelectTrigger,
   PromptInputModelSelectValue,
-} from '@/components/ui/ai-elements/prompt-input';
+} from '@/components/ai-elements/prompt-input';
 import { Button } from '@/components/ui/button';
 
 interface Props {

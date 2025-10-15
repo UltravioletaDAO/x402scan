@@ -6,34 +6,34 @@ import { CopyIcon } from 'lucide-react';
 
 import { isToolUIPart } from 'ai';
 
-import { Action, Actions } from '@/components/ui/ai-elements/actions';
+import { Action, Actions } from '@/components/ai-elements/actions';
 import {
   Conversation,
   ConversationContent,
   ConversationEmptyState,
   ConversationScrollButton,
-} from '@/components/ui/ai-elements/conversation';
-import { Loader } from '@/components/ui/ai-elements/loader';
-import { Message, MessageContent } from '@/components/ui/ai-elements/message';
+} from '@/components/ai-elements/conversation';
+import { Loader } from '@/components/ai-elements/loader';
+import { Message, MessageContent } from '@/components/ai-elements/message';
 import {
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
-} from '@/components/ui/ai-elements/reasoning';
-import { Response } from '@/components/ui/ai-elements/response';
+} from '@/components/ai-elements/reasoning';
+import { Response } from '@/components/ai-elements/response';
 import {
   Tool,
   ToolContent,
   ToolHeader,
   ToolOutput,
   ToolInput,
-} from '@/components/ui/ai-elements/tool';
+} from '@/components/ai-elements/tool';
 import {
   Source,
   Sources,
   SourcesContent,
   SourcesTrigger,
-} from '@/components/ui/ai-elements/sources';
+} from '@/components/ai-elements/sources';
 
 import { Logo } from '@/components/logo';
 

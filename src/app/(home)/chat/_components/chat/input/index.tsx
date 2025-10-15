@@ -6,7 +6,7 @@ import {
   PromptInputTextarea,
   PromptInputToolbar,
   PromptInputTools,
-} from '@/components/ui/ai-elements/prompt-input';
+} from '@/components/ai-elements/prompt-input';
 
 import { ModelSelect } from './model-select';
 
