@@ -1,6 +1,6 @@
 import { env } from '@/env';
 
-export const PROXY_ENDPOINT = '/api/proxy' as const;
+const PROXY_ENDPOINT = '/api/proxy' as const;
 
 export const fetchWithProxy = async (
   input: URL | RequestInfo,
