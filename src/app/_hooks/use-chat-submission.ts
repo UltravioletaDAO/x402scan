@@ -4,15 +4,17 @@ import { useState } from 'react';
 import type { UseAgentConfigurationReturn } from './use-agent-configuration';
 import type { UIMessage, UseChatHelpers } from '@ai-sdk/react';
 
-export function useChatSubmission({
-  chatId,
-  sendMessage,
-  agentConfig,
-}: {
-  chatId: string;
+interface UseChatSubmissionProps {
+  id: string;
   sendMessage: UseChatHelpers<UIMessage>['sendMessage'];
   agentConfig?: UseAgentConfigurationReturn;
-}) {
+}
+
+export function useChatSubmission({
+  id,
+  sendMessage,
+  agentConfig,
+}: UseChatSubmissionProps) {
   const [input, setInput] = useState('');
 
   // Get model and tools directly from agentConfig
@@ -36,13 +38,14 @@ export function useChatSubmission({
     if (!text.trim()) {
       return;
     }
+    window.history.replaceState({}, '', `/chat/${id}`);
     void sendMessage(
       { text },
       {
         body: {
-          model: model,
-          selectedTools: selectedTools,
-          chatId: chatId,
+          model,
+          selectedTools,
+          chatId: id,
         },
       }
     );

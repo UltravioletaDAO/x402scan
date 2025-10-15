@@ -4,8 +4,6 @@ import Link from 'next/link';
 
 import { Edit } from 'lucide-react';
 
-import { usePathname } from 'next/navigation';
-
 import {
   SidebarGroup,
   SidebarMenu,
@@ -13,18 +11,11 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 
-import type { Route } from 'next';
-
 export const NavMain = () => {
-  const pathname = usePathname();
-
-  const agentId =
-    pathname.split('/')[2] === 'new' ? undefined : pathname.split('/')[2];
-
   const items = [
     {
       title: 'New Chat',
-      url: (agentId ? `/chat/${agentId}` : '/chat') as Route,
+      url: '/chat' as const,
       icon: Edit,
     },
   ];

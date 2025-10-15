@@ -113,7 +113,6 @@ export async function generateX402Tools() {
             maxAmountRequired: accept.maxAmountRequired.toString(),
           });
         if (!parsedAccept.success) {
-          console.error(parsedAccept.error);
           continue;
         }
         toolDefinitions.push({

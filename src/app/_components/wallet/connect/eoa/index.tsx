@@ -28,7 +28,6 @@ const ConnectEOAButton = ({ connector }: { connector: Connector }) => {
             void toast.success('Connected to wallet');
           },
           onError: error => {
-            console.error(error);
             void toast.error(error.message);
           },
         }

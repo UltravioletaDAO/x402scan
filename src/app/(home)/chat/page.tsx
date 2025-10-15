@@ -1,7 +1,9 @@
-import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { api } from '@/trpc/server';
 import { Welcome } from './_components/welcome';
+
+import { v4 as uuidv4 } from 'uuid';
+import { Chat } from './_components/chat';
 
 export default async function ChatPage() {
   const session = await auth();
@@ -16,11 +18,7 @@ export default async function ChatPage() {
     return <Welcome />;
   }
 
-  // Create a new chat and redirect to it
-  const newChat = await api.chats.getOrCreateChat({
-    title: 'New Chat',
-    visibility: 'private',
-  });
+  const id = uuidv4();
 
-  redirect(`/chat/${newChat.id}`);
+  return <Chat id={id} initialMessages={[]} />;
 }

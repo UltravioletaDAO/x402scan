@@ -17,20 +17,17 @@ export default async function ChatPage({ params }: PageProps<'/chat/[id]'>) {
 
   const userId = session.user.id;
 
-  const chat = await api.chats.getOrCreateChat({
-    chatId: id,
-    title: 'New Chat',
-    visibility: 'private',
-  });
+  const chat = await api.chats.getChat(id);
 
   if (!chat) {
     return notFound();
   }
 
-  // Verify chat ownership if chatId was provided
-  if (chat.userId !== userId) {
-    return unauthorized();
-  }
-
-  return <Chat chat={chat} />;
+  return (
+    <Chat
+      id={id}
+      initialMessages={chat.messages}
+      isReadOnly={chat.userId !== userId}
+    />
+  );
 }

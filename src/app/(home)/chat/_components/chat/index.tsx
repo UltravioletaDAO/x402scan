@@ -8,23 +8,22 @@ import { PromptInputSection } from './input';
 import { useChatSubmission } from '@/app/_hooks/use-chat-submission';
 import { useAgentConfiguration } from '@/app/_hooks/use-agent-configuration';
 
-import type { RouterOutputs } from '@/trpc/client';
 import { convertToUIMessages } from '@/lib/utils';
+import type { Message } from '@prisma/client';
 
 interface Props {
-  chat: RouterOutputs['chats']['getOrCreateChat'];
+  id: string;
+  initialMessages: Message[];
+  isReadOnly?: boolean;
 }
 
-export const Chat: React.FC<Props> = ({ chat }) => {
-  // Agent configuration hook
+export const Chat: React.FC<Props> = ({ id, initialMessages }) => {
   const agentConfig = useAgentConfiguration();
 
-  // AI SDK useChat hook - initialized with latest messages from backend
   const { messages, sendMessage, status } = useChat({
-    messages: chat.messages ? convertToUIMessages(chat.messages) : [],
+    messages: initialMessages ? convertToUIMessages(initialMessages) : [],
   });
 
-  // Chat submission logic
   const {
     input,
     setInput,
@@ -34,7 +33,7 @@ export const Chat: React.FC<Props> = ({ chat }) => {
     setSelectedTools,
     handleSubmit,
   } = useChatSubmission({
-    chatId: chat.id,
+    id,
     sendMessage,
     agentConfig,
   });

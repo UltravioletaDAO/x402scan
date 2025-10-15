@@ -2,7 +2,7 @@ import { MessageSquare } from 'lucide-react';
 
 import { Breadcrumb } from '../../_components/breadcrumb';
 import { Separator } from '../../_components/separator';
-import { getChatById } from '@/services/db/chats';
+import { getChat } from '@/services/db/chats';
 
 export default async function ChatBreadcrumb({
   params,
@@ -10,7 +10,7 @@ export default async function ChatBreadcrumb({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const chat = await getChatById(id);
+  const chat = await getChat(id);
   if (!chat) {
     return null;
   }
