@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate",
-    "dev": "pnpm next:dev & wait-on http://localhost:3000 && pnpm sync:resources",
+    "dev": "pnpm next:dev",
     "next:dev": "next dev --turbopack",
-    "build": "prisma migrate deploy && next build --turbopack",
+    "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
@@ -124,6 +124,5 @@
     "typescript-eslint": "^8.44.1",
     "vitest": "^3.2.4",
     "wait-on": "^9.0.1"
-  },
-  "packageManager": "pnpm@9.14.4+sha512.c8180b3fbe4e4bca02c94234717896b5529740a6cbadf19fa78254270403ea2f27d4e1d46a08a0f56c89b63dc8ebfd3ee53326da720273794e6200fcf0d184ab"
+  }
 }
