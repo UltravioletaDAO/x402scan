@@ -74,10 +74,10 @@ async function proxy(request: NextRequest) {
 
     after(async () => {
       if (clonedUpstreamResponse.status === 402) {
-        await registerResource(
-          targetUrl.toString(),
-          await clonedUpstreamResponse.json()
-        );
+        const upstreamX402Response =
+          (await clonedUpstreamResponse.json()) as unknown;
+        console.log('upstreamX402Response', upstreamX402Response);
+        await registerResource(targetUrl.toString(), upstreamX402Response);
       } else {
         const cleanedTargetUrl = (() => {
           const urlObj = new URL(targetUrl.toString());
