@@ -36,22 +36,14 @@ export const ToolSelector: React.FC<ToolSelectorProps> = ({
     }
   };
 
-  const filteredTools = (tools ?? []).filter(
-    (tool: {
-      name: string;
-      description: string;
-      resource: string;
-      network: string;
-      maxAmountRequired: string;
-    }) => {
-      const q = query.trim().toLowerCase();
-      if (!q) return true;
-      return (
-        tool.name.toLowerCase().includes(q) ||
-        tool.description.toLowerCase().includes(q)
-      );
-    }
-  );
+  const filteredTools = (tools ?? []).filter(tool => {
+    const q = query.trim().toLowerCase();
+    if (!q) return true;
+    return (
+      tool.name.toLowerCase().includes(q) ||
+      tool.description.toLowerCase().includes(q)
+    );
+  });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

@@ -14,11 +14,13 @@ export const availableToolsRouter = createTRPCRouter({
         .replace(/[^a-zA-Z0-9_]/g, '_');
 
       return {
+        id: tool.id,
         name: toolName,
         description: tool.description,
         resource: tool.resource,
         network: tool.network,
         maxAmountRequired: tool.maxAmountRequired,
+        origin: tool.origin,
       };
     });
   }),

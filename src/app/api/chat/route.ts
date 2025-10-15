@@ -1,13 +1,18 @@
+import { NextResponse } from 'next/server';
+
 import { InvokeAgent } from '@/services/agent/core';
 import { getOrCreateWalletFromUserId } from '@/services/cdp/server-wallet/get-or-create';
-import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import type { Signer } from 'x402/types';
-import type { UIMessage } from '@ai-sdk/react';
+
 import { toAccount } from 'viem/accounts';
 import { getSelectedTools } from '@/services/agent/core';
 import { createMessage } from '@/services/db/chats';
-export async function POST(request: Request) {
+
+import type { NextRequest } from 'next/server';
+import type { Signer } from 'x402/types';
+import { chatRequestBodySchema } from './schema';
+
+export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -15,14 +20,13 @@ export async function POST(request: Request) {
 
   const walletClient = await getOrCreateWalletFromUserId(session.user.id);
 
-  const requestBody = (await request.json()) as {
-    model: string;
-    selectedTools: string[];
-    messages: UIMessage[];
-    chatId: string;
-  };
+  const requestBody = chatRequestBodySchema.safeParse(await request.json());
 
-  const { model, selectedTools, messages, chatId } = requestBody;
+  if (!requestBody.success) {
+    return NextResponse.json({ error: requestBody.error }, { status: 400 });
+  }
+
+  const { model, selectedTools, messages, chatId } = requestBody.data;
 
   const toolsToCallWith = await getSelectedTools(
     toAccount(walletClient) as Signer,

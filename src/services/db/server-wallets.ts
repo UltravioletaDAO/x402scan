@@ -2,6 +2,15 @@ import { prisma } from './client';
 
 import { v4 as uuid } from 'uuid';
 
+export const getWalletNameForUserId = async (
+  userId: string
+): Promise<string | null> => {
+  const wallet = await prisma.serverWallet.findFirst({
+    where: { userId, type: 'CHAT' },
+  });
+  return wallet?.walletName ?? null;
+};
+
 export const getOrCreateWalletNameFromUserId = async (
   userId: string
 ): Promise<string> => {

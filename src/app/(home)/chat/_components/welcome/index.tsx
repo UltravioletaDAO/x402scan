@@ -12,7 +12,7 @@ export const Welcome = () => {
   const { address } = useAccount();
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center w-full h-full">
+    <div className="flex-1 flex flex-col items-center justify-center w-full h-full gap-2">
       <Card className="p-8 max-w-md flex flex-col gap-4 items-center">
         <Logo className="size-16" />
         <div className="flex flex-col gap-2 items-center">
@@ -34,12 +34,12 @@ export const Welcome = () => {
             </Button>
           </WalletDialog>
         )}
-        <p className="text-muted-foreground/80 text-xs text-center max-w-xs mt-2">
-          {address
-            ? 'Sign in to confirm you own this wallet. This will also create a server wallet for you.'
-            : 'We will create a server wallet for you after you connect and sign in.'}
-        </p>
       </Card>
+      <p className="text-muted-foreground/80 text-xs text-center max-w-xs mt-2">
+        {address
+          ? 'Sign in to confirm you own this wallet. This will also create a server wallet for you.'
+          : 'After connecting, you will be able to create a server wallet to power your agent.'}
+      </p>
     </div>
   );
 };

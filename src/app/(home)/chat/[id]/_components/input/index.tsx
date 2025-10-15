@@ -8,11 +8,11 @@ import {
   PromptInputTools,
 } from '@/components/ui/ai-elements/prompt-input';
 
-import { ToolSelector } from './tool-selector';
 import { ModelSelect } from './model-select';
 
 import type { ChatStatus } from '../chat';
 import { WalletButton } from './wallet';
+import { ToolSelect } from './tool-select';
 
 interface PromptInputSectionProps {
   input: string;
@@ -45,9 +45,12 @@ export const PromptInputSection = ({
       <PromptInputToolbar>
         <PromptInputTools>
           <ModelSelect model={model} setModel={setModel} />
-          <ToolSelector
-            selectedTools={selectedTools}
-            onToolsChange={setSelectedTools}
+          <ToolSelect
+            tools={selectedTools}
+            addTool={tool => setSelectedTools([...selectedTools, tool])}
+            removeTool={tool =>
+              setSelectedTools(selectedTools.filter(t => t !== tool))
+            }
           />
           <WalletButton />
         </PromptInputTools>

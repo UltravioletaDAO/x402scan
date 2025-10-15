@@ -10,6 +10,7 @@ import { enhancedAcceptsSchema, enhancedOutputSchema } from '@/lib/x402/schema';
 
 import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
+import type { ResourceOrigin } from '@prisma/client';
 
 type FieldDef = {
   type?: string;
@@ -95,7 +96,9 @@ function inputSchemaToZodSchema(inputSchema: EnhancedOutputSchema['input']) {
 export async function generateX402Tools() {
   const resources = await listResources();
   const toolDefinitions: (EnhancedAcceptsSchema & {
+    id: string;
     outputSchema: EnhancedOutputSchema;
+    origin: ResourceOrigin;
   })[] = [];
 
   for (const resource of resources) {
@@ -113,7 +116,11 @@ export async function generateX402Tools() {
           console.error(parsedAccept.error);
           continue;
         }
-        toolDefinitions.push(parsedAccept.data);
+        toolDefinitions.push({
+          id: accept.id,
+          ...parsedAccept.data,
+          origin: resource.origin,
+        });
       }
     }
   }

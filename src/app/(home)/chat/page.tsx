@@ -11,6 +11,11 @@ export default async function ChatPage() {
     return <Welcome />;
   }
 
+  const walletExists = await api.serverWallet.exists();
+  if (!walletExists) {
+    return <Welcome />;
+  }
+
   // Create a new chat and redirect to it
   const newChat = await api.chats.getOrCreateChat({
     title: 'New Chat',

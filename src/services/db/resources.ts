@@ -133,6 +133,7 @@ export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
     where,
     include: {
       accepts: true,
+      origin: true,
     },
   });
 };
