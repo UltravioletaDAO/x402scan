@@ -18,7 +18,14 @@ export const env = createEnv({
         : z.string(),
   },
   client: {
-    NEXT_PUBLIC_APP_URL: z.url().default('http://localhost:3000'),
+    NEXT_PUBLIC_APP_URL: z
+      .url()
+      .default(
+        process.env.NEXT_PUBLIC_APP_URL ??
+          (process.env.VERCEL_PROJECT_PRODUCTION_URL
+            ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+            : 'http://localhost:3000')
+      ),
     NEXT_PUBLIC_NODE_ENV: z
       .enum(['development', 'production'])
       .default('development'),
