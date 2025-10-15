@@ -87,6 +87,7 @@ model Resources {
 
   accepts                     Accepts[]
   response                    ResourceResponse?
+  invocations                 ResourceInvocation[]
   origin                      ResourceOrigin               @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
   agentConfigurationResources AgentConfigurationResource[]
 }
@@ -159,6 +160,24 @@ model ResourceResponse {
   response   Json
 
   resource Resources @relation(fields: [resourceId], references: [id])
+}
+
+model ResourceInvocation {
+  id              String   @id @default(uuid())
+  resourceId      String?
+  statusCode      Int
+  statusText      String
+  method          String
+  url             String
+  requestContentType String
+  responseContentType String
+  responseHeaders Json?
+  responseBody    Json?
+  requestHeaders  Json?
+  requestBody     Json?
+  createdAt       DateTime @default(now())
+
+  resource Resources? @relation(fields: [resourceId], references: [id])
 }
 
 model OgImage {
