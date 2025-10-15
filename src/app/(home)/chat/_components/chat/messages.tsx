@@ -154,7 +154,7 @@ export const Messages = ({ messages, status }: MessagesProps) => {
         </>
       ) : (
         <ConversationEmptyState
-          icon={<Logo className="size-12" />}
+          icon={<Logo className="size-16" />}
           title="Welcome to x402scan Chat"
           description="Your playground invoking x402 resources through an agent"
         />

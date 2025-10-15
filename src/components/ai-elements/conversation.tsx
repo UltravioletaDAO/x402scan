@@ -41,7 +41,7 @@ const ConversationEmptyState = ({
 }) => (
   <div
     className={cn(
-      'flex size-full flex-col items-center justify-center gap-3 p-8 text-center',
+      'flex size-full flex-col items-center justify-center gap-6 p-8 text-center',
       className
     )}
     {...props}
@@ -49,8 +49,8 @@ const ConversationEmptyState = ({
     {children ?? (
       <>
         {icon && <div className="text-muted-foreground">{icon}</div>}
-        <div className="space-y-1">
-          <h3 className="font-bold text-lg">{title}</h3>
+        <div className="space-y-2">
+          <h3 className="font-bold text-2xl">{title}</h3>
           {description && (
             <p className="text-muted-foreground text-sm font-mono">
               {description}
