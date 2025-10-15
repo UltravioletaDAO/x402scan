@@ -11,6 +11,7 @@ import { enhancedAcceptsSchema, enhancedOutputSchema } from '@/lib/x402/schema';
 import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
 import type { ResourceOrigin } from '@prisma/client';
+import { env } from '@/env';
 
 type FieldDef = {
   type?: string;
@@ -178,12 +179,20 @@ export async function createX402AITools(
         }
 
         console.log(`Calling ${method} ${url}`, params);
-        const response = await fetchWithX402Payment(fetch, walletClient)(
-          `/api/proxy?url=${encodeURIComponent(url)}`,
-          requestInit
-        );
-        const data: unknown = await response.json();
-        return data;
+        try {
+          const response = await fetchWithX402Payment(fetch, walletClient)(
+            new URL(
+              `/api/proxy?url=${encodeURIComponent(url)}&share_data=true`,
+              env.NEXT_PUBLIC_APP_URL
+            ),
+            requestInit
+          );
+          const data: unknown = await response.json();
+          return data;
+        } catch (error) {
+          console.error('Error calling tool', error);
+          throw error;
+        }
       },
     };
   }
