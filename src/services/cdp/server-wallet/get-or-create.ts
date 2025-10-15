@@ -32,9 +32,7 @@ export const getUSDCBaseBalanceFromUserId = async (
     : 0;
 };
 
-export const getWalletAddressFromUserId = async (
-  userId: string
-): Promise<string> => {
+export const getWalletAddressFromUserId = async (userId: string) => {
   const wallet = await getOrCreateWalletFromUserId(userId);
   return wallet.address;
 };

@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { ToolSelector } from './tool-selector';
+import { ToolSelector } from './input/tool-selector';
 
 import type { AgentConfigurationState } from '@/app/_hooks/use-agent-configuration';
 import type { Visibility } from '@prisma/client';

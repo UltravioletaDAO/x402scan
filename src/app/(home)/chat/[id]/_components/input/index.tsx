@@ -2,31 +2,17 @@
 
 import {
   PromptInput,
-  PromptInputModelSelect,
-  PromptInputModelSelectContent,
-  PromptInputModelSelectItem,
-  PromptInputModelSelectTrigger,
-  PromptInputModelSelectValue,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar,
   PromptInputTools,
 } from '@/components/ui/ai-elements/prompt-input';
 
-import { ToolSelector } from '../tool-selector';
+import { ToolSelector } from './tool-selector';
+import { ModelSelect } from './model-select';
 
 import type { ChatStatus } from '../chat';
-
-const models = [
-  {
-    name: 'GPT 4o',
-    value: 'gpt-4o',
-  },
-  {
-    name: 'GPT 5',
-    value: 'gpt-5',
-  },
-];
+import { WalletButton } from './wallet';
 
 interface PromptInputSectionProps {
   input: string;
@@ -58,33 +44,14 @@ export const PromptInputSection = ({
       />
       <PromptInputToolbar>
         <PromptInputTools>
-          <PromptInputModelSelect
-            onValueChange={value => {
-              setModel(value);
-            }}
-            value={model}
-          >
-            <PromptInputModelSelectTrigger>
-              <PromptInputModelSelectValue />
-            </PromptInputModelSelectTrigger>
-            <PromptInputModelSelectContent>
-              {models.map(model => (
-                <PromptInputModelSelectItem
-                  key={model.value}
-                  value={model.value}
-                >
-                  {model.name}
-                </PromptInputModelSelectItem>
-              ))}
-            </PromptInputModelSelectContent>
-          </PromptInputModelSelect>
-
+          <ModelSelect model={model} setModel={setModel} />
           <ToolSelector
             selectedTools={selectedTools}
             onToolsChange={setSelectedTools}
           />
+          <WalletButton />
         </PromptInputTools>
-        <PromptInputSubmit disabled={!input} />
+        <PromptInputSubmit disabled={!input} className="size-8 md:size-8" />
       </PromptInputToolbar>
     </PromptInput>
   );

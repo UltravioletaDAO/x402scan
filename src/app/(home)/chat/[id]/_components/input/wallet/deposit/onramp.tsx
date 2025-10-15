@@ -4,24 +4,14 @@ import { useCallback, useState } from 'react';
 
 import Image from 'next/image';
 
-import { Check, Loader2, Wallet } from 'lucide-react';
-
-import { useSession } from 'next-auth/react';
+import { Check, Loader2 } from 'lucide-react';
 
 import { MoneyInput } from '@/components/ui/money-input';
 import { Button } from '@/components/ui/button';
 
-import { useSignIn } from '@/app/_hooks/use-sign-in';
-
 import { api } from '@/trpc/client';
 
 export const Onramp = () => {
-  const { data: session, status } = useSession();
-
-  if (status === 'loading') {
-    return null;
-  }
-
   return (
     <div className="flex flex-col gap-2">
       <div className="gap-1 flex items-center">
@@ -34,33 +24,7 @@ export const Onramp = () => {
         />
         <span className="font-bold text-sm">Onramp</span>
       </div>
-      {session ? <OnrampContent /> : <NoSessionContent />}
-    </div>
-  );
-};
-
-const NoSessionContent = () => {
-  const { signIn, isPending } = useSignIn({ isOnramp: true });
-
-  return (
-    <div className="flex flex-col gap-2">
-      <Button variant="turbo" onClick={() => signIn()} disabled={isPending}>
-        {isPending ? (
-          <>
-            <Loader2 className="size-4 animate-spin" />
-            Verifying...
-          </>
-        ) : (
-          <>
-            <Wallet className="size-4" />
-            Verify Wallet
-          </>
-        )}
-      </Button>
-      <p className="text-xs text-muted-foreground">
-        Please sign a message to verify you own this wallet before you use the
-        Onramp.
-      </p>
+      <OnrampContent />
     </div>
   );
 };
@@ -70,7 +34,7 @@ const OnrampContent = () => {
     mutate: createOnrampSession,
     isPending: isCreatingOnrampSession,
     isSuccess: isCreatedOnrampSession,
-  } = api.onrampSessions.create.useMutation({
+  } = api.onrampSessions.serverWallet.create.useMutation({
     onSuccess: url => {
       window.location.href = url;
     },

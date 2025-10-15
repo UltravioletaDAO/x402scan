@@ -112,7 +112,12 @@ const PromptInputButton = ({
   ...props
 }: ComponentProps<typeof Button>) => {
   const newSize =
-    (size ?? Children.count(props.children) > 1) ? 'default' : 'icon';
+    size ??
+    (props.children
+      ? Children.count(props.children) > 1
+        ? 'default'
+        : 'icon'
+      : 'default');
 
   return (
     <Button
@@ -173,8 +178,8 @@ const PromptInputModelSelectTrigger = ({
 }: ComponentProps<typeof SelectTrigger>) => (
   <SelectTrigger
     className={cn(
-      'border-none bg-transparent font-medium text-muted-foreground shadow-none transition-colors',
-      'hover:bg-accent hover:text-foreground [&[aria-expanded="true"]]:bg-accent [&[aria-expanded="true"]]:text-foreground',
+      'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
+      'h-8! rounded-md px-3 text-xs md:text-xs font-medium',
       className
     )}
     {...props}

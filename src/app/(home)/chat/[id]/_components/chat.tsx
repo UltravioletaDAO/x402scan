@@ -1,10 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-
 import { useChat } from '@ai-sdk/react';
 
-import { VerifyWalletModal } from './verify-wallet-modal';
 import { Messages } from './messages';
 import { PromptInputSection } from './input';
 
@@ -26,8 +23,6 @@ interface Props {
 }
 
 export const Chat: React.FC<Props> = ({ chat }) => {
-  const [showVerify, setShowVerify] = useState(!chat.userId);
-
   // Agent configuration hook
   const agentConfig = useAgentConfiguration();
 
@@ -69,8 +64,6 @@ export const Chat: React.FC<Props> = ({ chat }) => {
           />
         </div>
       </div>
-
-      <VerifyWalletModal open={showVerify} onOpenChange={setShowVerify} />
     </div>
   );
 };

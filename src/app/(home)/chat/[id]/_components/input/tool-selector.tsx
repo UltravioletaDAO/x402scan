@@ -56,7 +56,7 @@ export const ToolSelector: React.FC<ToolSelectorProps> = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8">
+        <Button variant="outline" size="sm">
           <span className="text-xs">
             {selectedTools.length > 0
               ? `${selectedTools.length} tool${selectedTools.length > 1 ? 's' : ''}`
