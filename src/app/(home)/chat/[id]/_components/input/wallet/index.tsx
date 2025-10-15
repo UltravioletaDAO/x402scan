@@ -5,17 +5,18 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { api } from '@/trpc/client';
-import { Logo } from '@/components/logo';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Logo } from '@/components/logo';
+
 import { WalletDisplay } from './display';
 import { Deposit } from './deposit';
+
+import { api } from '@/trpc/client';
 
 export const WalletButton = () => {
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =

@@ -105,8 +105,12 @@ export async function generateX402Tools() {
           .extend({
             outputSchema: enhancedOutputSchema,
           })
-          .safeParse(accept.outputSchema);
+          .safeParse({
+            ...accept,
+            maxAmountRequired: accept.maxAmountRequired.toString(),
+          });
         if (!parsedAccept.success) {
+          console.error(parsedAccept.error);
           continue;
         }
         toolDefinitions.push(parsedAccept.data);
