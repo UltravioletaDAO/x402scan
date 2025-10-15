@@ -10,6 +10,8 @@ import { useAgentConfiguration } from '@/app/_hooks/use-agent-configuration';
 
 import { convertToUIMessages } from '@/lib/utils';
 import type { Message } from '@prisma/client';
+import { toast } from 'sonner';
+import { api } from '@/trpc/client';
 
 interface Props {
   id: string;
@@ -20,8 +22,17 @@ interface Props {
 export const Chat: React.FC<Props> = ({ id, initialMessages }) => {
   const agentConfig = useAgentConfiguration();
 
+  const utils = api.useUtils();
+
   const { messages, sendMessage, status } = useChat({
     messages: initialMessages ? convertToUIMessages(initialMessages) : [],
+    onError: error => {
+      toast.error(error.message);
+    },
+    onFinish: () => {
+      void utils.chats.getUserChats.invalidate();
+      void utils.serverWallet.usdcBaseBalance.invalidate();
+    },
   });
 
   const {
@@ -39,11 +50,10 @@ export const Chat: React.FC<Props> = ({ id, initialMessages }) => {
   });
 
   return (
-    <div className="flex h-full flex-col relative">
+    <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
       <Messages messages={messages} status={status} />
-
       <div className="pb-2 md:pb-4">
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-4xl px-2">
           <PromptInputSection
             input={input}
             setInput={setInput}

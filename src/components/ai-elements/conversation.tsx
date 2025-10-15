@@ -12,7 +12,7 @@ const Conversation = ({
   ...props
 }: ComponentProps<typeof StickToBottom>) => (
   <StickToBottom
-    className={cn('relative h-full overflow-y-auto', className)}
+    className={cn('relative h-full overflow-y-scroll no-scrollbar', className)}
     initial="smooth"
     resize="smooth"
     role="log"
