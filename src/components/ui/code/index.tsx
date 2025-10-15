@@ -27,7 +27,8 @@ export const Code: React.FC<Props> = ({
   useLayoutEffect(() => {
     void highlight(value, lang, highlighter)
       .then(setNodes)
-      .catch(() => {
+      .catch(error => {
+        console.error(error);
         setNodes(
           <code
             className={

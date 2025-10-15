@@ -11,7 +11,7 @@ const Message = ({
 }) => (
   <div
     className={cn(
-      'group flex flex-col w-full items-end gap-2 py-4',
+      'group flex flex-col w-full items-end gap-4 py-4',
       from === 'user' ? 'is-user' : 'is-assistant items-start',
       '[&>div]:max-w-[80%]',
       className

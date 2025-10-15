@@ -5,21 +5,19 @@ import { Favicon } from '@/components/favicon';
 import { formatTokenAmount } from '@/lib/token';
 
 interface Props {
-  tool: string;
   isSelected: boolean;
   favicon: string | null;
   resource: string;
   price: bigint;
   description: string;
-  addTool: (tool: string) => void;
-  removeTool: (id: string) => void;
+  addTool: (resource: string) => void;
+  removeTool: (resource: string) => void;
 }
 
 export const ToolItem: React.FC<Props> = ({
-  tool,
+  resource,
   isSelected,
   favicon,
-  resource,
   price,
   description,
   addTool,
@@ -27,25 +25,27 @@ export const ToolItem: React.FC<Props> = ({
 }) => {
   return (
     <BaseCommandItem
-      onSelect={() => (isSelected ? removeTool(tool) : addTool(tool))}
+      onSelect={() => (isSelected ? removeTool(resource) : addTool(resource))}
       className="flex items-center justify-between gap-2 rounded-none px-3"
-      value={tool}
+      value={resource}
     >
       <div className="flex items-center gap-2 flex-1 overflow-hidden">
         <div
-          className={cn(
-            'rounded-md overflow-hidden border relative shrink-0 size-6',
-            isSelected && 'border-primary text-primary'
-          )}
+          className={cn('rounded-md overflow-hidden relative shrink-0 size-6')}
         >
           <Favicon url={favicon} className="size-full" />
         </div>
 
         <div className="flex flex-1 flex-col items-start gap-0 overflow-hidden">
-          <h3 className="text-sm font-medium line-clamp-1 w-full max-w-full truncate">
+          <h3
+            className={cn(
+              'text-sm font-semibold line-clamp-1 w-full max-w-full truncate',
+              isSelected && 'text-primary'
+            )}
+          >
             {resource}
           </h3>
-          <p className="text-xs text-muted-foreground line-clamp-2">
+          <p className="text-[10px] text-muted-foreground line-clamp-2">
             {description}
           </p>
         </div>

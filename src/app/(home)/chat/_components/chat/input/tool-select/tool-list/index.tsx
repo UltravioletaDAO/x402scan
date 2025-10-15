@@ -10,6 +10,7 @@ import {
 
 import { ToolItem } from './item';
 import { api } from '@/trpc/client';
+import { Loader2, SearchX } from 'lucide-react';
 
 interface Props {
   selectedTools: string[];
@@ -27,20 +28,19 @@ export const ToolList: React.FC<Props> = ({
   onRemoveTool,
   gradientClassName,
 }) => {
-  const { data: tools, isLoading } = api.availableTools.list.useQuery();
+  const { data: toolsData, isLoading } = api.availableTools.list.useQuery();
 
   const [searchQuery, setSearchQuery] = useState('');
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!tools) {
-    return <div>No tools found</div>;
-  }
+  const tools = toolsData ?? [];
 
   return (
-    <Command className="bg-transparent">
+    <Command
+      className="bg-transparent"
+      filter={(val, search) => {
+        return val.toLowerCase().includes(search.toLowerCase()) ? 1 : 0;
+      }}
+    >
       <CommandInput
         placeholder="Search tools..."
         value={searchQuery}
@@ -52,15 +52,26 @@ export const ToolList: React.FC<Props> = ({
         }}
         gradientClassName={gradientClassName}
       >
-        <CommandEmpty>No tools match your search</CommandEmpty>
+        <CommandEmpty
+          className="flex flex-col items-center justify-center gap-4 p-8 text-center text-sm text-muted-foreground"
+          style={{
+            height: `${toolItemHeight * numToolsToShow}px`,
+          }}
+        >
+          {isLoading ? (
+            <Loader2 className="size-10 animate-spin" />
+          ) : (
+            <SearchX className="size-10" />
+          )}
+          <h2>{isLoading ? 'Loading...' : 'No tools match your search'}</h2>
+        </CommandEmpty>
         {selectedTools.length > 0 && (
           <CommandGroup className="p-0" heading="Enabled">
             {tools
-              .filter(tool => selectedTools.includes(tool.name))
+              .filter(tool => selectedTools.includes(tool.resource))
               .map(tool => (
                 <ToolItem
                   key={tool.id}
-                  tool={tool.name}
                   favicon={tool.origin.favicon}
                   resource={tool.resource}
                   price={BigInt(tool.maxAmountRequired)}
@@ -75,17 +86,16 @@ export const ToolList: React.FC<Props> = ({
         {tools.length > selectedTools.length && (
           <CommandGroup className="p-0" heading="Available">
             {tools
-              .filter(tool => !selectedTools.some(t => t === tool.name))
+              .filter(tool => !selectedTools.some(t => t === tool.resource))
               .map(tool => {
                 return (
                   <ToolItem
                     key={tool.id}
-                    tool={tool.name}
                     favicon={tool.origin.favicon}
                     resource={tool.resource}
                     price={BigInt(tool.maxAmountRequired)}
                     description={tool.description}
-                    isSelected={selectedTools.some(t => t === tool.name)}
+                    isSelected={selectedTools.some(t => t === tool.resource)}
                     addTool={onAddTool}
                     removeTool={onRemoveTool}
                   />

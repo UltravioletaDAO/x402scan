@@ -104,7 +104,7 @@ export const Messages = ({ messages, status }: MessagesProps) => {
                             </MessageContent>
                             {message.role === 'assistant' &&
                               i === message.parts.length - 1 && (
-                                <Actions>
+                                <Actions className="-mt-2">
                                   <Action
                                     onClick={() =>
                                       navigator.clipboard

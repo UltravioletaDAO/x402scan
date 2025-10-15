@@ -10,7 +10,7 @@ export const Response = memo(
   ({ className, ...props }: ResponseProps) => (
     <Streamdown
       className={cn(
-        'size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 space-y-2',
+        'size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 space-y-4',
         className
       )}
       shikiTheme={['github-light', 'github-dark']}
@@ -53,30 +53,28 @@ export const Response = memo(
           );
 
           if (hasBlockElements) {
-            return <div className="text-sm md:text-base">{children}</div>;
+            return <div className="text-xs md:text-sm">{children}</div>;
           }
 
-          return <p className="text-sm md:text-base mb-8">{children}</p>;
+          return <p className="text-xs md:text-sm">{children}</p>;
         },
         ol({ children }) {
           return (
-            <ol className="flex list-decimal flex-col gap-2 pl-4 text-sm md:text-base">
+            <ol className="flex list-decimal flex-col pl-4 text-xs md:text-sm space-y-2 marker:text-xs md:marker:text-sm">
               {children}
             </ol>
           );
         },
         ul({ children }) {
           return (
-            <ul className="flex list-disc flex-col gap-2 pl-4 text-sm md:text-base">
+            <ul className="flex list-disc flex-col pl-4 text-xs md:text-sm space-y-2 marker:text-xs md:marker:text-sm">
               {children}
             </ul>
           );
         },
         li({ children }) {
           return (
-            <li className="ml-2 space-y-2 pl-2 text-sm md:text-base">
-              {children}
-            </li>
+            <li className="ml-2 space-y-2 text-xs md:text-sm">{children}</li>
           );
         },
       }}

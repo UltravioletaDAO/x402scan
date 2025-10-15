@@ -9,8 +9,8 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import { CodeBlock } from './code-block';
 import { JsonViewer } from './json-viewer';
+import { Code } from '../ui/code';
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
 type JsonObject = { [key: string]: JsonValue };
@@ -53,7 +53,7 @@ const ToolContent = ({
 }: ComponentProps<typeof CollapsibleContent>) => (
   <CollapsibleContent
     className={cn(
-      'data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in',
+      'data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in space-y-2 py-4',
       className
     )}
     {...props}
@@ -67,12 +67,12 @@ const ToolInput = ({
 }: ComponentProps<'div'> & {
   input: ToolUIPart['input'];
 }) => (
-  <div className={cn('space-y-2 overflow-hidden p-4', className)} {...props}>
-    <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+  <div className={cn('space-y-2 overflow-hidden px-4', className)} {...props}>
+    <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
       Parameters
     </h4>
-    <div className="rounded-md bg-muted/50">
-      <CodeBlock code={JSON.stringify(input, null, 2)} language="json" />
+    <div className="rounded-md bg-muted">
+      <JsonViewer data={input as JsonValue} />
     </div>
   </div>
 );
@@ -111,21 +111,23 @@ const ToolOutput = ({
   const { raw, parsed } = result;
 
   return (
-    <div className={cn('space-y-2 p-4', className)} {...props}>
-      <h4 className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+    <div className={cn('space-y-2 px-4', className)} {...props}>
+      <h4 className="font-medium text-muted-foreground text-xs uppercase font-mono">
         {errorText ? 'Error' : 'Result'}
       </h4>
       <div
         className={cn(
-          'overflow-x-auto rounded-md text-xs [&_table]:w-full',
+          'overflow-x-auto rounded-md text-xs [&_table]:w-full font-mono',
           errorText
             ? 'bg-destructive/10 text-destructive'
-            : 'bg-muted/50 text-foreground'
+            : 'bg-muted text-foreground'
         )}
       >
         {errorText && <div className="p-3">{errorText}</div>}
         {parsed && <JsonViewer data={parsed} defaultCollapsed={true} />}
-        {!parsed && raw && <div className="p-3">{raw}</div>}
+        {!parsed && raw && (
+          <Code value={JSON.stringify(raw, null, 2)} lang="json" />
+        )}
       </div>
     </div>
   );
