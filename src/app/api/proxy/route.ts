@@ -101,9 +101,7 @@ async function proxy(request: NextRequest) {
             ? {
                 requestBody: await extractRequestBody(clonedRequest),
                 requestHeaders: Object.fromEntries(clonedRequest.headers),
-                responseBody: await extractResponseBody(
-                  clonedUpstreamResponse.clone()
-                ),
+                responseBody: await extractResponseBody(clonedUpstreamResponse),
                 responseHeaders: Object.fromEntries(
                   clonedUpstreamResponse.headers
                 ),
