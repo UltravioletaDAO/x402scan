@@ -192,10 +192,16 @@ enum SessionStatus {
   ONRAMP_TRANSACTION_STATUS_FAILED
 }
 
+enum ServerWalletType {
+  CHAT
+  AGENT
+}
+
 model ServerWallet {
   id         String   @id @default(uuid())
-  userId     String   @unique
+  userId     String   
   walletName String   @unique
+  type       ServerWalletType @default(CHAT)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

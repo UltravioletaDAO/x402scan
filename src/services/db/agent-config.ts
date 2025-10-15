@@ -69,11 +69,11 @@ export const updateAgentConfiguration = async (
   });
 };
 
-// export const deleteAgentConfiguration = async (id: string) => {
-//   return await prisma.agentConfiguration.delete({
-//     where: { id },
-//   });
-// };
+export const deleteAgentConfiguration = async (id: string) => {
+  return await prisma.agentConfiguration.delete({
+    where: { id },
+  });
+};
 
 // Additional utility functions
 // export const getPublicAgentConfigurations = async () => {

@@ -1,31 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import type { Chat } from '@prisma/client';
 import type { UseAgentConfigurationReturn } from './use-agent-configuration';
-
-interface UseChatSubmissionProps {
-  isAuthed: boolean;
-  currentChat: Chat | undefined;
-  sendMessage: (
-    message: { text: string },
-    options?: {
-      body?: {
-        model: string;
-        selectedTools: string[];
-        chatId: string;
-      };
-    }
-  ) => void;
-  agentConfig?: UseAgentConfigurationReturn;
-}
+import type { UIMessage, UseChatHelpers } from '@ai-sdk/react';
 
 export function useChatSubmission({
-  isAuthed,
-  currentChat,
+  chatId,
   sendMessage,
   agentConfig,
-}: UseChatSubmissionProps) {
+}: {
+  chatId: string;
+  sendMessage: UseChatHelpers<UIMessage>['sendMessage'];
+  agentConfig?: UseAgentConfigurationReturn;
+}) {
   const [input, setInput] = useState('');
 
   // Get model and tools directly from agentConfig
@@ -46,23 +33,16 @@ export function useChatSubmission({
   };
 
   const sendChatMessage = (text: string) => {
-    if (!isAuthed) {
-      return;
-    }
-
     if (!text.trim()) {
       return;
     }
-    if (!currentChat?.id) {
-      throw new Error('Current chat not found');
-    }
-    sendMessage(
+    void sendMessage(
       { text },
       {
         body: {
           model: model,
           selectedTools: selectedTools,
-          chatId: currentChat.id,
+          chatId: chatId,
         },
       }
     );

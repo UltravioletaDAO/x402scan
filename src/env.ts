@@ -8,6 +8,7 @@ export const env = createEnv({
     CDP_API_KEY_NAME: z.string(),
     CDP_API_KEY_ID: z.string(),
     CDP_API_KEY_SECRET: z.string(),
+    CDP_WALLET_SECRET: z.string(),
     ECHO_APP_ID: z.string().optional(),
     HIDE_TRPC_LOGS: z.coerce.boolean().optional(),
     GITHUB_TOKEN: z.string().optional(),

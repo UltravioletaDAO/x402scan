@@ -22,7 +22,7 @@ export const chatsRouter = createTRPCRouter({
       z.object({
         chatId: z.string().optional(),
         title: z.string().min(1).max(255).optional(),
-        visibility: z.nativeEnum(Visibility).optional().default('private'),
+        visibility: z.enum(Visibility).optional().default('private'),
       })
     )
     .query(async ({ input, ctx }) => {
@@ -56,7 +56,7 @@ export const chatsRouter = createTRPCRouter({
       z.object({
         chatId: z.string(),
         title: z.string().min(1).max(255).optional(),
-        visibility: z.nativeEnum(Visibility).optional(),
+        visibility: z.enum(Visibility).optional(),
       })
     )
     .mutation(async ({ input, ctx }) => {

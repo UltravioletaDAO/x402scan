@@ -33,6 +33,7 @@ export default function HomeLayout({
           {
             label: 'Chat',
             href: '/chat',
+            subRoutes: ['/chat/'],
           },
         ]}
       />
