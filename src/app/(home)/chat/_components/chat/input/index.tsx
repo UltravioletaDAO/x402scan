@@ -10,9 +10,10 @@ import {
 
 import { ModelSelect } from './model-select';
 
-import type { ChatStatus } from '../chat';
 import { WalletButton } from './wallet';
 import { ToolSelect } from './tool-select';
+
+import type { ChatStatus } from 'ai';
 
 interface PromptInputSectionProps {
   input: string;

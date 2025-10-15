@@ -35,9 +35,10 @@ import {
   SourcesTrigger,
 } from '@/components/ui/ai-elements/sources';
 
-import type { UIMessage } from '@ai-sdk/react';
-import type { ChatStatus } from './chat';
 import { Logo } from '@/components/logo';
+
+import type { ChatStatus } from 'ai';
+import type { UIMessage } from '@ai-sdk/react';
 
 interface MessagesProps {
   messages: UIMessage[];

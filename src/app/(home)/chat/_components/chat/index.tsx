@@ -11,13 +11,6 @@ import { useAgentConfiguration } from '@/app/_hooks/use-agent-configuration';
 import type { RouterOutputs } from '@/trpc/client';
 import { convertToUIMessages } from '@/lib/utils';
 
-export type ChatStatus =
-  | 'streaming'
-  | 'submitted'
-  | 'awaiting-message'
-  | 'ready'
-  | 'error';
-
 interface Props {
   chat: RouterOutputs['chats']['getOrCreateChat'];
 }

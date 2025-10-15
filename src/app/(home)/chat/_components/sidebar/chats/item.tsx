@@ -2,9 +2,20 @@ import React, { memo } from 'react';
 
 import Link from 'next/link';
 
-import { SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import {
+  SidebarMenuAction,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from '@/components/ui/sidebar';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '@/components/ui/dropdown-menu';
 
 import type { Chat } from '@prisma/client';
+import { MoreHorizontal, Trash } from 'lucide-react';
 
 interface Props {
   chat: Chat;
@@ -17,6 +28,7 @@ const PureChatItem: React.FC<Props> = ({
   chat,
   isActive,
   setOpenMobile,
+  onDelete,
 }: Props) => {
   return (
     <SidebarMenuItem>
@@ -28,7 +40,7 @@ const PureChatItem: React.FC<Props> = ({
         </Link>
       </SidebarMenuButton>
 
-      {/* <DropdownMenu modal={true}>
+      <DropdownMenu modal={true}>
         <DropdownMenuTrigger asChild>
           <SidebarMenuAction
             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground mr-0.5 cursor-pointer"
@@ -41,64 +53,6 @@ const PureChatItem: React.FC<Props> = ({
 
         <DropdownMenuContent side="bottom" align="end">
           <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() =>
-              starChat.mutate({
-                id: chat.id,
-                starred: !chat.starred,
-              })
-            }
-          >
-            <Star className="text-foreground size-4" />
-            <span>{chat.starred ? "Unstar" : "Star"}</span>
-          </DropdownMenuItem>
-
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="flex cursor-pointer items-center gap-2">
-              <Share className="size-4" />
-              <span>Share</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent sideOffset={8}>
-                <DropdownMenuItem
-                  className="cursor-pointer flex-row justify-between"
-                  onClick={() => {
-                    updateChatVisibility.mutate({
-                      id: chat.id,
-                      visibility: "private",
-                    });
-                  }}
-                >
-                  <div className="flex flex-row items-center gap-2">
-                    <Lock size={12} />
-                    <span>Private</span>
-                  </div>
-                  {chat.visibility === "private" ? (
-                    <Check className="size-4" />
-                  ) : null}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="cursor-pointer flex-row justify-between"
-                  onClick={() => {
-                    updateChatVisibility.mutate({
-                      id: chat.id,
-                      visibility: "public",
-                    });
-                  }}
-                >
-                  <div className="flex flex-row items-center gap-2">
-                    <Globe />
-                    <span>Public</span>
-                  </div>
-                  {chat.visibility === "public" ? (
-                    <Check className="size-4" />
-                  ) : null}
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-
-          <DropdownMenuItem
             className="text-destructive focus:bg-destructive/15 focus:text-destructive cursor-pointer"
             onSelect={() => onDelete(chat.id)}
           >
@@ -106,7 +60,7 @@ const PureChatItem: React.FC<Props> = ({
             <span>Delete</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
-      </DropdownMenu> */}
+      </DropdownMenu>
     </SidebarMenuItem>
   );
 };

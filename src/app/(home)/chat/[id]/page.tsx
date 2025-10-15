@@ -1,6 +1,6 @@
 import { notFound, unauthorized } from 'next/navigation';
 
-import { Chat } from './_components/chat';
+import { Chat } from '../_components/chat';
 
 import { api } from '@/trpc/server';
 
