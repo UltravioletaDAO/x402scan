@@ -1,33 +1,30 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-const TARGET_HEADER = 'x-proxy-target';
 const RESPONSE_HEADER_BLOCKLIST = new Set([
   'content-encoding',
   'transfer-encoding',
   'content-length',
 ]);
-const REQUEST_HEADER_BLOCKLIST = new Set([
-  'host',
-  'content-length',
-  TARGET_HEADER,
-]);
+const REQUEST_HEADER_BLOCKLIST = new Set(['host', 'content-length']);
 
 async function proxy(request: NextRequest) {
-  const targetValue = request.headers.get(TARGET_HEADER);
+  const queryUrl = request.nextUrl.searchParams.get('url');
 
-  if (!targetValue) {
+  if (!queryUrl) {
     return NextResponse.json(
-      { error: 'Missing x-proxy-target header' },
+      { error: 'Missing url parameter' },
       { status: 400 }
     );
   }
 
+  const url = decodeURIComponent(queryUrl);
+
   let targetUrl: URL;
   try {
-    targetUrl = new URL(targetValue);
+    targetUrl = new URL(url);
   } catch {
     return NextResponse.json(
-      { error: 'Invalid x-proxy-target header' },
+      { error: 'Invalid url parameter' },
       { status: 400 }
     );
   }
@@ -59,7 +56,7 @@ async function proxy(request: NextRequest) {
         responseHeaders.set(key, value);
       }
     });
-    responseHeaders.set(TARGET_HEADER, targetUrl.toString());
+    responseHeaders.set('url', targetUrl.toString());
 
     return new NextResponse(upstreamResponse.body, {
       status: upstreamResponse.status,
@@ -73,22 +70,8 @@ async function proxy(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
-  return proxy(request);
-}
-
-export async function POST(request: NextRequest) {
-  return proxy(request);
-}
-
-export async function PUT(request: NextRequest) {
-  return proxy(request);
-}
-
-export async function PATCH(request: NextRequest) {
-  return proxy(request);
-}
-
-export async function DELETE(request: NextRequest) {
-  return proxy(request);
-}
+export const GET = proxy;
+export const POST = proxy;
+export const PUT = proxy;
+export const PATCH = proxy;
+export const DELETE = proxy;

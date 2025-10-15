@@ -1,34 +1,42 @@
-export const PROXY_ENDPOINT = '/api/proxy-402' as const;
-const TARGET_HEADER = 'x-proxy-target' as const;
+export const PROXY_ENDPOINT = '/api/proxy' as const;
 
-export const createFetchWithProxyHeader = (targetUrl: string) => {
-  return async (input: RequestInfo | URL, requestInit?: RequestInit) => {
-    const headers = new Headers(requestInit?.headers);
-    headers.set(TARGET_HEADER, targetUrl);
+export const fetchWithProxy = async (
+  input: URL | RequestInfo,
+  requestInit?: RequestInit
+) => {
+  let url: string;
+  if (input instanceof Request) {
+    url = input.url;
+  } else {
+    url = input.toString();
+  }
+  const proxyUrl = new URL(PROXY_ENDPOINT, window.location.origin);
+  proxyUrl.searchParams.set('url', encodeURIComponent(url));
 
-    const { method = 'GET', ...restInit } = requestInit ?? {};
-    const normalizedMethod = method.toString().toUpperCase();
+  const { method = 'GET', ...restInit } = requestInit ?? {};
+  const normalizedMethod = method.toString().toUpperCase();
 
-    // Auto-add Content-Type for requests with body
-    if (
-      normalizedMethod !== 'GET' &&
-      normalizedMethod !== 'HEAD' &&
-      restInit.body
-    ) {
-      headers.set('Content-Type', 'application/json');
-    }
+  const headers = new Headers(requestInit?.headers);
 
-    // Clear body for GET/HEAD requests
-    const finalInit: RequestInit = {
-      ...restInit,
-      method: normalizedMethod,
-      headers,
-    };
+  // Auto-add Content-Type for requests with body
+  if (
+    normalizedMethod !== 'GET' &&
+    normalizedMethod !== 'HEAD' &&
+    restInit.body
+  ) {
+    headers.set('Content-Type', 'application/json');
+  }
 
-    if (normalizedMethod === 'GET' || normalizedMethod === 'HEAD') {
-      finalInit.body = undefined;
-    }
-
-    return fetch(input, finalInit);
+  // Clear body for GET/HEAD requests
+  const finalInit: RequestInit = {
+    ...restInit,
+    method: normalizedMethod,
+    headers,
   };
+
+  if (normalizedMethod === 'GET' || normalizedMethod === 'HEAD') {
+    finalInit.body = undefined;
+  }
+
+  return fetch(proxyUrl.toString(), finalInit);
 };

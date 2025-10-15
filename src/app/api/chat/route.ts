@@ -116,8 +116,6 @@ export async function POST(request: NextRequest) {
 
   const tools = await createX402AITools(resourceIds, signer);
 
-  console.log('tools', tools);
-
   const result = streamText({
     model: openai(model),
     messages: convertToModelMessages(messages),

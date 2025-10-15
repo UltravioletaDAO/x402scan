@@ -179,7 +179,7 @@ export async function createX402AITools(
 
         console.log(`Calling ${method} ${url}`, params);
         const response = await fetchWithX402Payment(fetch, walletClient)(
-          url,
+          `/api/proxy?url=${encodeURIComponent(url)}`,
           requestInit
         );
         const data: unknown = await response.json();
