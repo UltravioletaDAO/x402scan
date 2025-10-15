@@ -11,7 +11,7 @@ import {
 import { cn } from '@/lib/utils';
 
 const Actions = ({ className, children, ...props }: ComponentProps<'div'>) => (
-  <div className={cn('flex items-center gap-1', className)} {...props}>
+  <div className={cn('flex items-center gap-1 -ml-1', className)} {...props}>
     {children}
   </div>
 );
@@ -22,7 +22,7 @@ const Action = ({
   label,
   className,
   variant = 'ghost',
-  size = 'sm',
+  size = 'icon',
   ...props
 }: ComponentProps<typeof Button> & {
   tooltip?: string;
@@ -31,7 +31,7 @@ const Action = ({
   const button = (
     <Button
       className={cn(
-        'relative size-9 p-1.5 text-muted-foreground hover:text-foreground',
+        'relative size-fit md:size-fit p-1.5 text-muted-foreground hover:text-foreground',
         className
       )}
       size={size}

@@ -25,7 +25,8 @@ const PromptInput = ({
 }: HTMLAttributes<HTMLFormElement>) => (
   <form
     className={cn(
-      'w-full divide-y overflow-hidden rounded-xl border bg-background shadow-sm',
+      'w-full divide-y overflow-hidden rounded-xl border bg-background shadow-sm transition-all duration-200',
+      'focus-within:ring-ring focus-within:ring-2',
       className
     )}
     {...props}
@@ -65,8 +66,8 @@ const PromptInputTextarea = ({
   return (
     <Textarea
       className={cn(
-        'w-full resize-none rounded-none border-none p-3 shadow-none outline-none ring-0',
-        'field-sizing-content max-h-[6lh] bg-transparent dark:bg-transparent',
+        'w-full resize-none rounded-none border-none p-3 pb-0 shadow-none outline-none ring-0',
+        'field-sizing-content max-h-[6lh] bg-transparent dark:bg-transparent min-h-[2lh]',
         'focus-visible:ring-0',
         className
       )}
@@ -86,7 +87,7 @@ const PromptInputToolbar = ({
   ...props
 }: HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('flex items-center justify-between p-1', className)}
+    className={cn('flex items-center justify-between p-1 md:p-2', className)}
     {...props}
   />
 );

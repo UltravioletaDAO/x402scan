@@ -18,7 +18,7 @@ type JsonArray = JsonValue[];
 
 const Tool = ({ className, ...props }: ComponentProps<typeof Collapsible>) => (
   <Collapsible
-    className={cn('not-prose mb-4 w-full rounded-md border', className)}
+    className={cn('not-prose w-full rounded-md border', className)}
     {...props}
   />
 );

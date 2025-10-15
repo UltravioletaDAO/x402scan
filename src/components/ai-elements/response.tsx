@@ -10,9 +10,76 @@ export const Response = memo(
   ({ className, ...props }: ResponseProps) => (
     <Streamdown
       className={cn(
-        'size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0',
+        'size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0 space-y-2',
         className
       )}
+      shikiTheme={['github-light', 'github-dark']}
+      components={{
+        h1({ children }) {
+          return (
+            <h1 className={cn('text-xl font-bold md:text-2xl')}>{children}</h1>
+          );
+        },
+        h2({ children }) {
+          return (
+            <h2 className={cn('text-lg font-bold md:text-xl')}>{children}</h2>
+          );
+        },
+        h3({ children }) {
+          return (
+            <h3 className={cn('text-md font-bold md:text-lg')}>{children}</h3>
+          );
+        },
+        h4({ children }) {
+          return (
+            <h4 className={cn('md:text-md text-sm font-bold')}>{children}</h4>
+          );
+        },
+        h5({ children }) {
+          return (
+            <h5 className={cn('text-xs font-bold md:text-sm')}>{children}</h5>
+          );
+        },
+        h6({ children }) {
+          return <h6 className={cn('text-xs font-bold')}>{children}</h6>;
+        },
+        p({ children, node }) {
+          const hasBlockElements = node?.children?.some(
+            child =>
+              'type' in child &&
+              child.type === 'element' &&
+              'tagName' in child &&
+              ['div', 'p', 'blockquote', 'form'].includes(child.tagName)
+          );
+
+          if (hasBlockElements) {
+            return <div className="text-sm md:text-base">{children}</div>;
+          }
+
+          return <p className="text-sm md:text-base mb-8">{children}</p>;
+        },
+        ol({ children }) {
+          return (
+            <ol className="flex list-decimal flex-col gap-2 pl-4 text-sm md:text-base">
+              {children}
+            </ol>
+          );
+        },
+        ul({ children }) {
+          return (
+            <ul className="flex list-disc flex-col gap-2 pl-4 text-sm md:text-base">
+              {children}
+            </ul>
+          );
+        },
+        li({ children }) {
+          return (
+            <li className="ml-2 space-y-2 pl-2 text-sm md:text-base">
+              {children}
+            </li>
+          );
+        },
+      }}
       {...props}
     />
   ),
