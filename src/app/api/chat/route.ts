@@ -1,24 +1,29 @@
 import { NextResponse } from 'next/server';
 
-import { InvokeAgent } from '@/services/agent/core';
-import { getOrCreateWalletFromUserId } from '@/services/cdp/server-wallet/get-or-create';
-import { auth } from '@/auth';
+import { convertToModelMessages, stepCountIs, streamText } from 'ai';
 
 import { toAccount } from 'viem/accounts';
-import { getSelectedTools } from '@/services/agent/core';
+
+import { createX402OpenAI } from '@merit-systems/ai-x402/server';
+
+import { getOrCreateWalletFromUserId } from '@/services/cdp/server-wallet/get-or-create';
+
 import { createMessage } from '@/services/db/chats';
 
-import type { NextRequest } from 'next/server';
-import type { Signer } from 'x402/types';
+import { auth } from '@/auth';
+
 import { chatRequestBodySchema } from './schema';
+
+import { createX402AITools } from '@/services/agent/get-tools';
+
+import type { NextRequest } from 'next/server';
 
 export async function POST(request: NextRequest) {
   const session = await auth();
+
   if (!session) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-
-  const walletClient = await getOrCreateWalletFromUserId(session.user.id);
 
   const requestBody = chatRequestBodySchema.safeParse(await request.json());
 
@@ -28,12 +33,9 @@ export async function POST(request: NextRequest) {
 
   const { model, selectedTools, messages, chatId } = requestBody.data;
 
-  const toolsToCallWith = await getSelectedTools(
-    toAccount(walletClient) as Signer,
-    selectedTools
-  );
-  // Only save the newest user message to the database, onFinish
-  // will save the rest.
+  const wallet = await getOrCreateWalletFromUserId(session.user.id);
+  const signer = toAccount(wallet);
+
   const lastMessage = messages[messages.length - 1];
   await createMessage({
     role: lastMessage.role,
@@ -44,14 +46,18 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  const result = await InvokeAgent(
-    model,
-    toAccount(walletClient) as Signer,
-    messages,
-    toolsToCallWith
+  const allTools = await createX402AITools(signer);
+  const tools = Object.fromEntries(
+    selectedTools.map(tool => [tool, allTools[tool]])
   );
 
-  // save the result to the database
+  const openai = createX402OpenAI(signer);
+  const result = streamText({
+    model: openai(model),
+    messages: convertToModelMessages(messages),
+    stopWhen: stepCountIs(50),
+    tools,
+  });
 
   return result.toUIMessageStreamResponse({
     onFinish: async message => {
