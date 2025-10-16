@@ -121,6 +121,7 @@ export async function POST(request: NextRequest) {
     messages: convertToModelMessages(messages),
     stopWhen: stepCountIs(50),
     tools,
+    maxOutputTokens: 10000,
   });
 
   return result.toUIMessageStreamResponse({
@@ -161,6 +162,7 @@ async function generateTitleFromUserMessage({
       },
       ...convertToModelMessages([message]),
     ],
+    maxOutputTokens: 100,
   });
 
   return title;
