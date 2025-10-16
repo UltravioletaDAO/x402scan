@@ -2,8 +2,8 @@ import { cache } from 'react';
 
 import NextAuth from 'next-auth';
 import { encode as defaultEncode } from 'next-auth/jwt';
-import { PrismaAdapter } from '@auth/prisma-adapter';
 
+import { PrismaAdapter } from '@auth/prisma-adapter';
 import { v4 as uuid } from 'uuid';
 
 import { prisma } from '../services/db/client';
@@ -21,6 +21,13 @@ declare module 'next-auth' {
     } & DefaultSession['user'];
   }
 
+  interface AdapterUser {
+    id: string;
+    email: string | null;
+    role: Role;
+    accounts: Account[];
+  }
+
   interface User {
     id?: string;
     email?: string | null;
@@ -30,22 +37,47 @@ declare module 'next-auth' {
 
 const { handlers, auth: uncachedAuth } = NextAuth({
   providers,
-  adapter: PrismaAdapter(prisma),
-  trustHost: true,
-  callbacks: {
-    session: async ({ session, user }) => {
-      if (!user.id) {
-        return session;
+  adapter: {
+    ...PrismaAdapter(prisma),
+    getUser: async id => {
+      const user = await prisma.user.findUnique({
+        where: { id },
+        include: { accounts: true },
+      });
+      if (!user) {
+        return null;
       }
-
       return {
-        ...session,
+        ...user,
+        email: user?.email ?? '',
+      };
+    },
+    getSessionAndUser: async sessionToken => {
+      const session = await prisma.session.findUnique({
+        where: { sessionToken },
+        include: { user: true },
+      });
+      if (!session) {
+        return null;
+      }
+      const user = await prisma.user.findUnique({
+        where: { id: session.userId },
+        include: { accounts: true },
+      });
+      if (!user) {
+        return null;
+      }
+      return {
+        session,
         user: {
-          ...session.user,
-          id: user.id,
+          ...user,
+          email: user.email ?? '',
         },
       };
     },
+  },
+  trustHost: true,
+  callbacks: {
     async jwt({ token, account }) {
       if (account?.provider === 'siwe-csrf') {
         token.credentials = true;
