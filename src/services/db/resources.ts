@@ -134,6 +134,16 @@ export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
     include: {
       accepts: true,
       origin: true,
+      _count: {
+        select: {
+          invocations: true,
+        },
+      },
+    },
+    orderBy: {
+      invocations: {
+        _count: 'desc',
+      },
     },
   });
 };
