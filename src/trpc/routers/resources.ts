@@ -5,6 +5,7 @@ import { createTRPCRouter, publicProcedure } from '../trpc';
 import {
   getResourceByAddress,
   listResources,
+  listResourcesWithPagination,
   searchResources,
   searchResourcesSchema,
 } from '@/services/db/resources';
@@ -14,12 +15,18 @@ import { ethereumAddressSchema } from '@/lib/schemas';
 import { Methods } from '@/types/x402';
 
 import { registerResource } from '@/lib/resources';
+import { paginatedQuerySchema } from '@/lib/pagination';
 
 export const resourcesRouter = createTRPCRouter({
   list: {
     all: publicProcedure.query(async () => {
       return await listResources();
     }),
+    paginated: publicProcedure
+      .input(paginatedQuerySchema())
+      .query(async ({ input }) => {
+        return await listResourcesWithPagination(input);
+      }),
     byAddress: publicProcedure
       .input(ethereumAddressSchema)
       .query(async ({ input }) => {

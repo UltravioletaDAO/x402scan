@@ -8,6 +8,7 @@ import { facilitatorsRouter } from './facilitators';
 import { onrampSessionsRouter } from './onramp-sessions';
 import { originsRouter } from './origins';
 import { resourcesRouter } from './resources';
+import { resourceTagsRouter } from './resource-tags';
 import { sellersRouter } from './sellers';
 import { statisticsRouter } from './statistics';
 import { transactionsRouter } from './transactions';
@@ -21,6 +22,7 @@ export const appRouter = createTRPCRouter({
   stats: statisticsRouter,
   sellers: sellersRouter,
   resources: resourcesRouter,
+  resourceTags: resourceTagsRouter,
   origins: originsRouter,
   transactions: transactionsRouter,
   transfers: transfersRouter,
