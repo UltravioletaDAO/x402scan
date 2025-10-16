@@ -24,6 +24,7 @@ import { Methods } from '@/types/x402';
 
 import type { AcceptsNetwork } from '@prisma/client';
 import { x402ResponseSchema } from 'x402/types';
+import { getFaviconUrl } from '@/lib/favicon';
 
 export const resourcesRouter = createTRPCRouter({
   list: {
@@ -113,11 +114,9 @@ export const resourcesRouter = createTRPCRouter({
           origin: origin,
           title: metadata?.title ?? og?.ogTitle,
           description: metadata?.description ?? og?.ogDescription,
-          favicon:
-            og?.favicon &&
-            (og.favicon.startsWith('/')
-              ? scrapedOrigin.replace(/\/$/, '') + og.favicon
-              : og.favicon),
+          favicon: og?.favicon
+            ? getFaviconUrl(og.favicon, scrapedOrigin)
+            : undefined,
           ogImages:
             og?.ogImage?.map(image => ({
               url: image.url,
