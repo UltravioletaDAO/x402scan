@@ -45,6 +45,8 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
         nonce: message.nonce,
       });
 
+      const email = parseResult.data.email;
+
       const user = await prisma.user.findFirst({
         where: {
           accounts: {
@@ -54,12 +56,36 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
             },
           },
         },
-      });
-
-      if (user) {
-        return user;
+        include: {
+          accounts: true,
         },
       });
+
+      // no user, create a user and an account
+      if (!user) {
+        return await prisma.user.create({
+          data: {
+            email,
+            accounts: {
+              create: {
+                type: 'siwe',
+                provider: SIWE_PROVIDER_ID,
+                providerAccountId: address,
+              },
+            },
+          },
+          include: {
+            accounts: true,
+          },
+        });
+      }
+
+      return user;
+    },
+    ...options,
+  });
+}
+
 async function verifySignature({
   siwe,
   credentials,

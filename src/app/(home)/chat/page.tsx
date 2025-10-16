@@ -10,6 +10,8 @@ import { headers } from 'next/headers';
 export default async function ChatPage() {
   const session = await auth();
 
+  console.log(session);
+
   const initialState = cookieToInitialState(
     getServerConfig(),
     (await headers()).get('cookie')
