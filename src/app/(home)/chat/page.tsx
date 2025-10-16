@@ -1,5 +1,4 @@
 import { auth } from '@/auth';
-import { api } from '@/trpc/server';
 import { Welcome } from './_components/welcome';
 
 import { v4 as uuidv4 } from 'uuid';
@@ -20,11 +19,6 @@ export default async function ChatPage() {
 
   // If not authenticated, redirect to home
   if (!session?.user?.id) {
-    return <Welcome />;
-  }
-
-  const walletExists = await api.serverWallet.exists();
-  if (!walletExists) {
     return <Welcome />;
   }
 
