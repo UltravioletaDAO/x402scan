@@ -14,9 +14,9 @@ enum Role {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(uuid())
   name          String?
-  email         String    @unique
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
   createdAt     DateTime  @default(now())
@@ -48,7 +48,7 @@ model Account {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([provider, providerAccountId])
 }
@@ -57,7 +57,7 @@ model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -254,7 +254,7 @@ model Message {
   attachments Json
   createdAt   DateTime @default(now())
 
-  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("Message")
 }
@@ -281,8 +281,8 @@ model AgentConfigurationResource {
   resourceId           String
   agentConfigurationId String
 
-  resource           Resources          @relation(fields: [resourceId], references: [id], onDelete: Cascade)
-  agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade)
+  resource           Resources          @relation(fields: [resourceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("AgentConfigurationResource")
 }
@@ -292,8 +292,8 @@ model AgentConfigurationUser {
   userId               String
   agentConfigurationId String
 
-  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade)
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("AgentUser")
 }

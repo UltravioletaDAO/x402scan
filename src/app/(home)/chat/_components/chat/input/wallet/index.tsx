@@ -14,16 +14,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/components/logo';
 
 import { WalletDisplay } from './display';
-import { Deposit } from './deposit';
+import { Deposit } from '../../deposit';
 
 import { api } from '@/trpc/client';
+import { useSession } from 'next-auth/react';
 
 export const WalletButton = () => {
+  const { data: session } = useSession();
+
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.serverWallet.usdcBaseBalance.useQuery(undefined);
+    api.serverWallet.usdcBaseBalance.useQuery(undefined, {
+      enabled: !!session,
+    });
 
   const { data: address, isLoading: isLoadingAddress } =
-    api.serverWallet.address.useQuery(undefined);
+    api.serverWallet.address.useQuery(undefined, {
+      enabled: !!session,
+    });
+
+  if (!session) {
+    return null;
+  }
 
   if (isLoadingAddress || isLoadingUsdcBalance) {
     return (

@@ -2,8 +2,6 @@
 
 import { useCallback, useState } from 'react';
 
-import Image from 'next/image';
-
 import { Check, Loader2 } from 'lucide-react';
 
 import { MoneyInput } from '@/components/ui/money-input';
@@ -13,17 +11,8 @@ import { api } from '@/trpc/client';
 
 export const Onramp = () => {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="gap-1 flex items-center">
-        <Image
-          src="/coinbase.png"
-          alt="Base"
-          height={16}
-          width={16}
-          className="size-4 inline-block mr-1 rounded-full"
-        />
-        <span className="font-bold text-sm">Onramp</span>
-      </div>
+    <div className="flex flex-col gap-1">
+      <span className="font-medium text-sm">Amount</span>
       <OnrampContent />
     </div>
   );
