@@ -29,6 +29,7 @@ interface Props {
 
 export const ChatContent: React.FC<Props> = ({
   id,
+  isReadOnly,
   initialMessages,
   initialPreferences,
   storePreferences,
@@ -118,20 +119,22 @@ export const ChatContent: React.FC<Props> = ({
   return (
     <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
       <Messages messages={messages} status={status} />
-      <div className="pb-2 md:pb-4">
-        <div className="mx-auto max-w-4xl px-2">
-          <PromptInputSection
-            input={input}
-            setInput={setInput}
-            handleSubmit={handleSubmit}
-            model={model}
-            setModel={handleSetModel}
-            selectedResourceIds={selectedResourceIds}
-            onSelectResource={onSelectResource}
-            status={status}
-          />
+      {!isReadOnly && (
+        <div className="pb-2 md:pb-4">
+          <div className="mx-auto max-w-4xl px-2">
+            <PromptInputSection
+              input={input}
+              setInput={setInput}
+              handleSubmit={handleSubmit}
+              model={model}
+              setModel={handleSetModel}
+              selectedResourceIds={selectedResourceIds}
+              onSelectResource={onSelectResource}
+              status={status}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
