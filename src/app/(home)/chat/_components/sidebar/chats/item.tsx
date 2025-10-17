@@ -52,7 +52,7 @@ const PureChatItem: React.FC<Props> = ({
           </SidebarMenuAction>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent side="bottom" align="end">
+        <DropdownMenuContent side="right" align="center" sideOffset={8}>
           <DropdownMenuItem
             className="text-destructive focus:bg-destructive/15 focus:text-destructive cursor-pointer"
             onSelect={() => onDelete(chat.id)}
@@ -74,7 +74,7 @@ export const ChatItem = memo(PureChatItem, (prevProps, nextProps) => {
 export const LoadingChatItem = () => {
   return (
     <SidebarMenuItem>
-      <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer">
+      <SidebarMenuButton>
         <Skeleton className="h-5 w-full" />
       </SidebarMenuButton>
     </SidebarMenuItem>

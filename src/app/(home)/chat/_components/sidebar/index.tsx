@@ -10,12 +10,17 @@ import {
 
 import { NavMain } from './main';
 import { LoadingNavChats, NavChats, UnauthedNavChats } from './chats';
-import { AgentSelect, UnauthedAgentSelect } from './agent-select';
+import {
+  AgentSelect,
+  LoadingAgentSelect,
+  UnauthedAgentSelect,
+} from './agent-select';
 import { Wallet } from './wallet';
 
 import { auth } from '@/auth';
 
 import { api, HydrateClient } from '@/trpc/server';
+import { LoadingWalletButton } from './wallet/button';
 
 export async function Sidebar({
   ...props
@@ -35,8 +40,14 @@ export async function Sidebar({
         {...props}
       >
         <SidebarHeader className="border-sidebar-border border-b p-3 group-data-[collapsible=icon]:p-2">
-          <div className="mt-2 group-data-[collapsible=icon]:mt-1">
-            {session ? <AgentSelect /> : <UnauthedAgentSelect />}
+          <div className="group-data-[collapsible=icon]:mt-1">
+            {session ? (
+              <Suspense fallback={<LoadingAgentSelect />}>
+                <AgentSelect />
+              </Suspense>
+            ) : (
+              <UnauthedAgentSelect />
+            )}
           </div>
         </SidebarHeader>
         <SidebarContent className="gap-0 pt-2">
@@ -50,7 +61,11 @@ export async function Sidebar({
           )}
         </SidebarContent>
         <SidebarFooter className="flex flex-col gap-2 p-3 group-data-[collapsible=icon]:p-2">
-          {session?.user.id && <Wallet />}
+          {session?.user.id && (
+            <Suspense fallback={<LoadingWalletButton />}>
+              <Wallet />
+            </Suspense>
+          )}
         </SidebarFooter>
         <SidebarRail />
       </BaseSidebar>
