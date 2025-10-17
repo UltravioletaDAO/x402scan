@@ -91,6 +91,7 @@ model Resources {
   origin                      ResourceOrigin               @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
   agentConfigurationResources AgentConfigurationResource[]
   tags                        ResourcesTags[]
+  requestMetadata             ResourceRequestMetadata?
 }
 
 enum AcceptsScheme {
@@ -179,6 +180,19 @@ model ResourceInvocation {
   createdAt           DateTime @default(now())
 
   resource Resources? @relation(fields: [resourceId], references: [id])
+}
+
+model ResourceRequestMetadata {
+  id          String  @id @default(uuid())
+  resourceId  String  @unique
+  headers     Json
+  body        Json
+  queryParams Json
+  inputSchema Json
+
+  resource Resources @relation(fields: [resourceId], references: [id])
+
+  @@map("ResourceRequestMetadata")
 }
 
 model OgImage {

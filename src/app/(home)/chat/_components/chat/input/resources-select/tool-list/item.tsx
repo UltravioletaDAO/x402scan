@@ -11,7 +11,7 @@ import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
   isSelected: boolean;
-  resource: RouterOutputs['availableTools']['list'][number];
+  resource: RouterOutputs['availableTools']['search'][number];
   onSelectResource: (resourceId: string) => void;
 }
 
@@ -30,7 +30,7 @@ export const ResourceItem: React.FC<Props> = ({
         <div
           className={cn('rounded-md overflow-hidden relative shrink-0 size-6')}
         >
-          <Favicon url={resource.origin.favicon} className="size-full" />
+          <Favicon url={resource.favicon} className="size-full" />
         </div>
 
         <div className="flex flex-1 flex-col items-start gap-0 overflow-hidden">

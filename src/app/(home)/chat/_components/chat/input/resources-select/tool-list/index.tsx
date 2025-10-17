@@ -33,14 +33,13 @@ export const ToolList: React.FC<Props> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const { data: resourcesData, isLoading } = api.availableTools.list.useQuery({
-    searchQuery: searchQuery.trim().length > 0 ? searchQuery.trim() : undefined,
+  const { data: tools, isLoading } = api.availableTools.search.useQuery({
+    search: searchQuery.trim().length > 0 ? searchQuery.trim() : undefined,
+    limit: 100,
     tagIds: selectedTags.length > 0 ? selectedTags : undefined,
   });
-  const { data: tagsData, isLoading: isLoadingTags } =
+  const { data: tags, isLoading: isLoadingTags } =
     api.resourceTags.list.useQuery();
-
-  const resources = resourcesData ?? [];
 
   return (
     <Command className="bg-transparent" shouldFilter={false}>
@@ -58,7 +57,7 @@ export const ToolList: React.FC<Props> = ({
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton key={index} className="w-12 h-[22px]" />
               ))
-            : tagsData?.map(tag => (
+            : tags?.map(tag => (
                 <Badge
                   key={tag.id}
                   variant={
@@ -97,32 +96,32 @@ export const ToolList: React.FC<Props> = ({
           )}
           <h2>{isLoading ? 'Loading...' : 'No tools match your search'}</h2>
         </CommandEmpty>
-        {selectedResourceIds.length > 0 && (
-          <CommandGroup className="p-0" heading="Selected">
-            {resources
-              .filter(resource => selectedResourceIds.includes(resource.id))
-              .map(resource => (
-                <ResourceItem
-                  key={resource.id}
-                  resource={resource}
-                  isSelected={selectedResourceIds.includes(resource.id)}
-                  onSelectResource={onSelectResource}
-                />
-              ))}
-          </CommandGroup>
-        )}
-        {resources.length > selectedResourceIds.length && (
+        {tools &&
+          tools.filter(tool => selectedResourceIds.includes(tool.id)).length >
+            0 && (
+            <CommandGroup className="p-0" heading="Selected">
+              {tools
+                ?.filter(tool => selectedResourceIds.includes(tool.id))
+                .map(tool => (
+                  <ResourceItem
+                    key={tool.id}
+                    resource={tool}
+                    isSelected={true}
+                    onSelectResource={onSelectResource}
+                  />
+                ))}
+            </CommandGroup>
+          )}
+        {tools && tools.length > 0 && (
           <CommandGroup className="p-0" heading="Tools">
-            {resources
-              .filter(
-                resource => !selectedResourceIds.some(t => t === resource.id)
-              )
-              .map(resource => {
+            {tools
+              .filter(tool => !selectedResourceIds.some(t => t === tool.id))
+              .map(tool => {
                 return (
                   <ResourceItem
-                    key={resource.id}
-                    resource={resource}
-                    isSelected={selectedResourceIds.includes(resource.id)}
+                    key={tool.id}
+                    resource={tool}
+                    isSelected={selectedResourceIds.includes(tool.id)}
                     onSelectResource={onSelectResource}
                   />
                 );

@@ -23,7 +23,7 @@ import {
 
 import { auth } from '@/auth';
 
-import { createX402AITools } from '@/services/agent/get-tools';
+import { createX402AITools } from '@/services/agent/create-tools';
 
 import { messageSchema } from '@/lib/message-schema';
 

@@ -155,20 +155,6 @@ export const getResource = async (id: string) => {
 export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
   return await prisma.resources.findMany({
     where,
-    include: {
-      accepts: true,
-      origin: true,
-      tags: {
-        include: {
-          tag: true,
-        },
-      },
-      _count: {
-        select: {
-          invocations: true,
-        },
-      },
-    },
     orderBy: [
       { invocations: { _count: 'desc' } },
       { tags: { _count: 'desc' } },
@@ -223,47 +209,75 @@ export const getResourceByAddress = async (address: string) => {
 };
 
 export const searchResourcesSchema = z.object({
-  search: z.string(),
+  search: z.string().optional(),
   limit: z.number().optional().default(10),
+  tagIds: z.array(z.string()).optional(),
 });
 
 export const searchResources = async (
   input: z.input<typeof searchResourcesSchema>
 ) => {
-  const { search, limit } = searchResourcesSchema.parse(input);
+  const { search, limit, tagIds } = searchResourcesSchema.parse(input);
+  console.log(search, limit, tagIds);
   return await prisma.resources.findMany({
     where: {
-      OR: [
-        {
-          resource: {
-            contains: search,
-          },
-        },
-        {
-          origin: {
-            resources: {
-              some: {
-                accepts: {
-                  some: {
-                    payTo: search.toLowerCase(),
+      ...(search
+        ? {
+            OR: [
+              {
+                resource: {
+                  contains: search,
+                },
+              },
+              {
+                origin: {
+                  resources: {
+                    some: {
+                      accepts: {
+                        some: {
+                          payTo: search.toLowerCase(),
+                        },
+                      },
+                    },
                   },
                 },
               },
-            },
-          },
-        },
-        {
-          metadata: {
-            path: ['title', 'description'],
-            string_contains: search,
-          },
-        },
-      ],
+              {
+                metadata: {
+                  path: ['title', 'description'],
+                  string_contains: search,
+                },
+              },
+            ],
+          }
+        : undefined),
+      ...(tagIds ? { tags: { some: { tagId: { in: tagIds } } } } : undefined),
     },
     include: {
       origin: true,
       accepts: true,
+      _count: {
+        select: {
+          invocations: true,
+        },
+      },
     },
     take: limit,
+    orderBy: [
+      { invocations: { _count: 'desc' } },
+      { tags: { _count: 'desc' } },
+    ],
+  });
+};
+
+export const listResourcesForTools = async (resourceIds: string[]) => {
+  return await prisma.resources.findMany({
+    where: {
+      id: { in: resourceIds },
+    },
+    include: {
+      accepts: true,
+      requestMetadata: true,
+    },
   });
 };
