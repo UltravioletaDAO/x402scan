@@ -5,20 +5,21 @@ import {
   ConversationContent,
   ConversationScrollButton,
 } from '@/components/ai-elements/conversation';
-import { Loader } from '@/components/ai-elements/loader';
 
 import { EmptyState } from './empty-state';
 import { LoadingMessage, Message } from './message';
 
 import type { ChatStatus } from 'ai';
 import type { UIMessage } from '@ai-sdk/react';
+import { AnimatedShinyText } from '@/components/magicui/animated-shiny-text';
 
 interface MessagesProps {
   messages: UIMessage[];
   status: ChatStatus;
+  model: string;
 }
 
-export const Messages = ({ messages, status }: MessagesProps) => {
+export const Messages = ({ messages, status, model }: MessagesProps) => {
   return (
     <Conversation className="h-full w-full">
       {messages.length > 0 ? (
@@ -32,7 +33,11 @@ export const Messages = ({ messages, status }: MessagesProps) => {
                 isLast={message.id === messages.at(-1)?.id}
               />
             ))}
-            {status === 'submitted' && <Loader />}
+            {status === 'submitted' && (
+              <AnimatedShinyText>
+                Calling {model} with x402...
+              </AnimatedShinyText>
+            )}
           </ConversationContent>
           <ConversationScrollButton />
         </>

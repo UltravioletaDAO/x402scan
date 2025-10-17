@@ -118,7 +118,7 @@ export const ChatContent: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
-      <Messages messages={messages} status={status} />
+      <Messages messages={messages} status={status} model={model} />
       {!isReadOnly && (
         <div className="pb-2 md:pb-4">
           <div className="mx-auto max-w-4xl px-2">
