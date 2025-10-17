@@ -10,6 +10,10 @@ import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
 import { getTracer } from '@lmnr-ai/lmnr';
 
+const randomColor = () => {
+  return '#' + Math.floor(Math.random() * 16777215).toString(16);
+};
+
 // Extract the resource type from listResourcesWithPagination return value
 type ResourceWithRelations = Awaited<
   ReturnType<typeof listResourcesWithPagination>
@@ -17,7 +21,6 @@ type ResourceWithRelations = Awaited<
 
 const labelingSchema = z.object({
   tag: z.string(),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
 });
 
 const labelingPrompt = `Your task is to assign reasonable tags to each resource you are given.
@@ -39,8 +42,8 @@ _VERY IMPORTANT_:
 
 To assign or create new tags, you must output the name of the tag you are assigning or creating.
 The system will then assign the tag to the resource, or create the tag if it does not exist.
-If you create a new tag, you must also output a color for the tag.
 
+{_RESOURCE_URL_}
 
 {_RESOURCE_DESCRIPTIONS_}
 
@@ -60,6 +63,7 @@ export const labelingPass = async (resource: ResourceWithRelations, metadata: {
     `;
 
   const prompt = labelingPrompt
+    .replace('{_RESOURCE_URL_}', resource.resource.toString())
     .replace('{_RESOURCE_DESCRIPTIONS_}', resourceDescription)
     .replace(
       '{_CURRENT_AVAILABLE_TAGS_}',
@@ -88,7 +92,7 @@ export const labelingPass = async (resource: ResourceWithRelations, metadata: {
   const tag = result.object.tag;
   const tagData = await prisma.tag.findFirst({ where: { name: tag } });
   if (!tagData) {
-    const newTag = await createResourceTag({ name: tag, color: result.object.color ?? '#000000' });
+    const newTag = await createResourceTag({ name: tag, color: randomColor() });
     await assignTagToResource({ resourceId: resource.id, tagId: newTag.id });
     return { resource, tag: newTag };
   } else {
