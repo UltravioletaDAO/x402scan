@@ -5,6 +5,7 @@ import {
   PromptInputModelSelectTrigger,
   PromptInputModelSelectValue,
 } from '@/components/ai-elements/prompt-input';
+import { clientCookieUtils } from '../../../_lib/cookies/client';
 
 interface Props {
   model: string;
@@ -26,6 +27,7 @@ export const ModelSelect = ({ model, setModel }: Props) => {
   return (
     <PromptInputModelSelect
       onValueChange={value => {
+        clientCookieUtils.setSelectedChatModel(value);
         setModel(value);
       }}
       value={model}

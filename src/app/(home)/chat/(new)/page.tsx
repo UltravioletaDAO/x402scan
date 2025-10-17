@@ -5,5 +5,5 @@ import { Chat } from '../_components/chat';
 export default async function ChatPage() {
   const id = uuidv4();
 
-  return <Chat id={id} initialMessages={[]} />;
+  return <Chat id={id} initialMessages={[]} storePreferences={true} />;
 }
