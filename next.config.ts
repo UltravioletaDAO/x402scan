@@ -28,6 +28,7 @@ const nextConfig: NextConfig = {
     turbopackScopeHoisting: false,
     authInterrupts: true,
   },
+  devIndicators: false,
 };
 
 export default nextConfig;

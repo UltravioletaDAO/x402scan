@@ -1,20 +1,32 @@
 'use client';
 
 import { CopyCode } from '@/components/ui/copy-code';
+import { Skeleton } from '@/components/ui/skeleton';
+import { api } from '@/trpc/client';
 
 import type { Address } from 'viem';
 
 interface Props {
   address: Address;
-  balance: number;
 }
 
-export const WalletDisplay: React.FC<Props> = ({ address, balance }) => {
+export const WalletDisplay: React.FC<Props> = ({ address }) => {
+  const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
+    api.serverWallet.usdcBaseBalance.useQuery();
+
   return (
     <div className="space-y-4 w-full overflow-hidden">
       <ItemContainer
         label="Balance"
-        value={<p className="bg-muted rounded-md border p-2">{balance} USDC</p>}
+        value={
+          isLoadingUsdcBalance ? (
+            <Skeleton className="h-4 w-16" />
+          ) : (
+            <p className="bg-muted rounded-md border p-2">
+              {usdcBalance?.toPrecision(3)} USDC
+            </p>
+          )
+        }
       />
       <ItemContainer
         label="Address"
