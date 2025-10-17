@@ -1,7 +1,7 @@
 'use client';
 
 import type { ToolUIPart } from 'ai';
-import { ChevronDownIcon } from 'lucide-react';
+import { Check, ChevronDownIcon, Loader2, X } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import {
   Collapsible,
@@ -11,10 +11,11 @@ import {
 import { cn } from '@/lib/utils';
 import { JsonViewer } from './json-viewer';
 import { Code } from '../ui/code';
-import { api } from '@/trpc/client';
+import type { RouterOutputs } from '@/trpc/client';
 import { Skeleton } from '../ui/skeleton';
-import { Favicon } from '../favicon';
+import { Favicon } from '../../app/_components/favicon';
 import { Loading } from '../ui/loading';
+import { formatTokenAmount } from '@/lib/token';
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
 type JsonObject = { [key: string]: JsonValue };
@@ -29,19 +30,16 @@ const Tool = ({ className, ...props }: ComponentProps<typeof Collapsible>) => (
 
 const ToolHeader = ({
   className,
-  type,
   state,
+  resource,
+  isResourceLoading,
   ...props
 }: {
-  type: ToolUIPart['type'];
   state: ToolUIPart['state'];
+  isResourceLoading: boolean;
+  resource: RouterOutputs['resources']['get'] | undefined;
   className?: string;
 }) => {
-  const resourceId = type.slice(5);
-  const { data: resource, isLoading: isResourceLoading } =
-    api.resources.get.useQuery(resourceId, {
-      enabled: state !== 'input-streaming',
-    });
   return (
     <CollapsibleTrigger
       className={cn(
@@ -53,7 +51,7 @@ const ToolHeader = ({
       <div className="flex items-center gap-2">
         <Loading
           value={resource}
-          isLoading={isResourceLoading || state === 'input-streaming'}
+          isLoading={isResourceLoading ?? state === 'input-streaming'}
           component={resource => (
             <Favicon
               url={resource.origin.favicon ?? null}
@@ -65,23 +63,35 @@ const ToolHeader = ({
         <div className="flex flex-col">
           <Loading
             value={resource}
-            isLoading={isResourceLoading || state === 'input-streaming'}
+            isLoading={isResourceLoading ?? state === 'input-streaming'}
             component={resource => (
-              <span className="font-semibold text-sm font-mono text-left">
-                {resource.resource}
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-sm font-mono text-left">
+                  {resource.resource}
+                </span>
+                <span className="text-sm font-semibold text-primary font-mono">
+                  {formatTokenAmount(resource.accepts[0].maxAmountRequired)}
+                </span>
+                {state === 'output-available' ? (
+                  <Check className="size-3 text-green-600" />
+                ) : state === 'output-error' ? (
+                  <X className="size-3 text-red-600" />
+                ) : (
+                  <Loader2 className="size-3 animate-spin" />
+                )}
+              </div>
             )}
-            loadingComponent={<Skeleton className="h-[14px] w-32" />}
+            loadingComponent={<Skeleton className="h-[14px] my-[3px] w-32" />}
           />
           <Loading
             value={resource}
-            isLoading={isResourceLoading || state === 'input-streaming'}
+            isLoading={isResourceLoading ?? state === 'input-streaming'}
             component={resource => (
               <span className="text-xs text-muted-foreground text-left">
                 {resource.accepts[0].description}
               </span>
             )}
-            loadingComponent={<Skeleton className="h-[14px] w-32" />}
+            loadingComponent={<Skeleton className="h-[12px] my-[2px] w-32" />}
           />
         </div>
       </div>

@@ -47,8 +47,6 @@ export const enhancedAcceptsSchema = PaymentRequirementsSchema.extend({
   outputSchema: enhancedOutputSchema.optional(),
 });
 
-export type EnhancedAcceptsSchema = z3.infer<typeof enhancedAcceptsSchema>;
-
 const EnhancedX402ResponseSchema = x402ResponseSchema
   .omit({
     error: true,

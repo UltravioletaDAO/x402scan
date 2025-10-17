@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers';
-import type { ChatPreferences } from './types';
+import type { ChatPreferences } from '../types';
 import { COOKIE_KEYS } from './keys';
 
 // Helper to safely parse JSON from cookie value
@@ -21,8 +21,8 @@ export const serverCookieUtils = {
       return {
         selectedChatModel: cookieStore.get(COOKIE_KEYS.SELECTED_CHAT_MODEL)
           ?.value,
-        resourceIds: safeParseJson(
-          cookieStore.get(COOKIE_KEYS.RESOURCE_IDS)?.value,
+        resources: safeParseJson(
+          cookieStore.get(COOKIE_KEYS.RESOURCES)?.value,
           []
         ),
       };

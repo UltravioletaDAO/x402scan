@@ -19,7 +19,7 @@ import {
 
 import { api } from '@/trpc/client';
 
-import { Favicon } from '@/components/favicon';
+import { Favicon } from '@/app/_components/favicon';
 import {
   Card,
   CardContent,

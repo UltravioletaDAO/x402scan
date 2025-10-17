@@ -18,14 +18,16 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import type { SelectedResource } from '@/app/(home)/chat/_lib/types';
+import { Favicons } from '@/app/_components/favicon';
 
 interface Props {
-  resourceIds: string[];
-  onSelectResource: (resourceId: string) => void;
+  resources: SelectedResource[];
+  onSelectResource: (resource: SelectedResource) => void;
 }
 
 export const ToolSelect: React.FC<Props> = ({
-  resourceIds,
+  resources,
   onSelectResource,
 }) => {
   const isMobile = useIsMobile();
@@ -33,7 +35,7 @@ export const ToolSelect: React.FC<Props> = ({
   const content = (
     <div className={cn('w-full max-w-full')}>
       <ToolList
-        selectedResourceIds={resourceIds}
+        selectedResources={resources}
         onSelectResource={onSelectResource}
         gradientClassName="md:from-popover"
       />
@@ -42,9 +44,13 @@ export const ToolSelect: React.FC<Props> = ({
 
   const trigger = (
     <Button variant="outline" size="sm">
+      <Favicons
+        favicons={resources.map(resource => resource.favicon)}
+        iconContainerClassName="size-5"
+      />
       <span className="text-xs">
-        {resourceIds.length > 0
-          ? `${resourceIds.length} Tool${resourceIds.length > 1 ? 's' : ''}`
+        {resources.length > 0
+          ? `${resources.length} Tool${resources.length > 1 ? 's' : ''}`
           : 'Select Tools'}
       </span>
     </Button>

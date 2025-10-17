@@ -2,17 +2,18 @@ import { Activity } from 'lucide-react';
 
 import { CommandItem as BaseCommandItem } from '@/components/ui/command';
 
-import { Favicon } from '@/components/favicon';
+import { Favicon } from '@/app/_components/favicon';
 
 import { cn } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
+import type { SelectedResource } from '@/app/(home)/chat/_lib/types';
 
 interface Props {
   isSelected: boolean;
-  resource: RouterOutputs['availableTools']['list'][number];
-  onSelectResource: (resourceId: string) => void;
+  resource: RouterOutputs['availableTools']['search'][number];
+  onSelectResource: (resource: SelectedResource) => void;
 }
 
 export const ResourceItem: React.FC<Props> = ({
@@ -22,7 +23,9 @@ export const ResourceItem: React.FC<Props> = ({
 }) => {
   return (
     <BaseCommandItem
-      onSelect={() => onSelectResource(resource.id)}
+      onSelect={() =>
+        onSelectResource({ id: resource.id, favicon: resource.favicon })
+      }
       className="flex items-center justify-between gap-3 rounded-none px-3"
       value={resource.resource}
     >
@@ -30,7 +33,7 @@ export const ResourceItem: React.FC<Props> = ({
         <div
           className={cn('rounded-md overflow-hidden relative shrink-0 size-6')}
         >
-          <Favicon url={resource.origin.favicon} className="size-full" />
+          <Favicon url={resource.favicon} className="size-full" />
         </div>
 
         <div className="flex flex-1 flex-col items-start gap-0 overflow-hidden">

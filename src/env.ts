@@ -16,6 +16,7 @@ export const env = createEnv({
       process.env.NEXT_PUBLIC_NODE_ENV === 'development'
         ? z.string().optional()
         : z.string(),
+    FREEPIK_API_KEY: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
