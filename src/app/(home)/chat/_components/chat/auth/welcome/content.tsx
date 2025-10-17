@@ -33,7 +33,7 @@ export const WelcomeContent: React.FC<Props> = ({ initialStep }) => {
   const { data: session, status: sessionStatus } = useSession();
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
     api.serverWallet.usdcBaseBalance.useQuery(undefined, {
-      enabled: !!session?.user?.id,
+      enabled: Boolean(session),
     });
 
   const isLoading =

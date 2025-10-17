@@ -59,7 +59,11 @@ export const Send: React.FC<Props> = ({ address }) => {
           toast.success(`${amount} USDC sent to your server wallet`);
           void refetchBalance();
           void refetchEthBalance();
-          void utils.serverWallet.usdcBaseBalance.invalidate();
+          for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+              void utils.serverWallet.usdcBaseBalance.invalidate();
+            }, i * 1000);
+          }
           setAmount(0);
           setTimeout(() => {
             resetSending();
