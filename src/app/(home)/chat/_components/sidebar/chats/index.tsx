@@ -21,7 +21,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 
-import { ChatItem } from './item';
+import { ChatItem, LoadingChatItem } from './item';
 
 import { api } from '@/trpc/client';
 
@@ -119,6 +119,19 @@ export const UnauthedNavChats = () => {
         <div className="text-muted-foreground px-2 py-2 text-xs">
           No chats yet.
         </div>
+      </SidebarMenu>
+    </SidebarGroup>
+  );
+};
+
+export const LoadingNavChats = () => {
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Chats</SidebarGroupLabel>
+      <SidebarMenu>
+        {Array.from({ length: 3 }).map((_, index) => (
+          <LoadingChatItem key={index} />
+        ))}
       </SidebarMenu>
     </SidebarGroup>
   );

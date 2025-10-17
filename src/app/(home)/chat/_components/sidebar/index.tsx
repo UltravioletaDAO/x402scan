@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { Suspense } from 'react';
 
 import {
   Sidebar as BaseSidebar,
@@ -9,13 +9,13 @@ import {
 } from '@/components/ui/sidebar';
 
 import { NavMain } from './main';
-import { NavChats, UnauthedNavChats } from './chats';
+import { LoadingNavChats, NavChats, UnauthedNavChats } from './chats';
 import { AgentSelect, UnauthedAgentSelect } from './agent-select';
+import { Wallet } from './wallet';
 
 import { auth } from '@/auth';
 
 import { api, HydrateClient } from '@/trpc/server';
-import { Wallet } from './wallet';
 
 export async function Sidebar({
   ...props
@@ -41,7 +41,13 @@ export async function Sidebar({
         </SidebarHeader>
         <SidebarContent className="gap-0 pt-2">
           <NavMain />
-          {session ? <NavChats /> : <UnauthedNavChats />}
+          {session ? (
+            <Suspense fallback={<LoadingNavChats />}>
+              <NavChats />
+            </Suspense>
+          ) : (
+            <UnauthedNavChats />
+          )}
         </SidebarContent>
         <SidebarFooter className="flex flex-col gap-2 p-3 group-data-[collapsible=icon]:p-2">
           {session?.user.id && <Wallet />}

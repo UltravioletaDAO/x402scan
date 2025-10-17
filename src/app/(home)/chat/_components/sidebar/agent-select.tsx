@@ -98,7 +98,7 @@ export const AgentSelect = () => {
                   asChild
                 >
                   <Link href={`/chat/${agent.id}`} key={agent.id}>
-                    <span className="truncate font-medium">{agent.model}</span>
+                    <span className="truncate font-medium">{agent.name}</span>
                   </Link>
                 </DropdownMenuItem>
               ))}

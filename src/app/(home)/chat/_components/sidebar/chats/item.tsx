@@ -16,6 +16,7 @@ import {
 
 import type { Chat } from '@prisma/client';
 import { MoreHorizontal, Trash } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   chat: Chat;
@@ -69,3 +70,13 @@ export const ChatItem = memo(PureChatItem, (prevProps, nextProps) => {
   if (prevProps.isActive !== nextProps.isActive) return false;
   return true;
 });
+
+export const LoadingChatItem = () => {
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground cursor-pointer">
+        <Skeleton className="h-5 w-full" />
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+};
