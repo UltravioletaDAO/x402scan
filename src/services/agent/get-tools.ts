@@ -189,8 +189,8 @@ export async function createX402AITools(
     const parametersSchema = inputSchemaToZodSchema(toolDef.outputSchema.input);
     const method = toolDef.outputSchema.input.method.toUpperCase();
 
-    aiTools[toolName] = {
-      description: `${toolDef.description} (Paid API - ${toolDef.maxAmountRequired} on ${toolDef.network})`,
+    aiTools[toolDef.id] = {
+      description: `${toolName}: ${toolDef.description} (Paid API - ${toolDef.maxAmountRequired} on ${toolDef.network})`,
       inputSchema: parametersSchema,
       execute: async (params: Record<string, unknown>) => {
         let url = toolDef.resource;
@@ -219,7 +219,6 @@ export async function createX402AITools(
           requestInit.headers = { 'Content-Type': 'application/json' };
         }
 
-        console.log(`Calling ${method} ${url}`, params);
         try {
           const response = await fetchWithX402Payment(fetch, walletClient)(
             new URL(

@@ -130,6 +130,28 @@ export const upsertResource = async (
   });
 };
 
+export const getResource = async (id: string) => {
+  return await prisma.resources.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      origin: true,
+      accepts: {
+        select: {
+          id: true,
+          description: true,
+          network: true,
+          payTo: true,
+          maxAmountRequired: true,
+          mimeType: true,
+          asset: true,
+        },
+      },
+    },
+  });
+};
+
 export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
   return await prisma.resources.findMany({
     where,
@@ -147,11 +169,10 @@ export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
         },
       },
     },
-    orderBy: {
-      invocations: {
-        _count: 'desc',
-      },
-    },
+    orderBy: [
+      { invocations: { _count: 'desc' } },
+      { tags: { _count: 'desc' } },
+    ],
   });
 };
 
