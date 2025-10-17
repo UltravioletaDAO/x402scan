@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     // Start title generation in parallel (don't await)
     const titlePromise = generateTitleFromUserMessage({
       message: lastMessage,
-      model: openai(model),
+      model: openai('gpt-4.1-nano'),
     });
 
     // Create chat with temporary title immediately

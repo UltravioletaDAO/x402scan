@@ -1,4 +1,3 @@
-import { fetchWithX402Payment } from './fetch';
 import { listResourcesForTools } from '../db/resources';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import { enhancedAcceptsSchema, enhancedOutputSchema } from '@/lib/x402/schema';
@@ -8,6 +7,7 @@ import type { Tool } from 'ai';
 import { env } from '@/env';
 import { inputSchemaToZodSchema } from './utils';
 import type { ResourceRequestMetadata } from '@prisma/client';
+import { fetchWithX402Payment } from './fetch';
 
 export async function createX402AITools(
   resourceIds: string[],
@@ -77,6 +77,20 @@ export async function createX402AITools(
               requestInit.headers = { 'Content-Type': 'application/json' };
             }
 
+            if (
+              resource.requestMetadata &&
+              typeof resource.requestMetadata.headers === 'object' &&
+              resource.requestMetadata.headers !== null &&
+              !Array.isArray(resource.requestMetadata.headers) &&
+              resource.requestMetadata.headers !== undefined &&
+              Object.keys(resource.requestMetadata.headers).length > 0
+            ) {
+              requestInit.headers = {
+                ...(requestInit.headers ?? {}),
+                ...resource.requestMetadata.headers,
+              } as HeadersInit;
+            }
+
             try {
               const response = await fetchWithX402Payment(fetch, walletClient)(
                 new URL(
@@ -85,6 +99,7 @@ export async function createX402AITools(
                 ),
                 requestInit
               );
+              console.log('response', response);
               const data: unknown = await response.json();
               return data;
             } catch (error) {
