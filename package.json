@@ -62,7 +62,6 @@
     "@trpc/server": "^11.5.1",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
-    "@wagmi/core": "^2.22.1",
     "ai": "^5.0.68",
     "autonumeric": "^4.10.9",
     "class-variance-authority": "^0.7.1",

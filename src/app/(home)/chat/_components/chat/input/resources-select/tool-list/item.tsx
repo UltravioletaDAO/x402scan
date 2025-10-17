@@ -1,3 +1,5 @@
+import { Activity } from 'lucide-react';
+
 import { CommandItem as BaseCommandItem } from '@/components/ui/command';
 
 import { Favicon } from '@/components/favicon';
@@ -21,7 +23,7 @@ export const ResourceItem: React.FC<Props> = ({
   return (
     <BaseCommandItem
       onSelect={() => onSelectResource(resource.id)}
-      className="flex items-center justify-between gap-2 rounded-none px-3"
+      className="flex items-center justify-between gap-3 rounded-none px-3"
       value={resource.resource}
     >
       <div className="flex items-center gap-2 flex-1 overflow-hidden">
@@ -45,6 +47,14 @@ export const ResourceItem: React.FC<Props> = ({
           </p>
         </div>
       </div>
+      {resource.invocations > 0 && (
+        <div className="flex items-center gap-0.5 font-semibold">
+          <Activity className="size-3 text-muted-foreground" />
+          <p className="text-xs text-muted-foreground">
+            {resource.invocations}
+          </p>
+        </div>
+      )}
       <p className="text-xs text-primary font-bold">
         {formatTokenAmount(BigInt(resource.maxAmountRequired))}
       </p>

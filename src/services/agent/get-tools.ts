@@ -94,14 +94,52 @@ function inputSchemaToZodSchema(inputSchema: EnhancedOutputSchema['input']) {
   return z.object(shape);
 }
 
-export async function generateX402Tools(resourceIds?: string[]) {
-  const resources = await listResources(
-    resourceIds ? { id: { in: resourceIds } } : undefined
-  );
+export const generateX402ToolsOptionsSchema = z.object({
+  resourceIds: z.array(z.string()).optional(),
+  tagIds: z.array(z.string()).optional(),
+  searchQuery: z.string().optional(),
+});
+
+export async function generateX402Tools({
+  resourceIds,
+  tagIds,
+  searchQuery,
+}: z.infer<typeof generateX402ToolsOptionsSchema> = {}) {
+  const resources = await listResources({
+    ...(resourceIds ? { id: { in: resourceIds } } : undefined),
+    ...(tagIds ? { tags: { some: { tagId: { in: tagIds } } } } : undefined),
+    ...(searchQuery
+      ? {
+          OR: [
+            { resource: { contains: searchQuery, mode: 'insensitive' } },
+            {
+              origin: {
+                resources: {
+                  some: {
+                    accepts: {
+                      some: {
+                        payTo: { contains: searchQuery, mode: 'insensitive' },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            {
+              metadata: {
+                path: ['title', 'description'],
+                string_contains: searchQuery,
+              },
+            },
+          ],
+        }
+      : undefined),
+  });
   const toolDefinitions: (EnhancedAcceptsSchema & {
     id: string;
     outputSchema: EnhancedOutputSchema;
     origin: ResourceOrigin;
+    invocations: number;
   })[] = [];
 
   for (const resource of resources) {
@@ -122,6 +160,7 @@ export async function generateX402Tools(resourceIds?: string[]) {
           id: resource.id,
           ...parsedAccept.data,
           origin: resource.origin,
+          invocations: resource._count.invocations,
         });
       }
     }
@@ -134,7 +173,9 @@ export async function createX402AITools(
   resourceIds: string[],
   walletClient: Signer
 ): Promise<Record<string, Tool>> {
-  const toolDefinitions = await generateX402Tools(resourceIds);
+  const toolDefinitions = await generateX402Tools({
+    resourceIds,
+  });
   const aiTools: Record<string, Tool> = {};
 
   for (const toolDef of toolDefinitions) {
