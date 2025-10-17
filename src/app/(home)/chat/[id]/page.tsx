@@ -28,6 +28,7 @@ export default async function ChatPage({ params }: PageProps<'/chat/[id]'>) {
       id={id}
       initialMessages={chat.messages}
       isReadOnly={chat.userId !== userId}
+      storePreferences={true}
     />
   );
 }

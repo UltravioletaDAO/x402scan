@@ -15,14 +15,25 @@ import { convertToUIMessages } from '@/lib/utils';
 
 import type { Message } from '@prisma/client';
 import { useSession } from 'next-auth/react';
+import { clientCookieUtils } from '../../_lib/cookies/client';
+
+import type { ChatPreferences } from '../../_lib/cookies/types';
 
 interface Props {
   id: string;
   initialMessages: Message[];
   isReadOnly?: boolean;
+  initialPreferences?: ChatPreferences;
+  storePreferences?: boolean;
 }
 
-export const ChatContent: React.FC<Props> = ({ id, initialMessages }) => {
+export const ChatContent: React.FC<Props> = ({
+  id,
+  isReadOnly,
+  initialMessages,
+  initialPreferences,
+  storePreferences,
+}) => {
   const utils = api.useUtils();
 
   const { data: session } = useSession();
@@ -41,7 +52,6 @@ export const ChatContent: React.FC<Props> = ({ id, initialMessages }) => {
       toast.error(error.message);
     },
     onFinish: () => {
-      console.log('onFinish');
       window.history.replaceState({}, '', `/chat/${id}`);
       void utils.chats.getUserChats.invalidate();
       setTimeout(() => {
@@ -51,8 +61,12 @@ export const ChatContent: React.FC<Props> = ({ id, initialMessages }) => {
   });
 
   const [input, setInput] = useState('');
-  const [model, setModel] = useState('gpt-4o');
-  const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>([]);
+  const [model, setModel] = useState(
+    initialPreferences?.selectedChatModel ?? 'gpt-4o'
+  );
+  const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>(
+    initialPreferences?.resourceIds ?? []
+  );
 
   const sendChatMessage = (text: string) => {
     if (!hasBalance) {
@@ -81,29 +95,46 @@ export const ChatContent: React.FC<Props> = ({ id, initialMessages }) => {
     setInput('');
   };
 
+  const handleSetModel = (model: string) => {
+    setModel(model);
+    if (storePreferences) {
+      clientCookieUtils.setSelectedChatModel(model);
+    }
+  };
+
+  const onSelectResource = (resourceId: string) => {
+    const newResourceIds = [...selectedResourceIds];
+    const existingIndex = newResourceIds.indexOf(resourceId);
+    if (existingIndex !== -1) {
+      newResourceIds.splice(existingIndex, 1);
+    } else {
+      newResourceIds.push(resourceId);
+    }
+    setSelectedResourceIds(newResourceIds);
+    if (storePreferences) {
+      clientCookieUtils.setResourceIds(newResourceIds);
+    }
+  };
+
   return (
     <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
       <Messages messages={messages} status={status} />
-      <div className="pb-2 md:pb-4">
-        <div className="mx-auto max-w-4xl px-2">
-          <PromptInputSection
-            input={input}
-            setInput={setInput}
-            handleSubmit={handleSubmit}
-            model={model}
-            setModel={setModel}
-            selectedResourceIds={selectedResourceIds}
-            onSelectResource={resourceId =>
-              setSelectedResourceIds(prev =>
-                prev.includes(resourceId)
-                  ? prev.filter(id => id !== resourceId)
-                  : [...prev, resourceId]
-              )
-            }
-            status={status}
-          />
+      {!isReadOnly && (
+        <div className="pb-2 md:pb-4">
+          <div className="mx-auto max-w-4xl px-2">
+            <PromptInputSection
+              input={input}
+              setInput={setInput}
+              handleSubmit={handleSubmit}
+              model={model}
+              setModel={handleSetModel}
+              selectedResourceIds={selectedResourceIds}
+              onSelectResource={onSelectResource}
+              status={status}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
