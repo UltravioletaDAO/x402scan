@@ -41,7 +41,7 @@ const ConversationEmptyState = ({
 }) => (
   <div
     className={cn(
-      'flex size-full flex-col items-center justify-center gap-6 p-8 text-center',
+      'flex size-full flex-col items-center justify-center gap-4 p-8 text-center',
       className
     )}
     {...props}
@@ -52,7 +52,7 @@ const ConversationEmptyState = ({
         <div className="space-y-2">
           <h3 className="font-bold text-2xl">{title}</h3>
           {description && (
-            <p className="text-muted-foreground text-sm font-mono">
+            <p className="text-muted-foreground text-sm font-mono max-w-xs">
               {description}
             </p>
           )}
