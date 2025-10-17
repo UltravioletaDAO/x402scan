@@ -38,7 +38,7 @@ export const enhancedOutputSchema = z3.object({
     queryParams: z3.record(FieldDefSchema).optional(),
     bodyFields: z3.record(FieldDefSchema).optional(),
   }),
-  output: z3.record(z3.string(), z3.any()).optional(),
+  output: z3.record(z3.string(), z3.any()).optional().nullable(),
 });
 
 export type EnhancedOutputSchema = z3.infer<typeof enhancedOutputSchema>;

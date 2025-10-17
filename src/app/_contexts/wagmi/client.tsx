@@ -1,11 +1,6 @@
 'use client';
 
-import {
-  createConfig,
-  http,
-  injected,
-  WagmiProvider as WagmiProviderBase,
-} from 'wagmi';
+import { createConfig, http, WagmiProvider as WagmiProviderBase } from 'wagmi';
 
 import { baseWagmiConfig } from './config';
 
@@ -20,7 +15,7 @@ interface Props {
   initialState: State | undefined;
 }
 
-export const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
+const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
   cdpConfig,
   providerConfig: {
     chains: [base],
@@ -33,7 +28,7 @@ export const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
 const getClientConfig = () =>
   createConfig({
     ...baseWagmiConfig,
-    connectors: [cdpEmbeddedWalletConnector, injected()],
+    connectors: [...baseWagmiConfig.connectors, cdpEmbeddedWalletConnector],
   });
 
 export const WagmiProviderClient: React.FC<Props> = ({
