@@ -2,14 +2,13 @@
 
 import React, { useState } from 'react';
 
-import { Check, Loader2, Wallet } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 
 import { useWriteContract } from 'wagmi';
 
 import { toast } from 'sonner';
 import { erc20Abi, parseUnits } from 'viem';
 
-import { Skeleton } from '@/components/ui/skeleton';
 import { MoneyInput } from '@/components/ui/money-input';
 import { Button } from '@/components/ui/button';
 
@@ -32,11 +31,7 @@ export const Send: React.FC<Props> = ({ address }) => {
     isLoading: isEthBalanceLoading,
     refetch: refetchEthBalance,
   } = useEthBalance();
-  const {
-    isLoading: isBalanceLoading,
-    data: balance,
-    refetch: refetchBalance,
-  } = useBalance();
+  const { data: balance, refetch: refetchBalance } = useBalance();
   const {
     writeContract,
     isPending: isSending,
@@ -80,27 +75,14 @@ export const Send: React.FC<Props> = ({ address }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-col gap-1">
-        <div className="flex justify-between">
-          <span className="font-medium text-sm">Amount</span>
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Wallet className="size-2.5" />
-            {isBalanceLoading ? (
-              <Skeleton className="h-3 w-8" />
-            ) : (
-              <span className="text-xs">{balance!.toLocaleString()} USDC</span>
-            )}
-          </div>
-        </div>
-        <MoneyInput
-          setAmount={setAmount}
-          placeholder="0.00"
-          inputClassName="placeholder:text-muted-foreground/60"
-          isBalanceMax
-          showMaxButton
-          decimalPlaces={6}
-        />
-      </div>
+      <MoneyInput
+        setAmount={setAmount}
+        placeholder="0.00"
+        inputClassName="placeholder:text-muted-foreground/60"
+        isBalanceMax
+        showMaxButton
+        decimalPlaces={6}
+      />
       {!isEthBalanceLoading && ethBalance === 0 && (
         <p className="text-yellow-600 bg-yellow-600/10 p-2 rounded-md text-xs">
           Insufficient gas to pay for this transaction. Please add some ETH to
