@@ -8,8 +8,8 @@ import {
 } from '@/components/ui/sidebar';
 
 import { NavMain } from './main';
-import { NavChats } from './chats';
-import { AgentSelect } from './agent-select';
+import { NavChats, UnauthedNavChats } from './chats';
+import { AgentSelect, UnauthedAgentSelect } from './agent-select';
 
 import { auth } from '@/auth';
 
@@ -19,10 +19,6 @@ export async function Sidebar({
   ...props
 }: React.ComponentProps<typeof BaseSidebar>) {
   const session = await auth();
-
-  if (!session) {
-    return null;
-  }
 
   if (session?.user) {
     void api.agentConfigurations.getUserConfigurations.prefetch();
@@ -38,12 +34,12 @@ export async function Sidebar({
       >
         <SidebarHeader className="border-sidebar-border border-b p-3 group-data-[collapsible=icon]:p-2">
           <div className="mt-2 group-data-[collapsible=icon]:mt-1">
-            <AgentSelect />
+            {session ? <AgentSelect /> : <UnauthedAgentSelect />}
           </div>
         </SidebarHeader>
         <SidebarContent className="gap-0 pt-2">
           <NavMain />
-          <NavChats />
+          {session ? <NavChats /> : <UnauthedNavChats />}
         </SidebarContent>
         <SidebarRail />
       </BaseSidebar>

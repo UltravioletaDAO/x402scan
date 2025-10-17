@@ -118,3 +118,35 @@ export const AgentSelect = () => {
     </SidebarGroup>
   );
 };
+
+export const UnauthedAgentSelect = () => {
+  const { open } = useSidebar();
+
+  return (
+    <SidebarGroup className="p-0">
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton
+            size="lg"
+            className={cn(
+              'bg-sidebar-accent text-sidebar-accent-foreground cursor-pointer transition-all duration-200 ease-in-out',
+              open ? 'justify-between' : 'min-h-[2.5rem] justify-center px-2'
+            )}
+          >
+            {open ? (
+              <>
+                <div className="min-w-0 flex-1 gap-2 flex items-center">
+                  <BotMessageSquare className="size-4 flex-shrink-0" />
+                  <span className="truncate">Agent</span>
+                </div>
+                <ChevronsUpDown className="ml-auto size-4 flex-shrink-0" />
+              </>
+            ) : (
+              <BotMessageSquare className="size-4" />
+            )}
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarGroup>
+  );
+};

@@ -40,6 +40,7 @@ import { Logo } from '@/components/logo';
 import type { ChatStatus } from 'ai';
 import type { UIMessage } from '@ai-sdk/react';
 import { toast } from 'sonner';
+import { Card } from '@/components/ui/card';
 
 interface MessagesProps {
   messages: UIMessage[];
@@ -154,9 +155,13 @@ export const Messages = ({ messages, status }: MessagesProps) => {
         </>
       ) : (
         <ConversationEmptyState
-          icon={<Logo className="size-16" />}
-          title="Welcome to x402scan Chat"
-          description="Your playground invoking x402 resources through an agent"
+          icon={
+            <Card className="p-2 border-primary/70 shadow-[0_0_4px_0px_color-mix(in_oklch,var(--primary)_70%,transparent)]">
+              <Logo className="size-12" />
+            </Card>
+          }
+          title="x402scan Composer"
+          description="A playground for building agents that pay for inference and resources with x402"
         />
       )}
     </Conversation>

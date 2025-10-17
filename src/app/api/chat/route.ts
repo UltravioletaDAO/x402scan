@@ -14,8 +14,6 @@ import { toAccount } from 'viem/accounts';
 
 import { createX402OpenAI } from '@merit-systems/ai-x402/server';
 
-import { getOrCreateWalletFromUserId } from '@/services/cdp/server-wallet/get-or-create';
-
 import {
   createChat,
   createMessage,
@@ -30,6 +28,7 @@ import { createX402AITools } from '@/services/agent/get-tools';
 import { messageSchema } from '@/lib/message-schema';
 
 import type { NextRequest } from 'next/server';
+import { getWalletForUserId } from '@/services/cdp/server-wallet';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -59,7 +58,13 @@ export async function POST(request: NextRequest) {
 
   const chat = await getChat(chatId, session.user.id);
 
-  const wallet = await getOrCreateWalletFromUserId(session.user.id);
+  const wallet = await getWalletForUserId(session.user.id);
+  if (!wallet) {
+    return NextResponse.json(
+      { error: 'Server wallet not found' },
+      { status: 404 }
+    );
+  }
   const signer = toAccount(wallet);
   const openai = createX402OpenAI(signer);
 
