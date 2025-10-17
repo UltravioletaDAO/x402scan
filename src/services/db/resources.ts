@@ -5,6 +5,8 @@ import { z } from 'zod';
 import type { Prisma } from '@prisma/client';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
+import { toPaginatedResponse } from '@/lib/pagination';
+import type { paginatedQuerySchema } from '@/lib/pagination';
 
 export const upsertResourceSchema = z.object({
   resource: z.string(),
@@ -146,6 +148,40 @@ export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
       },
     },
   });
+};
+
+export const listResourcesWithPagination = async (
+  pagination: z.infer<ReturnType<typeof paginatedQuerySchema>>,
+  where?: Prisma.ResourcesWhereInput
+) => {
+  const { skip, limit } = pagination;
+  const resources = await prisma.resources.findMany({
+    where,
+    include: {
+      accepts: true,
+      origin: true,
+      tags: {
+        include: {
+          tag: true,
+        },
+      },
+      _count: {
+        select: {
+          tags: true,
+          invocations: true,
+        },
+      },
+    },
+    orderBy: {
+      invocations: {
+        _count: 'desc',
+      },
+    },
+    skip,
+    take: limit + 1,
+  });
+
+  return toPaginatedResponse({ items: resources, limit });
 };
 
 export const getResourceByAddress = async (address: string) => {

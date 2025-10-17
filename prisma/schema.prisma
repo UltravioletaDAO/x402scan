@@ -90,6 +90,7 @@ model Resources {
   invocations                 ResourceInvocation[]
   origin                      ResourceOrigin               @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
   agentConfigurationResources AgentConfigurationResource[]
+  tags                        ResourcesTags[]
 }
 
 enum AcceptsScheme {
@@ -163,19 +164,19 @@ model ResourceResponse {
 }
 
 model ResourceInvocation {
-  id              String   @id @default(uuid())
-  resourceId      String?
-  statusCode      Int
-  statusText      String
-  method          String
-  url             String
-  requestContentType String
+  id                  String   @id @default(uuid())
+  resourceId          String?
+  statusCode          Int
+  statusText          String
+  method              String
+  url                 String
+  requestContentType  String
   responseContentType String
-  responseHeaders Json?
-  responseBody    Json?
-  requestHeaders  Json?
-  requestBody     Json?
-  createdAt       DateTime @default(now())
+  responseHeaders     Json?
+  responseBody        Json?
+  requestHeaders      Json?
+  requestBody         Json?
+  createdAt           DateTime @default(now())
 
   resource Resources? @relation(fields: [resourceId], references: [id])
 }
@@ -296,4 +297,28 @@ model AgentConfigurationUser {
   agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("AgentUser")
+}
+
+model Tag {
+  id            String          @id @default(uuid())
+  name          String          @unique
+  color         String
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  resourcesTags ResourcesTags[]
+
+  @@map("Tag")
+}
+
+model ResourcesTags {
+  id         String   @id @default(uuid())
+  resourceId String
+  tagId      String
+  assignedAt DateTime @default(now())
+
+  resource Resources @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  tag      Tag       @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([resourceId, tagId])
+  @@map("ResourcesTags")
 }
