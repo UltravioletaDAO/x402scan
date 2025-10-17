@@ -27,11 +27,8 @@ export const Deposit: React.FC<Props> = ({ address }) => {
       </div>
       <div className="flex flex-col gap-1">
         <span className="font-medium text-sm">Add Funds</span>
-        <Tabs
-          defaultValue="send"
-          className="flex flex-col gap-0 bg-muted rounded-md border"
-        >
-          <TabsList className="w-full justify-start gap-2 p-2 pb-0 rounded-md h-fit">
+        <Tabs defaultValue="send" className="flex flex-col gap-0">
+          <TabsList className="w-full justify-start gap-2 rounded-md h-fit">
             <TabsTrigger
               value="send"
               className="flex-1 flex items-center gap-2 py-2"
@@ -53,17 +50,11 @@ export const Deposit: React.FC<Props> = ({ address }) => {
               Onramp
             </TabsTrigger>
           </TabsList>
-          <TabsContents className="mt-0">
-            <TabsContent
-              value="send"
-              className="m-2 p-2 bg-card rounded-md shadow-sm"
-            >
+          <TabsContents className="mt-1">
+            <TabsContent value="send" className="p-1">
               <Send address={address} />
             </TabsContent>
-            <TabsContent
-              value="onramp"
-              className="m-2 p-2 bg-card rounded-md shadow-sm"
-            >
+            <TabsContent value="onramp" className="m-2">
               <Onramp />
             </TabsContent>
           </TabsContents>

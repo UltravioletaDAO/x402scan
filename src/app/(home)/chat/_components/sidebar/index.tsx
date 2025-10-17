@@ -3,6 +3,7 @@ import * as React from 'react';
 import {
   Sidebar as BaseSidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
@@ -14,6 +15,7 @@ import { AgentSelect, UnauthedAgentSelect } from './agent-select';
 import { auth } from '@/auth';
 
 import { api, HydrateClient } from '@/trpc/server';
+import { Wallet } from './wallet';
 
 export async function Sidebar({
   ...props
@@ -41,6 +43,9 @@ export async function Sidebar({
           <NavMain />
           {session ? <NavChats /> : <UnauthedNavChats />}
         </SidebarContent>
+        <SidebarFooter className="flex flex-col gap-2 p-3 group-data-[collapsible=icon]:p-2">
+          {session?.user.id && <Wallet />}
+        </SidebarFooter>
         <SidebarRail />
       </BaseSidebar>
     </HydrateClient>

@@ -7,7 +7,6 @@ import type {
   HTMLAttributes,
   KeyboardEventHandler,
 } from 'react';
-import { Children } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -106,35 +105,35 @@ const PromptInputTools = ({
   />
 );
 
-const PromptInputButton = ({
-  variant = 'ghost',
-  className,
-  size,
-  ...props
-}: ComponentProps<typeof Button>) => {
-  const newSize =
-    size ??
-    (props.children
-      ? Children.count(props.children) > 1
-        ? 'default'
-        : 'icon'
-      : 'default');
+// const PromptInputButton = ({
+//   variant = 'ghost',
+//   className,
+//   size,
+//   ...props
+// }: ComponentProps<typeof Button>) => {
+//   const newSize =
+//     size ??
+//     (props.children
+//       ? Children.count(props.children) > 1
+//         ? 'default'
+//         : 'icon'
+//       : 'default');
 
-  return (
-    <Button
-      className={cn(
-        'shrink-0 gap-1.5 rounded-lg',
-        variant === 'ghost' && 'text-muted-foreground',
-        newSize === 'default' && 'px-3',
-        className
-      )}
-      size={newSize}
-      type="button"
-      variant={variant}
-      {...props}
-    />
-  );
-};
+//   return (
+//     <Button
+//       className={cn(
+//         'shrink-0 gap-1.5 rounded-lg',
+//         variant === 'ghost' && 'text-muted-foreground',
+//         newSize === 'default' && 'px-3',
+//         className
+//       )}
+//       size={newSize}
+//       type="button"
+//       variant={variant}
+//       {...props}
+//     />
+//   );
+// };
 
 const PromptInputSubmit = ({
   className,
@@ -213,7 +212,6 @@ export {
   PromptInputTextarea,
   PromptInputToolbar,
   PromptInputTools,
-  PromptInputButton,
   PromptInputSubmit,
   PromptInputModelSelect,
   PromptInputModelSelectTrigger,

@@ -3,6 +3,7 @@ import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 
 import {
+  getResource,
   getResourceByAddress,
   listResources,
   listResourcesWithPagination,
@@ -16,8 +17,19 @@ import { Methods } from '@/types/x402';
 
 import { registerResource } from '@/lib/resources';
 import { paginatedQuerySchema } from '@/lib/pagination';
+import { TRPCError } from '@trpc/server';
 
 export const resourcesRouter = createTRPCRouter({
+  get: publicProcedure.input(z.string()).query(async ({ input }) => {
+    const resource = await getResource(input);
+    if (!resource) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Resource not found',
+      });
+    }
+    return resource;
+  }),
   list: {
     all: publicProcedure.query(async () => {
       return await listResources();

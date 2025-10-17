@@ -1,7 +1,7 @@
 import { api } from '@/trpc/client';
 
 import { useSession } from 'next-auth/react';
-import { Deposit } from '../../../deposit';
+import { Deposit } from '../../../../wallet/deposit';
 
 export const FundWallet = () => {
   const { data: session } = useSession();

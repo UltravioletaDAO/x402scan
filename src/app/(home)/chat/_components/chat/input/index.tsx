@@ -10,7 +10,6 @@ import {
 
 import { ModelSelect } from './model-select';
 
-import { WalletButton } from './wallet';
 import { ToolSelect } from './resources-select';
 
 import type { ChatStatus } from 'ai';
@@ -64,7 +63,6 @@ export const PromptInputSection: React.FC<Props> = ({
             resourceIds={selectedResourceIds}
             onSelectResource={onSelectResource}
           />
-          <WalletButton />
         </PromptInputTools>
         <PromptInputSubmit
           disabled={!input || !hasBalance}

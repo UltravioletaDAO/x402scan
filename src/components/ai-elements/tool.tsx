@@ -1,7 +1,7 @@
 'use client';
 
 import type { ToolUIPart } from 'ai';
-import { ChevronDownIcon, WrenchIcon } from 'lucide-react';
+import { ChevronDownIcon } from 'lucide-react';
 import type { ComponentProps, ReactNode } from 'react';
 import {
   Collapsible,
@@ -11,6 +11,10 @@ import {
 import { cn } from '@/lib/utils';
 import { JsonViewer } from './json-viewer';
 import { Code } from '../ui/code';
+import { api } from '@/trpc/client';
+import { Skeleton } from '../ui/skeleton';
+import { Favicon } from '../favicon';
+import { Loading } from '../ui/loading';
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
 type JsonObject = { [key: string]: JsonValue };
@@ -26,26 +30,65 @@ const Tool = ({ className, ...props }: ComponentProps<typeof Collapsible>) => (
 const ToolHeader = ({
   className,
   type,
+  state,
   ...props
 }: {
   type: ToolUIPart['type'];
   state: ToolUIPart['state'];
   className?: string;
-}) => (
-  <CollapsibleTrigger
-    className={cn(
-      'flex w-full items-center justify-between gap-4 p-3',
-      className
-    )}
-    {...props}
-  >
-    <div className="flex items-center gap-2">
-      <WrenchIcon className="size-4 text-muted-foreground" />
-      <span className="font-medium text-sm">{type}</span>
-    </div>
-    <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-  </CollapsibleTrigger>
-);
+}) => {
+  const resourceId = type.slice(5);
+  const { data: resource, isLoading: isResourceLoading } =
+    api.resources.get.useQuery(resourceId, {
+      enabled: state !== 'input-streaming',
+    });
+  return (
+    <CollapsibleTrigger
+      className={cn(
+        'flex w-full items-center justify-between gap-4 p-3 bg-muted/50 cursor-pointer hover:bg-muted/80 transition-all duration-200',
+        className
+      )}
+      {...props}
+    >
+      <div className="flex items-center gap-2">
+        <Loading
+          value={resource}
+          isLoading={isResourceLoading || state === 'input-streaming'}
+          component={resource => (
+            <Favicon
+              url={resource.origin.favicon ?? null}
+              className="size-8 rounded-md"
+            />
+          )}
+          loadingComponent={<Skeleton className="size-8" />}
+        />
+        <div className="flex flex-col">
+          <Loading
+            value={resource}
+            isLoading={isResourceLoading || state === 'input-streaming'}
+            component={resource => (
+              <span className="font-semibold text-sm font-mono text-left">
+                {resource.resource}
+              </span>
+            )}
+            loadingComponent={<Skeleton className="h-[14px] w-32" />}
+          />
+          <Loading
+            value={resource}
+            isLoading={isResourceLoading || state === 'input-streaming'}
+            component={resource => (
+              <span className="text-xs text-muted-foreground text-left">
+                {resource.accepts[0].description}
+              </span>
+            )}
+            loadingComponent={<Skeleton className="h-[14px] w-32" />}
+          />
+        </div>
+      </div>
+      <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+    </CollapsibleTrigger>
+  );
+};
 
 const ToolContent = ({
   className,
@@ -53,7 +96,7 @@ const ToolContent = ({
 }: ComponentProps<typeof CollapsibleContent>) => (
   <CollapsibleContent
     className={cn(
-      'data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in space-y-2 py-4',
+      'data-[state=closed]:fade-out-0 data-[state=closed]:slide-out-to-top-2 data-[state=open]:slide-in-from-top-2 text-popover-foreground outline-none data-[state=closed]:animate-out data-[state=open]:animate-in space-y-2 py-4 border-t',
       className
     )}
     {...props}

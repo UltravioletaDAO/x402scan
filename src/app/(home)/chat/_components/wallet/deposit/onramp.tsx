@@ -10,15 +10,6 @@ import { Button } from '@/components/ui/button';
 import { api } from '@/trpc/client';
 
 export const Onramp = () => {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="font-medium text-sm">Amount</span>
-      <OnrampContent />
-    </div>
-  );
-};
-
-const OnrampContent = () => {
   const {
     mutate: createOnrampSession,
     isPending: isCreatingOnrampSession,
@@ -63,7 +54,7 @@ const OnrampContent = () => {
             Opening Coinbase...
           </>
         ) : (
-          'Onramp'
+          'Buy on Coinbase'
         )}
       </Button>
     </div>
