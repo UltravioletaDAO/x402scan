@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { adminProcedure, createTRPCRouter, publicProcedure } from '../trpc';
 import {
   getAllResourceTags,
   createResourceTag,
@@ -15,25 +15,23 @@ export const resourceTagsRouter = createTRPCRouter({
     return await getAllResourceTags();
   }),
 
-  getByResource: publicProcedure
-    .input(z.string().uuid())
-    .query(async ({ input }) => {
-      return await getResourceTags(input);
-    }),
+  getByResource: publicProcedure.input(z.uuid()).query(async ({ input }) => {
+    return await getResourceTags(input);
+  }),
 
-  create: publicProcedure
+  create: adminProcedure
     .input(createResourceTagSchema)
     .mutation(async ({ input }) => {
       return await createResourceTag(input);
     }),
 
-  assign: publicProcedure
+  assign: adminProcedure
     .input(assignTagToResourceSchema)
     .mutation(async ({ input }) => {
       return await assignTagToResource(input);
     }),
 
-  unassign: publicProcedure
+  unassign: adminProcedure
     .input(assignTagToResourceSchema)
     .mutation(async ({ input }) => {
       return await unassignTagFromResource(input);
