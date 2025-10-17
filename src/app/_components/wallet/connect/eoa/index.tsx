@@ -11,12 +11,14 @@ interface Props {
   className?: string;
   buttonClassName?: string;
   connectors: Connector[];
+  prefix?: string;
 }
 
 export const ConnectEOAForm: React.FC<Props> = ({
   connectors,
   className,
   buttonClassName,
+  prefix,
 }) => {
   return (
     <div className={cn('flex flex-col gap-2', className)}>
@@ -25,6 +27,7 @@ export const ConnectEOAForm: React.FC<Props> = ({
           key={connector.id}
           connector={connector}
           className={buttonClassName}
+          prefix={prefix}
         />
       ))}
     </div>
@@ -34,11 +37,13 @@ export const ConnectEOAForm: React.FC<Props> = ({
 interface ConnectEOAButtonProps {
   connector: Connector;
   className?: string;
+  prefix?: string;
 }
 
 const ConnectEOAButton: React.FC<ConnectEOAButtonProps> = ({
   connector,
   className,
+  prefix,
 }) => {
   const { connectAsync, isPending } = useConnect();
 
@@ -71,7 +76,7 @@ const ConnectEOAButton: React.FC<ConnectEOAButtonProps> = ({
         <img src={connector.icon} alt={connector.name} className="size-4" />
       )}
       {isPending && <Loader2 className="size-4 animate-spin" />}
-      {connector.name}
+      {prefix ? `${prefix} ${connector.name}` : connector.name}
     </Button>
   );
 };

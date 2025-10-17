@@ -4,7 +4,7 @@ import { ConnectEmbeddedWalletForm } from '@/app/_components/wallet/connect/embe
 import { ConnectEOAForm } from '@/app/_components/wallet/connect/eoa';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount, useConnect } from 'wagmi';
 import {
   AlertDialog,
@@ -14,11 +14,15 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Logo } from '@/components/logo';
+import { Button } from '@/components/ui/button';
+import { Mail, Wallet } from 'lucide-react';
 
 export const ConnectDialog = () => {
   const { address } = useAccount();
 
   const { connectors } = useConnect();
+
+  const [isEmbeddedWallet, setIsEmbeddedWallet] = useState(false);
 
   const filteredConnectors = connectors.filter(
     connector =>
@@ -48,12 +52,13 @@ export const ConnectDialog = () => {
           </div>
         </AlertDialogHeader>
         <div className="p-4 flex flex-col gap-4">
-          {filteredConnectors.length > 0 && (
+          {filteredConnectors.length > 0 && !isEmbeddedWallet && (
             <>
               <ConnectEOAForm
                 connectors={filteredConnectors}
                 className="w-full"
                 buttonClassName="w-full h-12 md:h-12"
+                prefix="Connect"
               />
               <div className="flex items-center gap-2 w-full">
                 <Separator className="flex-1" />
@@ -62,7 +67,23 @@ export const ConnectDialog = () => {
               </div>
             </>
           )}
-          <ConnectEmbeddedWalletForm />
+          {filteredConnectors.length === 0 || isEmbeddedWallet ? (
+            <ConnectEmbeddedWalletForm />
+          ) : (
+            <Button
+              onClick={() => setIsEmbeddedWallet(true)}
+              className="w-full h-12 md:h-12"
+              variant="outline"
+            >
+              <Mail className="size-4" />
+              Continue with Email
+            </Button>
+          )}
+          {isEmbeddedWallet && filteredConnectors.length > 0 && (
+            <Button onClick={() => setIsEmbeddedWallet(false)} variant="ghost">
+              Back
+            </Button>
+          )}
         </div>
       </AlertDialogContent>
     </AlertDialog>

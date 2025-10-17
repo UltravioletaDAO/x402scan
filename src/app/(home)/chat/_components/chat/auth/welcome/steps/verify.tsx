@@ -22,7 +22,8 @@ export const Verify = () => {
         )}
       </Button>
       <p className="text-muted-foreground text-xs text-center font-mono">
-        Sign a message to confirm you own this wallet.
+        Sign a message to confirm you own this wallet and create a server wallet
+        for your agent. This will refresh the page.
       </p>
     </div>
   );
