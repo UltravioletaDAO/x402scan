@@ -34,6 +34,8 @@ import {
 } from '@/components/ai-elements/sources';
 
 import type { UIMessage, ChatStatus } from 'ai';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 interface Props {
   message: UIMessage;
@@ -129,6 +131,37 @@ export const Message: React.FC<Props> = ({ message, status, isLast }) => {
           }
         }
       })}
+    </BaseMessage>
+  );
+};
+
+interface LoadingMessageProps {
+  from: UIMessage['role'];
+  numLines: number;
+}
+
+export const LoadingMessage: React.FC<LoadingMessageProps> = ({
+  from,
+  numLines,
+}) => {
+  return (
+    <BaseMessage from={from} className={cn('w-full')}>
+      <MessageContent
+        className={cn(
+          'group-[.is-user]:bg-muted/50 w-full',
+          numLines === 1 && 'w-1/2'
+        )}
+      >
+        {Array.from({ length: numLines }).map((_, index) => (
+          <Skeleton
+            key={index}
+            className={cn(
+              'w-full h-4',
+              index === numLines - 1 && numLines > 1 && 'w-1/2'
+            )}
+          />
+        ))}
+      </MessageContent>
     </BaseMessage>
   );
 };

@@ -8,7 +8,7 @@ import {
 import { Loader } from '@/components/ai-elements/loader';
 
 import { EmptyState } from './empty-state';
-import { Message } from './message';
+import { LoadingMessage, Message } from './message';
 
 import type { ChatStatus } from 'ai';
 import type { UIMessage } from '@ai-sdk/react';
@@ -47,6 +47,19 @@ export const EmptyMessages = () => {
   return (
     <Conversation className="h-full w-full">
       <EmptyState />
+    </Conversation>
+  );
+};
+
+export const LoadingMessages = () => {
+  return (
+    <Conversation className="h-full w-full">
+      <ConversationContent className="max-w-4xl mx-auto">
+        <LoadingMessage from="user" numLines={2} />
+        <LoadingMessage from="assistant" numLines={4} />
+        <LoadingMessage from="user" numLines={1} />
+        <LoadingMessage from="assistant" numLines={3} />
+      </ConversationContent>
     </Conversation>
   );
 };

@@ -1,5 +1,5 @@
-import { ChatLoadingSkeleton } from '../_components/chat/chat-loading-skeleton';
+import { LoadingMessagesChat } from '../_components/chat/content';
 
 export default function ChatIdLoading() {
-  return <ChatLoadingSkeleton />;
+  return <LoadingMessagesChat />;
 }

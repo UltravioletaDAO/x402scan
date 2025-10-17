@@ -6,7 +6,7 @@ import { useChat } from '@ai-sdk/react';
 
 import { toast } from 'sonner';
 
-import { EmptyMessages, Messages } from './messages';
+import { EmptyMessages, LoadingMessages, Messages } from './messages';
 import { LoadingPromptInputSection, PromptInputSection } from './input';
 
 import { api } from '@/trpc/client';
@@ -112,6 +112,19 @@ export const LoadingEmptyChat = () => {
   return (
     <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
       <EmptyMessages />
+      <div className="pb-2 md:pb-4">
+        <div className="mx-auto max-w-4xl px-2">
+          <LoadingPromptInputSection />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const LoadingMessagesChat = () => {
+  return (
+    <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
+      <LoadingMessages />
       <div className="pb-2 md:pb-4">
         <div className="mx-auto max-w-4xl px-2">
           <LoadingPromptInputSection />
