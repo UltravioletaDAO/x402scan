@@ -15,6 +15,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Skeleton } from '../ui/skeleton';
 import { Favicon } from '../../app/_components/favicon';
 import { Loading } from '../ui/loading';
+import { formatTokenAmount } from '@/lib/token';
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;
 type JsonObject = { [key: string]: JsonValue };
@@ -68,6 +69,9 @@ const ToolHeader = ({
                 <span className="font-semibold text-sm font-mono text-left">
                   {resource.resource}
                 </span>
+                <span className="text-sm font-semibold text-primary font-mono">
+                  {formatTokenAmount(resource.accepts[0].maxAmountRequired)}
+                </span>
                 {state === 'output-available' ? (
                   <Check className="size-3 text-green-600" />
                 ) : state === 'output-error' ? (
@@ -77,7 +81,7 @@ const ToolHeader = ({
                 )}
               </div>
             )}
-            loadingComponent={<Skeleton className="h-[14px] w-32" />}
+            loadingComponent={<Skeleton className="h-[14px] my-[3px] w-32" />}
           />
           <Loading
             value={resource}
@@ -87,7 +91,7 @@ const ToolHeader = ({
                 {resource.accepts[0].description}
               </span>
             )}
-            loadingComponent={<Skeleton className="h-[14px] w-32" />}
+            loadingComponent={<Skeleton className="h-[12px] my-[2px] w-32" />}
           />
         </div>
       </div>

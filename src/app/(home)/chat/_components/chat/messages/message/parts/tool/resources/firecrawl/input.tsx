@@ -20,7 +20,7 @@ export const FirecrawlInput: InputComponent = ({ input }) => {
 
   return (
     <div className="flex items-center gap-2">
-      <Search className="size-4" />
+      <Search className="size-4 shrink-0" />
       <p className="text-sm font-medium">
         {query}{' '}
         {limit ? (

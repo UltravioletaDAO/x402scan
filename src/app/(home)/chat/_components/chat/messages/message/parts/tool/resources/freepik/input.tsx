@@ -20,7 +20,7 @@ export const FreepikInput: InputComponent = ({ input }) => {
 
   return (
     <div className="flex items-center gap-2">
-      <ImageIcon className="size-4" />
+      <ImageIcon className="size-4 shrink-0" />
       <p className="text-sm font-medium">
         {prompt}{' '}
         {model ? (
