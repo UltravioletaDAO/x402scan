@@ -88,3 +88,23 @@ export const getResourceTags = async (resourceId: string) => {
     },
   });
 };
+
+export const unassignAllTagsFromResource = async (resourceId: string) => {
+  return await prisma.resourcesTags.deleteMany({
+    where: {
+      resourceId,
+    },
+  });
+};
+
+export const unassignAllTagsFromAllResources = async () => {
+  return await prisma.resourcesTags.deleteMany({});
+};
+
+export const deleteResourceTag = async (tagId: string) => {
+  return await prisma.tag.delete({
+    where: {
+      id: tagId,
+    },
+  });
+};

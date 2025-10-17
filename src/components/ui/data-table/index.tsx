@@ -9,6 +9,8 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  type RowSelectionState,
+  type OnChangeFn,
 } from '@tanstack/react-table';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -46,6 +48,10 @@ interface DataTableProps<TData, TValue, AppRoute extends string> {
   page?: number;
   onPageChange?: (page: number) => void;
   hasNextPage?: boolean;
+  enableRowSelection?: boolean;
+  rowSelection?: RowSelectionState;
+  onRowSelectionChange?: OnChangeFn<RowSelectionState>;
+  getRowId?: (row: TData, index: number) => string;
 }
 
 export function DataTable<TData, TValue, AppRoute extends string>({
@@ -59,6 +65,10 @@ export function DataTable<TData, TValue, AppRoute extends string>({
   page,
   onPageChange,
   hasNextPage,
+  enableRowSelection = false,
+  rowSelection,
+  onRowSelectionChange,
+  getRowId,
 }: DataTableProps<TData, TValue, AppRoute>) {
   const isServerSidePagination =
     page !== undefined && onPageChange !== undefined;
@@ -77,6 +87,12 @@ export function DataTable<TData, TValue, AppRoute extends string>({
     },
     manualPagination: isServerSidePagination,
     pageCount: isServerSidePagination ? -1 : undefined,
+    enableRowSelection,
+    state: {
+      rowSelection: rowSelection ?? {},
+    },
+    onRowSelectionChange: onRowSelectionChange,
+    getRowId: getRowId,
   });
 
   const router = useRouter();
