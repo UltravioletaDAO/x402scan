@@ -15,6 +15,7 @@ import { ToolSelect } from './resources-select';
 import type { ChatStatus } from 'ai';
 import { api } from '@/trpc/client';
 import { useSession } from 'next-auth/react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   input: string;
@@ -68,6 +69,21 @@ export const PromptInputSection: React.FC<Props> = ({
           disabled={!input || !hasBalance}
           className="size-8 md:size-8"
         />
+      </PromptInputToolbar>
+    </PromptInput>
+  );
+};
+
+export const LoadingPromptInputSection = () => {
+  return (
+    <PromptInput>
+      <PromptInputTextarea disabled />
+      <PromptInputToolbar>
+        <PromptInputTools>
+          <Skeleton className="h-8 w-24" />
+          <Skeleton className="h-8 w-32" />
+        </PromptInputTools>
+        <Skeleton className="size-8" />
       </PromptInputToolbar>
     </PromptInput>
   );

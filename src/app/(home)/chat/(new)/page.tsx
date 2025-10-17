@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { Chat } from './_components/chat';
+import { Chat } from '../_components/chat';
 
 export default async function ChatPage() {
   const id = uuidv4();

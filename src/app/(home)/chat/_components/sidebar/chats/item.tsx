@@ -16,6 +16,7 @@ import {
 
 import type { Chat } from '@prisma/client';
 import { MoreHorizontal, Trash } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   chat: Chat;
@@ -51,7 +52,7 @@ const PureChatItem: React.FC<Props> = ({
           </SidebarMenuAction>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent side="bottom" align="end">
+        <DropdownMenuContent side="right" align="center" sideOffset={8}>
           <DropdownMenuItem
             className="text-destructive focus:bg-destructive/15 focus:text-destructive cursor-pointer"
             onSelect={() => onDelete(chat.id)}
@@ -69,3 +70,13 @@ export const ChatItem = memo(PureChatItem, (prevProps, nextProps) => {
   if (prevProps.isActive !== nextProps.isActive) return false;
   return true;
 });
+
+export const LoadingChatItem = () => {
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton>
+        <Skeleton className="h-5 w-full" />
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+};

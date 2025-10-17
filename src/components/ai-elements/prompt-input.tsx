@@ -35,7 +35,7 @@ const PromptInput = ({
 const PromptInputTextarea = ({
   onChange,
   className,
-  placeholder = 'What would you like to know?',
+  placeholder = 'What is the most interesting thing you can do with x402?',
   ...props
 }: ComponentProps<typeof Textarea> & {
   minHeight?: number;
