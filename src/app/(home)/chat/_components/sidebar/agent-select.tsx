@@ -53,9 +53,7 @@ export const AgentSelect = () => {
                 size="lg"
                 className={cn(
                   'bg-transparent text-sidebar-accent-foreground cursor-pointer transition-all duration-200 ease-in-out border',
-                  open
-                    ? 'justify-between'
-                    : 'min-h-[2.5rem] justify-center px-2'
+                  open ? 'justify-between px-4' : 'justify-center'
                 )}
               >
                 {open ? (
