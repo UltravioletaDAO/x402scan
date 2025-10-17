@@ -1,16 +1,10 @@
 import { auth } from '@/auth';
 import { Nav } from '../_components/layout/nav';
-import { forbidden, unauthorized } from 'next/navigation';
 
 export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
   const session = await auth();
-
-  if (!session) {
-    return unauthorized();
-  }
-
-  if (session?.user?.role !== 'admin') {
-    return forbidden();
+  if (!session || session.user.role !== 'admin') {
+    return children;
   }
 
   return (
@@ -18,31 +12,8 @@ export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
       <Nav
         tabs={[
           {
-            label: 'Overview',
-            href: '/',
-          },
-          {
-            label: 'Chat',
-            href: '/chat',
-            subRoutes: ['/chat/'],
-            isNew: true,
-          },
-          {
-            label: 'Resources',
-            href: '/resources',
-            subRoutes: ['/resources/register'],
-          },
-          {
-            label: 'Transactions',
-            href: '/transactions',
-          },
-          {
-            label: 'Facilitators',
-            href: '/facilitators',
-          },
-          {
-            label: 'Ecosystem',
-            href: '/ecosystem',
+            label: 'Tags',
+            href: '/admin/tags',
           },
         ]}
       />

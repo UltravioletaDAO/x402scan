@@ -1,4 +1,4 @@
-import { ErrorCard, ForbiddenCard, NotFoundCard } from './card';
+import { ForbiddenCard, NotFoundCard } from './card';
 
 import { cn } from '@/lib/utils';
 
@@ -7,14 +7,6 @@ import type { ErrorComponentProps } from './types';
 interface Props extends ErrorComponentProps {
   className?: string;
 }
-
-export const ErrorScreen: React.FC<Props> = ({ className, ...props }) => {
-  return (
-    <ErrorScreenContainer className={className}>
-      <ErrorCard {...props} />
-    </ErrorScreenContainer>
-  );
-};
 
 export const NotFoundScreen: React.FC<Props> = ({ className, ...props }) => {
   return (
