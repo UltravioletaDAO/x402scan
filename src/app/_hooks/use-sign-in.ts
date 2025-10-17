@@ -31,7 +31,8 @@ export const useSignIn = (props?: Props) => {
     onSuccess: () => {
       toast.success('Signed in successfully');
     },
-    onError: () => {
+    onError: error => {
+      console.error(error);
       toast.error('Failed to sign in');
     },
   });

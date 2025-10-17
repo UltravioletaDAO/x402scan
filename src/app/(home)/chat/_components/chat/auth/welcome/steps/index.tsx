@@ -1,7 +1,6 @@
-import { BotMessageSquare, DollarSign, Pen, Wallet } from 'lucide-react';
+import { DollarSign, Pen, Wallet } from 'lucide-react';
 
 import { Verify } from './verify';
-import { CreateWallet } from './create-wallet';
 
 import type { WelcomeStep } from './types';
 import { FundWallet } from './fund-wallet';
@@ -18,13 +17,8 @@ export const welcomeSteps: WelcomeStep[] = [
     component: <Verify />,
   },
   {
-    icon: <BotMessageSquare className="size-4" />,
-    title: 'Create Agent Wallet',
-    component: <CreateWallet />,
-  },
-  {
     icon: <DollarSign className="size-4" />,
-    title: 'Fund Wallet',
+    title: 'Fund Agent',
     component: <FundWallet />,
   },
 ];

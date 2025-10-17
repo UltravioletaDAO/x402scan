@@ -31,10 +31,6 @@ export const WelcomeContent: React.FC<Props> = ({ initialStep }) => {
 
   const { status: accountStatus } = useAccount();
   const { data: session, status: sessionStatus } = useSession();
-  const { data: hasServerWallet, isLoading: isLoadingServerWallet } =
-    api.serverWallet.exists.useQuery(undefined, {
-      enabled: !!session?.user?.id,
-    });
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
     api.serverWallet.usdcBaseBalance.useQuery(undefined, {
       enabled: !!session?.user?.id,
@@ -44,24 +40,20 @@ export const WelcomeContent: React.FC<Props> = ({ initialStep }) => {
     accountStatus === 'reconnecting' ||
     accountStatus === 'connecting' ||
     sessionStatus === 'loading' ||
-    isLoadingServerWallet ||
     isLoadingUsdcBalance;
 
   useEffect(() => {
     if (isLoading) return;
-    if (Boolean(session) && !Boolean(hasServerWallet)) {
-      setStep(2);
-    } else if (Boolean(session) && Boolean(hasServerWallet)) {
-      setStep(3);
-    } else if (
-      Boolean(session) &&
-      Boolean(hasServerWallet) &&
-      usdcBalance &&
-      usdcBalance > 0
-    ) {
-      setIsOpen(false);
+    if (!Boolean(session)) {
+      setStep(1);
+      return;
     }
-  }, [accountStatus, session, hasServerWallet, usdcBalance, isLoading]);
+    if (!usdcBalance) {
+      setStep(2);
+      return;
+    }
+    setIsOpen(false);
+  }, [accountStatus, session, usdcBalance, isLoading]);
 
   return (
     <AlertDialog open={isOpen}>
@@ -76,7 +68,7 @@ export const WelcomeContent: React.FC<Props> = ({ initialStep }) => {
             </AlertDialogDescription>
           </div>
         </AlertDialogHeader>
-        <div className="w-full flex flex-col gap-6 py-6 max-w-full overflow-hidden">
+        <div className="w-full flex flex-col gap-6 pt-6 max-w-full overflow-hidden">
           <div className="w-full px-4">
             <Stepper steps={welcomeSteps} currentStep={step} />
           </div>
@@ -90,7 +82,7 @@ export const WelcomeContent: React.FC<Props> = ({ initialStep }) => {
               {welcomeSteps.map((s, index) => (
                 <div
                   key={index}
-                  className="flex-shrink-0 flex flex-col gap-4 overflow-hidden px-4"
+                  className="flex-shrink-0 flex flex-col gap-4 overflow-hidden"
                   style={{ width: '100%' }}
                   data-step={index}
                   tabIndex={index === step ? undefined : -1}

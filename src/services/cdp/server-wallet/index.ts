@@ -1,10 +1,7 @@
 import { USDC_ADDRESS } from '@/lib/utils';
 import { convertTokenAmount } from '@/lib/token';
 import { CdpClient } from '@coinbase/cdp-sdk';
-import {
-  createWalletNameForUserId,
-  getWalletNameForUserId,
-} from '@/services/db/server-wallets';
+import { getWalletNameForUserId } from '@/services/db/server-wallets';
 import { base } from 'viem/chains';
 import { createConfig, getBalance, http } from '@wagmi/core';
 
@@ -12,10 +9,7 @@ const cdpClient = new CdpClient();
 
 export const getWalletForUserId = async (userId: string) => {
   const walletName = await getWalletNameForUserId(userId);
-  if (!walletName) {
-    return null;
-  }
-  const wallet = await cdpClient.evm.getAccount({
+  const wallet = await cdpClient.evm.getOrCreateAccount({
     name: walletName,
   });
   return wallet;
@@ -42,10 +36,6 @@ export const getUSDCBaseBalanceFromUserId = async (
     }
   );
 
-  console.log('wallet', wallet.address);
-
-  console.log('balance', balance);
-
   return convertTokenAmount(balance.value, balance.decimals);
 };
 
@@ -55,12 +45,4 @@ export const getWalletAddressFromUserId = async (userId: string) => {
     return null;
   }
   return wallet.address;
-};
-
-export const createWalletForUserId = async (userId: string) => {
-  const walletName = await createWalletNameForUserId(userId);
-  const wallet = await cdpClient.evm.createAccount({
-    name: walletName,
-  });
-  return wallet;
 };

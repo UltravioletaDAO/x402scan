@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
-import { Mail, Wallet } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 export const ConnectDialog = () => {
   const { address } = useAccount();

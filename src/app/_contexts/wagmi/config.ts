@@ -1,4 +1,10 @@
-import { cookieStorage, createConfig, createStorage, http } from 'wagmi';
+import {
+  cookieStorage,
+  createConfig,
+  createStorage,
+  http,
+  injected,
+} from 'wagmi';
 import { base } from 'wagmi/chains';
 
 export const baseWagmiConfig = {
@@ -9,6 +15,7 @@ export const baseWagmiConfig = {
   transports: {
     [base.id]: http(),
   },
+  connectors: [injected()],
 } as const;
 
 export const getServerConfig = () => createConfig(baseWagmiConfig);

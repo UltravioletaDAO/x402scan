@@ -15,6 +15,7 @@ import { ToolSelect } from './resources-select';
 
 import type { ChatStatus } from 'ai';
 import { api } from '@/trpc/client';
+import { useSession } from 'next-auth/react';
 
 interface Props {
   input: string;
@@ -36,7 +37,14 @@ export const PromptInputSection: React.FC<Props> = ({
   selectedResourceIds,
   onSelectResource,
 }) => {
-  const { data: usdcBalance } = api.serverWallet.usdcBaseBalance.useQuery();
+  const { data: session } = useSession();
+
+  const { data: usdcBalance } = api.serverWallet.usdcBaseBalance.useQuery(
+    undefined,
+    {
+      enabled: !!session,
+    }
+  );
 
   const hasBalance = usdcBalance && usdcBalance > 0;
 

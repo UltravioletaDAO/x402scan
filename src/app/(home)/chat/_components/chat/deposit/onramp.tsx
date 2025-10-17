@@ -2,8 +2,6 @@
 
 import { useCallback, useState } from 'react';
 
-import Image from 'next/image';
-
 import { Check, Loader2 } from 'lucide-react';
 
 import { MoneyInput } from '@/components/ui/money-input';

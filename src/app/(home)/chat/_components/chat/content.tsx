@@ -14,6 +14,7 @@ import { api } from '@/trpc/client';
 import { convertToUIMessages } from '@/lib/utils';
 
 import type { Message } from '@prisma/client';
+import { useSession } from 'next-auth/react';
 
 interface Props {
   id: string;
@@ -24,7 +25,14 @@ interface Props {
 export const ChatContent: React.FC<Props> = ({ id, initialMessages }) => {
   const utils = api.useUtils();
 
-  const { data: usdcBalance } = api.serverWallet.usdcBaseBalance.useQuery();
+  const { data: session } = useSession();
+
+  const { data: usdcBalance } = api.serverWallet.usdcBaseBalance.useQuery(
+    undefined,
+    {
+      enabled: !!session,
+    }
+  );
   const hasBalance = usdcBalance && usdcBalance > 0;
 
   const { messages, sendMessage, status } = useChat({
