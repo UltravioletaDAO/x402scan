@@ -14,6 +14,7 @@ import { WalletButton } from './wallet';
 import { ToolSelect } from './resources-select';
 
 import type { ChatStatus } from 'ai';
+import { api } from '@/trpc/client';
 
 interface Props {
   input: string;
@@ -35,6 +36,10 @@ export const PromptInputSection: React.FC<Props> = ({
   selectedResourceIds,
   onSelectResource,
 }) => {
+  const { data: usdcBalance } = api.serverWallet.usdcBaseBalance.useQuery();
+
+  const hasBalance = usdcBalance && usdcBalance > 0;
+
   return (
     <PromptInput onSubmit={handleSubmit}>
       <PromptInputTextarea
@@ -42,6 +47,7 @@ export const PromptInputSection: React.FC<Props> = ({
           setInput(e.target.value)
         }
         value={input}
+        disabled={!hasBalance}
       />
       <PromptInputToolbar>
         <PromptInputTools>
@@ -52,7 +58,10 @@ export const PromptInputSection: React.FC<Props> = ({
           />
           <WalletButton />
         </PromptInputTools>
-        <PromptInputSubmit disabled={!input} className="size-8 md:size-8" />
+        <PromptInputSubmit
+          disabled={!input || !hasBalance}
+          className="size-8 md:size-8"
+        />
       </PromptInputToolbar>
     </PromptInput>
   );

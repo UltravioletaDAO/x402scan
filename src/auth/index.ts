@@ -78,6 +78,12 @@ const { handlers, auth: uncachedAuth } = NextAuth({
   },
   trustHost: true,
   callbacks: {
+    async session({ session, user }) {
+      return {
+        ...session,
+        user: user,
+      };
+    },
     async jwt({ token, account }) {
       if (account?.provider === 'siwe-csrf') {
         token.credentials = true;

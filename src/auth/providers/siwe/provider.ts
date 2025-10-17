@@ -9,6 +9,7 @@ import {
   SIWE_PROVIDER_NAME,
   SIWE_STATEMENT,
 } from './constants';
+import { auth } from '@/auth';
 
 const siweCredentialsSchema = z.object({
   message: z.string().transform((val: string) => {
@@ -47,28 +48,41 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
 
       const email = parseResult.data.email;
 
-      const user = await prisma.user.findFirst({
-        where: {
-          accounts: {
-            some: {
+      const session = await auth();
+
+      if (session) {
+        // link account to user
+        const { user } = await prisma.account.upsert({
+          where: {
+            provider_providerAccountId: {
               provider: SIWE_PROVIDER_ID,
               providerAccountId: address,
             },
           },
-        },
-        include: {
-          accounts: true,
-        },
-      });
+          update: {
+            userId: session.user.id,
+          },
+          create: {
+            type: 'siwe',
+            userId: session.user.id,
+            provider: SIWE_PROVIDER_ID,
+            providerAccountId: address,
+          },
+          include: {
+            user: {
+              include: {
+                accounts: true,
+              },
+            },
+          },
+        });
 
-      // no user, create a user and an account
-      if (!user) {
-        return await prisma.user.create({
-          data: {
-            email,
+        return user;
+      } else {
+        const user = await prisma.user.findFirst({
+          where: {
             accounts: {
-              create: {
-                type: 'siwe',
+              some: {
                 provider: SIWE_PROVIDER_ID,
                 providerAccountId: address,
               },
@@ -78,9 +92,28 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
             accounts: true,
           },
         });
-      }
 
-      return user;
+        // no user, create a user and an account
+        if (!user) {
+          return await prisma.user.create({
+            data: {
+              email,
+              accounts: {
+                create: {
+                  type: 'siwe',
+                  provider: SIWE_PROVIDER_ID,
+                  providerAccountId: address,
+                },
+              },
+            },
+            include: {
+              accounts: true,
+            },
+          });
+        }
+
+        return user;
+      }
     },
     ...options,
   });

@@ -4,7 +4,7 @@ import { cookieToInitialState } from 'wagmi';
 
 import { getServerConfig } from '@/app/_contexts/wagmi/config';
 
-export const getWalletFromHeaders = async () => {
+export const getWalletsFromHeaders = async () => {
   const initialState = cookieToInitialState(
     getServerConfig(),
     (await headers()).get('cookie')
@@ -15,5 +15,5 @@ export const getWalletFromHeaders = async () => {
   }
 
   const connections = Array.from(initialState.connections.values());
-  return connections[0].accounts[0];
+  return connections.flatMap(connection => connection.accounts);
 };

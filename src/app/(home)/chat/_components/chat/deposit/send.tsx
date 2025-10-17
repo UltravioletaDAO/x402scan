@@ -9,7 +9,6 @@ import { useWriteContract } from 'wagmi';
 import { toast } from 'sonner';
 import { erc20Abi, parseUnits } from 'viem';
 
-import { CopyCode } from '@/components/ui/copy-code';
 import { Skeleton } from '@/components/ui/skeleton';
 import { MoneyInput } from '@/components/ui/money-input';
 import { Button } from '@/components/ui/button';
@@ -97,10 +96,6 @@ export const Send: React.FC<Props> = ({ address }) => {
           showMaxButton
           decimalPlaces={6}
         />
-      </div>
-      <div className="flex flex-col gap-1">
-        <span className="font-medium text-sm">Address</span>
-        <CopyCode code={address} toastMessage="Address copied to clipboard" />
       </div>
       {!isEthBalanceLoading && ethBalance === 0 && (
         <p className="text-yellow-600 bg-yellow-600/10 p-2 rounded-md text-xs">

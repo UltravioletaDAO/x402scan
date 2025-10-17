@@ -1,10 +1,10 @@
 import { createTRPCRouter, protectedProcedure } from '@/trpc/trpc';
 
 import {
-  getOrCreateWalletFromUserId,
   getUSDCBaseBalanceFromUserId,
   getWalletAddressFromUserId,
-} from '@/services/cdp/server-wallet/get-or-create';
+  createWalletForUserId,
+} from '@/services/cdp/server-wallet';
 import { getWalletNameForUserId } from '@/services/db/server-wallets';
 
 export const serverWalletRouter = createTRPCRouter({
@@ -12,8 +12,8 @@ export const serverWalletRouter = createTRPCRouter({
     return (await getWalletNameForUserId(ctx.session.user.id)) !== null;
   }),
 
-  wallet: protectedProcedure.query(async ({ ctx }) => {
-    return await getOrCreateWalletFromUserId(ctx.session.user.id);
+  create: protectedProcedure.mutation(async ({ ctx }) => {
+    return await createWalletForUserId(ctx.session.user.id);
   }),
 
   address: protectedProcedure.query(async ({ ctx }) => {

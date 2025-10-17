@@ -11,7 +11,7 @@ export const getWalletNameForUserId = async (
   return wallet?.walletName ?? null;
 };
 
-export const getOrCreateWalletNameFromUserId = async (
+export const createWalletNameForUserId = async (
   userId: string
 ): Promise<string> => {
   const wallet = await prisma.serverWallet.findFirst({
@@ -19,7 +19,7 @@ export const getOrCreateWalletNameFromUserId = async (
   });
 
   if (wallet) {
-    return wallet.walletName;
+    throw new Error('Wallet already exists');
   }
   const result = await prisma.serverWallet.create({
     data: {

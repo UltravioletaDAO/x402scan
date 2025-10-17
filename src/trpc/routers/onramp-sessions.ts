@@ -16,7 +16,7 @@ import {
 } from '@/services/cdp/onramp/create-onramp-session';
 
 import { SessionStatus } from '@prisma/client';
-import { getWalletAddressFromUserId } from '@/services/cdp/server-wallet/get-or-create';
+import { getWalletAddressFromUserId } from '@/services/cdp/server-wallet';
 
 export const onrampSessionsRouter = createTRPCRouter({
   get: protectedProcedure
@@ -75,6 +75,9 @@ export const onrampSessionsRouter = createTRPCRouter({
       .input(createOnrampUrlParamsSchema)
       .mutation(async ({ ctx, input }) => {
         const address = await getWalletAddressFromUserId(ctx.session.user.id);
+        if (!address) {
+          throw new TRPCError({ code: 'NOT_FOUND' });
+        }
         const { token, url } = await createOnrampUrl(address, input);
         await createOnrampSession({
           token,

@@ -14,7 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/components/logo';
 
 import { WalletDisplay } from './display';
-import { Deposit } from './deposit';
+import { Deposit } from '../../deposit';
 
 import { api } from '@/trpc/client';
 

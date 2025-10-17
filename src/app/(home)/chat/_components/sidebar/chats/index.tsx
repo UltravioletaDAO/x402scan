@@ -110,3 +110,16 @@ export const NavChats = () => {
     </>
   );
 };
+
+export const UnauthedNavChats = () => {
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Chats</SidebarGroupLabel>
+      <SidebarMenu>
+        <div className="text-muted-foreground px-2 py-2 text-xs">
+          No chats yet.
+        </div>
+      </SidebarMenu>
+    </SidebarGroup>
+  );
+};
