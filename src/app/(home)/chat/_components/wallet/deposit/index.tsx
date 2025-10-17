@@ -28,7 +28,7 @@ export const Deposit: React.FC<Props> = ({ address }) => {
       <div className="flex flex-col gap-1">
         <span className="font-medium text-sm">Add Funds</span>
         <Tabs defaultValue="send" className="flex flex-col gap-0">
-          <TabsList className="w-full justify-start gap-2 rounded-md h-fit bg-muted">
+          <TabsList className="w-full justify-start gap-2 rounded-md h-fit">
             <TabsTrigger
               value="send"
               className="flex-1 flex items-center gap-2 py-2"
@@ -54,7 +54,7 @@ export const Deposit: React.FC<Props> = ({ address }) => {
             <TabsContent value="send" className="p-1">
               <Send address={address} />
             </TabsContent>
-            <TabsContent value="onramp" className="p-1">
+            <TabsContent value="onramp" className="m-2">
               <Onramp />
             </TabsContent>
           </TabsContents>
