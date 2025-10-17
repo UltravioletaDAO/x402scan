@@ -6,8 +6,7 @@ import {
 
 import { cn } from '@/lib/utils';
 
-export interface AnimatedShinyTextProps
-  extends ComponentPropsWithoutRef<'span'> {
+interface AnimatedShinyTextProps extends ComponentPropsWithoutRef<'span'> {
   shimmerWidth?: number;
 }
 

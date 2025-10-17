@@ -15,10 +15,11 @@ import { ResourceItem } from './item';
 import { api } from '@/trpc/client';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { SelectedResource } from '@/app/(home)/chat/_lib/types';
 
 interface Props {
-  selectedResourceIds: string[];
-  onSelectResource: (resourceId: string) => void;
+  selectedResources: SelectedResource[];
+  onSelectResource: (resource: SelectedResource) => void;
   gradientClassName?: string;
 }
 
@@ -26,7 +27,7 @@ const toolItemHeight = 48;
 const numToolsToShow = 5;
 
 export const ToolList: React.FC<Props> = ({
-  selectedResourceIds,
+  selectedResources,
   onSelectResource,
   gradientClassName,
 }) => {
@@ -97,11 +98,11 @@ export const ToolList: React.FC<Props> = ({
           <h2>{isLoading ? 'Loading...' : 'No tools match your search'}</h2>
         </CommandEmpty>
         {tools &&
-          tools.filter(tool => selectedResourceIds.includes(tool.id)).length >
-            0 && (
+          tools.filter(tool => selectedResources.some(r => r.id === tool.id))
+            .length > 0 && (
             <CommandGroup className="p-0" heading="Selected">
               {tools
-                ?.filter(tool => selectedResourceIds.includes(tool.id))
+                ?.filter(tool => selectedResources.some(r => r.id === tool.id))
                 .map(tool => (
                   <ResourceItem
                     key={tool.id}
@@ -115,13 +116,13 @@ export const ToolList: React.FC<Props> = ({
         {tools && tools.length > 0 && (
           <CommandGroup className="p-0" heading="Tools">
             {tools
-              .filter(tool => !selectedResourceIds.some(t => t === tool.id))
+              .filter(tool => !selectedResources.some(r => r.id === tool.id))
               .map(tool => {
                 return (
                   <ResourceItem
                     key={tool.id}
                     resource={tool}
-                    isSelected={selectedResourceIds.includes(tool.id)}
+                    isSelected={selectedResources.some(r => r.id === tool.id)}
                     onSelectResource={onSelectResource}
                   />
                 );

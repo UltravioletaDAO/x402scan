@@ -11,7 +11,7 @@ export type JsonValue =
   | null
   | JsonObject
   | JsonArray;
-export type JsonObject = { [key: string]: JsonValue };
+type JsonObject = { [key: string]: JsonValue };
 export type JsonArray = JsonValue[];
 
 interface JsonNodeProps {

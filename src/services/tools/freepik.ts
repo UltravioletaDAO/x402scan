@@ -5,7 +5,7 @@ export const fetchFreepikMysticTaskInputSchema = z.object({
   task_id: z.string(),
 });
 
-export const fetchFreepikMysticTaskOutputSchema = z.object({
+const fetchFreepikMysticTaskOutputSchema = z.object({
   data: z.object({
     task_id: z.string(),
     status: z.enum(['CREATED', 'IN_PROGRESS', 'COMPLETED', 'FAILED']),

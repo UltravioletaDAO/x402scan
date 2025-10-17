@@ -10,7 +10,7 @@ import type { OutputComponent } from '../types';
 import z from 'zod';
 import { ChevronDownIcon } from 'lucide-react';
 
-export const firecrawlOutputSchema = z.object({
+const firecrawlOutputSchema = z.object({
   success: z.literal(true),
   data: z.object({
     web: z.array(

@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { JsonArray } from '@/components/ai-elements/json-viewer';
 import { JsonViewer } from '@/components/ai-elements/json-viewer';
 
-export const freepikOutputSchema = z.object({
+const freepikOutputSchema = z.object({
   data: z.object({
     task_id: z.string(),
     status: z.string(),
@@ -22,7 +22,6 @@ export const FreepikOutput: OutputComponent = ({ output, errorText }) => {
   const parseResult = freepikOutputSchema.safeParse(output);
 
   if (!parseResult.success) {
-    console.log('parseResult', parseResult.error.issues);
     return (
       <JsonViewer
         data={

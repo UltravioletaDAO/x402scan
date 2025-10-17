@@ -13,7 +13,7 @@ import { JsonViewer } from './json-viewer';
 import { Code } from '../ui/code';
 import type { RouterOutputs } from '@/trpc/client';
 import { Skeleton } from '../ui/skeleton';
-import { Favicon } from '../favicon';
+import { Favicon } from '../../app/_components/favicon';
 import { Loading } from '../ui/loading';
 
 type JsonValue = string | number | boolean | null | JsonObject | JsonArray;

@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Edit, Plus } from 'lucide-react';
 import type { RouterOutputs } from '@/trpc/client';
-import { Favicon } from '@/components/favicon';
+import { Favicon } from '@/app/_components/favicon';
 
 export const columns: ColumnDef<
   RouterOutputs['resourceRequestMetadata']['searchResources'][number]

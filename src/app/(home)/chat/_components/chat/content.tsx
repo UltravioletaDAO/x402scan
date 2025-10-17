@@ -17,7 +17,7 @@ import type { Message } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { clientCookieUtils } from '../../_lib/cookies/client';
 
-import type { ChatPreferences } from '../../_lib/cookies/types';
+import type { ChatPreferences, SelectedResource } from '../../_lib/types';
 
 interface Props {
   id: string;
@@ -64,9 +64,9 @@ export const ChatContent: React.FC<Props> = ({
   const [model, setModel] = useState(
     initialPreferences?.selectedChatModel ?? 'gpt-4o'
   );
-  const [selectedResourceIds, setSelectedResourceIds] = useState<string[]>(
-    initialPreferences?.resourceIds ?? []
-  );
+  const [selectedResources, setSelectedResources] = useState<
+    SelectedResource[]
+  >(initialPreferences?.resources ?? []);
 
   const sendChatMessage = (text: string) => {
     if (!hasBalance) {
@@ -82,7 +82,7 @@ export const ChatContent: React.FC<Props> = ({
       {
         body: {
           model,
-          resourceIds: selectedResourceIds,
+          resourceIds: selectedResources.map(resource => resource.id),
           chatId: id,
         },
       }
@@ -102,17 +102,17 @@ export const ChatContent: React.FC<Props> = ({
     }
   };
 
-  const onSelectResource = (resourceId: string) => {
-    const newResourceIds = [...selectedResourceIds];
-    const existingIndex = newResourceIds.indexOf(resourceId);
+  const onSelectResource = (resource: SelectedResource) => {
+    const newResources = [...selectedResources];
+    const existingIndex = newResources.findIndex(r => r.id === resource.id);
     if (existingIndex !== -1) {
-      newResourceIds.splice(existingIndex, 1);
+      newResources.splice(existingIndex, 1);
     } else {
-      newResourceIds.push(resourceId);
+      newResources.push(resource);
     }
-    setSelectedResourceIds(newResourceIds);
+    setSelectedResources(newResources);
     if (storePreferences) {
-      clientCookieUtils.setResourceIds(newResourceIds);
+      clientCookieUtils.setResources(newResources);
     }
   };
 
@@ -128,7 +128,7 @@ export const ChatContent: React.FC<Props> = ({
               handleSubmit={handleSubmit}
               model={model}
               setModel={handleSetModel}
-              selectedResourceIds={selectedResourceIds}
+              selectedResources={selectedResources}
               onSelectResource={onSelectResource}
               status={status}
             />

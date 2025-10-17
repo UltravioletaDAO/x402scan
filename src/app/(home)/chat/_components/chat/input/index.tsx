@@ -16,6 +16,7 @@ import type { ChatStatus } from 'ai';
 import { api } from '@/trpc/client';
 import { useSession } from 'next-auth/react';
 import { Skeleton } from '@/components/ui/skeleton';
+import type { SelectedResource } from '../../../_lib/types';
 
 interface Props {
   input: string;
@@ -23,8 +24,8 @@ interface Props {
   handleSubmit: (e: React.FormEvent) => void;
   model: string;
   setModel: (value: string) => void;
-  selectedResourceIds: string[];
-  onSelectResource: (resourceId: string) => void;
+  selectedResources: SelectedResource[];
+  onSelectResource: (resource: SelectedResource) => void;
   status: ChatStatus;
 }
 
@@ -34,7 +35,7 @@ export const PromptInputSection: React.FC<Props> = ({
   handleSubmit,
   model,
   setModel,
-  selectedResourceIds,
+  selectedResources,
   onSelectResource,
 }) => {
   const { data: session } = useSession();
@@ -61,7 +62,7 @@ export const PromptInputSection: React.FC<Props> = ({
         <PromptInputTools>
           <ModelSelect model={model} setModel={setModel} />
           <ToolSelect
-            resourceIds={selectedResourceIds}
+            resources={selectedResources}
             onSelectResource={onSelectResource}
           />
         </PromptInputTools>

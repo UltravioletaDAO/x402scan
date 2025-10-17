@@ -2,17 +2,18 @@ import { Activity } from 'lucide-react';
 
 import { CommandItem as BaseCommandItem } from '@/components/ui/command';
 
-import { Favicon } from '@/components/favicon';
+import { Favicon } from '@/app/_components/favicon';
 
 import { cn } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
+import type { SelectedResource } from '@/app/(home)/chat/_lib/types';
 
 interface Props {
   isSelected: boolean;
   resource: RouterOutputs['availableTools']['search'][number];
-  onSelectResource: (resourceId: string) => void;
+  onSelectResource: (resource: SelectedResource) => void;
 }
 
 export const ResourceItem: React.FC<Props> = ({
@@ -22,7 +23,9 @@ export const ResourceItem: React.FC<Props> = ({
 }) => {
   return (
     <BaseCommandItem
-      onSelect={() => onSelectResource(resource.id)}
+      onSelect={() =>
+        onSelectResource({ id: resource.id, favicon: resource.favicon })
+      }
       className="flex items-center justify-between gap-3 rounded-none px-3"
       value={resource.resource}
     >
