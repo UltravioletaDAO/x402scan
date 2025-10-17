@@ -17,12 +17,15 @@ declare module 'next-auth' {
     user: {
       id: string;
       role: Role;
+      admin: boolean;
     } & DefaultSession['user'];
   }
 
   interface User {
     id?: string;
     email?: string | null;
+    admin?: boolean;
+    role?: Role;
   }
 }
 
@@ -41,6 +44,8 @@ const { handlers, auth: uncachedAuth } = NextAuth({
         user: {
           ...session.user,
           id: user.id,
+          role: user.role ?? 'user',
+          admin: user.admin ?? false,
         },
       };
     },

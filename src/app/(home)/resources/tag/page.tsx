@@ -1,7 +1,15 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { ResourceTable } from './_components/resource-table';
+import { Unauthorized } from '@/app/_components/unauthorized/Unauthorized';
+import { auth } from '@/auth';
 
-export default function ResourcesPage() {
+export default async function ResourcesPage() {
+  const session = await auth();
+
+  if (!session?.user?.id || !session.user.admin) {
+    return <Unauthorized />;
+  } 
+
   return (
     <div>
       <Heading
