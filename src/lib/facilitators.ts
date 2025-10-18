@@ -50,7 +50,7 @@ const thirdwebFacilitator = {
   name: 'Thirdweb' as const,
   image: '/thirdweb.png',
   link: 'https://portal.thirdweb.com/payments/x402/facilitator',
-  addresses: ['0x758D2532FF6A304D1A0c2FdF46264590E4Ef0637'],
+  addresses: ['0x80c08de1a05Df2bD633CF520754e40fdE3C794d3'],
   color: 'var(--color-blue-600)',
 } satisfies Facilitator;
 
