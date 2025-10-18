@@ -16,7 +16,10 @@ import { upsertResourceResponse } from '@/services/db/resource-responses';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
-import { parseX402Response } from '@/lib/x402/schema';
+import {
+  EnhancedPaymentRequirementsSchema,
+  parseX402Response,
+} from '@/lib/x402/schema';
 import { formatTokenAmount } from '@/lib/token';
 import { getOriginFromUrl } from '@/lib/url';
 
@@ -88,6 +91,7 @@ export const resourcesRouter = createTRPCRouter({
           })
           .extend({
             error: z3.string().optional(),
+            accepts: z3.array(EnhancedPaymentRequirementsSchema).optional(),
           })
           .safeParse(data);
         if (!baseX402ParsedResponse.success) {

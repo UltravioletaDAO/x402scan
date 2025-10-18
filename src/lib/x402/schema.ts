@@ -1,4 +1,5 @@
 import {
+  ChainIdToNetwork,
   HTTPRequestStructureSchema,
   PaymentRequirementsSchema,
   x402ResponseSchema,
@@ -43,6 +44,40 @@ const EnhancedOutputSchema = z3.object({
 
 export type EnhancedOutputSchema = z3.infer<typeof EnhancedOutputSchema>;
 
+const EnhancedNetworkSchema = z3.union([
+  z3.enum([
+    'base-sepolia',
+    'avalanche-fuji',
+    'base',
+    'sei',
+    'sei-testnet',
+    'avalanche',
+    'iotex',
+    'solana-devnet',
+    'solana',
+  ]),
+  z3
+    .string()
+    .refine(
+      v =>
+        v.startsWith('eip155:') && !!ChainIdToNetwork[Number(v.split(':')[1])],
+      { message: 'Invalid network' }
+    )
+    .transform(v => ChainIdToNetwork[Number(v.split(':')[1])]),
+]);
+
+export type EnhancedNetworkSchema = z3.infer<typeof EnhancedNetworkSchema>;
+
+export const EnhancedPaymentRequirementsSchema =
+  PaymentRequirementsSchema.extend({
+    network: EnhancedNetworkSchema,
+    outputSchema: EnhancedOutputSchema.optional(),
+  });
+
+export type EnhancedPaymentRequirementsSchema = z3.infer<
+  typeof EnhancedPaymentRequirementsSchema
+>;
+
 const EnhancedX402ResponseSchema = x402ResponseSchema
   .omit({
     error: true,
@@ -50,13 +85,7 @@ const EnhancedX402ResponseSchema = x402ResponseSchema
   })
   .extend({
     error: z3.string().optional(), // Accept any error string
-    accepts: z3
-      .array(
-        PaymentRequirementsSchema.extend({
-          outputSchema: EnhancedOutputSchema.optional(),
-        })
-      )
-      .optional(),
+    accepts: z3.array(EnhancedPaymentRequirementsSchema).optional(),
   });
 
 // Types
