@@ -62,6 +62,7 @@ export const getAgentConfigurationById = async (
             'id', r.id,
             'resource', r.resource,
             'favicon', o.favicon,
+            'usageCount', COALESCE(resource_usage_counts.usage_count, 0),
             'accepts', (
               SELECT JSON_AGG(
                 JSONB_BUILD_OBJECT(
@@ -107,6 +108,16 @@ export const getAgentConfigurationById = async (
     LEFT JOIN "AgentConfigurationResource" acr ON acr."agentConfigurationId" = ac.id
     LEFT JOIN "Resources" r ON acr."resourceId" = r.id
     LEFT JOIN "ResourceOrigin" o ON r."originId" = o.id
+    LEFT JOIN (
+      SELECT 
+        tc."resourceId",
+        COUNT(tc.id) as usage_count
+      FROM "ToolCall" tc
+      LEFT JOIN "Chat" c ON tc."chatId" = c.id
+      LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
+      WHERE c."userAgentConfigurationId" IS NOT NULL
+      GROUP BY tc."resourceId"
+    ) resource_usage_counts ON r.id = resource_usage_counts."resourceId"
     WHERE ac.id = ${id}
     AND (
       ac."ownerId" = ${userId} 
@@ -151,6 +162,7 @@ export const getAgentConfigurationById = async (
             id: z.string(),
             resource: z.string(),
             favicon: z.url().nullable(),
+            usageCount: z.number(),
             accepts: z.array(
               z.object({
                 description: z.string(),
