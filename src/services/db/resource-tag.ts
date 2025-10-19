@@ -106,5 +106,8 @@ export const deleteResourceTag = async (tagId: string) => {
     where: {
       id: tagId,
     },
+    include: {
+      resourcesTags: true,
+    },
   });
 };

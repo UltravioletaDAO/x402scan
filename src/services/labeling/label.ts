@@ -4,7 +4,7 @@ import {
   createResourceTag,
   assignTagToResource,
 } from '@/services/db/resource-tag';
-import { listResourcesWithPagination } from '@/services/db/resources';
+import { type listResourcesWithPagination } from '@/services/db/resources';
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
@@ -27,7 +27,7 @@ const labelingPrompt = `Your task is to assign reasonable tags to each resource 
 
 _GUIDELINES_FOR_TAG_ASSIGNMENT_:
 - The tags should be short and concise, one word only.
-- You should very rarely create new tags. Re-using existing tags is always preferred.
+- You Are not allowed to create new tags. Re-using existing tags is always required..
 - Your goal is to cluster resources into meaningful groups based on the tag they are assigned to.
 
 _VERY IMPORTANT_:
@@ -40,8 +40,7 @@ _VERY IMPORTANT_:
 - The tag should be assigned to the resource, which should consider all of the accept objects provided to you.
 
 
-To assign or create new tags, you must output the name of the tag you are assigning or creating.
-The system will then assign the tag to the resource, or create the tag if it does not exist.
+To assign tags, you must output the name of the tag you are assigning.
 
 {_RESOURCE_URL_}
 
@@ -50,9 +49,12 @@ The system will then assign the tag to the resource, or create the tag if it doe
 {_CURRENT_AVAILABLE_TAGS_}
 `;
 
-export const labelingPass = async (resource: ResourceWithRelations, metadata: {
-  sessionId: string;
-}) => {
+export const labelingPass = async (
+  resource: ResourceWithRelations,
+  metadata: {
+    sessionId: string;
+  }
+) => {
   const tags = await getAllResourceTags();
   const resourceDescription = `
     RESOURCE DESCRIPTIONS:
@@ -100,4 +102,3 @@ export const labelingPass = async (resource: ResourceWithRelations, metadata: {
     return { resource, tag: tagData };
   }
 };
-

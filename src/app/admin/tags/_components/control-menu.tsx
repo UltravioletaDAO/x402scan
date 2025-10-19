@@ -35,7 +35,7 @@ export const ControlMenu = ({
     api.resourceTags.unassignAllFromAll.useMutation({
       onSuccess: () => {
         toast.success('All tags unassigned from all resources');
-        utils.resources.list.paginated.invalidate();
+        void utils.resources.list.paginated.invalidate();
         onSuccess?.();
       },
       onError: error => {
@@ -46,7 +46,7 @@ export const ControlMenu = ({
   const unassignAllMutation = api.resourceTags.unassignAll.useMutation({
     onSuccess: () => {
       toast.success('Tags unassigned successfully');
-      utils.resources.list.paginated.invalidate();
+      void utils.resources.list.paginated.invalidate();
       onSuccess?.();
     },
     onError: error => {
@@ -71,51 +71,50 @@ export const ControlMenu = ({
   return (
     <>
       <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm">
-          <MoreVertical className="size-4" />
-          Control Menu
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          variant="destructive"
-          disabled={!hasSelection || unassignAllMutation.isPending}
-          onSelect={() => setConfirmDialogOpen('selected')}
-        >
-          Unassign Tags from Selected
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          disabled={unassignAllFromAllMutation.isPending}
-          onSelect={() => setConfirmDialogOpen('all')}
-        >
-          Unassign All Tags (Database-wide)
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm">
+            <MoreVertical className="size-4" />
+            Control Menu
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem
+            variant="destructive"
+            disabled={!hasSelection || unassignAllMutation.isPending}
+            onSelect={() => setConfirmDialogOpen('selected')}
+          >
+            Unassign Tags from Selected
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            variant="destructive"
+            disabled={unassignAllFromAllMutation.isPending}
+            onSelect={() => setConfirmDialogOpen('all')}
+          >
+            Unassign All Tags (Database-wide)
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-    <ConfirmDialog
-      open={confirmDialogOpen === 'selected'}
-      onOpenChange={open => !open && setConfirmDialogOpen(null)}
-      title="Unassign Tags from Selected"
-      description={`Are you sure you want to unassign all tags from ${selectedResources.length} selected resource(s)? This action cannot be undone.`}
-      confirmLabel="Unassign"
-      onConfirm={handleUnassignFromSelected}
-      variant="destructive"
-    />
+      <ConfirmDialog
+        open={confirmDialogOpen === 'selected'}
+        onOpenChange={open => !open && setConfirmDialogOpen(null)}
+        title="Unassign Tags from Selected"
+        description={`Are you sure you want to unassign all tags from ${selectedResources.length} selected resource(s)? This action cannot be undone.`}
+        confirmLabel="Unassign"
+        onConfirm={handleUnassignFromSelected}
+        variant="destructive"
+      />
 
-    <ConfirmDialog
-      open={confirmDialogOpen === 'all'}
-      onOpenChange={open => !open && setConfirmDialogOpen(null)}
-      title="Unassign All Tags (Database-wide)"
-      description="Are you sure you want to unassign ALL tags from ALL resources in the database? This action cannot be undone."
-      confirmLabel="Unassign All"
-      onConfirm={handleUnassignAllFromAll}
-      variant="destructive"
-    />
+      <ConfirmDialog
+        open={confirmDialogOpen === 'all'}
+        onOpenChange={open => !open && setConfirmDialogOpen(null)}
+        title="Unassign All Tags (Database-wide)"
+        description="Are you sure you want to unassign ALL tags from ALL resources in the database? This action cannot be undone."
+        confirmLabel="Unassign All"
+        onConfirm={handleUnassignAllFromAll}
+        variant="destructive"
+      />
     </>
   );
 };
-

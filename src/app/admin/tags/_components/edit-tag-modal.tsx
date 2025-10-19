@@ -29,6 +29,8 @@ interface EditTagModalProps {
   resourceId: string;
   resourceName: string;
   pagination: z.infer<ReturnType<typeof paginatedQuerySchema>>;
+  selectedTagIds: string[];
+  setSelectedTagIds: (tagIds: string[]) => void;
 }
 
 export function EditTagModal({
@@ -37,11 +39,16 @@ export function EditTagModal({
   resourceId,
   resourceName,
   pagination,
+  selectedTagIds,
+  setSelectedTagIds,
 }: EditTagModalProps) {
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState('#3b82f6');
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [tagToDelete, setTagToDelete] = useState<{ id: string; name: string } | null>(null);
+  const [tagToDelete, setTagToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const utils = api.useUtils();
 
@@ -50,6 +57,24 @@ export function EditTagModal({
     resourceId,
     { enabled: open }
   );
+
+  function invalidateResourcesList() {
+    void utils.resources.list.paginated.invalidate({
+      pagination,
+      where:
+        selectedTagIds.length > 0
+          ? {
+              tags: {
+                some: {
+                  tagId: {
+                    in: selectedTagIds,
+                  },
+                },
+              },
+            }
+          : undefined,
+    });
+  }
 
   const createTag = api.resourceTags.create.useMutation({
     onSuccess: () => {
@@ -63,7 +88,7 @@ export function EditTagModal({
     onSuccess: () => {
       void utils.resourceTags.list.invalidate();
       void utils.resourceTags.getByResource.invalidate(resourceId);
-      void utils.resources.list.paginated.invalidate(pagination);
+      invalidateResourcesList();
     },
   });
 
@@ -71,7 +96,7 @@ export function EditTagModal({
     onSuccess: () => {
       void utils.resourceTags.list.invalidate();
       void utils.resourceTags.getByResource.invalidate(resourceId);
-      void utils.resources.list.paginated.invalidate(pagination);
+      invalidateResourcesList();
     },
   });
 
@@ -79,7 +104,7 @@ export function EditTagModal({
     onSuccess: () => {
       void utils.resourceTags.list.invalidate();
       void utils.resourceTags.getByResource.invalidate(resourceId);
-      void utils.resources.list.paginated.invalidate(pagination);
+      invalidateResourcesList();
       setTagToDelete(null);
       setDeleteConfirmOpen(false);
     },
@@ -117,6 +142,7 @@ export function EditTagModal({
   const handleConfirmDelete = () => {
     if (tagToDelete) {
       deleteTag.mutate(tagToDelete.id);
+      setSelectedTagIds(selectedTagIds.filter(id => id !== tagToDelete.id));
     }
   };
 
@@ -186,7 +212,9 @@ export function EditTagModal({
                               className="size-4 rounded-sm flex-shrink-0"
                               style={{ backgroundColor: tag.color }}
                             />
-                            <span className="text-sm font-medium break-all">{tag.name}</span>
+                            <span className="text-sm font-medium break-all">
+                              {tag.name}
+                            </span>
                             <span className="text-xs text-muted-foreground flex-shrink-0">
                               ({tag._count.resourcesTags})
                             </span>
@@ -195,7 +223,9 @@ export function EditTagModal({
                             size="xs"
                             variant={isAssigned ? 'destructive' : 'default'}
                             onClick={() => handleToggleTag(tag.id)}
-                            disabled={assignTag.isPending || unassignTag.isPending}
+                            disabled={
+                              assignTag.isPending || unassignTag.isPending
+                            }
                           >
                             {isAssigned ? (
                               <>

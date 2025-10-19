@@ -13,7 +13,13 @@ import type { RouterOutputs } from '@/trpc/client';
 type ColumnType =
   RouterOutputs['resources']['list']['paginated']['items'][number];
 
-export const columns: ExtendedColumnDef<ColumnType>[] = [
+interface ColumnHandlers {
+  onTagsClick?: (resource: ColumnType) => void;
+}
+
+export const createColumns = (
+  handlers?: ColumnHandlers
+): ExtendedColumnDef<ColumnType>[] => [
   {
     id: 'select',
     header: ({ table }) => (
@@ -102,7 +108,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       const hasMore = tags.length > 2;
 
       return (
-        <div className="flex flex-wrap gap-1 justify-center">
+        <div
+          className="flex flex-wrap gap-1 justify-center cursor-pointer"
+          onClick={e => {
+            e.stopPropagation();
+            handlers?.onTagsClick?.(row.original);
+          }}
+        >
           {visibleTags.map(resourceTag => (
             <span
               key={resourceTag.id}

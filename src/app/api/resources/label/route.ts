@@ -1,12 +1,11 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
 import { listResourcesWithPagination } from '@/services/db/resources';
-import { labelingPass } from '@/services/labeling';
+import { labelingPass } from '@/services/labeling/label';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/services/db/client';
 import { z } from 'zod';
 import { v4 } from 'uuid';
-
 
 const resourceLabelingPayloadSchema = z.object({
   resourceIds: z.array(z.string()).optional(),
@@ -35,7 +34,7 @@ async function* iterateResourcesBatched(
       break;
     }
 
-    yield items; 
+    yield items;
 
     hasMore = hasNextPage;
     skip += batchSize;
@@ -54,7 +53,9 @@ export const GET = async (request: NextRequest) => {
 
   const searchParams = request.nextUrl.searchParams;
   const resourceIdsParam = searchParams.get('resourceIds');
-  const resourceIds = resourceIdsParam ? resourceIdsParam.split(',') : undefined;
+  const resourceIds = resourceIdsParam
+    ? resourceIdsParam.split(',')
+    : undefined;
 
   const payload = resourceLabelingPayloadSchema.parse({ resourceIds });
 
@@ -100,9 +101,18 @@ export const GET = async (request: NextRequest) => {
       batch.map(async resource => {
         try {
           const result = await labelingPass(resource, { sessionId });
-          return { resourceId: resource.id, tagId: result.tag.id, tagName: result.tag.name, success: true };
+          return {
+            resourceId: resource.id,
+            tagId: result.tag.id,
+            tagName: result.tag.name,
+            success: true,
+          };
         } catch (error) {
-          return { resourceId: resource.id, success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+          return {
+            resourceId: resource.id,
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+          };
         }
       })
     );
@@ -120,7 +130,10 @@ export const GET = async (request: NextRequest) => {
         totalFailed++;
         results.push({
           success: false,
-          error: result.reason instanceof Error ? result.reason.message : 'Unknown error',
+          error:
+            result.reason instanceof Error
+              ? result.reason.message
+              : 'Unknown error',
         });
       }
     }
@@ -148,4 +161,3 @@ export const GET = async (request: NextRequest) => {
     { status: 200 }
   );
 };
-
