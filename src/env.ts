@@ -17,6 +17,7 @@ export const env = createEnv({
         ? z.string().optional()
         : z.string(),
     FREEPIK_API_KEY: z.string().optional(),
+    BLOB_READ_WRITE_TOKEN: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z

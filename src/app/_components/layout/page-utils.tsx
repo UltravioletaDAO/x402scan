@@ -11,6 +11,7 @@ interface HeadingProps {
   icon?: ReactNode;
   description?: string | ReactNode;
   actions?: ReactNode;
+  className?: string;
 }
 
 export const Heading: React.FC<HeadingProps> = ({
@@ -18,9 +19,15 @@ export const Heading: React.FC<HeadingProps> = ({
   title,
   description,
   actions,
+  className,
 }) => {
   return (
-    <HeadingContainer className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <HeadingContainer
+      className={cn(
+        'flex flex-col md:flex-row md:items-center md:justify-between gap-4',
+        className
+      )}
+    >
       <div className="flex items-center gap-4 shrink-0 flex-1">
         {icon}
         <div className="flex flex-col gap-1 md:gap-3 text-left">

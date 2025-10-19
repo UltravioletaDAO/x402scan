@@ -2,11 +2,20 @@ import { octetInputParser } from '@trpc/server/http';
 
 import { createTRPCRouter, protectedProcedure } from '../../trpc';
 import { put } from '@vercel/blob';
+import { env } from '@/env';
+import { TRPCError } from '@trpc/server';
 
 export const uploadRouter = createTRPCRouter({
   image: protectedProcedure
     .input(octetInputParser)
     .mutation(async ({ ctx, input }) => {
+      if (!env.BLOB_READ_WRITE_TOKEN) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'BLOB_READ_WRITE_TOKEN is not defined.',
+        });
+      }
+
       const fileName = `${ctx.session.user.id}-${Date.now()}`;
 
       // Convert ReadableStream to Uint8Array
