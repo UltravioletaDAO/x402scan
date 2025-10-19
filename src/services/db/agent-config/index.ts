@@ -94,7 +94,7 @@ export const listAgentConfigurationsByUserId = async (userId: string) => {
         },
       },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { chats: { _count: 'desc' } },
   });
 };
 

@@ -24,13 +24,6 @@ export const KnownSellerChart = ({ addresses }: Props) => {
     }
   );
 
-  const [bazaarOverallStats] = api.public.stats.bazaar.overall.useSuspenseQuery(
-    {
-      startDate,
-      endDate,
-    }
-  );
-
   if (isLoading) {
     return <LoadingKnownSellerChart />;
   }
@@ -56,7 +49,6 @@ export const KnownSellerChart = ({ addresses }: Props) => {
         },
       ]}
       height={32}
-      dataMax={Number(bazaarOverallStats.total_transactions) / 48}
     />
   );
 };

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Edit } from 'lucide-react';
+import { Edit, Settings } from 'lucide-react';
 
 import {
   SidebarGroup,
@@ -11,12 +11,20 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { api } from '@/trpc/client';
 
 export const NavMain = () => {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const isAgent = pathname.includes('/composer/agent/');
   const agentId = pathname.split('/')[3];
+
+  const { data: agentConfiguration } =
+    api.public.agentConfigurations.get.useQuery(agentId, {
+      enabled: isAgent && !!session?.user.id,
+    });
 
   const items = [
     {
@@ -26,6 +34,15 @@ export const NavMain = () => {
         : ('/composer/chat' as const),
       icon: Edit,
     },
+    ...(isAgent && session?.user.id === agentConfiguration?.ownerId
+      ? [
+          {
+            title: 'Edit Agent',
+            url: `/composer/agent/${agentId}/edit` as const,
+            icon: Settings,
+          },
+        ]
+      : []),
   ];
 
   return (

@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 import { BotMessageSquare, ChevronsUpDown, Plus } from 'lucide-react';
 
@@ -58,7 +59,26 @@ export const AgentSelect = () => {
                 {open ? (
                   <>
                     <div className="min-w-0 flex-1 gap-2 flex items-center">
-                      <BotMessageSquare className="size-4 flex-shrink-0" />
+                      {isAgent ? (
+                        agent ? (
+                          agent.image ? (
+                            <Image
+                              src={agent.image}
+                              alt={agent.name}
+                              width={16}
+                              height={16}
+                            />
+                          ) : (
+                            <BotMessageSquare className="size-4 flex-shrink-0" />
+                          )
+                        ) : isLoading ? (
+                          <Skeleton className="size-4 flex-shrink-0" />
+                        ) : (
+                          <BotMessageSquare className="size-4 flex-shrink-0" />
+                        )
+                      ) : (
+                        <BotMessageSquare className="size-4 flex-shrink-0" />
+                      )}
                       {isAgent ? (
                         agent ? (
                           <span className="truncate">{agent.name}</span>
@@ -90,16 +110,24 @@ export const AgentSelect = () => {
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 p-2" asChild>
                 <Link href="/composer/chat">
+                  <BotMessageSquare className="size-4 flex-shrink-0" />
                   <span className="truncate font-medium">Playground</span>
                 </Link>
               </DropdownMenuItem>
               {agentConfigurations.map(agent => (
-                <DropdownMenuItem
-                  key={agent.id}
-                  className="justify-between gap-2 p-2"
-                  asChild
-                >
+                <DropdownMenuItem key={agent.id} className="gap-2 p-2" asChild>
                   <Link href={`/composer/agent/${agent.id}`} key={agent.id}>
+                    {agent.image ? (
+                      <Image
+                        src={agent.image}
+                        alt={agent.name}
+                        width={16}
+                        height={16}
+                        className="size-4 flex-shrink-0"
+                      />
+                    ) : (
+                      <BotMessageSquare className="size-4 flex-shrink-0" />
+                    )}
                     <span className="truncate font-medium">{agent.name}</span>
                   </Link>
                 </DropdownMenuItem>

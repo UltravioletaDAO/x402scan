@@ -158,7 +158,7 @@ export default function RootLayout({
                                     alt="GitHub"
                                     width={16}
                                     height={16}
-                                    className="size-4"
+                                    className="size-4 dark:invert"
                                   />
                                 </Button>
                               </a>

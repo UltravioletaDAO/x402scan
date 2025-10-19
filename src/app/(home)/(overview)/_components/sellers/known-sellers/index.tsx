@@ -28,10 +28,6 @@ export const TopServers = async () => {
       endDate,
       sorting: defaultSellersSorting,
     }),
-    api.public.stats.bazaar.overall.prefetch({
-      startDate,
-      endDate,
-    }),
   ]);
 
   return (
