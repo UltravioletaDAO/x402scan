@@ -1,8 +1,9 @@
+import { Suspense } from 'react';
+
 import { BotMessageSquare, MessagesSquare, Users } from 'lucide-react';
 
 import Link from 'next/link';
 
-import { Favicons } from '@/app/_components/favicon';
 import {
   Card,
   CardDescription,
@@ -10,6 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Favicons } from '@/app/_components/favicon';
+
+import { AgentCardChart, LoadingAgentCardChart } from './chart';
 
 import type { RouterOutputs } from '@/trpc/client';
 
@@ -39,8 +43,11 @@ export const AgentCard: React.FC<Props> = ({ agentConfiguration }) => {
             {agentConfiguration.description ?? 'No description'}
           </CardDescription>
         </CardHeader>
-        <CardFooter className="justify-between text-sm">
-          <div className="flex flex-row items-center gap-2 text-sm">
+        <Suspense fallback={<LoadingAgentCardChart />}>
+          <AgentCardChart agentConfigId={agentConfiguration.id} />
+        </Suspense>
+        <CardFooter className="justify-between text-xs pt-2">
+          <div className="flex flex-row items-center gap-2">
             <Favicons
               favicons={agentConfiguration.resources.map(
                 resource => resource.originFavicon ?? null
