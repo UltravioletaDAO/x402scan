@@ -1,31 +1,20 @@
+import z from 'zod';
+
 import { prisma } from '../client';
+import { queryRaw } from '../query';
 
 import { agentConfigurationSchema } from './schema';
 
-import z from 'zod';
+import { Prisma } from '@prisma/client';
 
-// AgentConfiguration CRUD operations
 export const createAgentConfiguration = async (
   userId: string,
-  data: z.infer<typeof agentConfigurationSchema>
+  input: z.infer<typeof agentConfigurationSchema>
 ) => {
-  const {
-    name,
-    model,
-    systemPrompt,
-    visibility,
-    resourceIds,
-    image,
-    description,
-  } = data;
+  const { resourceIds, ...data } = input;
   return await prisma.agentConfiguration.create({
     data: {
-      name,
-      model,
-      systemPrompt,
-      visibility,
-      image,
-      description,
+      ...data,
       owner: {
         connect: { id: userId },
       },
@@ -51,38 +40,187 @@ export const getAgentConfigurationById = async (
   id: string,
   userId?: string
 ) => {
-  return await prisma.agentConfiguration.findUnique({
-    where: {
-      id,
-      OR: [
-        { ownerId: userId },
-        { users: { some: { userId } } },
-        { visibility: 'public' },
-      ],
-    },
-    include: {
-      resources: {
-        select: {
-          resource: {
-            select: {
-              id: true,
-              origin: {
-                select: {
-                  favicon: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
+  const [agentConfiguration] = await queryRaw(
+    Prisma.sql`
+    SELECT 
+      ac.id,
+      ac.name,
+      ac.description,
+      ac.image,
+      ac."systemPrompt",
+      ac.visibility,
+      ac."createdAt",
+      ac."updatedAt",
+      ac."ownerId",
+      ac.model,
+      COALESCE(user_counts.user_count, 0) as "userCount",
+      COALESCE(message_counts.message_count, 0) as "messageCount",
+      COALESCE(tool_call_counts.tool_call_count, 0) as "toolCallCount",
+      COALESCE(
+        JSON_AGG(
+          DISTINCT JSONB_BUILD_OBJECT(
+            'id', r.id,
+            'originFavicon', o.favicon
+          )
+        ) FILTER (WHERE r.id IS NOT NULL),
+        '[]'
+      ) AS resources
+    FROM "AgentConfiguration" ac
+    LEFT JOIN (
+      SELECT 
+        "agentConfigurationId",
+        COUNT(*) as user_count
+      FROM "AgentUser"
+      GROUP BY "agentConfigurationId"
+    ) user_counts ON ac.id = user_counts."agentConfigurationId"
+    LEFT JOIN (
+      SELECT 
+        c."agentConfigurationId",
+        COUNT(m."Message") as message_count
+      FROM "Chat" c
+      LEFT JOIN "Message" m ON c.id = m."chatId"
+      WHERE c."agentConfigurationId" IS NOT NULL
+      GROUP BY c."agentConfigurationId"
+    ) message_counts ON ac.id = message_counts."agentConfigurationId"
+    LEFT JOIN (
+      SELECT 
+        c."agentConfigurationId",
+        COUNT(tc.id) as tool_call_count
+      FROM "Chat" c
+      LEFT JOIN "ToolCall" tc ON c.id = tc."chatId"
+      WHERE c."agentConfigurationId" IS NOT NULL
+      GROUP BY c."agentConfigurationId"
+    ) tool_call_counts ON ac.id = tool_call_counts."agentConfigurationId"
+    LEFT JOIN "AgentConfigurationResource" acr ON acr."agentConfigurationId" = ac.id
+    LEFT JOIN "Resources" r ON acr."resourceId" = r.id
+    LEFT JOIN "ResourceOrigin" o ON r."originId" = o.id
+    WHERE ac.id = ${id}
+    AND (
+      ac."ownerId" = ${userId} 
+      OR EXISTS (
+        SELECT 1 FROM "AgentUser" au 
+        WHERE au."agentConfigurationId" = ac.id 
+        AND au."userId" = ${userId}
+      ) 
+      OR ac.visibility = 'public'
+    )
+    GROUP BY
+      ac.id,
+      ac.name,
+      ac.description,
+      ac.image,
+      ac."systemPrompt",
+      ac.visibility,
+      ac."createdAt",
+      ac."updatedAt",
+      ac.model,
+      user_counts.user_count,
+      message_counts.message_count,
+      tool_call_counts.tool_call_count
+  `,
+    z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        ownerId: z.string(),
+        description: z.string().nullable(),
+        image: z.string().nullable(),
+        systemPrompt: z.string(),
+        visibility: z.enum(['public', 'private']),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+        model: z.string().nullable(),
+        userCount: z.bigint(),
+        messageCount: z.bigint(),
+        toolCallCount: z.bigint(),
+        resources: z.array(
+          z.object({
+            id: z.string(),
+            originFavicon: z.string().nullable(),
+          })
+        ),
+      })
+    )
+  );
+
+  return agentConfiguration;
 };
 
 export const listAgentConfigurations = async () => {
-  return await prisma.agentConfiguration.findMany({
-    orderBy: { users: { _count: 'desc' } },
-  });
+  const agentConfigurations = await queryRaw(
+    Prisma.sql`
+      SELECT 
+        ac.id,
+        ac.name,
+        ac.description,
+        ac.image,
+        ac."systemPrompt",
+        ac.visibility,
+        ac."createdAt",
+        COUNT(DISTINCT au."userId") AS user_count,
+        COUNT(DISTINCT ch.id) AS chat_count,
+        COALESCE(m.message_count, 0) AS message_count,
+        COALESCE(tc.tool_call_count, 0) AS tool_call_count,
+        -- JSON aggregate of tools/resources with origin favicon and id
+        COALESCE(
+          JSON_AGG(
+            DISTINCT JSONB_BUILD_OBJECT(
+              'id', r.id,
+              'originFavicon', o.favicon
+            )
+          ) FILTER (WHERE r.id IS NOT NULL),
+          '[]'
+        ) AS resources
+      FROM "AgentConfiguration" ac
+      LEFT JOIN "AgentUser" au ON au."agentConfigurationId" = ac.id
+      LEFT JOIN "Chat" ch ON ch."agentConfigurationId" = ac.id
+      LEFT JOIN (
+        SELECT c."agentConfigurationId", COUNT(m."Message") AS message_count
+        FROM "Chat" c
+        LEFT JOIN "Message" m ON c.id = m."chatId"
+        WHERE c."agentConfigurationId" IS NOT NULL
+        GROUP BY c."agentConfigurationId"
+      ) m ON m."agentConfigurationId" = ac.id
+      LEFT JOIN (
+        SELECT c."agentConfigurationId", COUNT(tc.id) AS tool_call_count
+        FROM "Chat" c
+        LEFT JOIN "ToolCall" tc ON c.id = tc."chatId"
+        WHERE c."agentConfigurationId" IS NOT NULL
+        GROUP BY c."agentConfigurationId"
+      ) tc ON tc."agentConfigurationId" = ac.id
+      -- Join to tools/resources related to the AgentConfiguration
+      LEFT JOIN "AgentConfigurationResource" acr ON acr."agentConfigurationId" = ac.id
+      LEFT JOIN "Resources" r ON acr."resourceId" = r.id
+      LEFT JOIN "ResourceOrigin" o ON r."originId" = o.id
+      WHERE ac.visibility = 'public'
+      GROUP BY 
+        ac.id, ac.name, ac.description, ac.image, ac."systemPrompt", ac.visibility, ac."createdAt", m.message_count, tc.tool_call_count
+      ORDER BY message_count DESC
+    `,
+    z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        description: z.string().nullable(),
+        image: z.string().nullable(),
+        systemPrompt: z.string(),
+        visibility: z.enum(['public', 'private']),
+        createdAt: z.date(),
+        user_count: z.bigint(),
+        chat_count: z.bigint(),
+        message_count: z.bigint(),
+        tool_call_count: z.bigint(),
+        resources: z.array(
+          z.object({
+            id: z.string(),
+            originFavicon: z.string().nullable(),
+          })
+        ),
+      })
+    )
+  );
+
+  return agentConfigurations;
 };
 
 export const listAgentConfigurationsByUserId = async (userId: string) => {
@@ -126,6 +264,36 @@ export const updateAgentConfiguration = async (
 export const deleteAgentConfiguration = async (id: string, userId: string) => {
   return await prisma.agentConfiguration.delete({
     where: { id, ownerId: userId },
+  });
+};
+
+export const joinAgentConfiguration = async (
+  userId: string,
+  agentConfigurationId: string
+) => {
+  return await prisma.agentConfigurationUser.create({
+    data: {
+      userId,
+      agentConfigurationId,
+    },
+  });
+};
+
+export const getAgentConfigurationUser = async (
+  userId: string,
+  agentConfigurationId: string
+) => {
+  return await prisma.agentConfigurationUser.findUnique({
+    where: { userId_agentConfigurationId: { userId, agentConfigurationId } },
+  });
+};
+
+export const leaveAgentConfiguration = async (
+  userId: string,
+  agentConfigurationId: string
+) => {
+  return await prisma.agentConfigurationUser.delete({
+    where: { userId_agentConfigurationId: { userId, agentConfigurationId } },
   });
 };
 

@@ -4,9 +4,13 @@ import { useState } from 'react';
 
 import Image from 'next/image';
 
+import { Bot } from 'lucide-react';
+
 import { useChat } from '@ai-sdk/react';
 
 import { toast } from 'sonner';
+
+import { Card } from '@/components/ui/card';
 
 import { EmptyMessages, LoadingMessages, Messages } from './messages';
 import { LoadingPromptInputSection, PromptInputSection } from './input';
@@ -15,13 +19,12 @@ import { api } from '@/trpc/client';
 
 import { convertToUIMessages } from '@/lib/utils';
 
-import type { AgentConfiguration, Message } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { clientCookieUtils } from '../../chat/_lib/cookies/client';
 
+import type { Message } from '@prisma/client';
 import type { ChatConfig, SelectedResource } from '../../_types/chat-config';
-import { Card } from '@/components/ui/card';
-import { Bot } from 'lucide-react';
+import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
   id: string;
@@ -29,7 +32,7 @@ interface Props {
   isReadOnly?: boolean;
   initialConfig?: ChatConfig;
   storeConfig?: boolean;
-  agentConfig?: AgentConfiguration;
+  agentConfig?: RouterOutputs['public']['agentConfigurations']['get'];
 }
 
 export const ChatContent: React.FC<Props> = ({
@@ -62,7 +65,7 @@ export const ChatContent: React.FC<Props> = ({
         {},
         '',
         agentConfig
-          ? `/composer/agent/${agentConfig.id}/${id}`
+          ? `/composer/agent/${agentConfig.id}/chat/${id}`
           : `/composer/chat/${id}`
       );
       void utils.user.chats.list.invalidate();

@@ -1,6 +1,6 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { Agents } from './_components/agents';
-import { Bot, Edit, Plus } from 'lucide-react';
+import { Bot, Edit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 

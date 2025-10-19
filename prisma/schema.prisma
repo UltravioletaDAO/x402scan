@@ -92,6 +92,7 @@ model Resources {
   agentConfigurationResources AgentConfigurationResource[]
   tags                        ResourcesTags[]
   requestMetadata             ResourceRequestMetadata?
+  toolCalls                   ToolCall[]
 }
 
 enum AcceptsScheme {
@@ -261,6 +262,9 @@ model Chat {
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages           Message[]
   agentConfiguration AgentConfiguration? @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade)
+  toolCalls          ToolCall[]
+
+  @@map("Chat")
 }
 
 model Message {
@@ -274,6 +278,15 @@ model Message {
   chat Chat @relation(fields: [chatId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("Message")
+}
+
+model ToolCall {
+  id         String    @id @default(uuid())
+  resourceId String
+  createdAt  DateTime  @default(now())
+  chatId     String
+  resource   Resources @relation(fields: [resourceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  chat       Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 model AgentConfiguration {
@@ -312,9 +325,12 @@ model AgentConfigurationUser {
   userId               String
   agentConfigurationId String
 
+  joinedAt DateTime @default(now())
+
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
+  @@unique([userId, agentConfigurationId])
   @@map("AgentUser")
 }
 

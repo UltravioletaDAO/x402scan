@@ -128,7 +128,11 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const tools = await createX402AITools(resourceIds, signer);
+  const tools = await createX402AITools({
+    resourceIds,
+    walletClient: signer,
+    chatId,
+  });
 
   const result = streamText({
     model: openai(model),

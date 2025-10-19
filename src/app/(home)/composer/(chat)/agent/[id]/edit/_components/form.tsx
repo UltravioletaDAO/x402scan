@@ -50,9 +50,7 @@ export const EditAgentForm: React.FC<Props> = ({ agentConfiguration }) => {
         model: agentConfiguration.model ?? undefined,
         systemPrompt: agentConfiguration.systemPrompt,
         visibility: agentConfiguration.visibility,
-        resourceIds: agentConfiguration.resources.map(
-          resource => resource.resource.id
-        ),
+        resourceIds: agentConfiguration.resources.map(resource => resource.id),
       }}
     />
   );

@@ -8,11 +8,19 @@ import { env } from '@/env';
 import { inputSchemaToZodSchema } from './utils';
 import type { ResourceRequestMetadata } from '@prisma/client';
 import { fetchWithX402Payment } from './fetch';
+import { createToolCall } from '../db/tool-calls';
 
-export async function createX402AITools(
-  resourceIds: string[],
-  walletClient: Signer
-): Promise<Record<string, Tool>> {
+interface CreateX402AIToolsParams {
+  resourceIds: string[];
+  walletClient: Signer;
+  chatId: string;
+}
+
+export async function createX402AITools({
+  resourceIds,
+  walletClient,
+  chatId,
+}: CreateX402AIToolsParams): Promise<Record<string, Tool>> {
   const resources = await listResourcesForTools(resourceIds);
 
   const aiTools: Record<string, Tool> = {};
@@ -99,7 +107,14 @@ export async function createX402AITools(
                 ),
                 requestInit
               );
-              console.log('response', response);
+              void createToolCall({
+                resource: {
+                  connect: { id: resource.id },
+                },
+                chat: {
+                  connect: { id: chatId },
+                },
+              });
               const data: unknown = await response.json();
               return data;
             } catch (error) {

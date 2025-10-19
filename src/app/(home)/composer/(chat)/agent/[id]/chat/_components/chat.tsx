@@ -1,4 +1,4 @@
-import { Chat } from '../../../_components/chat';
+import { Chat } from '../../../../_components/chat';
 
 import type { Message } from '@prisma/client';
 import type { RouterOutputs } from '@/trpc/client';
