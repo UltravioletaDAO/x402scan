@@ -2,9 +2,9 @@ import {
   fetchFreepikMysticTask,
   fetchFreepikMysticTaskInputSchema,
 } from '@/services/tools/freepik';
-import { createTRPCRouter, protectedProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure } from '../../trpc';
 
-export const toolsRouter = createTRPCRouter({
+export const userToolsRouter = createTRPCRouter({
   freepik: {
     getTask: protectedProcedure
       .input(fetchFreepikMysticTaskInputSchema)

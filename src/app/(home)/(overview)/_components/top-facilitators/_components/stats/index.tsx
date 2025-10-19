@@ -4,7 +4,7 @@ import { LoadingStatsCards, StatsCards } from './stat-cards';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
-  stats: NonNullable<RouterOutputs['facilitators']['list']>[number];
+  stats: NonNullable<RouterOutputs['public']['facilitators']['list']>[number];
 }
 
 export const FacilitatorStats: React.FC<Props> = ({ stats }) => {

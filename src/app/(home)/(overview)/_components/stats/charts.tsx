@@ -17,16 +17,15 @@ import { ActivityTimeframe } from '@/types/timeframes';
 export const OverallCharts = () => {
   const { startDate, endDate, timeframe } = useTimeRangeContext();
 
-  const [overallStats] = api.stats.getOverallStatistics.useSuspenseQuery({
+  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
     startDate,
     endDate,
   });
-  const [previousOverallStats] =
-    api.stats.getOverallStatistics.useSuspenseQuery({
-      startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-      endDate: startDate,
-    });
-  const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery({
+  const [previousOverallStats] = api.public.stats.overall.useSuspenseQuery({
+    startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
+    endDate: startDate,
+  });
+  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
     numBuckets: 32,
     startDate,
     endDate,

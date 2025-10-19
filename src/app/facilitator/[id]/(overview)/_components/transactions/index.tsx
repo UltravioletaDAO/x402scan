@@ -24,7 +24,7 @@ export const LatestTransactions: React.FC<Props> = async ({ addresses }) => {
   const startDate = subMonths(endDate, 1);
   const limit = 100;
 
-  await api.transfers.list.prefetch({
+  await api.public.transfers.list.prefetch({
     limit,
     facilitators: addresses,
     startDate,

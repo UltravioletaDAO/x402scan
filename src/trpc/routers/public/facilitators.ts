@@ -2,7 +2,7 @@ import {
   listTopFacilitators,
   listTopFacilitatorsInputSchema,
 } from '@/services/cdp/sql/facilitators/list';
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, publicProcedure } from '../../trpc';
 import {
   bucketedStatisticsInputSchema,
   getBucketedFacilitatorsStatistics,

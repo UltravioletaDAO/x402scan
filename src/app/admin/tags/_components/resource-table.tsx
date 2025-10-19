@@ -7,7 +7,7 @@ import { api, type RouterOutputs } from '@/trpc/client';
 import { EditTagModal } from './edit-tag-modal';
 
 type Resource =
-  RouterOutputs['resources']['list']['paginated']['items'][number];
+  RouterOutputs['public']['resources']['list']['paginated']['items'][number];
 
 const PAGE_SIZE = 25;
 
@@ -17,7 +17,7 @@ export const ResourceTable = () => {
   );
   const [page, setPage] = useState(0);
 
-  const { data, isLoading } = api.resources.list.paginated.useQuery({
+  const { data, isLoading } = api.public.resources.list.paginated.useQuery({
     skip: page * PAGE_SIZE,
     limit: PAGE_SIZE,
   });

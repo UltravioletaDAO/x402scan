@@ -4,6 +4,7 @@ import { userAgentConfigurationsRouter } from './agent-configurations';
 import { userChatsRouter } from './chats';
 import { onrampSessionsRouter } from './onramp-sessions';
 import { serverWalletRouter } from './server-wallet';
+import { userToolsRouter } from './tools';
 import { uploadRouter } from './upload';
 
 export const userRouter = createTRPCRouter({
@@ -12,4 +13,5 @@ export const userRouter = createTRPCRouter({
   onrampSessions: onrampSessionsRouter,
   serverWallet: serverWalletRouter,
   upload: uploadRouter,
+  tools: userToolsRouter,
 });

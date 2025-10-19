@@ -19,7 +19,7 @@ export const LatestTransactions = async () => {
   const startDate = subMonths(endDate, 1);
   const limit = 100;
 
-  await api.transfers.list.prefetch({
+  await api.public.transfers.list.prefetch({
     limit,
     sorting: defaultTransfersSorting,
     startDate,

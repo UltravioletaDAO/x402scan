@@ -12,7 +12,7 @@ import type { SelectedResource } from '../../_types/chat-config';
 
 interface Props {
   isSelected: boolean;
-  resource: RouterOutputs['availableTools']['search'][number];
+  resource: RouterOutputs['public']['tools']['search'][number];
   onSelectResource: (resource: SelectedResource) => void;
 }
 

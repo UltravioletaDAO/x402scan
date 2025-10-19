@@ -15,19 +15,21 @@ interface Props {
 export const KnownSellerChart = ({ addresses }: Props) => {
   const { startDate, endDate } = useTimeRangeContext();
 
-  const { data: bucketedStats, isLoading } =
-    api.stats.getBucketedStatistics.useQuery({
+  const { data: bucketedStats, isLoading } = api.public.stats.bucketed.useQuery(
+    {
       addresses,
       startDate,
       endDate,
       numBuckets: 48,
-    });
+    }
+  );
 
-  const [bazaarOverallStats] =
-    api.stats.bazaar.overallStatistics.useSuspenseQuery({
+  const [bazaarOverallStats] = api.public.stats.bazaar.overall.useSuspenseQuery(
+    {
       startDate,
       endDate,
-    });
+    }
+  );
 
   if (isLoading) {
     return <LoadingKnownSellerChart />;

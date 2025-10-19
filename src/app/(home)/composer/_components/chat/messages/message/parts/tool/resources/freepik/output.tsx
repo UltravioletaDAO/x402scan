@@ -46,7 +46,7 @@ const FreepikImageDisplay: React.FC<{ task_id: string }> = ({ task_id }) => {
     data: task,
     isLoading: isTaskLoading,
     error: taskError,
-  } = api.tools.freepik.getTask.useQuery(
+  } = api.user.tools.freepik.getTask.useQuery(
     { task_id },
     {
       refetchInterval: isTaskFetched ? undefined : 2000,

@@ -54,7 +54,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
   const { data: origins, isLoading: isLoadingOrigins } =
     api.public.origins.search.useQuery(input, options);
   const { data: resources, isLoading: isLoadingResources } =
-    api.resources.search.useQuery(input, options);
+    api.public.resources.search.useQuery(input, options);
 
   const handleSelect = <T extends string>(route: Route<T>) => {
     router.push(route);

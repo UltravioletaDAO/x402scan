@@ -23,10 +23,10 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
   const startDate = subMonths(endDate, 1);
 
   const [firstTransfer] = await Promise.all([
-    api.stats.getFirstTransferTimestamp({
+    api.public.stats.firstTransferTimestamp({
       addresses: [address],
     }),
-    api.transfers.list.prefetch({
+    api.public.transfers.list.prefetch({
       limit: 100,
       recipient: address,
       startDate,

@@ -21,7 +21,7 @@ export const AllSellers = async () => {
 
   const limit = 100;
 
-  await api.sellers.list.all.prefetch({
+  await api.public.sellers.list.all.prefetch({
     sorting: defaultSellersSorting,
     limit,
     startDate,

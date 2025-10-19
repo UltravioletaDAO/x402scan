@@ -1,4 +1,4 @@
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, publicProcedure } from '../../trpc';
 
 import {
   getTransaction,

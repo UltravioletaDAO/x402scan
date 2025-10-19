@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 
 type Resource =
-  RouterOutputs['resourceRequestMetadata']['searchResources'][number];
+  RouterOutputs['admin']['resources']['requestMetadata']['searchResources'][number];
 
 const PAGE_SIZE = 25;
 
@@ -22,12 +22,12 @@ export const ResourceMetadataTable = () => {
   const [page, setPage] = useState(0);
 
   const { data: searchResults, isLoading: isSearching } =
-    api.resourceRequestMetadata.searchResources.useQuery({
+    api.admin.resources.requestMetadata.searchResources.useQuery({
       search: searchQuery ?? undefined,
     });
 
   const { data: existingMetadata, isLoading: isLoadingMetadata } =
-    api.resourceRequestMetadata.list.useQuery();
+    api.admin.resources.requestMetadata.list.useQuery();
 
   // Create a map of existing metadata by resource ID for quick lookup
   const metadataMap = new Map(
@@ -65,7 +65,7 @@ export const ResourceMetadataTable = () => {
       <DataTable
         columns={columns}
         data={
-          paginatedResources as RouterOutputs['resourceRequestMetadata']['searchResources']
+          paginatedResources as RouterOutputs['admin']['resources']['requestMetadata']['searchResources']
         }
         pageSize={PAGE_SIZE}
         isLoading={isSearching || isLoadingMetadata}

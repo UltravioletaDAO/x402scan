@@ -45,21 +45,3 @@ export const getAcceptsAddresses = async () => {
     }
   )();
 };
-
-export const listAccepts = async () => {
-  return await prisma.accepts.findMany({
-    select: {
-      id: true,
-      resource: true,
-      outputSchema: true,
-      scheme: true,
-      network: true,
-      description: true,
-      payTo: true,
-      asset: true,
-    },
-    orderBy: {
-      resource: 'asc',
-    },
-  });
-};

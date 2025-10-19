@@ -37,7 +37,7 @@ const ToolHeader = ({
 }: {
   state: ToolUIPart['state'];
   isResourceLoading: boolean;
-  resource: RouterOutputs['resources']['get'] | undefined;
+  resource: RouterOutputs['public']['resources']['get'] | undefined;
   className?: string;
 }) => {
   return (

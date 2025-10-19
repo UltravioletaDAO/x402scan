@@ -13,8 +13,8 @@ export const TopFacilitators = async () => {
 
 const TopFacilitatorsContent = async () => {
   const [overallStats, facilitatorsData] = await Promise.all([
-    api.stats.getOverallStatistics({}),
-    api.facilitators.list({
+    api.public.stats.overall({}),
+    api.public.facilitators.list({
       limit: 3,
     }),
   ]);

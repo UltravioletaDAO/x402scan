@@ -2,7 +2,7 @@ import {
   getFacilitatorTransfer,
   getFacilitatorTransferInputSchema,
 } from '@/services/cdp/sql/transfers/get';
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, publicProcedure } from '../../trpc';
 import {
   listFacilitatorTransfersInputSchema,
   listFacilitatorTransfers,

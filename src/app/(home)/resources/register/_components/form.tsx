@@ -55,19 +55,21 @@ export const RegisterResourceForm = () => {
     isPending,
     data,
     reset,
-  } = api.resources.register.useMutation({
+  } = api.public.resources.register.useMutation({
     onSuccess: data => {
       if (data.error) {
         toast.error('Failed to add resource');
         return;
       }
-      void utils.resources.list.invalidate();
+      void utils.public.resources.list.all.invalidate();
       void utils.public.origins.list.withResources.invalidate();
-      void utils.resources.getResourceByAddress.invalidate(data.accepts.payTo);
+      void utils.public.resources.getResourceByAddress.invalidate(
+        data.accepts.payTo
+      );
       void utils.public.origins.list.withResources.byAddress.invalidate(
         data.accepts.payTo
       );
-      void utils.sellers.list.bazaar.invalidate();
+      void utils.public.sellers.list.bazaar.invalidate();
       if (data.enhancedParseWarnings) {
         toast.warning(
           'Resource added successfully, but is not available for use'

@@ -16,7 +16,7 @@ interface Props {
 export const ToolPart: React.FC<Props> = ({ part }) => {
   const resourceId = part.type.slice(5);
   const { data: resource, isLoading: isResourceLoading } =
-    api.resources.get.useQuery(resourceId, {
+    api.public.resources.get.useQuery(resourceId, {
       enabled: part.state !== 'input-streaming',
     });
 

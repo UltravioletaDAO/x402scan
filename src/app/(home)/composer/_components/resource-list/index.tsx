@@ -35,13 +35,13 @@ export const ResourceList: React.FC<Props> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const { data: tools, isLoading } = api.availableTools.search.useQuery({
+  const { data: tools, isLoading } = api.public.tools.search.useQuery({
     search: searchQuery.trim().length > 0 ? searchQuery.trim() : undefined,
     limit: 100,
     tagIds: selectedTags.length > 0 ? selectedTags : undefined,
   });
   const { data: tags, isLoading: isLoadingTags } =
-    api.resourceTags.list.useQuery();
+    api.public.resources.tags.list.useQuery();
 
   return (
     <Command className="bg-transparent" shouldFilter={false}>

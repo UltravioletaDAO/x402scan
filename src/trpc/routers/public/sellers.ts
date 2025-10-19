@@ -1,4 +1,4 @@
-import { createTRPCRouter, infiniteQueryProcedure } from '../trpc';
+import { createTRPCRouter, infiniteQueryProcedure } from '../../trpc';
 import z from 'zod';
 import {
   listTopSellers,

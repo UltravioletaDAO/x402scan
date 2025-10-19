@@ -23,12 +23,12 @@ export const TopServers = async () => {
   const startDate = subMonths(endDate, 1);
 
   await Promise.all([
-    api.sellers.list.bazaar.prefetch({
+    api.public.sellers.list.bazaar.prefetch({
       startDate,
       endDate,
       sorting: defaultSellersSorting,
     }),
-    api.stats.bazaar.overallStatistics.prefetch({
+    api.public.stats.bazaar.overall.prefetch({
       startDate,
       endDate,
     }),

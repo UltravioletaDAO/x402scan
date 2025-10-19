@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, publicProcedure } from '../../trpc';
 
 import {
   getResource,
@@ -18,6 +18,7 @@ import { Methods } from '@/types/x402';
 import { registerResource } from '@/lib/resources';
 import { paginatedQuerySchema } from '@/lib/pagination';
 import { TRPCError } from '@trpc/server';
+import { listResourceTags, listTags } from '@/services/db/resource-tag';
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {
@@ -127,4 +128,13 @@ export const resourcesRouter = createTRPCRouter({
         type: 'no402' as const,
       };
     }),
+  tags: {
+    list: publicProcedure.query(async () => {
+      return await listTags();
+    }),
+
+    getByResource: publicProcedure.input(z.uuid()).query(async ({ input }) => {
+      return await listResourceTags(input);
+    }),
+  },
 });
