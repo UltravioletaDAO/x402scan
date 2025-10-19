@@ -3,7 +3,7 @@ export type SelectedResource = {
   favicon: string | null;
 };
 
-export interface ChatPreferences {
-  selectedChatModel?: string;
+export interface ChatConfig {
+  model?: string;
   resources?: SelectedResource[];
 }

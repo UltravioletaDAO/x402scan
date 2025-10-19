@@ -12,7 +12,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-import { ResourceList } from '../../../../_components/resource-list';
+import { ResourceList } from '../../resource-list';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 

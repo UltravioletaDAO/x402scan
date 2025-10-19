@@ -1,8 +1,10 @@
 import { MessageSquare } from 'lucide-react';
 
-import { Breadcrumb } from '../../_components/breadcrumb';
-import { Separator } from '../../_components/separator';
+import { Breadcrumb } from '../../../_components/breadcrumb';
+import { Separator } from '../../../_components/separator';
+
 import { getChat } from '@/services/db/chats';
+
 import { auth } from '@/auth';
 
 export default async function ChatBreadcrumb({
@@ -23,7 +25,7 @@ export default async function ChatBreadcrumb({
     <>
       <Separator />
       <Breadcrumb
-        href={`/chat/${id}`}
+        href={`/composer/chat/${id}`}
         image={null}
         name={chat.title}
         Fallback={MessageSquare}

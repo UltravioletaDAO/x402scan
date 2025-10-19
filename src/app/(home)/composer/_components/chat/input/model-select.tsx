@@ -5,7 +5,7 @@ import {
   PromptInputModelSelectTrigger,
   PromptInputModelSelectValue,
 } from '@/components/ai-elements/prompt-input';
-import { clientCookieUtils } from '../../../_lib/cookies/client';
+import { clientCookieUtils } from '../../../chat/_lib/cookies/client';
 
 interface Props {
   model: string;

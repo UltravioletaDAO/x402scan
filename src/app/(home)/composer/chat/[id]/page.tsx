@@ -6,7 +6,9 @@ import { api } from '@/trpc/server';
 
 import { auth } from '@/auth';
 
-export default async function ChatPage({ params }: PageProps<'/chat/[id]'>) {
+export default async function ChatPage({
+  params,
+}: PageProps<'/composer/chat/[id]'>) {
   const { id } = await params;
 
   const session = await auth();
@@ -28,7 +30,6 @@ export default async function ChatPage({ params }: PageProps<'/chat/[id]'>) {
       id={id}
       initialMessages={chat.messages}
       isReadOnly={chat.userId !== userId}
-      storePreferences={true}
     />
   );
 }

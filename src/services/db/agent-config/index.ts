@@ -47,6 +47,22 @@ export const getAgentConfigurationById = async (id: string, userId: string) => {
         { visibility: 'public' },
       ],
     },
+    include: {
+      resources: {
+        select: {
+          resource: {
+            select: {
+              id: true,
+              origin: {
+                select: {
+                  favicon: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   });
 };
 

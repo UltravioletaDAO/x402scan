@@ -34,14 +34,13 @@ export const AgentSelect = () => {
 
   const pathname = usePathname();
 
-  const agentId = pathname.split('/')[2];
+  const isAgent = pathname.includes('/composer/agent/');
+  const agentId = pathname.split('/')[3];
 
   const [agentConfigurations, { isLoading }] =
     api.agentConfigurations.list.useSuspenseQuery(undefined);
 
   const agent = agentConfigurations.find(agent => agent.id === agentId);
-
-  const isAgent = agent !== undefined;
 
   return (
     <SidebarGroup className="p-0">
@@ -60,13 +59,17 @@ export const AgentSelect = () => {
                   <>
                     <div className="min-w-0 flex-1 gap-2 flex items-center">
                       <BotMessageSquare className="size-4 flex-shrink-0" />
-                      <span className="truncate">
-                        {isAgent
-                          ? isLoading
-                            ? 'Loading...'
-                            : 'Agent'
-                          : 'Playground'}
-                      </span>
+                      {isAgent ? (
+                        agent ? (
+                          <span className="truncate">{agent.name}</span>
+                        ) : isLoading ? (
+                          <Skeleton className="h-4 w-24" />
+                        ) : (
+                          <span className="truncate">Agent</span>
+                        )
+                      ) : (
+                        <span className="truncate">Playground</span>
+                      )}
                     </div>
                     <ChevronsUpDown className="ml-auto size-4 flex-shrink-0" />
                   </>
@@ -96,7 +99,7 @@ export const AgentSelect = () => {
                   className="justify-between gap-2 p-2"
                   asChild
                 >
-                  <Link href={`/composer/chat/${agent.id}`} key={agent.id}>
+                  <Link href={`/composer/agent/${agent.id}`} key={agent.id}>
                     <span className="truncate font-medium">{agent.name}</span>
                   </Link>
                 </DropdownMenuItem>

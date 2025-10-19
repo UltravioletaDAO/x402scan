@@ -15,24 +15,24 @@ import { convertToUIMessages } from '@/lib/utils';
 
 import type { Message } from '@prisma/client';
 import { useSession } from 'next-auth/react';
-import { clientCookieUtils } from '../../_lib/cookies/client';
+import { clientCookieUtils } from '../../chat/_lib/cookies/client';
 
-import type { ChatPreferences, SelectedResource } from '../../_lib/types';
+import type { ChatConfig, SelectedResource } from '../../_types/chat-config';
 
 interface Props {
   id: string;
   initialMessages: Message[];
   isReadOnly?: boolean;
-  initialPreferences?: ChatPreferences;
-  storePreferences?: boolean;
+  initialConfig?: ChatConfig;
+  storeConfig?: boolean;
 }
 
 export const ChatContent: React.FC<Props> = ({
   id,
   isReadOnly,
   initialMessages,
-  initialPreferences,
-  storePreferences,
+  initialConfig,
+  storeConfig,
 }) => {
   const utils = api.useUtils();
 
@@ -61,12 +61,10 @@ export const ChatContent: React.FC<Props> = ({
   });
 
   const [input, setInput] = useState('');
-  const [model, setModel] = useState(
-    initialPreferences?.selectedChatModel ?? 'gpt-4o'
-  );
+  const [model, setModel] = useState(initialConfig?.model ?? 'gpt-4o');
   const [selectedResources, setSelectedResources] = useState<
     SelectedResource[]
-  >(initialPreferences?.resources ?? []);
+  >(initialConfig?.resources ?? []);
 
   const sendChatMessage = (text: string) => {
     if (!hasBalance) {
@@ -97,7 +95,7 @@ export const ChatContent: React.FC<Props> = ({
 
   const handleSetModel = (model: string) => {
     setModel(model);
-    if (storePreferences) {
+    if (storeConfig) {
       clientCookieUtils.setSelectedChatModel(model);
     }
   };
@@ -111,7 +109,7 @@ export const ChatContent: React.FC<Props> = ({
       newResources.push(resource);
     }
     setSelectedResources(newResources);
-    if (storePreferences) {
+    if (storeConfig) {
       clientCookieUtils.setResources(newResources);
     }
   };

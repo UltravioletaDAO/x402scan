@@ -18,7 +18,7 @@ import { ResourcesSelect } from './resources-select';
 import { api } from '@/trpc/client';
 
 import type { ChatStatus } from 'ai';
-import type { SelectedResource } from '../../../_lib/types';
+import type { SelectedResource } from '../../../chat/_lib/types';
 
 interface Props {
   input: string;

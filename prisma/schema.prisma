@@ -16,7 +16,7 @@ enum Role {
 model User {
   id            String    @id @default(uuid())
   name          String?
-  email         String?    @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
   createdAt     DateTime  @default(now())
@@ -183,8 +183,8 @@ model ResourceInvocation {
 }
 
 model ResourceRequestMetadata {
-  id          String  @id @default(uuid())
-  resourceId  String  @unique
+  id          String @id @default(uuid())
+  resourceId  String @unique
   headers     Json
   body        Json
   queryParams Json
@@ -250,15 +250,17 @@ enum Visibility {
 }
 
 model Chat {
-  id          String     @id @default(uuid())
-  createdAt   DateTime   @default(now())
-  title       String
-  userId      String
-  visibility  Visibility @default(private)
-  lastContext Json?
+  id                   String     @id @default(uuid())
+  createdAt            DateTime   @default(now())
+  title                String
+  userId               String
+  visibility           Visibility @default(private)
+  lastContext          Json?
+  agentConfigurationId String?
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages Message[]
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages           Message[]
+  agentConfiguration AgentConfiguration? @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade)
 }
 
 model Message {
@@ -279,6 +281,8 @@ model AgentConfiguration {
   ownerId      String
   name         String
   model        String?
+  description  String?
+  image        String?
   systemPrompt String
   visibility   Visibility @default(private)
   createdAt    DateTime   @default(now())
@@ -287,6 +291,7 @@ model AgentConfiguration {
   owner     User                         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   users     AgentConfigurationUser[]
   resources AgentConfigurationResource[]
+  chats     Chat[]
 
   @@map("AgentConfiguration")
 }

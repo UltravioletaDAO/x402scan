@@ -1,23 +1,26 @@
-import { getWalletsFromHeaders } from '@/lib/wallet';
 import { ChatContent } from './content';
 import { ConnectDialog } from './auth/connect-dialog';
 import { Onboarding } from './auth/welcome';
 
+import { getWalletsFromHeaders } from '@/lib/wallet';
+
 import type { Message } from '@prisma/client';
-import { serverCookieUtils } from '../../_lib/cookies/server';
+import type { ChatConfig } from '../../_types/chat-config';
 
 interface Props {
   id: string;
   initialMessages: Message[];
+  initialConfig?: ChatConfig;
   isReadOnly?: boolean;
-  storePreferences?: boolean;
+  storeConfig?: boolean;
 }
 
 export const Chat: React.FC<Props> = async ({
   id,
   initialMessages,
   isReadOnly,
-  storePreferences,
+  storeConfig,
+  initialConfig,
 }) => {
   if (isReadOnly) {
     return (
@@ -29,8 +32,6 @@ export const Chat: React.FC<Props> = async ({
     );
   }
 
-  const preferences = await serverCookieUtils.getPreferences();
-
   const isConnected = await getWalletsFromHeaders()
     .then(wallets => wallets?.length && wallets.length > 0)
     .catch(() => false);
@@ -41,8 +42,8 @@ export const Chat: React.FC<Props> = async ({
         id={id}
         initialMessages={initialMessages}
         isReadOnly={isReadOnly}
-        initialPreferences={preferences}
-        storePreferences={storePreferences}
+        initialConfig={initialConfig}
+        storeConfig={storeConfig}
       />
       {!isConnected && <ConnectDialog />}
       {isConnected && <Onboarding />}
