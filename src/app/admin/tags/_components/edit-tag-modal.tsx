@@ -36,33 +36,33 @@ export function EditTagModal({
 
   const utils = api.useUtils();
 
-  const { data: allTags = [] } = api.resourceTags.list.useQuery();
-  const { data: resourceTags = [] } = api.resourceTags.getByResource.useQuery(
-    resourceId,
-    { enabled: open }
-  );
+  const { data: allTags = [] } = api.public.resources.tags.list.useQuery();
+  const { data: resourceTags = [] } =
+    api.public.resources.tags.getByResource.useQuery(resourceId, {
+      enabled: open,
+    });
 
-  const createTag = api.resourceTags.create.useMutation({
+  const createTag = api.admin.resources.tags.create.useMutation({
     onSuccess: () => {
-      void utils.resourceTags.list.invalidate();
+      void utils.public.resources.tags.list.invalidate();
       setNewTagName('');
       setNewTagColor('#3b82f6');
     },
   });
 
-  const assignTag = api.resourceTags.assign.useMutation({
+  const assignTag = api.admin.resources.tags.assign.useMutation({
     onSuccess: () => {
-      void utils.resourceTags.list.invalidate();
-      void utils.resourceTags.getByResource.invalidate(resourceId);
-      void utils.resources.list.paginated.invalidate(pagination);
+      void utils.public.resources.tags.list.invalidate();
+      void utils.public.resources.tags.getByResource.invalidate(resourceId);
+      void utils.public.resources.list.paginated.invalidate(pagination);
     },
   });
 
-  const unassignTag = api.resourceTags.unassign.useMutation({
+  const unassignTag = api.admin.resources.tags.unassign.useMutation({
     onSuccess: () => {
-      void utils.resourceTags.list.invalidate();
-      void utils.resourceTags.getByResource.invalidate(resourceId);
-      void utils.resources.list.paginated.invalidate(pagination);
+      void utils.public.resources.tags.list.invalidate();
+      void utils.public.resources.tags.getByResource.invalidate(resourceId);
+      void utils.public.resources.list.paginated.invalidate(pagination);
     },
   });
 

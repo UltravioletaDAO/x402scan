@@ -23,10 +23,14 @@ export const createOnrampSession = async (
   });
 };
 
-export const getOnrampSessionByToken = async (token: string) => {
+export const getOnrampSessionByToken = async (
+  token: string,
+  userId: string
+) => {
   return prisma.onrampSession.findUnique({
     where: {
       token,
+      userId,
     },
   });
 };

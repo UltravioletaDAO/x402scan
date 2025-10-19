@@ -18,8 +18,9 @@ import { toast } from 'sonner';
 import { Loader2, Save, Trash2 } from 'lucide-react';
 
 type Resource =
-  RouterOutputs['resourceRequestMetadata']['searchResources'][number];
-type Metadata = RouterOutputs['resourceRequestMetadata']['list'][number];
+  RouterOutputs['admin']['resources']['requestMetadata']['searchResources'][number];
+type Metadata =
+  RouterOutputs['admin']['resources']['requestMetadata']['list'][number];
 
 interface EditMetadataModalProps {
   open: boolean;
@@ -41,41 +42,47 @@ export const EditMetadataModal = ({
 
   const utils = api.useUtils();
 
-  const createMutation = api.resourceRequestMetadata.create.useMutation({
-    onSuccess: () => {
-      toast.success('Request metadata created successfully');
-      void utils.resourceRequestMetadata.list.invalidate();
-      void utils.resourceRequestMetadata.searchResources.invalidate();
-      onOpenChange(false);
-    },
-    onError: error => {
-      toast.error(`Failed to create metadata: ${error.message}`);
-    },
-  });
+  const createMutation = api.admin.resources.requestMetadata.create.useMutation(
+    {
+      onSuccess: () => {
+        toast.success('Request metadata created successfully');
+        void utils.admin.resources.requestMetadata.list.invalidate();
+        void utils.admin.resources.requestMetadata.searchResources.invalidate();
+        onOpenChange(false);
+      },
+      onError: error => {
+        toast.error(`Failed to create metadata: ${error.message}`);
+      },
+    }
+  );
 
-  const updateMutation = api.resourceRequestMetadata.update.useMutation({
-    onSuccess: () => {
-      toast.success('Request metadata updated successfully');
-      void utils.resourceRequestMetadata.list.invalidate();
-      void utils.resourceRequestMetadata.searchResources.invalidate();
-      onOpenChange(false);
-    },
-    onError: error => {
-      toast.error(`Failed to update metadata: ${error.message}`);
-    },
-  });
+  const updateMutation = api.admin.resources.requestMetadata.update.useMutation(
+    {
+      onSuccess: () => {
+        toast.success('Request metadata updated successfully');
+        void utils.admin.resources.requestMetadata.list.invalidate();
+        void utils.admin.resources.requestMetadata.searchResources.invalidate();
+        onOpenChange(false);
+      },
+      onError: error => {
+        toast.error(`Failed to update metadata: ${error.message}`);
+      },
+    }
+  );
 
-  const deleteMutation = api.resourceRequestMetadata.delete.useMutation({
-    onSuccess: () => {
-      toast.success('Request metadata deleted successfully');
-      void utils.resourceRequestMetadata.list.invalidate();
-      void utils.resourceRequestMetadata.searchResources.invalidate();
-      onOpenChange(false);
-    },
-    onError: error => {
-      toast.error(`Failed to delete metadata: ${error.message}`);
-    },
-  });
+  const deleteMutation = api.admin.resources.requestMetadata.delete.useMutation(
+    {
+      onSuccess: () => {
+        toast.success('Request metadata deleted successfully');
+        void utils.admin.resources.requestMetadata.list.invalidate();
+        void utils.admin.resources.requestMetadata.searchResources.invalidate();
+        onOpenChange(false);
+      },
+      onError: error => {
+        toast.error(`Failed to delete metadata: ${error.message}`);
+      },
+    }
+  );
 
   // Initialize form data when modal opens or existing metadata changes
   useEffect(() => {

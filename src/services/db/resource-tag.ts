@@ -1,24 +1,18 @@
 import { prisma } from './client';
 import { z } from 'zod';
 
-export const createResourceTagSchema = z.object({
+export const createTagSchema = z.object({
   name: z.string().min(1),
   color: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
 });
 
-export const createResourceTag = async (
-  input: z.input<typeof createResourceTagSchema>
-) => {
-  const { name, color } = createResourceTagSchema.parse(input);
+export const createTag = async (data: z.infer<typeof createTagSchema>) => {
   return await prisma.tag.create({
-    data: {
-      name,
-      color,
-    },
+    data,
   });
 };
 
-export const getAllResourceTags = async () => {
+export const listTags = async () => {
   return await prisma.tag.findMany({
     orderBy: {
       name: 'asc',
@@ -34,14 +28,14 @@ export const getAllResourceTags = async () => {
 };
 
 export const assignTagToResourceSchema = z.object({
-  resourceId: z.string().uuid(),
-  tagId: z.string().uuid(),
+  resourceId: z.uuid(),
+  tagId: z.uuid(),
 });
 
 export const assignTagToResource = async (
-  input: z.input<typeof assignTagToResourceSchema>
+  data: z.infer<typeof assignTagToResourceSchema>
 ) => {
-  const { resourceId, tagId } = assignTagToResourceSchema.parse(input);
+  const { resourceId, tagId } = data;
   return await prisma.resourcesTags.upsert({
     where: {
       resourceId_tagId: {
@@ -60,9 +54,9 @@ export const assignTagToResource = async (
 };
 
 export const unassignTagFromResource = async (
-  input: z.input<typeof assignTagToResourceSchema>
+  data: z.infer<typeof assignTagToResourceSchema>
 ) => {
-  const { resourceId, tagId } = assignTagToResourceSchema.parse(input);
+  const { resourceId, tagId } = data;
   return await prisma.resourcesTags.delete({
     where: {
       resourceId_tagId: {
@@ -73,7 +67,7 @@ export const unassignTagFromResource = async (
   });
 };
 
-export const getResourceTags = async (resourceId: string) => {
+export const listResourceTags = async (resourceId: string) => {
   return await prisma.resourcesTags.findMany({
     where: {
       resourceId,

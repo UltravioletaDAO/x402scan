@@ -7,7 +7,7 @@ import {
 } from '@/app/(home)/_components/transactions';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
-import { Section } from '../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { subMonths } from 'date-fns';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
@@ -19,7 +19,7 @@ export const LatestTransactions = async () => {
   const startDate = subMonths(endDate, 1);
   const limit = 100;
 
-  await api.transfers.list.prefetch({
+  await api.public.transfers.list.prefetch({
     limit,
     sorting: defaultTransfersSorting,
     startDate,

@@ -23,16 +23,16 @@ export default async function FacilitatorsPage() {
   const startDate = subDays(endDate, ActivityTimeframe.ThirtyDays);
 
   await Promise.all([
-    api.facilitators.bucketedStatistics.prefetch({
+    api.public.facilitators.bucketedStatistics.prefetch({
       numBuckets: 48,
       startDate,
       endDate,
     }),
-    api.stats.getOverallStatistics.prefetch({
+    api.public.stats.overall.prefetch({
       startDate,
       endDate,
     }),
-    api.facilitators.list.prefetch({
+    api.public.facilitators.list.prefetch({
       startDate,
       endDate,
     }),

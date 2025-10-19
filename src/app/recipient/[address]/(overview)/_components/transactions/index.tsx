@@ -7,7 +7,7 @@ import { LatestTransactionsTable } from '../../../_components/transactions/table
 
 import { api, HydrateClient } from '@/trpc/server';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { Section } from '@/app/(home)/(overview)/_components/utils';
+import { Section } from '@/app/_components/layout/page-utils';
 import { subMonths } from 'date-fns';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
@@ -23,10 +23,10 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
   const startDate = subMonths(endDate, 1);
 
   const [firstTransfer] = await Promise.all([
-    api.stats.getFirstTransferTimestamp({
+    api.public.stats.firstTransferTimestamp({
       addresses: [address],
     }),
-    api.transfers.list.prefetch({
+    api.public.transfers.list.prefetch({
       limit: 100,
       recipient: address,
       startDate,

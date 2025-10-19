@@ -12,7 +12,7 @@ export const KnownSellersTable = () => {
   const { sorting } = useSellersSorting();
   const { startDate, endDate } = useTimeRangeContext();
 
-  const [topSellers] = api.sellers.list.bazaar.useSuspenseQuery({
+  const [topSellers] = api.public.sellers.list.bazaar.useSuspenseQuery({
     startDate,
     endDate,
     sorting,

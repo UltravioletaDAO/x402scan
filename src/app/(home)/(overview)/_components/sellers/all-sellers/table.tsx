@@ -13,7 +13,7 @@ export const AllSellersTable = () => {
 
   const { startDate, endDate } = useTimeRangeContext();
 
-  const [topSellers] = api.sellers.list.all.useSuspenseQuery({
+  const [topSellers] = api.public.sellers.list.all.useSuspenseQuery({
     sorting,
     limit: 100,
     startDate,

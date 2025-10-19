@@ -6,7 +6,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Favicon } from '@/app/_components/favicon';
 
 export const columns: ColumnDef<
-  RouterOutputs['resourceRequestMetadata']['searchResources'][number]
+  RouterOutputs['admin']['resources']['requestMetadata']['searchResources'][number]
 >[] = [
   {
     accessorKey: 'resource',

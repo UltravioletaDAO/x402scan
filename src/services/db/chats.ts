@@ -13,25 +13,43 @@ export const createChat = async (data: Prisma.ChatCreateInput) => {
   });
 };
 
-export const getChat = async (id: string, userId: string) => {
+export const getChat = async (id: string, userId?: string) => {
   return await prisma.chat.findUnique({
     where: { id, OR: [{ userId }, { visibility: 'public' }] },
     include: {
       messages: {
         orderBy: { createdAt: 'asc' },
       },
+      userAgentConfiguration: {
+        select: {
+          agentConfigurationId: true,
+        },
+      },
     },
   });
 };
 
-export const getChatsByUserId = async (userId: string) => {
+export const listChatsSchema = z.object({
+  agentId: z.uuid().optional(),
+});
+
+export const listChats = async (
+  userId: string,
+  { agentId }: z.infer<typeof listChatsSchema>
+) => {
   return await prisma.chat.findMany({
-    where: { userId },
+    where: {
+      userId,
+      userAgentConfiguration: agentId
+        ? { agentConfigurationId: agentId }
+        : null,
+    },
     orderBy: { createdAt: 'desc' },
     include: {
-      messages: {
-        take: 1,
-        orderBy: { createdAt: 'desc' },
+      userAgentConfiguration: {
+        select: {
+          agentConfigurationId: true,
+        },
       },
     },
   });

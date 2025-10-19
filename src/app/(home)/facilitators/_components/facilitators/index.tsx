@@ -13,7 +13,7 @@ export const FacilitatorsTable: React.FC = () => {
   const { sorting } = useFacilitatorsSorting();
   const { startDate, endDate } = useTimeRangeContext();
 
-  const [facilitators] = api.facilitators.list.useSuspenseQuery({
+  const [facilitators] = api.public.facilitators.list.useSuspenseQuery({
     sorting,
     startDate,
     endDate,

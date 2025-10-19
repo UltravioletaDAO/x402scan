@@ -17,7 +17,7 @@ export const FacilitatorChart: React.FC<Props> = async ({
   facilitator,
   total_transactions,
 }) => {
-  const bucketedStats = await api.stats.getBucketedStatistics({
+  const bucketedStats = await api.public.stats.bucketed({
     numBuckets: 48,
     facilitators: facilitator.addresses,
   });

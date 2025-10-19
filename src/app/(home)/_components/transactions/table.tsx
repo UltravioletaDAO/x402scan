@@ -17,7 +17,7 @@ export const Table: React.FC<Props> = ({ limit, pageSize }) => {
   const { sorting } = useTransfersSorting();
   const { startDate, endDate } = useTimeRangeContext();
 
-  const [latestTransactions] = api.transfers.list.useSuspenseQuery({
+  const [latestTransactions] = api.public.transfers.list.useSuspenseQuery({
     limit,
     sorting,
     startDate,

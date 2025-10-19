@@ -24,10 +24,10 @@ export default async function TransactionsPage({
   const startDate = subMonths(endDate, 1);
 
   const [firstTransfer] = await Promise.all([
-    api.stats.getFirstTransferTimestamp({
+    api.public.stats.firstTransferTimestamp({
       addresses: [address],
     }),
-    api.transfers.list.prefetch({
+    api.public.transfers.list.prefetch({
       limit,
       recipient: address,
       startDate,

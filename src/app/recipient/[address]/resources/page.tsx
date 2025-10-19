@@ -10,7 +10,7 @@ export default async function ResourcesPage({
   const { address } = await params;
 
   const originsWithResources =
-    await api.origins.list.withResources.byAddress(address);
+    await api.public.origins.list.withResources.byAddress(address);
 
   return (
     <HydrateClient>

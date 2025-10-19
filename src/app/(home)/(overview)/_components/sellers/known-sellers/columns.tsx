@@ -26,7 +26,8 @@ import type { RouterOutputs } from '@/trpc/client';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/context';
 
-type ColumnType = RouterOutputs['sellers']['list']['bazaar']['items'][number];
+type ColumnType =
+  RouterOutputs['public']['sellers']['list']['bazaar']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {

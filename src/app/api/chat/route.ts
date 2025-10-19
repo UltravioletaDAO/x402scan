@@ -35,6 +35,7 @@ const bodySchema = z.object({
   resourceIds: z.array(z.uuid()),
   messages: z.array(messageSchema),
   chatId: z.string(),
+  agentConfigurationId: z.uuid().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -54,7 +55,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { model, resourceIds, messages, chatId } = requestBody.data;
+  const { model, resourceIds, messages, chatId, agentConfigurationId } =
+    requestBody.data;
 
   const chat = await getChat(chatId, session.user.id);
 
@@ -84,6 +86,22 @@ export async function POST(request: NextRequest) {
       user: {
         connect: { id: session.user.id },
       },
+      userAgentConfiguration: agentConfigurationId
+        ? {
+            connectOrCreate: {
+              where: {
+                userId_agentConfigurationId: {
+                  userId: session.user.id,
+                  agentConfigurationId: agentConfigurationId,
+                },
+              },
+              create: {
+                userId: session.user.id,
+                agentConfigurationId: agentConfigurationId,
+              },
+            },
+          }
+        : undefined,
       messages: {
         create: {
           role: lastMessage.role,
@@ -119,7 +137,11 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const tools = await createX402AITools(resourceIds, signer);
+  const tools = await createX402AITools({
+    resourceIds,
+    walletClient: signer,
+    chatId,
+  });
 
   const result = streamText({
     model: openai(model),

@@ -42,7 +42,11 @@ export const Origins: React.FC<Props> = ({
         Icon={({ className }) =>
           origin.favicon ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={origin.favicon} alt="Favicon" className={className} />
+            <img
+              src={origin.favicon}
+              alt="Favicon"
+              className={cn(className, 'rounded-md')}
+            />
           ) : (
             <Globe className={className} />
           )
