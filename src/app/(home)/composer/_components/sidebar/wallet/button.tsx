@@ -15,7 +15,7 @@ export const WalletButton: React.FC<Props> = ({ onClick }) => {
   const { open } = useSidebar();
 
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.serverWallet.usdcBaseBalance.useQuery();
+    api.user.serverWallet.usdcBaseBalance.useQuery();
 
   return (
     <SidebarMenuButton

@@ -7,7 +7,7 @@ export default async function AgentPage({
 }: PageProps<'/composer/agent/[id]'>) {
   const { id } = await params;
 
-  const agentConfiguration = await api.agentConfigurations.get({ id });
+  const agentConfiguration = await api.public.agentConfigurations.get({ id });
 
   if (!agentConfiguration) {
     return notFound();

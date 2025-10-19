@@ -38,7 +38,7 @@ export const ChatContent: React.FC<Props> = ({
 
   const { data: session } = useSession();
 
-  const { data: usdcBalance } = api.serverWallet.usdcBaseBalance.useQuery(
+  const { data: usdcBalance } = api.user.serverWallet.usdcBaseBalance.useQuery(
     undefined,
     {
       enabled: !!session,
@@ -53,9 +53,9 @@ export const ChatContent: React.FC<Props> = ({
     },
     onFinish: () => {
       window.history.replaceState({}, '', `/chat/${id}`);
-      void utils.chats.getUserChats.invalidate();
+      void utils.user.chats.list.invalidate();
       setTimeout(() => {
-        void utils.serverWallet.usdcBaseBalance.invalidate();
+        void utils.user.serverWallet.usdcBaseBalance.invalidate();
       }, 3000);
     },
   });

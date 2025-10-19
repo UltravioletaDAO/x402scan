@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 
 import { Loader2, SearchX } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
 import {
   Command,
   CommandEmpty,
@@ -9,13 +10,13 @@ import {
   CommandInput,
   CommandList,
 } from '@/components/ui/command';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import { ResourceItem } from './item';
 
 import { api } from '@/trpc/client';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { SelectedResource } from '@/app/(home)/composer/chat/_lib/types';
+
+import type { SelectedResource } from '../../_types/chat-config';
 
 interface Props {
   selectedResourceIds: string[];

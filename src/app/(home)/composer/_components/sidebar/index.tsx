@@ -28,8 +28,8 @@ export async function Sidebar({
   const session = await auth();
 
   if (session?.user) {
-    void api.agentConfigurations.list.prefetch();
-    void api.chats.getUserChats.prefetchInfinite();
+    void api.user.agentConfigurations.list.prefetch();
+    void api.user.chats.list.prefetchInfinite();
   }
 
   return (

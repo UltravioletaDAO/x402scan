@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Edit } from 'lucide-react';
+import { Bot, Edit } from 'lucide-react';
 
 import {
   SidebarGroup,
@@ -18,6 +18,11 @@ export const NavMain = () => {
       url: '/chat' as const,
       icon: Edit,
     },
+    {
+      title: 'New Agent',
+      url: '/agent/new' as const,
+      icon: Bot,
+    },
   ];
 
   return (
@@ -26,7 +31,7 @@ export const NavMain = () => {
         {items.map(item => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton key={item.title} tooltip={item.title} asChild>
-              <Link href={item.url}>
+              <Link href={`/composer${item.url}`}>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
               </Link>

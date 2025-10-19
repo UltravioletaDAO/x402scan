@@ -13,7 +13,7 @@ export const createChat = async (data: Prisma.ChatCreateInput) => {
   });
 };
 
-export const getChat = async (id: string, userId: string) => {
+export const getChat = async (id: string, userId?: string) => {
   return await prisma.chat.findUnique({
     where: { id, OR: [{ userId }, { visibility: 'public' }] },
     include: {

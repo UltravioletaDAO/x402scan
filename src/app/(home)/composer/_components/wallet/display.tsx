@@ -12,7 +12,7 @@ interface Props {
 
 export const WalletDisplay: React.FC<Props> = ({ address }) => {
   const { data: usdcBalance, isLoading: isLoadingUsdcBalance } =
-    api.serverWallet.usdcBaseBalance.useQuery();
+    api.user.serverWallet.usdcBaseBalance.useQuery();
 
   return (
     <div className="space-y-4 w-full overflow-hidden">

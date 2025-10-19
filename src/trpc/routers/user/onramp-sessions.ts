@@ -19,48 +19,45 @@ import { SessionStatus } from '@prisma/client';
 import { getWalletAddressFromUserId } from '@/services/cdp/server-wallet';
 
 export const onrampSessionsRouter = createTRPCRouter({
-  get: protectedProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .query(async ({ input: { id }, ctx }) => {
-      const onrampSession = await getOnrampSessionByToken(id);
+  get: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
+    const onrampSession = await getOnrampSessionByToken(
+      input,
+      ctx.session.user.id
+    );
 
-      if (!onrampSession) {
-        throw new TRPCError({ code: 'NOT_FOUND' });
-      }
+    if (!onrampSession) {
+      throw new TRPCError({ code: 'NOT_FOUND' });
+    }
 
-      if (onrampSession.userId !== ctx.session.user.id) {
-        throw new TRPCError({ code: 'FORBIDDEN' });
-      }
+    if (onrampSession.userId !== ctx.session.user.id) {
+      throw new TRPCError({ code: 'FORBIDDEN' });
+    }
 
-      if (
-        onrampSession.status ===
-          SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS ||
-        onrampSession.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
-      ) {
-        return onrampSession;
-      }
+    if (
+      onrampSession.status ===
+        SessionStatus.ONRAMP_TRANSACTION_STATUS_SUCCESS ||
+      onrampSession.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
+    ) {
+      return onrampSession;
+    }
 
-      const { transactions } = await getOnrampTransactions(id);
+    const { transactions } = await getOnrampTransactions(input);
 
-      const transaction = transactions[0];
+    const transaction = transactions[0];
 
-      if (!transaction) {
-        return onrampSession;
-      }
+    if (!transaction) {
+      return onrampSession;
+    }
 
-      return await updateOnrampSession(onrampSession.id, {
-        status: transaction.status,
-        txHash: transaction.tx_hash,
-        failureReason:
-          transaction.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
-            ? transaction.failure_reason
-            : null,
-      });
-    }),
+    return await updateOnrampSession(onrampSession.id, {
+      status: transaction.status,
+      txHash: transaction.tx_hash,
+      failureReason:
+        transaction.status === SessionStatus.ONRAMP_TRANSACTION_STATUS_FAILED
+          ? transaction.failure_reason
+          : null,
+    });
+  }),
 
   create: protectedProcedure
     .input(createOnrampUrlParamsSchema)

@@ -2,6 +2,8 @@ import React, { memo } from 'react';
 
 import Link from 'next/link';
 
+import { MoreHorizontal, Trash } from 'lucide-react';
+
 import {
   SidebarMenuAction,
   SidebarMenuButton,
@@ -13,10 +15,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu';
+import { Skeleton } from '@/components/ui/skeleton';
 
 import type { Chat } from '@prisma/client';
-import { MoreHorizontal, Trash } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   chat: Chat;
@@ -34,7 +35,10 @@ const PureChatItem: React.FC<Props> = ({
   return (
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive}>
-        <Link href={`/chat/${chat.id}`} onClick={() => setOpenMobile(false)}>
+        <Link
+          href={`/composer/chat/${chat.id}`}
+          onClick={() => setOpenMobile(false)}
+        >
           <div className="flex min-w-0 items-center gap-2">
             <span className="truncate">{chat.title}</span>
           </div>

@@ -38,7 +38,7 @@ export const AgentSelect = () => {
   const agentId = pathname.split('/')[3];
 
   const [agentConfigurations, { isLoading }] =
-    api.agentConfigurations.list.useSuspenseQuery(undefined);
+    api.user.agentConfigurations.list.useSuspenseQuery();
 
   const agent = agentConfigurations.find(agent => agent.id === agentId);
 

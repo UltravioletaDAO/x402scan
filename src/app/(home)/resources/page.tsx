@@ -6,7 +6,7 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default async function ResourcesPage() {
-  const resources = await api.origins.list.withResources.all();
+  const resources = await api.public.origins.list.withResources.all();
 
   return (
     <div>

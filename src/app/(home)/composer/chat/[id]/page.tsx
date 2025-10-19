@@ -1,4 +1,4 @@
-import { notFound, unauthorized } from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 import { Chat } from '../_components/chat';
 
@@ -12,14 +12,9 @@ export default async function ChatPage({
   const { id } = await params;
 
   const session = await auth();
+  const userId = session?.user.id;
 
-  if (!session?.user?.id) {
-    return unauthorized();
-  }
-
-  const userId = session.user.id;
-
-  const chat = await api.chats.getChat(id);
+  const chat = await api.public.chats.get(id);
 
   if (!chat) {
     return notFound();

@@ -35,10 +35,10 @@ export const NavChats = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [chats, { isLoading }] =
-    api.chats.getUserChats.useSuspenseQuery(undefined);
+    api.user.chats.list.useSuspenseQuery(undefined);
 
   const utils = api.useUtils();
-  const deleteChat = api.chats.deleteChat.useMutation();
+  const deleteChat = api.user.chats.delete.useMutation();
 
   const handleDelete = () => {
     if (deleteId) {
@@ -47,7 +47,7 @@ export const NavChats = () => {
         {
           onSuccess: () => {
             setShowDeleteDialog(false);
-            void utils.chats.getUserChats.invalidate();
+            void utils.user.chats.list.invalidate();
             void router.push('/composer/chat');
           },
         }

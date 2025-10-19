@@ -14,7 +14,7 @@ export const Onramp = () => {
     mutate: createOnrampSession,
     isPending: isCreatingOnrampSession,
     isSuccess: isCreatedOnrampSession,
-  } = api.onrampSessions.serverWallet.create.useMutation({
+  } = api.user.onrampSessions.serverWallet.create.useMutation({
     onSuccess: url => {
       window.location.href = url;
     },

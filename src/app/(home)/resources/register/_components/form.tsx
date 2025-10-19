@@ -62,9 +62,9 @@ export const RegisterResourceForm = () => {
         return;
       }
       void utils.resources.list.invalidate();
-      void utils.origins.list.withResources.invalidate();
+      void utils.public.origins.list.withResources.invalidate();
       void utils.resources.getResourceByAddress.invalidate(data.accepts.payTo);
-      void utils.origins.list.withResources.byAddress.invalidate(
+      void utils.public.origins.list.withResources.byAddress.invalidate(
         data.accepts.payTo
       );
       void utils.sellers.list.bazaar.invalidate();

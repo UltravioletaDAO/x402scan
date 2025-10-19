@@ -4,7 +4,7 @@ import { WalletDialog } from '../../wallet/dialog';
 import { SidebarMenu, SidebarMenuItem } from '@/components/ui/sidebar';
 
 export const Wallet = async () => {
-  const address = await api.serverWallet.address();
+  const address = await api.user.serverWallet.address();
 
   return (
     <SidebarMenu>

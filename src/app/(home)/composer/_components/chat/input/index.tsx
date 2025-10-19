@@ -18,7 +18,7 @@ import { ResourcesSelect } from './resources-select';
 import { api } from '@/trpc/client';
 
 import type { ChatStatus } from 'ai';
-import type { SelectedResource } from '../../../chat/_lib/types';
+import type { SelectedResource } from '../../../_types/chat-config';
 
 interface Props {
   input: string;
@@ -42,7 +42,7 @@ export const PromptInputSection: React.FC<Props> = ({
 }) => {
   const { data: session } = useSession();
 
-  const { data: usdcBalance } = api.serverWallet.usdcBaseBalance.useQuery(
+  const { data: usdcBalance } = api.user.serverWallet.usdcBaseBalance.useQuery(
     undefined,
     {
       enabled: !!session,

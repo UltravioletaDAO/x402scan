@@ -5,7 +5,7 @@ import { Deposit } from '../../../../wallet/deposit';
 
 export const FundWallet = () => {
   const { data: session } = useSession();
-  const { data: address } = api.serverWallet.address.useQuery(undefined, {
+  const { data: address } = api.user.serverWallet.address.useQuery(undefined, {
     enabled: !!session,
   });
 

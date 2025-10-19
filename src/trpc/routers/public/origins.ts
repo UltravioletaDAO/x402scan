@@ -1,5 +1,5 @@
 import { ethereumAddressSchema } from '@/lib/schemas';
-import { createTRPCRouter, publicProcedure } from '../trpc';
+import { createTRPCRouter, publicProcedure } from '../../trpc';
 import {
   listOriginsByAddress,
   listOriginsWithResources,

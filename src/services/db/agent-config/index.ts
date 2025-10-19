@@ -37,7 +37,10 @@ export const createAgentConfiguration = async (
   });
 };
 
-export const getAgentConfigurationById = async (id: string, userId: string) => {
+export const getAgentConfigurationById = async (
+  id: string,
+  userId?: string
+) => {
   return await prisma.agentConfiguration.findUnique({
     where: {
       id,
@@ -66,7 +69,13 @@ export const getAgentConfigurationById = async (id: string, userId: string) => {
   });
 };
 
-export const getAgentConfigurationsByUserId = async (userId: string) => {
+export const listAgentConfigurations = async () => {
+  return await prisma.agentConfiguration.findMany({
+    orderBy: { users: { _count: 'desc' } },
+  });
+};
+
+export const listAgentConfigurationsByUserId = async (userId: string) => {
   return await prisma.agentConfiguration.findMany({
     where: {
       users: {

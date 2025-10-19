@@ -44,7 +44,7 @@ export default function NewAgentPage() {
   });
 
   const { mutate: createAgent, isPending } =
-    api.agentConfigurations.create.useMutation({
+    api.user.agentConfigurations.create.useMutation({
       onSuccess: agentConfiguration => {
         toast.success('Agent configuration created successfully');
         router.push(`/composer/agent/${agentConfiguration.id}`);

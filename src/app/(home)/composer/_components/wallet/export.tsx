@@ -13,7 +13,7 @@ export const ExportWallet = () => {
     isPending: isExporting,
     data: privateKey,
     isSuccess: isExported,
-  } = api.serverWallet.export.useMutation();
+  } = api.user.serverWallet.export.useMutation();
 
   return (
     <div className="flex flex-col gap-4">

@@ -9,7 +9,7 @@ export const Onboarding = async () => {
     auth()
       .then(Boolean)
       .catch(() => false),
-    api.serverWallet
+    api.user.serverWallet
       .usdcBaseBalance()
       .then(data => Boolean(data && data > 0))
       .catch(() => false),

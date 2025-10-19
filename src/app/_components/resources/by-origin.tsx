@@ -6,7 +6,7 @@ import { getBazaarMethod } from './executor/utils';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
-  originsWithResources: RouterOutputs['origins']['list']['withResources']['byAddress'];
+  originsWithResources: RouterOutputs['public']['origins']['list']['withResources']['byAddress'];
 }
 
 export const ResourcesByOrigin: React.FC<Props> = ({

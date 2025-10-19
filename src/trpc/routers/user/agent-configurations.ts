@@ -2,24 +2,17 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '@/trpc/trpc';
 import {
   createAgentConfiguration,
-  getAgentConfigurationById,
-  getAgentConfigurationsByUserId,
+  listAgentConfigurationsByUserId,
   updateAgentConfiguration,
   deleteAgentConfiguration,
   updateAgentConfigurationSchema,
 } from '@/services/db/agent-config';
 import { createAgentConfigurationSchema } from '@/services/db/agent-config/schema';
 
-export const agentConfigurationsRouter = createTRPCRouter({
+export const userAgentConfigurationsRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
-    return await getAgentConfigurationsByUserId(ctx.session.user.id);
+    return await listAgentConfigurationsByUserId(ctx.session.user.id);
   }),
-
-  get: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input, ctx }) => {
-      return await getAgentConfigurationById(input.id, ctx.session.user.id);
-    }),
 
   // Create a new agent configuration
   create: protectedProcedure
