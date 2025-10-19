@@ -1,6 +1,6 @@
 'use client';
 
-import { Bot, Plus } from 'lucide-react';
+import { Bot } from 'lucide-react';
 
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,12 +21,12 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 
-import { ResourcesSelect } from '../../_components/resources-select';
-import { SelectedResource } from './_components/selected-resource';
-
 import { api } from '@/trpc/client';
 
 import { createAgentConfigurationSchema } from '@/services/db/agent-config/schema';
+
+import { ResourceList } from '../../_components/resources-select/resource-list';
+import { Card } from '@/components/ui/card';
 
 import type z from 'zod';
 
@@ -56,10 +56,6 @@ export default function NewAgentPage() {
 
   const onSubmit = (data: z.infer<typeof createAgentConfigurationSchema>) => {
     createAgent(data);
-  };
-
-  const handleCancel = () => {
-    router.push('/');
   };
 
   return (
@@ -131,8 +127,8 @@ export default function NewAgentPage() {
                   <FieldContent>
                     <FieldLabel htmlFor="resourceIds">Tools</FieldLabel>
                   </FieldContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                    <ResourcesSelect
+                  <Card>
+                    <ResourceList
                       selectedResourceIds={field.value}
                       onSelectResource={resource => {
                         field.onChange(
@@ -141,49 +137,19 @@ export default function NewAgentPage() {
                             : [...field.value, resource.id]
                         );
                       }}
-                    >
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-16 md:h-16"
-                      >
-                        <Plus className="size-4" />
-                        <span className="text-xs">Add Tool</span>
-                      </Button>
-                    </ResourcesSelect>
-                    {field.value.map(resourceId => (
-                      <SelectedResource
-                        key={resourceId}
-                        resourceId={resourceId}
-                        onRemoveResource={() => {
-                          field.onChange(
-                            field.value.filter(id => id !== resourceId)
-                          );
-                        }}
-                      />
-                    ))}
-                  </div>
+                    />
+                  </Card>
                 </Field>
               )}
             />
-            <Field orientation="responsive">
-              <Button
-                type="button"
-                variant="outline"
-                disabled={isPending}
-                className="flex-1"
-                onClick={handleCancel}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending || !form.formState.isValid}
-                className="flex-1"
-              >
-                {isPending ? 'Creating...' : 'Create Workbench'}
-              </Button>
-            </Field>
+            <Button
+              type="submit"
+              variant="turbo"
+              disabled={isPending || !form.formState.isValid}
+              className="w-full h-12 md:h-12"
+            >
+              {isPending ? 'Creating...' : 'Create Agent'}
+            </Button>
           </FieldGroup>
         </form>
       </div>
