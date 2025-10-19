@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { prisma } from './client';
+import { prisma } from '../client';
 import type { OnrampSession } from '@prisma/client';
 
 export const createOnrampSessionSchema = z.object({

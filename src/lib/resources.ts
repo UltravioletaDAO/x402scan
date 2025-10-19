@@ -1,8 +1,8 @@
 import z3 from 'zod3';
 
 import { scrapeOriginData } from '@/services/scraper';
-import { upsertResource } from '@/services/db/resources';
-import { upsertOrigin } from '@/services/db/origin';
+import { upsertResource } from '@/services/db/resources/resource';
+import { upsertOrigin } from '@/services/db/resources/origin';
 
 import {
   parseX402Response,
@@ -12,7 +12,7 @@ import { getOriginFromUrl } from '@/lib/url';
 
 import type { AcceptsNetwork } from '@prisma/client';
 import { x402ResponseSchema } from 'x402/types';
-import { upsertResourceResponse } from '@/services/db/resource-responses';
+import { upsertResourceResponse } from '@/services/db/resources/response';
 import { formatTokenAmount } from './token';
 
 export const registerResource = async (url: string, data: unknown) => {

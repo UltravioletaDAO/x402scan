@@ -4,7 +4,7 @@ import {
   listTopSellers,
   listTopSellersInputSchema,
 } from '@/services/cdp/sql/sellers/list';
-import { getAcceptsAddresses } from '@/services/db/accepts';
+import { getAcceptsAddresses } from '@/services/db/resources/accepts';
 import type { FacilitatorAddress } from '@/lib/facilitators';
 import type { Address } from 'viem';
 

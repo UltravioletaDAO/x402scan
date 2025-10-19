@@ -19,7 +19,7 @@ import {
   createMessage,
   getChat,
   updateChat,
-} from '@/services/db/chats';
+} from '@/services/db/composer/chat';
 
 import { auth } from '@/auth';
 

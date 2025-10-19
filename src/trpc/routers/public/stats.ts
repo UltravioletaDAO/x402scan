@@ -12,7 +12,7 @@ import {
 } from '@/services/cdp/sql/stats/first-transfer';
 
 import { createTRPCRouter, publicProcedure } from '../../trpc';
-import { getAcceptsAddresses } from '@/services/db/accepts';
+import { getAcceptsAddresses } from '@/services/db/resources/accepts';
 
 export const statsRouter = createTRPCRouter({
   overall: publicProcedure

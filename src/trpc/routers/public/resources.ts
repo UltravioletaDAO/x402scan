@@ -9,7 +9,7 @@ import {
   listResourcesWithPagination,
   searchResources,
   searchResourcesSchema,
-} from '@/services/db/resources';
+} from '@/services/db/resources/resource';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 
@@ -18,7 +18,7 @@ import { Methods } from '@/types/x402';
 import { registerResource } from '@/lib/resources';
 import { paginatedQuerySchema } from '@/lib/pagination';
 import { TRPCError } from '@trpc/server';
-import { listResourceTags, listTags } from '@/services/db/resource-tag';
+import { listResourceTags, listTags } from '@/services/db/resources/tag';
 
 export const resourcesRouter = createTRPCRouter({
   get: publicProcedure.input(z.string()).query(async ({ input }) => {

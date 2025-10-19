@@ -8,7 +8,7 @@ import {
   updateChatSchema,
   listChats,
   listChatsSchema,
-} from '@/services/db/chats';
+} from '@/services/db/composer/chat';
 
 export const userChatsRouter = createTRPCRouter({
   list: protectedProcedure

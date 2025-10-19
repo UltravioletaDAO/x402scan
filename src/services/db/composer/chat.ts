@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { prisma } from './client';
+import { prisma } from '../client';
 
 import type { Prisma } from '@prisma/client';
 

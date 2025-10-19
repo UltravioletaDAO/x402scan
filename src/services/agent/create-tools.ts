@@ -1,14 +1,17 @@
-import { listResourcesForTools } from '../db/resources';
-import type { EnhancedOutputSchema } from '@/lib/x402/schema';
+import { createToolCall } from '@/services/db/composer/tool-call';
+import { listResourcesForTools } from '@/services/db/resources/resource';
+
+import { inputSchemaToZodSchema } from './utils';
+import { fetchWithX402Payment } from './fetch';
+
+import { env } from '@/env';
+
 import { enhancedAcceptsSchema, enhancedOutputSchema } from '@/lib/x402/schema';
 
+import type { EnhancedOutputSchema } from '@/lib/x402/schema';
+import type { ResourceRequestMetadata } from '@prisma/client';
 import type { Signer } from 'x402/types';
 import type { Tool } from 'ai';
-import { env } from '@/env';
-import { inputSchemaToZodSchema } from './utils';
-import type { ResourceRequestMetadata } from '@prisma/client';
-import { fetchWithX402Payment } from './fetch';
-import { createToolCall } from '../db/tool-calls';
 
 interface CreateX402AIToolsParams {
   resourceIds: string[];

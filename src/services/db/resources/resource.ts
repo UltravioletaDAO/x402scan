@@ -1,4 +1,4 @@
-import { prisma } from './client';
+import { prisma } from '../client';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { z } from 'zod';
