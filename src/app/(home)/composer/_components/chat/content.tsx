@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 
+import Image from 'next/image';
+
 import { useChat } from '@ai-sdk/react';
 
 import { toast } from 'sonner';
@@ -13,11 +15,13 @@ import { api } from '@/trpc/client';
 
 import { convertToUIMessages } from '@/lib/utils';
 
-import type { Message } from '@prisma/client';
+import type { AgentConfiguration, Message } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { clientCookieUtils } from '../../chat/_lib/cookies/client';
 
 import type { ChatConfig, SelectedResource } from '../../_types/chat-config';
+import { Card } from '@/components/ui/card';
+import { Bot } from 'lucide-react';
 
 interface Props {
   id: string;
@@ -25,6 +29,7 @@ interface Props {
   isReadOnly?: boolean;
   initialConfig?: ChatConfig;
   storeConfig?: boolean;
+  agentConfig?: AgentConfiguration;
 }
 
 export const ChatContent: React.FC<Props> = ({
@@ -33,6 +38,7 @@ export const ChatContent: React.FC<Props> = ({
   initialMessages,
   initialConfig,
   storeConfig,
+  agentConfig,
 }) => {
   const utils = api.useUtils();
 
@@ -116,7 +122,32 @@ export const ChatContent: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
-      <Messages messages={messages} status={status} model={model} />
+      <Messages
+        messages={messages}
+        status={status}
+        model={model}
+        emptyState={
+          agentConfig
+            ? {
+                title: agentConfig.name,
+                description: agentConfig.description ?? 'No description',
+                icon: agentConfig.image ? (
+                  <Image
+                    src={agentConfig.image}
+                    alt={agentConfig.name}
+                    width={96}
+                    height={96}
+                    className="size-16 rounded-md overflow-hidden"
+                  />
+                ) : (
+                  <Card className="p-2 border">
+                    <Bot className="size-12" />
+                  </Card>
+                ),
+              }
+            : undefined
+        }
+      />
       {!isReadOnly && (
         <div className="pb-2 md:pb-4">
           <div className="mx-auto max-w-4xl px-2">

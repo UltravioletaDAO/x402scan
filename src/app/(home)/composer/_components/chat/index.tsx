@@ -2,15 +2,19 @@ import { ChatContent } from './content';
 import { ConnectDialog } from './auth/connect-dialog';
 import { Onboarding } from './auth/welcome';
 
+import { serverCookieUtils } from '../../chat/_lib/cookies/server';
+
 import { getWalletsFromHeaders } from '@/lib/wallet';
 
 import type { Message } from '@prisma/client';
-import type { ChatConfig } from '../../_types/chat-config';
+import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
   id: string;
   initialMessages: Message[];
-  initialConfig?: ChatConfig;
+  agentConfig?: NonNullable<
+    RouterOutputs['public']['agentConfigurations']['get']
+  >;
   isReadOnly?: boolean;
   storeConfig?: boolean;
 }
@@ -20,7 +24,7 @@ export const Chat: React.FC<Props> = async ({
   initialMessages,
   isReadOnly,
   storeConfig,
-  initialConfig,
+  agentConfig,
 }) => {
   if (isReadOnly) {
     return (
@@ -36,6 +40,16 @@ export const Chat: React.FC<Props> = async ({
     .then(wallets => wallets?.length && wallets.length > 0)
     .catch(() => false);
 
+  const initialConfig = agentConfig
+    ? {
+        model: agentConfig.model ?? undefined,
+        resources: agentConfig.resources.map(resource => ({
+          id: resource.resource.id,
+          favicon: resource.resource.origin?.favicon ?? null,
+        })),
+      }
+    : await serverCookieUtils.getConfig();
+
   return (
     <>
       <ChatContent
@@ -44,6 +58,7 @@ export const Chat: React.FC<Props> = async ({
         isReadOnly={isReadOnly}
         initialConfig={initialConfig}
         storeConfig={storeConfig}
+        agentConfig={agentConfig}
       />
       {!isConnected && <ConnectDialog />}
       {isConnected && <Onboarding />}

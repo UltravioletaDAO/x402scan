@@ -23,14 +23,8 @@ export const AgentChat: React.FC<Props> = async ({
       id={id}
       initialMessages={initialMessages}
       isReadOnly={isReadOnly}
-      storeConfig={true}
-      initialConfig={{
-        model: agentConfig.model ?? undefined,
-        resources: agentConfig.resources.map(resource => ({
-          id: resource.resource.id,
-          favicon: resource.resource.origin?.favicon ?? null,
-        })),
-      }}
+      storeConfig={false}
+      agentConfig={agentConfig}
     />
   );
 };

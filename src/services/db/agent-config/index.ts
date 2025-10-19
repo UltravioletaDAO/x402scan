@@ -9,13 +9,23 @@ export const createAgentConfiguration = async (
   userId: string,
   data: z.infer<typeof createAgentConfigurationSchema>
 ) => {
-  const { name, model, systemPrompt, visibility, resourceIds } = data;
+  const {
+    name,
+    model,
+    systemPrompt,
+    visibility,
+    resourceIds,
+    image,
+    description,
+  } = data;
   return await prisma.agentConfiguration.create({
     data: {
       name,
       model,
       systemPrompt,
       visibility,
+      image,
+      description,
       owner: {
         connect: { id: userId },
       },

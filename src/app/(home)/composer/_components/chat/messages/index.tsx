@@ -6,6 +6,7 @@ import {
   ConversationScrollButton,
 } from '@/components/ai-elements/conversation';
 
+import type { EmptyStateProps } from './empty-state';
 import { EmptyState } from './empty-state';
 import { LoadingMessage, Message } from './message';
 
@@ -17,9 +18,15 @@ interface MessagesProps {
   messages: UIMessage[];
   status: ChatStatus;
   model: string;
+  emptyState?: EmptyStateProps;
 }
 
-export const Messages = ({ messages, status, model }: MessagesProps) => {
+export const Messages: React.FC<MessagesProps> = ({
+  messages,
+  status,
+  model,
+  emptyState,
+}) => {
   return (
     <Conversation className="h-full w-full">
       {messages.length > 0 ? (
@@ -42,16 +49,20 @@ export const Messages = ({ messages, status, model }: MessagesProps) => {
           <ConversationScrollButton />
         </>
       ) : (
-        <EmptyState />
+        <EmptyState {...emptyState} />
       )}
     </Conversation>
   );
 };
 
-export const EmptyMessages = () => {
+export const EmptyMessages = ({
+  title,
+  description,
+  icon,
+}: EmptyStateProps) => {
   return (
     <Conversation className="h-full w-full">
-      <EmptyState />
+      <EmptyState title={title} description={description} icon={icon} />
     </Conversation>
   );
 };
