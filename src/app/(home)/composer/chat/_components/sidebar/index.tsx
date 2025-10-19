@@ -28,7 +28,7 @@ export async function Sidebar({
   const session = await auth();
 
   if (session?.user) {
-    void api.agentConfigurations.getUserConfigurations.prefetch();
+    void api.agentConfigurations.list.prefetch();
     void api.chats.getUserChats.prefetchInfinite();
   }
 

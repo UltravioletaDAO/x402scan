@@ -37,7 +37,7 @@ export const AgentSelect = () => {
   const agentId = pathname.split('/')[2];
 
   const [agentConfigurations, { isLoading }] =
-    api.agentConfigurations.getUserConfigurations.useSuspenseQuery(undefined);
+    api.agentConfigurations.list.useSuspenseQuery(undefined);
 
   const agent = agentConfigurations.find(agent => agent.id === agentId);
 
@@ -96,13 +96,13 @@ export const AgentSelect = () => {
                   className="justify-between gap-2 p-2"
                   asChild
                 >
-                  <Link href={`/chat/${agent.id}`} key={agent.id}>
+                  <Link href={`/composer/chat/${agent.id}`} key={agent.id}>
                     <span className="truncate font-medium">{agent.name}</span>
                   </Link>
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
-              <Link href="/chat/new">
+              <Link href="/composer/agent/new">
                 <DropdownMenuItem className="gap-2 p-2">
                   <Plus className="size-4" />
                   <div className="text-muted-foreground font-medium">

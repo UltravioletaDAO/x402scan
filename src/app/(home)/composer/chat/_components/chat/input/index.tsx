@@ -1,5 +1,9 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
+
+import { Skeleton } from '@/components/ui/skeleton';
+
 import {
   PromptInput,
   PromptInputSubmit,
@@ -9,13 +13,11 @@ import {
 } from '@/components/ai-elements/prompt-input';
 
 import { ModelSelect } from './model-select';
+import { ResourcesSelect } from './resources-select';
 
-import { ToolSelect } from './resources-select';
+import { api } from '@/trpc/client';
 
 import type { ChatStatus } from 'ai';
-import { api } from '@/trpc/client';
-import { useSession } from 'next-auth/react';
-import { Skeleton } from '@/components/ui/skeleton';
 import type { SelectedResource } from '../../../_lib/types';
 
 interface Props {
@@ -61,7 +63,7 @@ export const PromptInputSection: React.FC<Props> = ({
       <PromptInputToolbar>
         <PromptInputTools>
           <ModelSelect model={model} setModel={setModel} />
-          <ToolSelect
+          <ResourcesSelect
             resources={selectedResources}
             onSelectResource={onSelectResource}
           />

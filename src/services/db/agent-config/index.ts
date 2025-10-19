@@ -1,14 +1,8 @@
 import z from 'zod';
 
-import { prisma } from './client';
+import { prisma } from '../client';
 
-export const createAgentConfigurationSchema = z.object({
-  name: z.string().default('New Agent'),
-  model: z.string().optional(),
-  systemPrompt: z.string(),
-  visibility: z.enum(['public', 'private']).optional().default('private'),
-  resourceIds: z.array(z.uuid()),
-});
+import type { createAgentConfigurationSchema } from './schema';
 
 // AgentConfiguration CRUD operations
 export const createAgentConfiguration = async (

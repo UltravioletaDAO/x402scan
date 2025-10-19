@@ -6,31 +6,19 @@ import {
   getAgentConfigurationsByUserId,
   updateAgentConfiguration,
   deleteAgentConfiguration,
-  createAgentConfigurationSchema,
   updateAgentConfigurationSchema,
 } from '@/services/db/agent-config';
+import { createAgentConfigurationSchema } from '@/services/db/agent-config/schema';
 
 export const agentConfigurationsRouter = createTRPCRouter({
-  // Get all agent configurations for the current user
-  getUserConfigurations: protectedProcedure.query(async ({ ctx }) => {
+  list: protectedProcedure.query(async ({ ctx }) => {
     return await getAgentConfigurationsByUserId(ctx.session.user.id);
   }),
 
-  // Get a specific agent configuration by ID
-  getById: protectedProcedure
+  get: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const config = await getAgentConfigurationById(
-        input.id,
-        ctx.session.user.id
-      );
-
-      // Ensure user owns this configuration
-      if (!config || config.ownerId !== ctx.session.user.id) {
-        throw new Error('Configuration not found or access denied');
-      }
-
-      return config;
+      return await getAgentConfigurationById(input.id, ctx.session.user.id);
     }),
 
   // Create a new agent configuration

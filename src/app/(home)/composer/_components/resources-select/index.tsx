@@ -12,54 +12,41 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-import { ToolList } from './tool-list';
+import { ResourceList } from './resource-list';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import type { SelectedResource } from '@/app/(home)/chat/_lib/types';
-import { Favicons } from '@/app/_components/favicon';
+
+import type { SelectedResource } from '@/app/(home)/composer/chat/_lib/types';
 
 interface Props {
-  resources: SelectedResource[];
+  selectedResourceIds: string[];
   onSelectResource: (resource: SelectedResource) => void;
+  children: React.ReactNode;
 }
 
-export const ToolSelect: React.FC<Props> = ({
-  resources,
+export const ResourcesSelect: React.FC<Props> = ({
+  selectedResourceIds,
   onSelectResource,
+  children,
 }) => {
   const isMobile = useIsMobile();
 
   const content = (
     <div className={cn('w-full max-w-full')}>
-      <ToolList
-        selectedResources={resources}
+      <ResourceList
+        selectedResourceIds={selectedResourceIds}
         onSelectResource={onSelectResource}
         gradientClassName="md:from-popover"
       />
     </div>
   );
 
-  const trigger = (
-    <Button variant="outline" size="sm">
-      <Favicons
-        favicons={resources.map(resource => resource.favicon)}
-        iconContainerClassName="size-5"
-      />
-      <span className="text-xs">
-        {resources.length > 0
-          ? `${resources.length} Tool${resources.length > 1 ? 's' : ''}`
-          : 'Select Tools'}
-      </span>
-    </Button>
-  );
-
   if (isMobile) {
     return (
       <Drawer>
-        <DrawerTrigger asChild>{trigger}</DrawerTrigger>
+        <DrawerTrigger asChild>{children}</DrawerTrigger>
         <DrawerContent className="p-0">
           <DrawerHeader className="items-start px-3 pb-3">
             <DrawerTitle className="text-lg">Tools Selector</DrawerTitle>
@@ -75,7 +62,7 @@ export const ToolSelect: React.FC<Props> = ({
 
   return (
     <Popover>
-      <PopoverTrigger asChild>{trigger}</PopoverTrigger>
+      <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent
         className="w-xs overflow-hidden p-0 md:w-lg"
         align="start"

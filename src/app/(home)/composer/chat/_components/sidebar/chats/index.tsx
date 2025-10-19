@@ -48,7 +48,7 @@ export const NavChats = () => {
           onSuccess: () => {
             setShowDeleteDialog(false);
             void utils.chats.getUserChats.invalidate();
-            void router.push('/chat');
+            void router.push('/composer/chat');
           },
         }
       );

@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
-import type { SelectedResource } from '@/app/(home)/chat/_lib/types';
+import type { SelectedResource } from '@/app/(home)/composer/chat/_lib/types';
 
 interface Props {
   isSelected: boolean;
