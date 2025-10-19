@@ -60,7 +60,7 @@ export const Chat: React.FC<Props> = async ({
         storeConfig={storeConfig}
         agentConfig={agentConfig}
       />
-      {!isConnected && <ConnectDialog />}
+      {!isConnected && <ConnectDialog agentConfig={agentConfig} />}
       {isConnected && <Onboarding />}
     </>
   );

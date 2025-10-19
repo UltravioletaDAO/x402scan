@@ -58,8 +58,6 @@ export async function POST(request: NextRequest) {
   const { model, resourceIds, messages, chatId, agentConfigurationId } =
     requestBody.data;
 
-  console.log('agentConfigurationId', agentConfigurationId);
-
   const chat = await getChat(chatId, session.user.id);
 
   const wallet = await getWalletForUserId(session.user.id);
@@ -88,9 +86,20 @@ export async function POST(request: NextRequest) {
       user: {
         connect: { id: session.user.id },
       },
-      agentConfiguration: agentConfigurationId
+      userAgentConfiguration: agentConfigurationId
         ? {
-            connect: { id: agentConfigurationId },
+            connectOrCreate: {
+              where: {
+                userId_agentConfigurationId: {
+                  userId: session.user.id,
+                  agentConfigurationId: agentConfigurationId,
+                },
+              },
+              create: {
+                userId: session.user.id,
+                agentConfigurationId: agentConfigurationId,
+              },
+            },
           }
         : undefined,
       messages: {

@@ -1,9 +1,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { UnauthedButton } from './unauthed';
-import { AuthedButton } from './authed';
-
-import { auth } from '@/auth';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 interface Props {
   agentConfigurationId: string;
@@ -12,15 +10,11 @@ interface Props {
 export const HeaderButtons: React.FC<Props> = async ({
   agentConfigurationId,
 }) => {
-  const session = await auth();
-
   return (
     <ButtonsContainer>
-      {session ? (
-        <AuthedButton agentConfigurationId={agentConfigurationId} />
-      ) : (
-        <UnauthedButton />
-      )}
+      <Link href={`/composer/agent/${agentConfigurationId}/chat`}>
+        <Button variant="turbo">Use Agent</Button>
+      </Link>
     </ButtonsContainer>
   );
 };

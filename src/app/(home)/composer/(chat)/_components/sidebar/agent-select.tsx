@@ -29,76 +29,24 @@ import { api } from '@/trpc/client';
 
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Loading } from '@/components/ui/loading';
+import { useState } from 'react';
 
 export const AgentSelect = () => {
-  const { isMobile, open } = useSidebar();
+  const { isMobile } = useSidebar();
 
-  const pathname = usePathname();
-
-  const isAgent =
-    pathname.includes('/composer/agent/') &&
-    !pathname.includes('/composer/agent/new');
-  const agentId = pathname.split('/')[3];
-
-  const [agentConfigurations, { isLoading }] =
+  const [agentConfigurations] =
     api.user.agentConfigurations.list.useSuspenseQuery();
 
-  const agent = agentConfigurations.find(agent => agent.id === agentId);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <SidebarGroup className="p-0">
       <SidebarMenu>
         <SidebarMenuItem>
-          <DropdownMenu>
+          <DropdownMenu open={isOpen} onOpenChange={open => setIsOpen(open)}>
             <DropdownMenuTrigger asChild>
-              <SidebarMenuButton
-                size="lg"
-                className={cn(
-                  'bg-transparent text-sidebar-accent-foreground cursor-pointer transition-all duration-200 ease-in-out border',
-                  open ? 'justify-between px-4' : 'justify-center'
-                )}
-              >
-                {open ? (
-                  <>
-                    <div className="min-w-0 flex-1 gap-2 flex items-center">
-                      {isAgent ? (
-                        agent ? (
-                          agent.image ? (
-                            <Image
-                              src={agent.image}
-                              alt={agent.name}
-                              width={16}
-                              height={16}
-                            />
-                          ) : (
-                            <BotMessageSquare className="size-4 flex-shrink-0" />
-                          )
-                        ) : isLoading ? (
-                          <Skeleton className="size-4 flex-shrink-0" />
-                        ) : (
-                          <BotMessageSquare className="size-4 flex-shrink-0" />
-                        )
-                      ) : (
-                        <BotMessageSquare className="size-4 flex-shrink-0" />
-                      )}
-                      {isAgent ? (
-                        agent ? (
-                          <span className="truncate">{agent.name}</span>
-                        ) : isLoading ? (
-                          <Skeleton className="h-4 w-24" />
-                        ) : (
-                          <span className="truncate">Agent</span>
-                        )
-                      ) : (
-                        <span className="truncate">Playground</span>
-                      )}
-                    </div>
-                    <ChevronsUpDown className="ml-auto size-4 flex-shrink-0" />
-                  </>
-                ) : (
-                  <BotMessageSquare className="size-4" />
-                )}
-              </SidebarMenuButton>
+              <AgentSelectButton onClick={() => setIsOpen(true)} />
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
@@ -118,11 +66,14 @@ export const AgentSelect = () => {
               </DropdownMenuItem>
               {agentConfigurations.map(agent => (
                 <DropdownMenuItem key={agent.id} className="gap-2 p-2" asChild>
-                  <Link href={`/composer/agent/${agent.id}`} key={agent.id}>
-                    {agent.image ? (
+                  <Link
+                    href={`/composer/agent/${agent.agentConfiguration.id}/chat`}
+                    key={agent.id}
+                  >
+                    {agent.agentConfiguration.image ? (
                       <Image
-                        src={agent.image}
-                        alt={agent.name}
+                        src={agent.agentConfiguration.image}
+                        alt={agent.agentConfiguration.name}
                         width={16}
                         height={16}
                         className="size-4 flex-shrink-0"
@@ -130,7 +81,9 @@ export const AgentSelect = () => {
                     ) : (
                       <BotMessageSquare className="size-4 flex-shrink-0" />
                     )}
-                    <span className="truncate font-medium">{agent.name}</span>
+                    <span className="truncate font-medium">
+                      {agent.agentConfiguration.name}
+                    </span>
                   </Link>
                 </DropdownMenuItem>
               ))}
@@ -152,36 +105,94 @@ export const AgentSelect = () => {
 };
 
 export const UnauthedAgentSelect = () => {
-  const { open } = useSidebar();
-
   return (
     <SidebarGroup className="p-0">
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton
-            size="lg"
-            className={cn(
-              'bg-sidebar-accent text-sidebar-accent-foreground cursor-pointer transition-all duration-200 ease-in-out',
-              open ? 'justify-between' : 'min-h-[2.5rem] justify-center px-2'
-            )}
-          >
-            {open ? (
-              <>
-                <div className="min-w-0 flex-1 gap-2 flex items-center">
-                  <BotMessageSquare className="size-4 flex-shrink-0" />
-                  <span className="truncate">Agent</span>
-                </div>
-                <ChevronsUpDown className="ml-auto size-4 flex-shrink-0" />
-              </>
-            ) : (
-              <BotMessageSquare className="size-4" />
-            )}
-          </SidebarMenuButton>
+          <AgentSelectButton />
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
   );
 };
+
+const AgentSelectButton = React.forwardRef<
+  HTMLButtonElement,
+  { onClick?: () => void }
+>(({ onClick }, ref) => {
+  const { open } = useSidebar();
+
+  const pathname = usePathname();
+
+  const isAgent =
+    pathname.includes('/composer/agent/') &&
+    !pathname.includes('/composer/agent/new');
+  const agentId = pathname.split('/')[3];
+
+  const { data: agentConfiguration, isLoading: isAgentConfigurationLoading } =
+    api.public.agentConfigurations.get.useQuery(agentId, {
+      enabled: isAgent,
+    });
+
+  return (
+    <SidebarMenuButton
+      ref={ref}
+      size="lg"
+      className={cn(
+        'bg-transparent text-sidebar-accent-foreground cursor-pointer transition-all duration-200 ease-in-out border',
+        open ? 'justify-between px-4' : 'justify-center'
+      )}
+      onClick={onClick}
+    >
+      {open ? (
+        <>
+          <div className="min-w-0 flex-1 gap-2 flex items-center">
+            {isAgent ? (
+              <>
+                <Loading
+                  value={agentConfiguration?.image ?? undefined}
+                  isLoading={isAgentConfigurationLoading}
+                  component={image => (
+                    <Image
+                      src={image}
+                      alt="Agent"
+                      width={16}
+                      height={16}
+                      className="size-4 flex-shrink-0"
+                    />
+                  )}
+                  loadingComponent={
+                    <Skeleton className="size-4 flex-shrink-0" />
+                  }
+                  errorComponent={
+                    <BotMessageSquare className="size-4 flex-shrink-0" />
+                  }
+                />
+                <Loading
+                  value={agentConfiguration?.name}
+                  isLoading={isAgentConfigurationLoading}
+                  component={name => <span className="truncate">{name}</span>}
+                  loadingComponent={<Skeleton className="h-4 w-24" />}
+                  errorComponent={<span className="truncate">Agent</span>}
+                />
+              </>
+            ) : (
+              <>
+                <BotMessageSquare className="size-4 flex-shrink-0" />
+                <span className="truncate">Agent</span>
+              </>
+            )}
+          </div>
+          <ChevronsUpDown className="ml-auto size-4 flex-shrink-0" />
+        </>
+      ) : (
+        <BotMessageSquare className="size-4" />
+      )}
+    </SidebarMenuButton>
+  );
+});
+
+AgentSelectButton.displayName = 'AgentSelectButton';
 
 export const LoadingAgentSelect = () => {
   return (

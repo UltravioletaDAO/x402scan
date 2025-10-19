@@ -18,7 +18,7 @@ export default async function AgentPage({
     return notFound();
   }
 
-  if (chat.agentConfigurationId !== id) {
+  if (chat.userAgentConfiguration?.agentConfigurationId !== id) {
     return notFound();
   }
 

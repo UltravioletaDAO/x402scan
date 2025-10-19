@@ -75,21 +75,23 @@ export const getAgentConfigurationById = async (
     ) user_counts ON ac.id = user_counts."agentConfigurationId"
     LEFT JOIN (
       SELECT 
-        c."agentConfigurationId",
+        acu."agentConfigurationId",
         COUNT(m."Message") as message_count
       FROM "Chat" c
+      LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
       LEFT JOIN "Message" m ON c.id = m."chatId"
-      WHERE c."agentConfigurationId" IS NOT NULL
-      GROUP BY c."agentConfigurationId"
+      WHERE c."userAgentConfigurationId" IS NOT NULL
+      GROUP BY acu."agentConfigurationId"
     ) message_counts ON ac.id = message_counts."agentConfigurationId"
     LEFT JOIN (
       SELECT 
-        c."agentConfigurationId",
+        acu."agentConfigurationId",
         COUNT(tc.id) as tool_call_count
       FROM "Chat" c
+      LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
       LEFT JOIN "ToolCall" tc ON c.id = tc."chatId"
-      WHERE c."agentConfigurationId" IS NOT NULL
-      GROUP BY c."agentConfigurationId"
+      WHERE c."userAgentConfigurationId" IS NOT NULL
+      GROUP BY acu."agentConfigurationId"
     ) tool_call_counts ON ac.id = tool_call_counts."agentConfigurationId"
     LEFT JOIN "AgentConfigurationResource" acr ON acr."agentConfigurationId" = ac.id
     LEFT JOIN "Resources" r ON acr."resourceId" = r.id
@@ -173,20 +175,22 @@ export const listAgentConfigurations = async () => {
         ) AS resources
       FROM "AgentConfiguration" ac
       LEFT JOIN "AgentUser" au ON au."agentConfigurationId" = ac.id
-      LEFT JOIN "Chat" ch ON ch."agentConfigurationId" = ac.id
+      LEFT JOIN "Chat" ch ON ch."userAgentConfigurationId" = au.id
       LEFT JOIN (
-        SELECT c."agentConfigurationId", COUNT(m."Message") AS message_count
+        SELECT acu."agentConfigurationId", COUNT(m."Message") AS message_count
         FROM "Chat" c
+        LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
         LEFT JOIN "Message" m ON c.id = m."chatId"
-        WHERE c."agentConfigurationId" IS NOT NULL
-        GROUP BY c."agentConfigurationId"
+        WHERE c."userAgentConfigurationId" IS NOT NULL
+        GROUP BY acu."agentConfigurationId"
       ) m ON m."agentConfigurationId" = ac.id
       LEFT JOIN (
-        SELECT c."agentConfigurationId", COUNT(tc.id) AS tool_call_count
+        SELECT acu."agentConfigurationId", COUNT(tc.id) AS tool_call_count
         FROM "Chat" c
+        LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
         LEFT JOIN "ToolCall" tc ON c.id = tc."chatId"
-        WHERE c."agentConfigurationId" IS NOT NULL
-        GROUP BY c."agentConfigurationId"
+        WHERE c."userAgentConfigurationId" IS NOT NULL
+        GROUP BY acu."agentConfigurationId"
       ) tc ON tc."agentConfigurationId" = ac.id
       -- Join to tools/resources related to the AgentConfiguration
       LEFT JOIN "AgentConfigurationResource" acr ON acr."agentConfigurationId" = ac.id
@@ -224,13 +228,12 @@ export const listAgentConfigurations = async () => {
 };
 
 export const listAgentConfigurationsByUserId = async (userId: string) => {
-  return await prisma.agentConfiguration.findMany({
+  return await prisma.agentConfigurationUser.findMany({
     where: {
-      users: {
-        some: {
-          userId,
-        },
-      },
+      userId,
+    },
+    include: {
+      agentConfiguration: true,
     },
     orderBy: { chats: { _count: 'desc' } },
   });

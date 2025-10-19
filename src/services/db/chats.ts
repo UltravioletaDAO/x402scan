@@ -20,6 +20,11 @@ export const getChat = async (id: string, userId?: string) => {
       messages: {
         orderBy: { createdAt: 'asc' },
       },
+      userAgentConfiguration: {
+        select: {
+          agentConfigurationId: true,
+        },
+      },
     },
   });
 };
@@ -35,9 +40,18 @@ export const listChats = async (
   return await prisma.chat.findMany({
     where: {
       userId,
-      agentConfigurationId: agentId ? { equals: agentId } : { equals: null },
+      userAgentConfiguration: agentId
+        ? { agentConfigurationId: agentId }
+        : null,
     },
     orderBy: { createdAt: 'desc' },
+    include: {
+      userAgentConfiguration: {
+        select: {
+          agentConfigurationId: true,
+        },
+      },
+    },
   });
 };
 

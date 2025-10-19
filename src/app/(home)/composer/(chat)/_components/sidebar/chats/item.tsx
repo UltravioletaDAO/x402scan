@@ -17,10 +17,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import type { Chat } from '@prisma/client';
+import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
-  chat: Chat;
+  chat: RouterOutputs['user']['chats']['list'][number];
   isActive: boolean;
   onDelete: (chatId: string) => void;
   setOpenMobile: (open: boolean) => void;
@@ -37,8 +37,8 @@ const PureChatItem: React.FC<Props> = ({
       <SidebarMenuButton asChild isActive={isActive}>
         <Link
           href={
-            chat.agentConfigurationId
-              ? `/composer/agent/${chat.agentConfigurationId}/${chat.id}`
+            chat.userAgentConfiguration?.agentConfigurationId
+              ? `/composer/agent/${chat.userAgentConfiguration.agentConfigurationId}/${chat.id}`
               : `/composer/chat/${chat.id}`
           }
           onClick={() => setOpenMobile(false)}

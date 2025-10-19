@@ -257,11 +257,11 @@ model Chat {
   userId               String
   visibility           Visibility @default(private)
   lastContext          Json?
-  agentConfigurationId String?
+  userAgentConfigurationId String?
 
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages           Message[]
-  agentConfiguration AgentConfiguration? @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade)
+  userAgentConfiguration AgentConfigurationUser? @relation(fields: [userAgentConfigurationId], references: [id], onDelete: Cascade)
   toolCalls          ToolCall[]
 
   @@map("Chat")
@@ -304,7 +304,6 @@ model AgentConfiguration {
   owner     User                         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   users     AgentConfigurationUser[]
   resources AgentConfigurationResource[]
-  chats     Chat[]
 
   @@map("AgentConfiguration")
 }
@@ -329,6 +328,7 @@ model AgentConfigurationUser {
 
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  chats Chat[]
 
   @@unique([userId, agentConfigurationId])
   @@map("AgentUser")
