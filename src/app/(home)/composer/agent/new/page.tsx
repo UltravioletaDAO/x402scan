@@ -25,7 +25,7 @@ import { api } from '@/trpc/client';
 
 import { createAgentConfigurationSchema } from '@/services/db/agent-config/schema';
 
-import { ResourceList } from '../../_components/resources-select/resource-list';
+import { ResourceList } from '../../_components/resource-list';
 import { Card } from '@/components/ui/card';
 
 import type z from 'zod';
