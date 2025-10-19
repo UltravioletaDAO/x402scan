@@ -20,6 +20,7 @@ import {
   FieldGroup,
   FieldLabel,
   FieldLegend,
+  FieldSeparator,
   FieldSet,
 } from '@/components/ui/field';
 
@@ -74,10 +75,13 @@ export const AgentForm: React.FC<Props> = ({
     });
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-8">
+    <form
+      onSubmit={form.handleSubmit(onSubmit)}
+      className="flex flex-col gap-4"
+    >
       <FieldSet>
         <FieldLegend>Display Information</FieldLegend>
-        <FieldGroup className="flex flex-col md:flex-row bg-card border border-border rounded-md p-4 gap-4">
+        <FieldGroup className="flex flex-col md:flex-row">
           <Controller
             control={form.control}
             name="image"
@@ -156,6 +160,7 @@ export const AgentForm: React.FC<Props> = ({
           </FieldGroup>
         </FieldGroup>
       </FieldSet>
+      <FieldSeparator className="my-0" />
       <FieldSet>
         <FieldLegend>Behavior</FieldLegend>
         <FieldGroup className="w-full items-start gap-6 flex flex-col">
