@@ -9,7 +9,7 @@ import {
   createOnrampSession,
   getOnrampSessionByToken,
   updateOnrampSession,
-} from '@/services/db/onramp-sessions';
+} from '@/services/db/user/onramp-sessions';
 import {
   createOnrampUrl,
   createOnrampUrlParamsSchema,

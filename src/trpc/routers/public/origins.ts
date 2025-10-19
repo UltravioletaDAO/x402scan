@@ -6,7 +6,7 @@ import {
   listOriginsWithResourcesByAddress,
   searchOrigins,
   searchOriginsSchema,
-} from '@/services/db/origin';
+} from '@/services/db/resources/origin';
 
 export const originsRouter = createTRPCRouter({
   list: {

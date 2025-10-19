@@ -8,7 +8,7 @@ import {
   assignTagToResource,
   unassignTagFromResource,
   assignTagToResourceSchema,
-} from '@/services/db/resource-tag';
+} from '@/services/db/resources/tag';
 import {
   createResourceRequestMetadata,
   createResourceRequestMetadataSchema,
@@ -18,7 +18,7 @@ import {
   getAllResourceRequestMetadata,
   deleteResourceRequestMetadata,
   searchResourcesForMetadata,
-} from '@/services/db/resource-request-metadata';
+} from '@/services/db/resources/request-metadata';
 
 export const adminResourcesRouter = createTRPCRouter({
   tags: {

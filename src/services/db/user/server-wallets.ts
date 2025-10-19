@@ -1,4 +1,4 @@
-import { prisma } from './client';
+import { prisma } from '../client';
 
 import { v4 as uuid } from 'uuid';
 

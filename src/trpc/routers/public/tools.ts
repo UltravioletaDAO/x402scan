@@ -1,7 +1,7 @@
 import { createTRPCRouter, publicProcedure } from '../../trpc';
 
 import { searchX402Tools } from '@/services/agent/search-tools';
-import { searchResourcesSchema } from '@/services/db/resources';
+import { searchResourcesSchema } from '@/services/db/resources/resource';
 
 export const publicToolsRouter = createTRPCRouter({
   search: publicProcedure

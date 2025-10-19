@@ -1,6 +1,8 @@
 import { unstable_cache } from 'next/cache';
+
+import { prisma } from '../client';
+
 import type { ResourceOrigin } from '@prisma/client';
-import { prisma } from './client';
 
 const getAcceptsAddressesUncached = async () => {
   const accepts = await prisma.accepts.findMany({

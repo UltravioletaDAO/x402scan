@@ -1,7 +1,7 @@
-import { searchResources } from '../db/resources';
+import { searchResources } from '../db/resources/resource';
 import { enhancedAcceptsSchema, enhancedOutputSchema } from '@/lib/x402/schema';
 
-import type { searchResourcesSchema } from '../db/resources';
+import type { searchResourcesSchema } from '../db/resources/resource';
 import type { z } from 'zod';
 
 interface X402ToolResponse {
