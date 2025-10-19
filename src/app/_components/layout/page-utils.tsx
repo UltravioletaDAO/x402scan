@@ -1,10 +1,14 @@
 import React from 'react';
 
+import Link from 'next/link';
+import { ChevronRight } from 'lucide-react';
+
 import { Separator } from '@/components/ui/separator';
 
 import { cn } from '@/lib/utils';
 
 import type { ReactNode } from 'react';
+import type { Route } from 'next';
 
 interface HeadingProps {
   title: string | ReactNode;
@@ -88,6 +92,61 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
         className
       )}
     >
+      {children}
+    </div>
+  );
+};
+
+interface SectionProps<T extends string> {
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+  actions?: React.ReactNode;
+  className?: string;
+  href?: Route<T>;
+}
+
+export const Section = <T extends string>({
+  children,
+  title,
+  actions,
+  description,
+  className,
+  href,
+}: SectionProps<T>) => {
+  const Header = () => {
+    return (
+      <div
+        className={cn(
+          'flex items-center gap-1',
+          href && 'group cursor-pointer'
+        )}
+      >
+        <h1 className="font-bold text-2xl">{title}</h1>
+        {href && (
+          <div className="flex items-center gap-2 bg-muted/0 hover:bg-muted rounded-md p-0.5 transition-all hover:scale-105 group-hover:translate-x-1">
+            <ChevronRight className="size-4 text-foreground/60 group-hover:text-muted-foreground" />
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className={cn('flex flex-col gap-6', className)}>
+      <div className="flex flex-col gap-1">
+        <div className="flex justify-between items-center">
+          {href ? (
+            <Link href={href} prefetch={false}>
+              <Header />
+            </Link>
+          ) : (
+            <Header />
+          )}
+          {actions}
+        </div>
+        {description && <p className="text-muted-foreground">{description}</p>}
+      </div>
       {children}
     </div>
   );

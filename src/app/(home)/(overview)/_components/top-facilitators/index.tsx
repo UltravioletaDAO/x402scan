@@ -1,7 +1,10 @@
-import { api } from '@/trpc/server';
-import { Section } from '../utils';
-import { FacilitatorCard, LoadingFacilitatorCard } from './_components/card';
 import { Suspense } from 'react';
+
+import { Section } from '@/app/_components/layout/page-utils';
+
+import { FacilitatorCard, LoadingFacilitatorCard } from './_components/card';
+
+import { api } from '@/trpc/server';
 
 export const TopFacilitators = async () => {
   return (

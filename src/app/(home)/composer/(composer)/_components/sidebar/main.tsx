@@ -18,7 +18,9 @@ export const NavMain = () => {
   const pathname = usePathname();
   const { data: session } = useSession();
 
-  const isAgent = pathname.includes('/composer/agent/');
+  const isAgent =
+    pathname.includes('/composer/agent/') &&
+    !pathname.includes('/composer/agent/new');
   const agentId = pathname.split('/')[3];
 
   const { data: agentConfiguration } =

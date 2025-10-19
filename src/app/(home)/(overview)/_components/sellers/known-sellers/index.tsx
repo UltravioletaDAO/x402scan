@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 
 import { subMonths } from 'date-fns';
 
-import { Section } from '../../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 
 import { KnownSellersTable, LoadingKnownSellersTable } from './table';
 

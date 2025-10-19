@@ -35,9 +35,11 @@ export const NavChats = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data: chats, isLoading } = api.user.chats.list.useQuery({
-    agentId: pathname.includes('/composer/agent/')
-      ? pathname.split('/')[3]
-      : undefined,
+    agentId:
+      pathname.includes('/composer/agent/') &&
+      !pathname.includes('/composer/agent/new')
+        ? pathname.split('/')[3]
+        : undefined,
   });
 
   const utils = api.useUtils();

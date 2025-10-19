@@ -35,7 +35,9 @@ export const AgentSelect = () => {
 
   const pathname = usePathname();
 
-  const isAgent = pathname.includes('/composer/agent/');
+  const isAgent =
+    pathname.includes('/composer/agent/') &&
+    !pathname.includes('/composer/agent/new');
   const agentId = pathname.split('/')[3];
 
   const [agentConfigurations, { isLoading }] =

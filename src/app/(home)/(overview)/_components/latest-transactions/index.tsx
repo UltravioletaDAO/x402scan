@@ -7,7 +7,7 @@ import {
 } from '@/app/(home)/_components/transactions';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
-import { Section } from '../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { subMonths } from 'date-fns';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';

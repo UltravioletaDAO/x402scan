@@ -4,7 +4,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { differenceInSeconds, subMonths, subSeconds } from 'date-fns';
 
-import { Section } from '../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 
 import { OverallCharts, LoadingOverallCharts } from './charts';
 
