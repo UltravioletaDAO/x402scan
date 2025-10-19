@@ -58,9 +58,13 @@ export const NavChats = () => {
     }
   };
 
-  if (isLoading || !chats || state === 'collapsed') return null;
+  if (isLoading) {
+    return <LoadingNavChats />;
+  }
 
-  if (chats.length === 0) {
+  if (state === 'collapsed') return null;
+
+  if (!chats || chats.length === 0) {
     return (
       <SidebarGroup>
         <SidebarGroupLabel>Chats</SidebarGroupLabel>
@@ -127,7 +131,7 @@ export const UnauthedNavChats = () => {
   );
 };
 
-export const LoadingNavChats = () => {
+const LoadingNavChats = () => {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Chats</SidebarGroupLabel>
