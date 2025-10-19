@@ -36,7 +36,11 @@ const PureChatItem: React.FC<Props> = ({
     <SidebarMenuItem>
       <SidebarMenuButton asChild isActive={isActive}>
         <Link
-          href={`/composer/chat/${chat.id}`}
+          href={
+            chat.agentConfigurationId
+              ? `/composer/agent/${chat.agentConfigurationId}/${chat.id}`
+              : `/composer/chat/${chat.id}`
+          }
           onClick={() => setOpenMobile(false)}
         >
           <div className="flex min-w-0 items-center gap-2">

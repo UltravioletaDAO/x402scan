@@ -35,6 +35,7 @@ const bodySchema = z.object({
   resourceIds: z.array(z.uuid()),
   messages: z.array(messageSchema),
   chatId: z.string(),
+  agentConfigurationId: z.uuid().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -54,7 +55,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { model, resourceIds, messages, chatId } = requestBody.data;
+  const { model, resourceIds, messages, chatId, agentConfigurationId } =
+    requestBody.data;
+
+  console.log('agentConfigurationId', agentConfigurationId);
 
   const chat = await getChat(chatId, session.user.id);
 
@@ -84,6 +88,11 @@ export async function POST(request: NextRequest) {
       user: {
         connect: { id: session.user.id },
       },
+      agentConfiguration: agentConfigurationId
+        ? {
+            connect: { id: agentConfigurationId },
+          }
+        : undefined,
       messages: {
         create: {
           role: lastMessage.role,

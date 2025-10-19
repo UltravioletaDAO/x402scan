@@ -2,6 +2,8 @@ import { api } from '@/trpc/server';
 import { notFound } from 'next/navigation';
 import { AgentChat } from '../_components/chat';
 
+import { v4 as uuidv4 } from 'uuid';
+
 export default async function AgentPage({
   params,
 }: PageProps<'/composer/agent/[id]'>) {
@@ -13,9 +15,11 @@ export default async function AgentPage({
     return notFound();
   }
 
+  const chatId = uuidv4();
+
   return (
     <AgentChat
-      id={id}
+      id={chatId}
       initialMessages={[]}
       agentConfig={agentConfiguration}
       isReadOnly={false}

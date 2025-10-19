@@ -89,8 +89,8 @@ export const AgentSelect = () => {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2 p-2" asChild>
-                <Link href="/">
-                  <span className="truncate font-medium">Default Chat</span>
+                <Link href="/composer/chat">
+                  <span className="truncate font-medium">Playground</span>
                 </Link>
               </DropdownMenuItem>
               {agentConfigurations.map(agent => (

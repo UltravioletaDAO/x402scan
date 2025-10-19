@@ -24,16 +24,20 @@ export const getChat = async (id: string, userId?: string) => {
   });
 };
 
-export const getChatsByUserId = async (userId: string) => {
+export const listChatsSchema = z.object({
+  agentId: z.uuid().optional(),
+});
+
+export const listChats = async (
+  userId: string,
+  { agentId }: z.infer<typeof listChatsSchema>
+) => {
   return await prisma.chat.findMany({
-    where: { userId },
-    orderBy: { createdAt: 'desc' },
-    include: {
-      messages: {
-        take: 1,
-        orderBy: { createdAt: 'desc' },
-      },
+    where: {
+      userId,
+      agentConfigurationId: agentId ? { equals: agentId } : { equals: null },
     },
+    orderBy: { createdAt: 'desc' },
   });
 };
 

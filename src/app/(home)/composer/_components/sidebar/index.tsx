@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/sidebar';
 
 import { NavMain } from './main';
-import { LoadingNavChats, NavChats, UnauthedNavChats } from './chats';
+import { NavChats, UnauthedNavChats } from './chats';
 import {
   AgentSelect,
   LoadingAgentSelect,
@@ -29,7 +29,6 @@ export async function Sidebar({
 
   if (session?.user) {
     void api.user.agentConfigurations.list.prefetch();
-    void api.user.chats.list.prefetchInfinite();
   }
 
   return (
@@ -52,13 +51,7 @@ export async function Sidebar({
         </SidebarHeader>
         <SidebarContent className="gap-0 pt-2">
           <NavMain />
-          {session ? (
-            <Suspense fallback={<LoadingNavChats />}>
-              <NavChats />
-            </Suspense>
-          ) : (
-            <UnauthedNavChats />
-          )}
+          {session ? <NavChats /> : <UnauthedNavChats />}
         </SidebarContent>
         <SidebarFooter className="flex flex-col gap-2 p-3 group-data-[collapsible=icon]:p-2">
           {session?.user.id && (

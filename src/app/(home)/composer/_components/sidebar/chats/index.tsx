@@ -34,8 +34,11 @@ export const NavChats = () => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const [chats, { isLoading }] =
-    api.user.chats.list.useSuspenseQuery(undefined);
+  const { data: chats, isLoading } = api.user.chats.list.useQuery({
+    agentId: pathname.includes('/composer/agent/')
+      ? pathname.split('/')[3]
+      : undefined,
+  });
 
   const utils = api.useUtils();
   const deleteChat = api.user.chats.delete.useMutation();

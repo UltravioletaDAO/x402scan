@@ -58,7 +58,13 @@ export const ChatContent: React.FC<Props> = ({
       toast.error(error.message);
     },
     onFinish: () => {
-      window.history.replaceState({}, '', `/chat/${id}`);
+      window.history.replaceState(
+        {},
+        '',
+        agentConfig
+          ? `/composer/agent/${agentConfig.id}/${id}`
+          : `/composer/chat/${id}`
+      );
       void utils.user.chats.list.invalidate();
       setTimeout(() => {
         void utils.user.serverWallet.usdcBaseBalance.invalidate();
@@ -88,6 +94,7 @@ export const ChatContent: React.FC<Props> = ({
           model,
           resourceIds: selectedResources.map(resource => resource.id),
           chatId: id,
+          agentConfigurationId: agentConfig?.id,
         },
       }
     );

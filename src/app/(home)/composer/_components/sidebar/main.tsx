@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { Bot, Edit } from 'lucide-react';
+import { Edit } from 'lucide-react';
 
 import {
   SidebarGroup,
@@ -10,18 +10,21 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { usePathname } from 'next/navigation';
 
 export const NavMain = () => {
+  const pathname = usePathname();
+
+  const isAgent = pathname.includes('/composer/agent/');
+  const agentId = pathname.split('/')[3];
+
   const items = [
     {
       title: 'New Chat',
-      url: '/chat' as const,
+      url: isAgent
+        ? (`/composer/agent/${agentId}` as const)
+        : ('/composer/chat' as const),
       icon: Edit,
-    },
-    {
-      title: 'New Agent',
-      url: '/agent/new' as const,
-      icon: Bot,
     },
   ];
 
@@ -31,7 +34,7 @@ export const NavMain = () => {
         {items.map(item => (
           <SidebarMenuItem key={item.title}>
             <SidebarMenuButton key={item.title} tooltip={item.title} asChild>
-              <Link href={`/composer${item.url}`}>
+              <Link href={item.url}>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
               </Link>

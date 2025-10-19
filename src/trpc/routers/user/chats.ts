@@ -3,16 +3,19 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '@/trpc/trpc';
 
 import {
-  getChatsByUserId,
   updateChat,
   deleteChat,
   updateChatSchema,
+  listChats,
+  listChatsSchema,
 } from '@/services/db/chats';
 
 export const userChatsRouter = createTRPCRouter({
-  list: protectedProcedure.query(async ({ ctx }) => {
-    return await getChatsByUserId(ctx.session.user.id);
-  }),
+  list: protectedProcedure
+    .input(listChatsSchema)
+    .query(async ({ input, ctx }) => {
+      return await listChats(ctx.session.user.id, input);
+    }),
 
   update: protectedProcedure
     .input(updateChatSchema)
