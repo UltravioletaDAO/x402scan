@@ -5,7 +5,7 @@ import { auth } from '@/auth';
 
 export default async function AgentPage({
   params,
-}: PageProps<'/composer/agent/[id]/[chatId]'>) {
+}: PageProps<'/composer/agent/[id]/chat/[chatId]'>) {
   const { id, chatId } = await params;
 
   const [session, agentConfiguration, chat] = await Promise.all([

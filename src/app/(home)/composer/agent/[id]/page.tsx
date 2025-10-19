@@ -2,6 +2,7 @@ import { Body } from '@/app/_components/layout/page-utils';
 import { api } from '@/trpc/server';
 import { notFound } from 'next/navigation';
 import { HeaderCard } from './_components/header';
+import { Tools } from './_components/tools';
 
 export default async function AgentPage({
   params,
@@ -17,6 +18,7 @@ export default async function AgentPage({
   return (
     <Body className="gap-8 pt-0">
       <HeaderCard agentConfiguration={agentConfiguration} />
+      <Tools resources={agentConfiguration.resources} />
     </Body>
   );
 }

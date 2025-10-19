@@ -38,7 +38,7 @@ const PureChatItem: React.FC<Props> = ({
         <Link
           href={
             chat.userAgentConfiguration?.agentConfigurationId
-              ? `/composer/agent/${chat.userAgentConfiguration.agentConfigurationId}/${chat.id}`
+              ? `/composer/agent/${chat.userAgentConfiguration.agentConfigurationId}/chat/${chat.id}`
               : `/composer/chat/${chat.id}`
           }
           onClick={() => setOpenMobile(false)}

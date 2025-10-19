@@ -60,7 +60,18 @@ export const getAgentConfigurationById = async (
         JSON_AGG(
           DISTINCT JSONB_BUILD_OBJECT(
             'id', r.id,
-            'originFavicon', o.favicon
+            'resource', r.resource,
+            'favicon', o.favicon,
+            'accepts', (
+              SELECT JSON_AGG(
+                JSONB_BUILD_OBJECT(
+                  'description', a2.description,
+                  'maxAmountRequired', a2."maxAmountRequired"
+                )
+              )
+              FROM "Accepts" a2
+              WHERE a2."resourceId" = r.id
+            )
           )
         ) FILTER (WHERE r.id IS NOT NULL),
         '[]'
@@ -138,7 +149,14 @@ export const getAgentConfigurationById = async (
         resources: z.array(
           z.object({
             id: z.string(),
-            originFavicon: z.string().nullable(),
+            resource: z.string(),
+            favicon: z.url().nullable(),
+            accepts: z.array(
+              z.object({
+                description: z.string(),
+                maxAmountRequired: z.number(),
+              })
+            ),
           })
         ),
       })
