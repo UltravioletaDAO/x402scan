@@ -1,24 +1,27 @@
 import { z } from 'zod';
+
 import { createTRPCRouter, protectedProcedure } from '@/trpc/trpc';
+
 import {
-  createAgentConfiguration,
-  listAgentConfigurationsByUserId,
-  updateAgentConfiguration,
-  deleteAgentConfiguration,
-  updateAgentConfigurationSchema,
   joinAgentConfiguration,
   leaveAgentConfiguration,
-  getAgentConfigurationUser,
-} from '@/services/db/agent-config';
-import { agentConfigurationSchema } from '@/services/db/agent-config/schema';
+  listUserAgentConfigurations,
+} from '@/services/db/agent-config/user';
+import {
+  createAgentConfiguration,
+  createAgentConfigurationSchema,
+  deleteAgentConfiguration,
+  updateAgentConfiguration,
+  updateAgentConfigurationSchema,
+} from '@/services/db/agent-config/mutate';
 
 export const userAgentConfigurationsRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
-    return await listAgentConfigurationsByUserId(ctx.session.user.id);
+    return await listUserAgentConfigurations(ctx.session.user.id);
   }),
 
   create: protectedProcedure
-    .input(agentConfigurationSchema)
+    .input(createAgentConfigurationSchema)
     .mutation(async ({ input, ctx }) => {
       return await createAgentConfiguration(ctx.session.user.id, input);
     }),
@@ -30,9 +33,9 @@ export const userAgentConfigurationsRouter = createTRPCRouter({
     }),
 
   delete: protectedProcedure
-    .input(z.object({ id: z.string() }))
+    .input(z.uuid())
     .mutation(async ({ input, ctx }) => {
-      return await deleteAgentConfiguration(input.id, ctx.session.user.id);
+      return await deleteAgentConfiguration(input, ctx.session.user.id);
     }),
 
   join: protectedProcedure.input(z.uuid()).mutation(async ({ input, ctx }) => {
@@ -41,9 +44,5 @@ export const userAgentConfigurationsRouter = createTRPCRouter({
 
   leave: protectedProcedure.input(z.uuid()).mutation(async ({ input, ctx }) => {
     return await leaveAgentConfiguration(ctx.session.user.id, input);
-  }),
-
-  isMember: protectedProcedure.input(z.uuid()).query(async ({ input, ctx }) => {
-    return Boolean(await getAgentConfigurationUser(ctx.session.user.id, input));
   }),
 });

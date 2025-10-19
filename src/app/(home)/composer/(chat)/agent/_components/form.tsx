@@ -24,16 +24,16 @@ import {
   FieldSet,
   FieldTitle,
 } from '@/components/ui/field';
-
-import { api } from '@/trpc/client';
-
-import { agentConfigurationSchema } from '@/services/db/agent-config/schema';
-
-import { ResourceList } from '../../_components/resource-list';
+import { Dropzone } from '@/components/ui/dropzone';
 import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
-import { Dropzone } from '@/components/ui/dropzone';
+import { ResourceList } from '../../_components/resource-list';
+
+import { api } from '@/trpc/client';
+
+import { agentConfigurationSchema } from '@/services/db/agent-config/mutate/schema';
+
 import { cn } from '@/lib/utils';
 
 import type z from 'zod';
