@@ -4,6 +4,10 @@ import {
   getAgentConfigurationById,
   listAgentConfigurations,
 } from '@/services/db/agent-config';
+import {
+  agentConfigBucketedActivityInputSchema,
+  getAgentConfigBucketedActivity,
+} from '@/services/db/agent-config/stats';
 import { auth } from '@/auth';
 
 export const publicAgentConfigurationsRouter = createTRPCRouter({
@@ -15,4 +19,10 @@ export const publicAgentConfigurationsRouter = createTRPCRouter({
   list: publicProcedure.query(async () => {
     return await listAgentConfigurations();
   }),
+
+  getBucketedActivity: publicProcedure
+    .input(agentConfigBucketedActivityInputSchema)
+    .query(async ({ input }) => {
+      return await getAgentConfigBucketedActivity(input);
+    }),
 });
