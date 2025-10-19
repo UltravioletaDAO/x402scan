@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import { Avatar } from '@/components/ui/avatar';
 
-import { AgentStats } from './stats';
+import { AgentStats, LoadingAgentStats } from './stats';
 
 import { cn } from '@/lib/utils';
 
@@ -74,6 +74,9 @@ export const LoadingHeaderCard = () => {
             <Skeleton className="w-64 h-[16px] my-[4px]" />
           </div>
           <LoadingHeaderButtons />
+        </div>
+        <div className="col-span-2">
+          <LoadingAgentStats />
         </div>
       </div>
     </Card>

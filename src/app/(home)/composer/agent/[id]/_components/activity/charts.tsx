@@ -1,7 +1,7 @@
 'use client';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
-import { MultiCharts } from '@/components/ui/charts/multi';
+import { LoadingMultiCharts, MultiCharts } from '@/components/ui/charts/multi';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
@@ -95,6 +95,27 @@ export const ActivityCharts: React.FC<Props> = ({
               getValue: value => value.toString(),
             },
           ],
+        },
+      ]}
+    />
+  );
+};
+
+export const LoadingActivityCharts = () => {
+  return (
+    <LoadingMultiCharts
+      tabs={[
+        {
+          type: 'bar',
+          label: 'Users',
+        },
+        {
+          type: 'bar',
+          label: 'Messages',
+        },
+        {
+          type: 'bar',
+          label: 'Tool Calls',
         },
       ]}
     />

@@ -1,7 +1,7 @@
 import { Section } from '@/app/_components/layout/page-utils';
 import type { RouterOutputs } from '@/trpc/client';
 import { api } from '@/trpc/server';
-import { ActivityCharts } from './charts';
+import { ActivityCharts, LoadingActivityCharts } from './charts';
 import { Card } from '@/components/ui/card';
 
 interface Props {
@@ -15,13 +15,27 @@ export const Activity: React.FC<Props> = async ({ agentConfiguration }) => {
     });
 
   return (
+    <ActivityContainer>
+      <ActivityCharts
+        agentConfiguration={agentConfiguration}
+        bucketedActivity={bucketedActivity}
+      />
+    </ActivityContainer>
+  );
+};
+
+export const LoadingActivity = () => {
+  return (
+    <ActivityContainer>
+      <LoadingActivityCharts />
+    </ActivityContainer>
+  );
+};
+
+const ActivityContainer = ({ children }: { children: React.ReactNode }) => {
+  return (
     <Section title="Usage">
-      <Card>
-        <ActivityCharts
-          agentConfiguration={agentConfiguration}
-          bucketedActivity={bucketedActivity}
-        />
-      </Card>
+      <Card className="overflow-hidden">{children}</Card>
     </Section>
   );
 };

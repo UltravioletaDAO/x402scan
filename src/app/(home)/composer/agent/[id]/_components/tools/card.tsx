@@ -12,6 +12,7 @@ import { Favicon } from '@/app/_components/favicon';
 import { formatTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   resource: RouterOutputs['public']['agentConfigurations']['get']['resources'][number];
@@ -19,7 +20,7 @@ interface Props {
 
 export const ToolCard: React.FC<Props> = ({ resource }) => {
   return (
-    <Card key={resource.id}>
+    <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 space-y-0">
@@ -39,6 +40,23 @@ export const ToolCard: React.FC<Props> = ({ resource }) => {
         <CardDescription className="line-clamp-2">
           {resource.accepts[0].description}
         </CardDescription>
+      </CardHeader>
+    </Card>
+  );
+};
+
+export const LoadingToolCard = () => {
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 space-y-0">
+            <Skeleton className="size-4" />
+            <Skeleton className="w-24 h-4" />
+            <Skeleton className="w-8 h-4" />
+          </div>
+        </div>
+        <Skeleton className="h-4 w-full" />
       </CardHeader>
     </Card>
   );

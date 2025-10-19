@@ -1,4 +1,5 @@
-import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn, formatCompactAgo } from '@/lib/utils';
 import type { RouterOutputs } from '@/trpc/client';
 import {
   Calendar,
@@ -8,13 +9,63 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
+type Config = NonNullable<
+  RouterOutputs['public']['agentConfigurations']['get']
+>;
+
 interface Props {
-  agentConfiguration: NonNullable<
-    RouterOutputs['public']['agentConfigurations']['get']
-  >;
+  agentConfiguration: Config;
 }
 
+const statCards = [
+  {
+    title: 'Users',
+    Icon: Users,
+    getValue: (config: Config) => config.userCount.toString(),
+  },
+  {
+    title: 'Messages',
+    Icon: MessagesSquare,
+    getValue: (config: Config) => config.messageCount.toString(),
+  },
+  {
+    title: 'Tool Calls',
+    Icon: Wrench,
+    getValue: (config: Config) => config.toolCallCount.toString(),
+  },
+  {
+    title: 'Created',
+    Icon: Calendar,
+    getValue: (config: Config) => formatCompactAgo(config.createdAt),
+  },
+] as const;
+
 export const AgentStats: React.FC<Props> = ({ agentConfiguration }) => {
+  return (
+    <AgentStatsContainer>
+      {statCards.map(({ title, Icon, getValue }) => (
+        <StatCard
+          key={title}
+          title={title}
+          Icon={Icon}
+          value={getValue(agentConfiguration)}
+        />
+      ))}
+    </AgentStatsContainer>
+  );
+};
+
+export const LoadingAgentStats = () => {
+  return (
+    <AgentStatsContainer>
+      {statCards.map(({ title, Icon }) => (
+        <LoadingStatCard key={title} title={title} Icon={Icon} />
+      ))}
+    </AgentStatsContainer>
+  );
+};
+
+const AgentStatsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
       className={cn(
@@ -26,44 +77,52 @@ export const AgentStats: React.FC<Props> = ({ agentConfiguration }) => {
         '[&>*:nth-child(-n+2)]:border-b md:[&>*:not(:last-child)]:border-b'
       )}
     >
-      <BaseStatCard
-        title="Users"
-        value={agentConfiguration.userCount.toString()}
-        Icon={Users}
-      />
-      <BaseStatCard
-        title="Messages"
-        value={agentConfiguration.messageCount.toString()}
-        Icon={MessagesSquare}
-      />
-      <BaseStatCard
-        title="Tool Calls"
-        value={agentConfiguration.toolCallCount.toString()}
-        Icon={Wrench}
-      />
-      <BaseStatCard
-        title="Created At"
-        value={agentConfiguration.createdAt.toLocaleDateString()}
-        Icon={Calendar}
-      />
+      {children}
     </div>
   );
 };
 
-interface StatCardProps {
+interface BaseStatCardProps {
   title: string;
-  value: string;
+  value: React.ReactNode;
   Icon: LucideIcon;
 }
 
-const BaseStatCard: React.FC<StatCardProps> = ({ title, value, Icon }) => {
+const BaseStatCard: React.FC<BaseStatCardProps> = ({ title, value, Icon }) => {
   return (
     <div className="flex justify-between flex-1 px-4 gap-2 py-1">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Icon className="size-4 shrink-0" />
         <span className="text-xs font-medium tracking-wider">{title}</span>
       </div>
-      <div className="text-lg font-bold font-mono">{value}</div>
+      {value}
     </div>
+  );
+};
+
+interface StatsCardProps extends Omit<BaseStatCardProps, 'value'> {
+  value: string;
+}
+
+const StatCard: React.FC<StatsCardProps> = ({ title, Icon, value }) => {
+  return (
+    <BaseStatCard
+      title={title}
+      value={<div className="text-lg font-bold font-mono">{value}</div>}
+      Icon={Icon}
+    />
+  );
+};
+
+const LoadingStatCard: React.FC<Omit<BaseStatCardProps, 'value'>> = ({
+  title,
+  Icon,
+}) => {
+  return (
+    <BaseStatCard
+      title={title}
+      value={<Skeleton className="w-8 h-[16px] my-[4px]" />}
+      Icon={Icon}
+    />
   );
 };
