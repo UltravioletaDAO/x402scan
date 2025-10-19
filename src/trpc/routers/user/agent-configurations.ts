@@ -7,7 +7,7 @@ import {
   deleteAgentConfiguration,
   updateAgentConfigurationSchema,
 } from '@/services/db/agent-config';
-import { createAgentConfigurationSchema } from '@/services/db/agent-config/schema';
+import { agentConfigurationSchema } from '@/services/db/agent-config/schema';
 
 export const userAgentConfigurationsRouter = createTRPCRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
@@ -16,7 +16,7 @@ export const userAgentConfigurationsRouter = createTRPCRouter({
 
   // Create a new agent configuration
   create: protectedProcedure
-    .input(createAgentConfigurationSchema)
+    .input(agentConfigurationSchema)
     .mutation(async ({ input, ctx }) => {
       return await createAgentConfiguration(ctx.session.user.id, input);
     }),

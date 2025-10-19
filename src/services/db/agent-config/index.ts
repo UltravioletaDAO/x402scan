@@ -1,13 +1,13 @@
-import z from 'zod';
-
 import { prisma } from '../client';
 
-import type { createAgentConfigurationSchema } from './schema';
+import { agentConfigurationSchema } from './schema';
+
+import z from 'zod';
 
 // AgentConfiguration CRUD operations
 export const createAgentConfiguration = async (
   userId: string,
-  data: z.infer<typeof createAgentConfigurationSchema>
+  data: z.infer<typeof agentConfigurationSchema>
 ) => {
   const {
     name,
@@ -98,23 +98,28 @@ export const listAgentConfigurationsByUserId = async (userId: string) => {
   });
 };
 
-export const updateAgentConfigurationSchema = z.object({
-  id: z.string(),
-  name: z.string().optional(),
-  model: z.string().optional(),
-  systemPrompt: z.string().optional(),
-  visibility: z.enum(['public', 'private']).optional(),
-  resourceIds: z.array(z.uuid()).optional(),
-});
+export const updateAgentConfigurationSchema = agentConfigurationSchema
+  .partial()
+  .extend({
+    id: z.string(),
+  });
 
 export const updateAgentConfiguration = async (
   userId: string,
   updateData: z.infer<typeof updateAgentConfigurationSchema>
 ) => {
-  const { id, ...data } = updateData;
+  const { id, resourceIds, ...data } = updateData;
   return await prisma.agentConfiguration.update({
     where: { id, ownerId: userId },
-    data,
+    data: {
+      ...data,
+      resources: {
+        deleteMany: {},
+        createMany: {
+          data: resourceIds?.map(resourceId => ({ resourceId })) ?? [],
+        },
+      },
+    },
   });
 };
 

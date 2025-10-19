@@ -7,12 +7,10 @@ import {
 import { auth } from '@/auth';
 
 export const publicAgentConfigurationsRouter = createTRPCRouter({
-  get: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const session = await auth();
-      return await getAgentConfigurationById(input.id, session?.user?.id);
-    }),
+  get: publicProcedure.input(z.uuid()).query(async ({ input }) => {
+    const session = await auth();
+    return await getAgentConfigurationById(input, session?.user?.id);
+  }),
 
   list: publicProcedure.query(async () => {
     return await listAgentConfigurations();
