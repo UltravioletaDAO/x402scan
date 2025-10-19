@@ -19,6 +19,7 @@ import { api } from '@/trpc/client';
 
 import type { ChatStatus } from 'ai';
 import type { SelectedResource } from '../../../_types/chat-config';
+import { ServerWalletButton } from './server-wallet';
 
 interface Props {
   input: string;
@@ -67,6 +68,7 @@ export const PromptInputSection: React.FC<Props> = ({
             resources={selectedResources}
             onSelectResource={onSelectResource}
           />
+          <ServerWalletButton />
         </PromptInputTools>
         <PromptInputSubmit
           disabled={!input || !hasBalance}

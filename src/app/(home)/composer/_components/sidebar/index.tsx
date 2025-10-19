@@ -3,7 +3,6 @@ import { Suspense } from 'react';
 import {
   Sidebar as BaseSidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarRail,
 } from '@/components/ui/sidebar';
@@ -15,12 +14,10 @@ import {
   LoadingAgentSelect,
   UnauthedAgentSelect,
 } from './agent-select';
-import { Wallet } from './wallet';
 
 import { auth } from '@/auth';
 
 import { api, HydrateClient } from '@/trpc/server';
-import { LoadingWalletButton } from './wallet/button';
 
 export async function Sidebar({
   ...props
@@ -53,13 +50,6 @@ export async function Sidebar({
           <NavMain />
           {session ? <NavChats /> : <UnauthedNavChats />}
         </SidebarContent>
-        <SidebarFooter className="flex flex-col gap-2 p-3 group-data-[collapsible=icon]:p-2">
-          {session?.user.id && (
-            <Suspense fallback={<LoadingWalletButton />}>
-              <Wallet />
-            </Suspense>
-          )}
-        </SidebarFooter>
         <SidebarRail />
       </BaseSidebar>
     </HydrateClient>
