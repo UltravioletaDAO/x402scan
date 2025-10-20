@@ -50,14 +50,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: 'agentConfiguration',
     header: () => (
-      <HeaderCell
-        Icon={Bot}
-        label="Agent Configuration"
-        className="mr-auto px-2"
-      />
+      <HeaderCell Icon={Bot} label="Agent" className="mr-auto px-2" />
     ),
     cell: ({ row }) => (
-      <div className="flex items-center gap-2 mr-auto px-2">
+      <div className="flex items-center gap-2 mr-auto px-2 text-muted-foreground text-sm font-medium">
         {row.original.agentConfiguration ? (
           <>
             {row.original.agentConfiguration.image ? (
@@ -71,14 +67,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
             ) : (
               <Bot className="size-3" />
             )}
-            <span className="text-muted-foreground text-sm font-medium">
-              {row.original.agentConfiguration.name}
-            </span>
+            {row.original.agentConfiguration.name}
           </>
         ) : (
           <>
             <MessageSquare className="size-3" />
-            <div className="text-sm">Playground</div>
+            Playground
           </>
         )}
       </div>
@@ -93,13 +87,13 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) =>
       row.original.resource ? (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 overflow-hidden">
           <Favicon
             url={row.original.resource?.favicon}
             className="size-3"
             Fallback={Wrench}
           />
-          <span className="text-muted-foreground font-mono text-sm font-medium">
+          <span className="text-muted-foreground font-mono text-xs font-medium flex-1 truncate">
             {row.original.resource.resource}
           </span>
         </div>
@@ -108,14 +102,14 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
     accessorKey: 'time',
     header: () => (
-      <HeaderCell Icon={Calendar} label="Created At" className="mx-auto" />
+      <HeaderCell Icon={Calendar} label="Timestamp" className="ml-auto" />
     ),
     cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
+      <div className="text-right font-mono text-xs">
         {formatCompactAgo(row.original.createdAt)}
       </div>
     ),
     size: 100,
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+    loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];

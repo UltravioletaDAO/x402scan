@@ -1,18 +1,26 @@
 'use client';
 
-import { ArrowLeftRight, Bot, Calendar, Users, Wrench } from 'lucide-react';
+import {
+  Activity,
+  ArrowLeftRight,
+  Bot,
+  Calendar,
+  Users,
+  Wrench,
+} from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { formatCompactAgo } from '@/lib/utils';
 
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
-import { SellersSortingContext } from '../../../../_contexts/sorting/sellers/context';
+
+import { ToolsSortingContext } from '@/app/_contexts/sorting/tools/context';
+import { Favicon } from '@/app/_components/favicon';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
-import { ToolsSortingContext } from '@/app/_contexts/sorting/tools/context';
-import { Favicon } from '@/app/_components/favicon';
+import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
 
 type ColumnType = RouterOutputs['public']['tools']['top'][number];
 
@@ -45,17 +53,22 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
   },
   {
+    accessorKey: 'chart',
+    header: () => (
+      <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
+    ),
+    cell: ({ row }) => (
+      <KnownSellerChart
+        addresses={row.original.accepts.map(accept => accept.payTo)}
+      />
+    ),
+    size: 100,
+    loading: () => <LoadingKnownSellerChart />,
+  },
+  {
     accessorKey: 'toolCalls',
     header: () => (
-      <HeaderCell
-        Icon={ArrowLeftRight}
-        label="Calls"
-        className="mx-auto"
-        sorting={{
-          sortContext: ToolsSortingContext,
-          sortKey: 'toolCalls',
-        }}
-      />
+      <HeaderCell Icon={ArrowLeftRight} label="Calls" className="mx-auto" />
     ),
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
@@ -66,7 +79,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    size: 100, // Fixed width for transaction count
+    size: 75, // Fixed width for transaction count
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -91,7 +104,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    size: 100, // Fixed width for volume column
+    size: 75, // Fixed width for volume column
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -106,7 +119,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    size: 100, // Fixed width for users count
+    size: 75, // Fixed width for users count
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -116,8 +129,8 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         Icon={Calendar}
         label="Latest"
         sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'latest_block_timestamp',
+          sortContext: ToolsSortingContext,
+          sortKey: 'latestCallTime',
         }}
         className="mx-auto"
       />
@@ -127,7 +140,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         {formatCompactAgo(row.original.latest_call_time ?? new Date())}
       </div>
     ),
-    size: 100, // Fixed width for timestamp
+    size: 75, // Fixed width for timestamp
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
 ];

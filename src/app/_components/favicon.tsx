@@ -3,6 +3,7 @@ import { Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 import type { LucideIcon } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   url: string | null;
@@ -61,6 +62,43 @@ export const Favicons: React.FC<FaviconsProps> = ({
           >
             <Favicon url={favicon} className="size-full" />
           </div>
+        );
+      })}
+    </div>
+  );
+};
+
+export const LoadingFavicons = ({
+  count,
+  orientation = 'horizontal',
+  containerClassName,
+  iconContainerClassName,
+}: {
+  count: number;
+  orientation?: 'horizontal' | 'vertical';
+  containerClassName?: string;
+  iconContainerClassName?: string;
+}) => {
+  return (
+    <div
+      className={cn(
+        'flex items-center',
+        {
+          'flex-col pt-2': orientation === 'vertical',
+          'flex-row pl-2': orientation === 'horizontal',
+        },
+        containerClassName
+      )}
+    >
+      {Array.from({ length: count }).map((_, index) => {
+        return (
+          <Skeleton
+            key={index}
+            className={cn(iconContainerClassName, {
+              '-mt-2': orientation === 'vertical',
+              '-ml-2': orientation === 'horizontal',
+            })}
+          />
         );
       })}
     </div>

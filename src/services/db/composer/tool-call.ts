@@ -106,15 +106,15 @@ export const listTopTools = async (
             : Prisma.sql`unique_users > 0`
     }
     ORDER BY 
-      ${Prisma.sql`${
+      ${
         sorting.id === 'toolCalls'
-          ? 'tool_calls'
+          ? Prisma.sql`tool_calls`
           : sorting.id === 'agentConfigurations'
-            ? 'agent_configurations'
+            ? Prisma.sql`agent_configurations`
             : sorting.id === 'uniqueUsers'
-              ? 'unique_users'
-              : 'latest_call_time'
-      }`} ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
+              ? Prisma.sql`unique_users`
+              : Prisma.sql`latest_call_time`
+      } ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
     LIMIT ${limit}
   `,
     z.array(

@@ -6,23 +6,29 @@ export const Agents = async () => {
   const topAgents = await api.public.agents.list();
 
   return (
-    <Section title="Top Agents" description="Discover the most popular agents">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {topAgents.map(agent => (
-          <AgentCard key={agent.id} agentConfiguration={agent} />
-        ))}
-      </div>
-    </Section>
+    <AgentsContainer>
+      {topAgents.map(agent => (
+        <AgentCard key={agent.id} agentConfiguration={agent} />
+      ))}
+    </AgentsContainer>
   );
 };
 
 export const LoadingAgents = () => {
   return (
+    <AgentsContainer>
+      {Array.from({ length: 3 }).map((_, index) => (
+        <LoadingAgentCard key={index} />
+      ))}
+    </AgentsContainer>
+  );
+};
+
+const AgentsContainer = ({ children }: { children: React.ReactNode }) => {
+  return (
     <Section title="Top Agents" description="Discover the most popular agents">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <LoadingAgentCard key={index} />
-        ))}
+        {children}
       </div>
     </Section>
   );
