@@ -2,7 +2,7 @@ import React, { Suspense } from 'react';
 
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { differenceInSeconds, subMonths, subSeconds } from 'date-fns';
+import { subMonths } from 'date-fns';
 
 import { Section } from '@/app/_components/layout/page-utils';
 
@@ -26,10 +26,6 @@ export const OverallStats = async () => {
     api.public.agents.activity.overall.prefetch({
       startDate,
       endDate,
-    }),
-    api.public.agents.activity.overall.prefetch({
-      startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-      endDate: startDate,
     }),
     api.public.agents.activity.bucketed.prefetch({
       startDate,
