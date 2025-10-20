@@ -1,6 +1,6 @@
 import z from 'zod';
 
-import { ethereumAddressSchema, facilitatorAddressSchema } from '@/lib/schemas';
+import { ethereumAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
