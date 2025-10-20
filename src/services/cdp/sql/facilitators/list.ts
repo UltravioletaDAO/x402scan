@@ -1,11 +1,15 @@
-import type { FacilitatorName } from '@/lib/facilitators';
-import { facilitatorNameMap, facilitators } from '@/lib/facilitators';
-import { runBaseSqlQuery } from '../query';
-import { formatDateForSql, sortingSchema } from '../lib';
 import z from 'zod';
-import { ethereumAddressSchema } from '@/lib/schemas';
+
+import { runBaseSqlQuery } from '../query';
+
+import { formatDateForSql } from '../lib';
+
+import { facilitatorNameMap, facilitators } from '@/lib/facilitators';
+import { ethereumAddressSchema, sortingSchema } from '@/lib/schemas';
 import { USDC_ADDRESS } from '@/lib/utils';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+
+import type { FacilitatorName } from '@/lib/facilitators';
 
 const listTopFacilitatorsSortIds = [
   'tx_count',

@@ -55,6 +55,10 @@ export const formatAddress = (address: string) => {
 };
 
 export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
+  if (previous === BigInt(0)) {
+    return 0;
+  }
+
   return ((Number(current) - Number(previous)) / Number(previous)) * 100;
 };
 

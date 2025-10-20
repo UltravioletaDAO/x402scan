@@ -12,7 +12,7 @@ import { statsRouter } from './stats';
 import { resourcesRouter } from './resources';
 
 export const publicRouter = createTRPCRouter({
-  agentConfigurations: publicAgentConfigurationsRouter,
+  agents: publicAgentConfigurationsRouter,
   chats: publicChatsRouter,
   origins: originsRouter,
   tools: publicToolsRouter,
