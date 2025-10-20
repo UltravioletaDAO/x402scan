@@ -9,7 +9,6 @@ export const queryRaw = async <T>(sql: Sql, resultSchema: z.ZodSchema<T>) => {
   const parseResult = resultSchema.safeParse(result);
 
   if (!parseResult.success) {
-    console.log(result);
     // console.error(parseResult.error.issues);
     throw new Error('Invalid result: ' + parseResult.error.message);
   }

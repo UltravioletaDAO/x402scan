@@ -110,7 +110,6 @@ export async function createX402AITools({
                 ),
                 requestInit
               );
-              console.log('response', response);
               void createToolCall({
                 resource: {
                   connect: { id: resource.id },
