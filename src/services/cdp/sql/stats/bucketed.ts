@@ -1,10 +1,10 @@
 import z from 'zod';
 import { subMonths } from 'date-fns';
 
-import { runBaseSqlQuery } from '../query';
-import { baseQuerySchema, formatDateForSql } from '../lib';
+import { baseQuerySchema } from '../lib';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+import { transfersPrisma } from '@/services/db/transfers-client';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -28,95 +28,87 @@ const getBucketedStatisticsUncached = async (
   }
   const { addresses, startDate, endDate, numBuckets, facilitators, tokens } =
     parseResult.data;
-  const outputSchema = z.object({
-    bucket_start: z.coerce.date(),
-    total_transactions: z.coerce.number(),
-    total_amount: z.coerce.number(),
-    unique_buyers: z.coerce.number(),
-    unique_sellers: z.coerce.number(),
+
+  // Build the where clause for Prisma
+  const where = {
+    // Filter by token addresses
+    address: { in: tokens.map(t => t.toLowerCase()) },
+    // Filter by facilitator addresses
+    transaction_from: { in: facilitators.map(f => f.toLowerCase()) },
+    // Optional filter by recipient addresses (sellers)
+    ...(addresses && addresses.length > 0 && {
+      recipient: { in: addresses.map(a => a.toLowerCase()) },
+    }),
+    // Date range filters
+    block_timestamp: { gte: startDate, lte: endDate },
+  };
+
+  // Get all transfers in the time range
+  const transfers = await transfersPrisma.transferEvent.findMany({
+    where,
+    select: {
+      block_timestamp: true,
+      amount: true,
+      sender: true,
+      recipient: true,
+    },
   });
 
   // Calculate bucket size in seconds for consistent alignment
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeMs = Math.floor(timeRangeMs / numBuckets);
-  const bucketSizeSeconds = Math.max(1, Math.floor(bucketSizeMs / 1000)); // Ensure at least 1 second
+  const bucketSizeSeconds = Math.max(1, Math.floor(bucketSizeMs / 1000));
 
   // Calculate the first bucket start time aligned to the bucket size
   const startTimestamp = Math.floor(startDate.getTime() / 1000);
   const firstBucketStartTimestamp =
     Math.floor(startTimestamp / bucketSizeSeconds) * bucketSizeSeconds;
 
-  // Simple query to get actual data - we'll add zeros in TypeScript
-  const sql = `SELECT
-    toDateTime(toUInt32(toUnixTimestamp(block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}) AS bucket_start,
-    COUNT(*) AS total_transactions,
-    SUM(parameters['value']::UInt256) AS total_amount,
-    COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
-    COUNT(DISTINCT parameters['to']::String) AS unique_sellers
-FROM base.events
-WHERE event_signature = 'Transfer(address,address,uint256)'
-    AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
-    AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
-    AND parameters['value']::UInt256 < 1000000000
-    ${
-      addresses && addresses.length > 0
-        ? `AND parameters['to']::String IN (${addresses
-            .map(a => `'${a}'`)
-            .join(', ')})`
-        : ''
-    }
-    ${
-      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ''
-    }
-    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
-GROUP BY bucket_start
-ORDER BY bucket_start ASC;
-  `;
+  // Group transfers into buckets
+  const bucketMap = new Map<number, {
+    total_transactions: number;
+    total_amount: number;
+    buyers: Set<string>;
+    sellers: Set<string>;
+  }>();
 
-  const result = await runBaseSqlQuery(sql, z.array(outputSchema));
+  for (const transfer of transfers) {
+    const timestamp = Math.floor(transfer.block_timestamp.getTime() / 1000);
+    const bucketIndex = Math.floor((timestamp - firstBucketStartTimestamp) / bucketSizeSeconds);
+    const bucketStartTimestamp = firstBucketStartTimestamp + bucketIndex * bucketSizeSeconds;
 
-  if (!result) {
-    return [];
+    if (!bucketMap.has(bucketStartTimestamp)) {
+      bucketMap.set(bucketStartTimestamp, {
+        total_transactions: 0,
+        total_amount: 0,
+        buyers: new Set(),
+        sellers: new Set(),
+      });
+    }
+
+    const bucket = bucketMap.get(bucketStartTimestamp)!;
+    bucket.total_transactions++;
+    bucket.total_amount += transfer.amount;
+    bucket.buyers.add(transfer.sender);
+    bucket.sellers.add(transfer.recipient);
   }
 
   // Generate complete time series with zero values for missing periods
   const completeTimeSeries = [];
-  const dataMap = new Map(
-    result.map(item => [
-      item.bucket_start.getTime(),
-      {
-        bucket_start: item.bucket_start,
-        total_transactions: item.total_transactions,
-        total_amount: item.total_amount,
-        unique_buyers: item.unique_buyers,
-        unique_sellers: item.unique_sellers,
-      },
-    ])
-  );
 
-  // Generate all expected time buckets using consistent bucket alignment
+  // Generate all expected time buckets
   for (let i = 0; i < numBuckets; i++) {
-    // Calculate bucket start time using the same logic as SQL
-    const bucketStartTimestamp =
-      firstBucketStartTimestamp + i * bucketSizeSeconds;
+    const bucketStartTimestamp = firstBucketStartTimestamp + i * bucketSizeSeconds;
     const bucketStart = new Date(bucketStartTimestamp * 1000);
+    const bucket = bucketMap.get(bucketStartTimestamp);
 
-    // Check if we have data for this bucket using the exact timestamp
-    const bucketKey = bucketStart.getTime();
-    const existingData = dataMap.get(bucketKey);
-
-    if (existingData) {
-      completeTimeSeries.push(existingData);
-    } else {
-      // Add zero values for missing periods
-      completeTimeSeries.push({
-        bucket_start: bucketStart,
-        total_transactions: 0,
-        total_amount: 0,
-        unique_buyers: 0,
-        unique_sellers: 0,
-      });
-    }
+    completeTimeSeries.push({
+      bucket_start: bucketStart,
+      total_transactions: bucket?.total_transactions ?? 0,
+      total_amount: bucket?.total_amount ?? 0,
+      unique_buyers: bucket?.buyers.size ?? 0,
+      unique_sellers: bucket?.sellers.size ?? 0,
+    });
   }
 
   return completeTimeSeries;
