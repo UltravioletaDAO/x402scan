@@ -23,7 +23,7 @@ export function ResourceExecutorModal({
   onOpenChange,
   resourceId,
 }: ResourceExecutorModalProps) {
-  const { data: resource, isLoading } = api.resources.getById.useQuery(
+  const { data: resource, isLoading } = api.public.resources.getById.useQuery(
     resourceId,
     { enabled: open }
   );

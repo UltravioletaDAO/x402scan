@@ -15,7 +15,7 @@ import { api, type RouterOutputs } from '@/trpc/client';
 import { toast } from 'sonner';
 
 type Resource =
-  RouterOutputs['resources']['list']['paginated']['items'][number];
+  RouterOutputs['public']['resources']['list']['paginated']['items'][number];
 
 interface ControlMenuProps {
   selectedResources?: Resource[];
@@ -32,10 +32,10 @@ export const ControlMenu = ({
   >(null);
 
   const unassignAllFromAllMutation =
-    api.resourceTags.unassignAllFromAll.useMutation({
+    api.admin.resources.tags.unassignAllFromAll.useMutation({
       onSuccess: () => {
         toast.success('All tags unassigned from all resources');
-        void utils.resources.list.paginated.invalidate();
+        void utils.public.resources.list.paginated.invalidate();
         onSuccess?.();
       },
       onError: error => {
@@ -43,10 +43,10 @@ export const ControlMenu = ({
       },
     });
 
-  const unassignAllMutation = api.resourceTags.unassignAll.useMutation({
+  const unassignAllMutation = api.admin.resources.tags.unassignAll.useMutation({
     onSuccess: () => {
       toast.success('Tags unassigned successfully');
-      void utils.resources.list.paginated.invalidate();
+      void utils.public.resources.list.paginated.invalidate();
       onSuccess?.();
     },
     onError: error => {
