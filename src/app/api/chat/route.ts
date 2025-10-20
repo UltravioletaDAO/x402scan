@@ -60,6 +60,10 @@ export async function POST(request: NextRequest) {
 
   const chat = await getChat(chatId, session.user.id);
 
+  if (chat?.userId !== session.user.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const wallet = await getWalletForUserId(session.user.id);
   if (!wallet) {
     return NextResponse.json(

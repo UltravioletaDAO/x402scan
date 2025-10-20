@@ -1,10 +1,11 @@
 import { auth } from '@/auth';
 import { Nav } from '../_components/layout/nav';
+import { forbidden } from 'next/navigation';
 
 export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
   const session = await auth();
   if (!session || session.user.role !== 'admin') {
-    return children;
+    return forbidden();
   }
 
   return (
