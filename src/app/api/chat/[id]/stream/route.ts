@@ -1,5 +1,5 @@
 import { auth } from '@/auth';
-import { getChat } from '@/services/db/composer/chat';
+import { getChatStreamId } from '@/services/db/composer/chat';
 import { UI_MESSAGE_STREAM_HEADERS } from 'ai';
 import { after } from 'next/server';
 import { createResumableStreamContext } from 'resumable-stream';
@@ -12,7 +12,7 @@ export async function GET(
 
   const session = await auth();
 
-  const chat = await getChat(id, session?.user.id);
+  const chat = await getChatStreamId(id, session?.user.id);
 
   if (chat?.activeStreamId == null) {
     // no content response when there is no active stream

@@ -29,6 +29,13 @@ export const getChat = async (id: string, userId?: string) => {
   });
 };
 
+export const getChatStreamId = async (id: string, userId?: string) => {
+  return await prisma.chat.findUnique({
+    where: { id, OR: [{ userId }, { visibility: 'public' }] },
+    select: { activeStreamId: true },
+  });
+};
+
 export const listChatsSchema = z.object({
   agentId: z.uuid().optional(),
 });
@@ -76,12 +83,5 @@ export const updateChat = async (
 export const deleteChat = async (id: string, userId: string) => {
   return await prisma.chat.delete({
     where: { id, userId },
-  });
-};
-
-// Message CRUD operations
-export const createMessage = async (data: Prisma.MessageCreateInput) => {
-  return await prisma.message.create({
-    data,
   });
 };
