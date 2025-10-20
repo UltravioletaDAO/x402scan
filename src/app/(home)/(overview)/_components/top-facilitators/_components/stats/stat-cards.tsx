@@ -79,7 +79,7 @@ const BaseStatCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex flex-row justify-between items-center md:flex-col md:justify-center md:items-start flex-1 px-2 py-2">
+    <div className="flex flex-row justify-between items-center md:flex-col md:justify-center md:items-start flex-1 p-2">
       <p className="text-[10px] font-medium leading-none">{title}</p>
       <div className="gap-1 flex items-center justify-start">{children}</div>
     </div>

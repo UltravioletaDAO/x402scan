@@ -11,7 +11,7 @@ interface Props {
   agentConfigId: string;
 }
 
-const height = 32;
+const height = '100%';
 
 export const AgentCardChart: React.FC<Props> = async ({ agentConfigId }) => {
   const bucketedActivity = await api.public.agents.activity.agent.bucketed({
