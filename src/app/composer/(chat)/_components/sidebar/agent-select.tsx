@@ -179,7 +179,7 @@ const AgentSelectButton = React.forwardRef<
             ) : (
               <>
                 <BotMessageSquare className="size-4 flex-shrink-0" />
-                <span className="truncate">Agent</span>
+                <span className="truncate">Playground</span>
               </>
             )}
           </div>

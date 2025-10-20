@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { formatCompactAgo } from '@/lib/utils';
 
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
-import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/context';
+import { SellersSortingContext } from '../../../../_contexts/sorting/sellers/context';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
