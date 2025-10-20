@@ -1,8 +1,13 @@
+import { parseUnits } from 'viem';
 import { createPaymentHeader, selectPaymentRequirements } from 'x402/client';
 import { PaymentRequirementsSchema } from 'x402/types';
 import type { Signer } from 'x402/types';
 
-async function getPaymentHeaderFromBody(body: unknown, walletClient: Signer) {
+async function getPaymentHeaderFromBody(
+  body: unknown,
+  walletClient: Signer,
+  maxAmount?: number
+) {
   const { x402Version, accepts } = body as {
     x402Version: number;
     accepts: unknown[];
@@ -15,6 +20,15 @@ async function getPaymentHeaderFromBody(body: unknown, walletClient: Signer) {
     parsedPaymentRequirements
   );
 
+  if (maxAmount) {
+    if (
+      BigInt(selectedPaymentRequirements.maxAmountRequired) >
+      BigInt(parseUnits(String(maxAmount), 6))
+    ) {
+      throw new Error('Max amount exceeded');
+    }
+  }
+
   const paymentHeader = await createPaymentHeader(
     walletClient,
     x402Version,
@@ -25,7 +39,8 @@ async function getPaymentHeaderFromBody(body: unknown, walletClient: Signer) {
 
 export function fetchWithX402Payment(
   fetch: typeof globalThis.fetch,
-  walletClient: Signer
+  walletClient: Signer,
+  maxAmount?: number
 ): typeof fetch {
   return async (input: string | URL | Request, init?: RequestInit) => {
     const headers: Record<string, string> = {
@@ -41,8 +56,10 @@ export function fetchWithX402Payment(
       const paymentRequiredJson = (await response.json()) as unknown;
       const paymentHeader = await getPaymentHeaderFromBody(
         paymentRequiredJson,
-        walletClient
+        walletClient,
+        maxAmount
       );
+      console.log('paymentHeader', paymentHeader);
       headers['x-payment'] = paymentHeader;
       const newResponse = await fetch(input, {
         ...init,

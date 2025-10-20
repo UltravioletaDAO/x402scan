@@ -4,7 +4,7 @@ import {
   createTag,
   assignTagToResource,
 } from '@/services/db/resources/tag';
-import { listResourcesWithPagination } from '@/services/db/resources/resource';
+import type { listResourcesWithPagination } from '@/services/db/resources/resource';
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
@@ -27,7 +27,6 @@ const labelingPrompt = `Your task is to assign reasonable tags to each resource 
 
 _GUIDELINES_FOR_TAG_ASSIGNMENT_:
 - The tags should be short and concise, one word only.
-- You Are not allowed to create new tags. Re-using existing tags is always required..
 - Your goal is to cluster resources into meaningful groups based on the tag they are assigned to.
 
 _VERY IMPORTANT_:

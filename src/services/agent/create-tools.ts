@@ -1,3 +1,5 @@
+import { parseUnits } from 'viem';
+
 import { createToolCall } from '@/services/db/composer/tool-call';
 import { listResourcesForTools } from '@/services/db/resources/resource';
 
@@ -17,12 +19,14 @@ interface CreateX402AIToolsParams {
   resourceIds: string[];
   walletClient: Signer;
   chatId: string;
+  maxAmount?: number;
 }
 
 export async function createX402AITools({
   resourceIds,
   walletClient,
   chatId,
+  maxAmount,
 }: CreateX402AIToolsParams): Promise<Record<string, Tool>> {
   const resources = await listResourcesForTools(resourceIds);
 
@@ -40,6 +44,13 @@ export async function createX402AITools({
             maxAmountRequired: accept.maxAmountRequired.toString(),
           });
         if (!parsedAccept.success) {
+          continue;
+        }
+        if (
+          maxAmount &&
+          BigInt(parsedAccept.data.maxAmountRequired) >
+            BigInt(parseUnits(String(maxAmount), 6))
+        ) {
           continue;
         }
         const urlParts = new URL(resource.resource);
@@ -103,7 +114,11 @@ export async function createX402AITools({
             }
 
             try {
-              const response = await fetchWithX402Payment(fetch, walletClient)(
+              const response = await fetchWithX402Payment(
+                fetch,
+                walletClient,
+                maxAmount
+              )(
                 new URL(
                   `/api/proxy?url=${encodeURIComponent(url)}&share_data=true`,
                   env.NEXT_PUBLIC_APP_URL

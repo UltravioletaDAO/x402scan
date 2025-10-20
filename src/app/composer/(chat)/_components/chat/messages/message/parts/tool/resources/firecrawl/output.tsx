@@ -30,6 +30,8 @@ export const FirecrawlOutput: OutputComponent = ({ output, errorText }) => {
     return <div className="text-destructive text-sm">{errorText}</div>;
   }
 
+  console.log('output', output);
+
   const parseResult = firecrawlOutputSchema.safeParse(output);
 
   if (!parseResult.success) {

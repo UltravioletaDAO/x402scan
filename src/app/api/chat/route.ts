@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import type { LanguageModel, UIMessage } from 'ai';
 import {
+  APICallError,
   convertToModelMessages,
   generateText,
   stepCountIs,
@@ -28,8 +29,14 @@ import { createX402AITools } from '@/services/agent/create-tools';
 import { messageSchema } from '@/lib/message-schema';
 
 import type { NextRequest } from 'next/server';
-import { getWalletForUserId } from '@/services/cdp/server-wallet';
+import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
 import { ChatSDKError } from '@/lib/errors';
+import {
+  getUserMessageCount,
+  getUserToolCallCount,
+} from '@/services/db/user/chat';
+import { freeTierConfig } from '@/lib/free-tier';
+import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -46,6 +53,11 @@ export async function POST(request: NextRequest) {
     return new ChatSDKError('unauthorized:chat').toResponse();
   }
 
+  const [messageCount, toolCallCount] = await Promise.all([
+    getUserMessageCount(session.user.id),
+    getUserToolCallCount(session.user.id),
+  ]);
+
   const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
@@ -57,7 +69,14 @@ export async function POST(request: NextRequest) {
 
   const chat = await getChat(chatId, session.user.id);
 
-  const wallet = await getWalletForUserId(session.user.id);
+  const isFreeTier =
+    messageCount < freeTierConfig.numMessages &&
+    toolCallCount < freeTierConfig.numToolCalls;
+
+  const wallet = isFreeTier
+    ? await getFreeTierWallet()
+    : await getWalletForUserId(session.user.id);
+
   if (!wallet) {
     return new ChatSDKError('not_found:chat').toResponse();
   }
@@ -139,6 +158,7 @@ export async function POST(request: NextRequest) {
     resourceIds,
     walletClient: signer,
     chatId,
+    maxAmount: isFreeTier ? freeTierConfig.maxAmount : undefined,
   });
 
   const result = streamText({
@@ -161,8 +181,14 @@ export async function POST(request: NextRequest) {
       }
     },
     onError: error => {
-      console.error('Error streaming text:', error);
-      return new ChatSDKError('bad_request:chat').message;
+      if (error instanceof APICallError) {
+        if (error.statusCode === 402) {
+          return new ChatSDKError('payment_required:chat').message;
+        }
+        return new ChatSDKError('bad_request:chat').message;
+      } else {
+        return new ChatSDKError('bad_request:chat').message;
+      }
     },
   });
 }

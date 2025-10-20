@@ -1,7 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
-
 import Image from 'next/image';
 
 import {
@@ -12,12 +10,12 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
-import { useRouter } from 'next/navigation';
 import { useAccount } from 'wagmi';
 
 import { Logo } from '@/components/logo';
 
 import type { RouterOutputs } from '@/trpc/client';
+import { Verify } from './verify';
 import { ConnectWalletForm } from '@/app/_components/wallet/connect/form';
 
 interface Props {
@@ -27,17 +25,9 @@ interface Props {
 export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
   const { address } = useAccount();
 
-  const router = useRouter();
-
-  useEffect(() => {
-    if (address) {
-      router.refresh();
-    }
-  }, [address, router]);
-
   return (
     <AlertDialog open={true}>
-      <AlertDialogContent className="p-0 overflow-hidden gap-0">
+      <AlertDialogContent className="p-0 overflow-hidden gap-0 sm:max-w-sm">
         <AlertDialogHeader className="flex flex-row items-center gap-4 space-y-0 bg-muted border-b p-4">
           {agentConfig?.image ? (
             <Image
@@ -62,9 +52,13 @@ export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
             </AlertDialogDescription>
           </div>
         </AlertDialogHeader>
-        <div className="p-4 flex flex-col gap-4">
-          <ConnectWalletForm />
-        </div>
+        {address ? (
+          <Verify />
+        ) : (
+          <div className="p-4 flex flex-col gap-2">
+            <ConnectWalletForm />
+          </div>
+        )}
       </AlertDialogContent>
     </AlertDialog>
   );

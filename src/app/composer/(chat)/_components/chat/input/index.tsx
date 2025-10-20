@@ -19,7 +19,7 @@ import { api } from '@/trpc/client';
 
 import type { ChatStatus } from 'ai';
 import type { SelectedResource } from '../../../_types/chat-config';
-import { ServerWalletButton } from './server-wallet';
+import { WalletButton } from './wallet';
 
 interface Props {
   input: string;
@@ -43,14 +43,18 @@ export const PromptInputSection: React.FC<Props> = ({
 }) => {
   const { data: session } = useSession();
 
-  const { data: usdcBalance } = api.user.serverWallet.usdcBaseBalance.useQuery(
-    undefined,
-    {
+  const { data: usdcBalance, isLoading: isUsdcBalanceLoading } =
+    api.user.serverWallet.usdcBaseBalance.useQuery(undefined, {
       enabled: !!session,
-    }
-  );
+    });
+  const { data: freeTierUsage, isLoading: isFreeTierUsageLoading } =
+    api.user.freeTier.usage.useQuery(undefined, {
+      enabled: !!session,
+    });
 
-  const hasBalance = usdcBalance && usdcBalance > 0;
+  const isLoading = isUsdcBalanceLoading || isFreeTierUsageLoading;
+
+  const hasBalance = (usdcBalance ?? 0) > 0 || freeTierUsage?.hasFreeTier;
 
   return (
     <PromptInput onSubmit={handleSubmit}>
@@ -60,6 +64,11 @@ export const PromptInputSection: React.FC<Props> = ({
         }
         value={input}
         disabled={!hasBalance}
+        placeholder={
+          !isLoading && !hasBalance
+            ? 'Add funds to your agent to continue'
+            : undefined
+        }
       />
       <PromptInputToolbar>
         <PromptInputTools>
@@ -68,7 +77,7 @@ export const PromptInputSection: React.FC<Props> = ({
             resources={selectedResources}
             onSelectResource={onSelectResource}
           />
-          <ServerWalletButton />
+          <WalletButton />
         </PromptInputTools>
         <PromptInputSubmit
           disabled={!input || !hasBalance}

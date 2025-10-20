@@ -4,7 +4,7 @@ import {
   exportWalletFromUserId,
   getUSDCBaseBalanceFromUserId,
   getWalletAddressFromUserId,
-} from '@/services/cdp/server-wallet';
+} from '@/services/cdp/server-wallet/user';
 
 export const serverWalletRouter = createTRPCRouter({
   address: protectedProcedure.query(async ({ ctx }) => {

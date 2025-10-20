@@ -1,13 +1,11 @@
 import { ChatContent } from './content';
-import { ConnectDialog } from './auth/connect-dialog';
-import { Onboarding } from './auth/welcome';
+import { ConnectDialog } from './auth/dialog';
 
 import { serverCookieUtils } from '../../chat/_lib/cookies/server';
 
-import { getWalletsFromHeaders } from '@/lib/wallet';
-
 import type { Message } from '@prisma/client';
 import type { RouterOutputs } from '@/trpc/client';
+import { auth } from '@/auth';
 
 interface Props {
   id: string;
@@ -34,9 +32,7 @@ export const Chat: React.FC<Props> = async ({
     );
   }
 
-  const isConnected = await getWalletsFromHeaders()
-    .then(wallets => wallets?.length && wallets.length > 0)
-    .catch(() => false);
+  const session = await auth();
 
   const initialConfig = agentConfig
     ? {
@@ -58,8 +54,7 @@ export const Chat: React.FC<Props> = async ({
         storeConfig={storeConfig}
         agentConfig={agentConfig}
       />
-      {!isConnected && <ConnectDialog agentConfig={agentConfig} />}
-      {isConnected && <Onboarding />}
+      {!session && <ConnectDialog agentConfig={agentConfig} />}
     </>
   );
 };
