@@ -62,13 +62,6 @@ export const listChats = async (
   });
 };
 
-export const updateChatSchema = z.object({
-  id: z.string(),
-  title: z.string().min(1).max(255).optional(),
-  visibility: z.enum(['public', 'private']).optional(),
-  activeStreamId: z.string().nullable().optional(),
-});
-
 export const updateChat = async (
   userId: string,
   chatId: string,
