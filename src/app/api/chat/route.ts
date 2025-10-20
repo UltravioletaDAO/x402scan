@@ -29,6 +29,7 @@ import { messageSchema } from '@/lib/message-schema';
 
 import type { NextRequest } from 'next/server';
 import { getWalletForUserId } from '@/services/cdp/server-wallet';
+import { ChatSDKError } from '@/lib/errors';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -42,17 +43,13 @@ export async function POST(request: NextRequest) {
   const session = await auth();
 
   if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    return new ChatSDKError('unauthorized:chat').toResponse();
   }
 
   const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
-    console.error(requestBody.error);
-    return NextResponse.json(
-      { error: 'Invalid request body' },
-      { status: 400 }
-    );
+    return new ChatSDKError('bad_request:chat').toResponse();
   }
 
   const { model, resourceIds, messages, chatId, agentConfigurationId } =
@@ -62,10 +59,7 @@ export async function POST(request: NextRequest) {
 
   const wallet = await getWalletForUserId(session.user.id);
   if (!wallet) {
-    return NextResponse.json(
-      { error: 'Server wallet not found' },
-      { status: 404 }
-    );
+    return new ChatSDKError('not_found:chat').toResponse();
   }
   const signer = toAccount(wallet);
   const openai = createX402OpenAI(signer);
@@ -166,6 +160,10 @@ export async function POST(request: NextRequest) {
         });
       }
     },
+    onError: error => {
+      console.error('Error streaming text:', error);
+      return new ChatSDKError('bad_request:chat').message;
+    },
   });
 }
 
@@ -178,23 +176,28 @@ async function generateTitleFromUserMessage({
   message,
   model,
 }: GenerateTitleProps) {
-  const { text: title } = await generateText({
-    model,
-    messages: [
-      {
-        role: 'system',
-        content: `\n
+  try {
+    const { text: title } = await generateText({
+      model,
+      messages: [
+        {
+          role: 'system',
+          content: `\n
       - you will generate a short title in english based on the first message a user begins a conversation with
       - ensure it is not more than 80 characters long
       - the title should be a summary of the user's message
       - the title should be in the same language as the user's message
       - the title does not need to be a full sentence, try to pack in the most important information in a few words
       - do not use quotes or colons`,
-      },
-      ...convertToModelMessages([message]),
-    ],
-    maxOutputTokens: 100,
-  });
+        },
+        ...convertToModelMessages([message]),
+      ],
+      maxOutputTokens: 100,
+    });
 
-  return title;
+    return title;
+  } catch (error) {
+    console.error('Error generating title:', error);
+    throw new ChatSDKError('server:chat');
+  }
 }

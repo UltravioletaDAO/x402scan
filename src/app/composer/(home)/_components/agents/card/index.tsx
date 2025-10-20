@@ -34,8 +34,8 @@ interface Props {
 export const AgentCard: React.FC<Props> = ({ agentConfiguration }) => {
   return (
     <Link href={`/composer/agent/${agentConfiguration.id}`}>
-      <Card className="hover:border-primary transition-colors overflow-hidden flex flex-col justify-between">
-        <CardHeader className="border-b">
+      <Card className="hover:border-primary transition-colors overflow-hidden flex flex-col justify-between h-full">
+        <CardHeader className="border-b flex-1">
           <div className="flex flex-row items-center gap-3">
             {agentConfiguration.image ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -49,7 +49,7 @@ export const AgentCard: React.FC<Props> = ({ agentConfiguration }) => {
             )}
             <CardTitle>{agentConfiguration.name}</CardTitle>
           </div>
-          <CardDescription className="text-xs">
+          <CardDescription className="text-xs line-clamp-2">
             {agentConfiguration.description ?? 'No description'}
           </CardDescription>
         </CardHeader>
