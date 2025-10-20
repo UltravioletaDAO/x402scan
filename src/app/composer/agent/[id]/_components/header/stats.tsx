@@ -9,9 +9,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-type Config = NonNullable<
-  RouterOutputs['public']['agentConfigurations']['get']
->;
+type Config = NonNullable<RouterOutputs['public']['agents']['get']>;
 
 interface Props {
   agentConfiguration: Config;

@@ -6,9 +6,7 @@ import type { RouterOutputs } from '@/trpc/client';
 interface Props {
   id: string;
   initialMessages: Message[];
-  agentConfig: NonNullable<
-    RouterOutputs['public']['agentConfigurations']['get']
-  >;
+  agentConfig: NonNullable<RouterOutputs['public']['agents']['get']>;
   isReadOnly?: boolean;
 }
 

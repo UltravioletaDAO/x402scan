@@ -23,15 +23,15 @@ export const OverallStats = async () => {
   const startDate = subMonths(endDate, 1);
 
   await Promise.all([
-    api.public.stats.overall.prefetch({
+    api.public.agents.activity.overall.prefetch({
       startDate,
       endDate,
     }),
-    api.public.stats.overall.prefetch({
+    api.public.agents.activity.overall.prefetch({
       startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
       endDate: startDate,
     }),
-    api.public.stats.bucketed.prefetch({
+    api.public.agents.activity.bucketed.prefetch({
       startDate,
       endDate,
       numBuckets: 32,

@@ -16,9 +16,7 @@ import { HeaderButtons, LoadingHeaderButtons } from './button';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
-  agentConfiguration: NonNullable<
-    RouterOutputs['public']['agentConfigurations']['get']
-  >;
+  agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
 }
 
 export const HeaderCard: React.FC<Props> = async ({ agentConfiguration }) => {

@@ -1,7 +1,7 @@
 import {
-  BaseBarChart,
-  LoadingBarChart,
-} from '@/components/ui/charts/chart/bar';
+  BaseAreaChart,
+  LoadingAreaChart,
+} from '@/components/ui/charts/chart/area';
 
 import { api } from '@/trpc/server';
 
@@ -14,10 +14,9 @@ interface Props {
 const height = 32;
 
 export const AgentCardChart: React.FC<Props> = async ({ agentConfigId }) => {
-  const bucketedActivity =
-    await api.public.agentConfigurations.getBucketedActivity({
-      agentConfigurationId: agentConfigId,
-    });
+  const bucketedActivity = await api.public.agents.activity.agent.bucketed({
+    agentConfigurationId: agentConfigId,
+  });
 
   const chartData: ChartData<{
     total_messages: number;
@@ -27,9 +26,9 @@ export const AgentCardChart: React.FC<Props> = async ({ agentConfigId }) => {
   }));
 
   return (
-    <BaseBarChart
+    <BaseAreaChart
       data={chartData}
-      bars={[
+      areas={[
         {
           dataKey: 'total_messages',
           color: 'var(--primary)',
@@ -41,5 +40,5 @@ export const AgentCardChart: React.FC<Props> = async ({ agentConfigId }) => {
 };
 
 export const LoadingAgentCardChart = () => {
-  return <LoadingBarChart height={height} />;
+  return <LoadingAreaChart height={height} />;
 };

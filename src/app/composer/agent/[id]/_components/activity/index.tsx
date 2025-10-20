@@ -5,14 +5,13 @@ import { ActivityCharts, LoadingActivityCharts } from './charts';
 import { Card } from '@/components/ui/card';
 
 interface Props {
-  agentConfiguration: RouterOutputs['public']['agentConfigurations']['get'];
+  agentConfiguration: RouterOutputs['public']['agents']['get'];
 }
 
 export const Activity: React.FC<Props> = async ({ agentConfiguration }) => {
-  const bucketedActivity =
-    await api.public.agentConfigurations.getBucketedActivity({
-      agentConfigurationId: agentConfiguration.id,
-    });
+  const bucketedActivity = await api.public.agents.activity.agent.bucketed({
+    agentConfigurationId: agentConfiguration.id,
+  });
 
   return (
     <ActivityContainer>

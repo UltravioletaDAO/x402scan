@@ -15,7 +15,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
-  resource: RouterOutputs['public']['agentConfigurations']['get']['resources'][number];
+  resource: RouterOutputs['public']['agents']['get']['resources'][number];
 }
 
 export const ToolCard: React.FC<Props> = ({ resource }) => {

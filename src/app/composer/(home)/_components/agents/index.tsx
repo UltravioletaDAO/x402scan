@@ -3,7 +3,7 @@ import { api } from '@/trpc/server';
 import { AgentCard } from './card';
 
 export const Agents = async () => {
-  const topAgents = await api.public.agentConfigurations.list();
+  const topAgents = await api.public.agents.list();
 
   return (
     <Section title="Top Agents" description="Discover the most popular agents">

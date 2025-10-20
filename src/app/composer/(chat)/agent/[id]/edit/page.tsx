@@ -16,7 +16,7 @@ export default async function EditAgentPage({
 
   const { id } = await params;
 
-  const agentConfiguration = await api.public.agentConfigurations.get(id);
+  const agentConfiguration = await api.public.agents.get(id);
 
   if (!agentConfiguration) {
     return notFound();

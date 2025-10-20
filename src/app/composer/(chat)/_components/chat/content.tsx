@@ -32,7 +32,7 @@ interface Props {
   isReadOnly?: boolean;
   initialConfig?: ChatConfig;
   storeConfig?: boolean;
-  agentConfig?: RouterOutputs['public']['agentConfigurations']['get'];
+  agentConfig?: RouterOutputs['public']['agents']['get'];
 }
 
 export const ChatContent: React.FC<Props> = ({

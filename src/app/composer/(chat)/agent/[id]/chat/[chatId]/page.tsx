@@ -10,7 +10,7 @@ export default async function AgentPage({
 
   const [session, agentConfiguration, chat] = await Promise.all([
     auth(),
-    api.public.agentConfigurations.get(id),
+    api.public.agents.get(id),
     api.public.chats.get(chatId),
   ]);
 

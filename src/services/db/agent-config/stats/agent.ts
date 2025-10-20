@@ -2,9 +2,9 @@ import z from 'zod';
 
 import { subMonths, differenceInMilliseconds, getUnixTime } from 'date-fns';
 
-import { queryRaw } from '../query';
+import { queryRaw } from '../../query';
 import { Prisma } from '@prisma/client';
-import { prisma } from '../client';
+import { prisma } from '../../client';
 
 export const agentConfigBucketedActivityInputSchema = z.object({
   agentConfigurationId: z.string(),

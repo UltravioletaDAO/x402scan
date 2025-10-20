@@ -18,7 +18,7 @@ import { AgentCardChart, LoadingAgentCardChart } from './chart';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
-  agentConfiguration: RouterOutputs['public']['agentConfigurations']['list'][number];
+  agentConfiguration: RouterOutputs['public']['agents']['list'][number];
 }
 
 export const AgentCard: React.FC<Props> = ({ agentConfiguration }) => {

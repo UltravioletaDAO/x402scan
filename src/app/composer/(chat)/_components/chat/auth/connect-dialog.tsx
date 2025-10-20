@@ -21,9 +21,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { ConnectWalletForm } from '@/app/_components/wallet/connect/form';
 
 interface Props {
-  agentConfig?: NonNullable<
-    RouterOutputs['public']['agentConfigurations']['get']
-  >;
+  agentConfig?: NonNullable<RouterOutputs['public']['agents']['get']>;
 }
 
 export const ConnectDialog: React.FC<Props> = ({ agentConfig }) => {
