@@ -24,15 +24,6 @@ export const joinAgentConfiguration = async (
   });
 };
 
-export const getAgentConfigurationUser = async (
-  userId: string,
-  agentConfigurationId: string
-) => {
-  return await prisma.agentConfigurationUser.findUnique({
-    where: { userId_agentConfigurationId: { userId, agentConfigurationId } },
-  });
-};
-
 export const leaveAgentConfiguration = async (
   userId: string,
   agentConfigurationId: string

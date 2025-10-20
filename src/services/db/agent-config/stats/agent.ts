@@ -80,7 +80,6 @@ export const getAgentConfigBucketedActivity = async (
       WHERE acu."agentConfigurationId" = ${agentConfigurationId}
       GROUP BY tb.bucket_start_timestamp
     )
-    -- Dump message_data
     SELECT
       to_timestamp(tb.bucket_start_timestamp) AS bucket_start,
       COALESCE(md.unique_users, 0) AS unique_users,

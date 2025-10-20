@@ -1,0 +1,121 @@
+'use client';
+
+import {
+  Bot,
+  Calendar,
+  CircleDot,
+  MessageSquare,
+  Server,
+  Wrench,
+} from 'lucide-react';
+
+import Image from 'next/image';
+
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { formatCompactAgo } from '@/lib/utils';
+
+import { HeaderCell } from '@/components/ui/data-table/header-cell';
+
+import type { ExtendedColumnDef } from '@/components/ui/data-table';
+import type { RouterOutputs } from '@/trpc/client';
+import { Favicon } from '@/app/_components/favicon';
+
+type ColumnType = RouterOutputs['public']['agents']['activity']['feed'][number];
+
+export const columns: ExtendedColumnDef<ColumnType>[] = [
+  {
+    accessorKey: 'type',
+    header: () => (
+      <HeaderCell Icon={CircleDot} label="Event" className="mr-auto" />
+    ),
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+        {row.original.type === 'message' ? (
+          <>
+            <MessageSquare className="size-3" />
+            <span>Message</span>
+          </>
+        ) : (
+          <>
+            <Wrench className="size-3 text-primary" />
+            <span>Tool Call</span>
+          </>
+        )}
+      </div>
+    ),
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
+  },
+  {
+    accessorKey: 'agentConfiguration',
+    header: () => (
+      <HeaderCell
+        Icon={Bot}
+        label="Agent Configuration"
+        className="mr-auto px-2"
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2 mr-auto px-2">
+        {row.original.agentConfiguration ? (
+          <>
+            {row.original.agentConfiguration.image ? (
+              <Image
+                src={row.original.agentConfiguration.image}
+                alt={row.original.agentConfiguration.name}
+                width={16}
+                height={16}
+                className="size-3"
+              />
+            ) : (
+              <Bot className="size-3" />
+            )}
+            <span className="text-muted-foreground text-sm font-medium">
+              {row.original.agentConfiguration.name}
+            </span>
+          </>
+        ) : (
+          <>
+            <MessageSquare className="size-3" />
+            <div className="text-sm">Playground</div>
+          </>
+        )}
+      </div>
+    ),
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
+  },
+  {
+    accessorKey: 'resource',
+    header: () => (
+      <HeaderCell Icon={Server} label="Resource" className="mr-auto" />
+    ),
+    cell: ({ row }) =>
+      row.original.resource ? (
+        <div className="flex items-center gap-2">
+          <Favicon
+            url={row.original.resource?.favicon}
+            className="size-3"
+            Fallback={Wrench}
+          />
+          <span className="text-muted-foreground font-mono text-sm font-medium">
+            {row.original.resource.resource}
+          </span>
+        </div>
+      ) : null,
+  },
+  {
+    accessorKey: 'time',
+    header: () => (
+      <HeaderCell Icon={Calendar} label="Created At" className="mx-auto" />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center font-mono text-xs">
+        {formatCompactAgo(row.original.createdAt)}
+      </div>
+    ),
+    size: 100,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+];

@@ -8,14 +8,18 @@ import {
   agentConfigBucketedActivityInputSchema,
   getAgentConfigBucketedActivity,
 } from '@/services/db/agent-config/stats/agent';
-
-import { auth } from '@/auth';
 import {
   getOverallActivity,
   getOverallBucketedActivity,
   overallActivityInputSchema,
   overallBucketedActivityInputSchema,
 } from '@/services/db/agent-config/stats/overall';
+import {
+  getAgentConfigFeed,
+  getAgentConfigFeedSchema,
+} from '@/services/db/agent-config/feed';
+
+import { auth } from '@/auth';
 
 export const publicAgentConfigurationsRouter = createTRPCRouter({
   get: publicProcedure.input(z.uuid()).query(async ({ input }) => {
@@ -44,6 +48,11 @@ export const publicAgentConfigurationsRouter = createTRPCRouter({
       .input(overallBucketedActivityInputSchema)
       .query(async ({ input }) => {
         return await getOverallBucketedActivity(input);
+      }),
+    feed: publicProcedure
+      .input(getAgentConfigFeedSchema)
+      .query(async ({ input }) => {
+        return await getAgentConfigFeed(input);
       }),
   },
 });

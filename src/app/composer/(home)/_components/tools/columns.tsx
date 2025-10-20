@@ -44,16 +44,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       </div>
     ),
   },
-
-  //   {
-  //     accessorKey: 'chart',
-  //     header: () => (
-  //       <HeaderCell Icon={Activity} label="Activity" className="mx-auto" />
-  //     ),
-  //     cell: ({ row }) => <KnownSellerChart addresses={row.original.recipients} />,
-  //     size: 100,
-  //     loading: () => <LoadingKnownSellerChart />,
-  //   },
   {
     accessorKey: 'toolCalls',
     header: () => (

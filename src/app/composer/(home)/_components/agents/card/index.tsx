@@ -16,6 +16,7 @@ import { Favicons } from '@/app/_components/favicon';
 import { AgentCardChart, LoadingAgentCardChart } from './chart';
 
 import type { RouterOutputs } from '@/trpc/client';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   agentConfiguration: RouterOutputs['public']['agents']['list'][number];
@@ -78,5 +79,38 @@ export const AgentCard: React.FC<Props> = ({ agentConfiguration }) => {
         </CardFooter>
       </Card>
     </Link>
+  );
+};
+
+export const LoadingAgentCard = () => {
+  return (
+    <Card className="justify-between flex flex-col hover:border-primary transition-colors overflow-hidden">
+      <CardHeader>
+        <div className="flex flex-row items-center gap-3">
+          <Skeleton className="size-5" />
+          <Skeleton className="w-16 h-4" />
+        </div>
+        <Skeleton className="w-full h-4" />
+      </CardHeader>
+      <div className="pb-2">
+        <LoadingAgentCardChart />
+      </div>
+      <CardFooter className="justify-between text-xs pt-4 border-t">
+        <div className="flex flex-row items-center gap-2">
+          <Skeleton className="size-5" />
+          <Skeleton className="w-16 h-4" />
+        </div>
+        <div className="flex flex-row items-center gap-2">
+          <div className="flex flex-row items-center gap-1">
+            <Skeleton className="size-3" />
+            <Skeleton className="w-16 h-4" />
+          </div>
+          <div className="flex flex-row items-center gap-1">
+            <Skeleton className="size-3" />
+            <Skeleton className="w-16 h-4" />
+          </div>
+        </div>
+      </CardFooter>
+    </Card>
   );
 };

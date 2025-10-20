@@ -2,11 +2,11 @@ import { ToolsSortingContext } from './context';
 
 import { useSorting } from '../base/hook';
 
-export const useSellersSorting = () => {
+export const useToolsSorting = () => {
   const context = useSorting(ToolsSortingContext);
   if (!context) {
     throw new Error(
-      'useSellersSorting must be used within a SellersSortingProvider'
+      'useToolsSorting must be used within a ToolsSortingProvider'
     );
   }
   return context;

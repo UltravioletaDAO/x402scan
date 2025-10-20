@@ -1,6 +1,6 @@
 import { Section } from '@/app/_components/layout/page-utils';
 import { api } from '@/trpc/server';
-import { AgentCard } from './card';
+import { AgentCard, LoadingAgentCard } from './card';
 
 export const Agents = async () => {
   const topAgents = await api.public.agents.list();
@@ -10,6 +10,18 @@ export const Agents = async () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {topAgents.map(agent => (
           <AgentCard key={agent.id} agentConfiguration={agent} />
+        ))}
+      </div>
+    </Section>
+  );
+};
+
+export const LoadingAgents = () => {
+  return (
+    <Section title="Top Agents" description="Discover the most popular agents">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <LoadingAgentCard key={index} />
         ))}
       </div>
     </Section>
