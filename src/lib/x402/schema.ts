@@ -77,7 +77,7 @@ const EnhancedPaymentRequirementsSchema = PaymentRequirementsSchema.extend({
   outputSchema: enhancedOutputSchema.optional(),
 });
 
-export type EnhancedPaymentRequirementsSchema = z3.infer<
+type EnhancedPaymentRequirementsSchema = z3.infer<
   typeof EnhancedPaymentRequirementsSchema
 >;
 
