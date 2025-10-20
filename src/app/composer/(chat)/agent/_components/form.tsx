@@ -82,6 +82,31 @@ export const AgentForm: React.FC<Props> = ({
       className="flex flex-col gap-4"
     >
       <FieldSet>
+        <FieldLegend>Tools</FieldLegend>
+        <FieldGroup className="w-full items-start gap-6 flex flex-col">
+          <Controller
+            control={form.control}
+            name="resourceIds"
+            render={({ field }) => (
+              <Field>
+                <Card>
+                  <ResourceList
+                    selectedResourceIds={field.value}
+                    onSelectResource={resource => {
+                      field.onChange(
+                        field.value.includes(resource.id)
+                          ? field.value.filter(id => id !== resource.id)
+                          : [...field.value, resource.id]
+                      );
+                    }}
+                  />
+                </Card>
+              </Field>
+            )}
+          />
+        </FieldGroup>
+      </FieldSet>
+      <FieldSet>
         <FieldLegend>Display Information</FieldLegend>
         <FieldGroup>
           <FieldGroup className="flex flex-col md:flex-row">
@@ -223,29 +248,6 @@ export const AgentForm: React.FC<Props> = ({
       <FieldSet>
         <FieldLegend>Behavior</FieldLegend>
         <FieldGroup className="w-full items-start gap-6 flex flex-col">
-          <Controller
-            control={form.control}
-            name="resourceIds"
-            render={({ field }) => (
-              <Field>
-                <FieldContent>
-                  <FieldLabel htmlFor="resourceIds">Tools</FieldLabel>
-                </FieldContent>
-                <Card>
-                  <ResourceList
-                    selectedResourceIds={field.value}
-                    onSelectResource={resource => {
-                      field.onChange(
-                        field.value.includes(resource.id)
-                          ? field.value.filter(id => id !== resource.id)
-                          : [...field.value, resource.id]
-                      );
-                    }}
-                  />
-                </Card>
-              </Field>
-            )}
-          />
           <Controller
             control={form.control}
             name="systemPrompt"
