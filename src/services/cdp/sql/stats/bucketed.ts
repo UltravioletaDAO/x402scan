@@ -41,6 +41,8 @@ const getBucketedStatisticsUncached = async (
     }),
     // Date range filters
     block_timestamp: { gte: startDate, lte: endDate },
+    // NOTE(shafu): There is one big 45k transfer that destroys the chart, so we filter it out.
+    amount: { lt: 1000000000 },
   };
 
   // Get all transfers in the time range
