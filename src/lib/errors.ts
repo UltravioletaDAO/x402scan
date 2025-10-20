@@ -1,4 +1,4 @@
-export type ErrorType =
+type ErrorType =
   | 'bad_request'
   | 'unauthorized'
   | 'forbidden'
@@ -8,7 +8,7 @@ export type ErrorType =
   | 'payment_required'
   | 'server';
 
-export type Surface =
+type Surface =
   | 'chat'
   | 'auth'
   | 'api'
@@ -19,9 +19,9 @@ export type Surface =
   | 'document'
   | 'suggestions';
 
-export type ErrorCode = `${ErrorType}:${Surface}`;
+type ErrorCode = `${ErrorType}:${Surface}`;
 
-export type ErrorVisibility = 'response' | 'log' | 'none';
+type ErrorVisibility = 'response' | 'log' | 'none';
 
 const visibilityBySurface: Record<Surface, ErrorVisibility> = {
   database: 'log',
@@ -100,7 +100,7 @@ function getMessageByErrorCode(errorCode: ErrorCode): string {
     case 'offline:chat':
       return "We're having trouble sending your message. Please check your internet connection and try again.";
     case 'payment_required:chat':
-      return paymentRequiredText;
+      return 'Out of funds. Please deposit more funds to continue.';
     case 'server:chat':
       return 'An error occurred while processing your request. Please try again later.';
 
@@ -138,6 +138,3 @@ function getStatusCodeByType(type: ErrorType) {
       return 500;
   }
 }
-
-export const paymentRequiredText =
-  'Out of funds. Please deposit more funds to continue.';
