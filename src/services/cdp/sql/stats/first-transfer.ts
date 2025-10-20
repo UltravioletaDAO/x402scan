@@ -1,9 +1,9 @@
 import z from 'zod';
 
-import { baseQuerySchema, formatDateForSql } from '../lib';
+import { baseQuerySchema } from '../lib';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
-import { runBaseSqlQuery } from '../query';
+import { transfersPrisma } from '@/services/db/transfers-client';
 
 export const getFirstTransferTimestampInputSchema = baseQuerySchema.extend({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -21,36 +21,34 @@ export const getFirstTransferTimestamp = async (
   const { addresses, startDate, endDate, facilitators, tokens } =
     parseResult.data;
 
-  const sql = `SELECT block_timestamp
-      FROM base.events
-      WHERE event_signature = 'Transfer(address,address,uint256)'
-        AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
-        AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
-        ${
-          addresses && addresses.length > 0
-            ? `AND parameters['to']::String IN (${addresses
-                .map(a => `'${a}'`)
-                .join(', ')})`
-            : ''
-        }
-        ${
-          startDate
-            ? `AND block_timestamp >= '${formatDateForSql(startDate)}'`
-            : ''
-        }
-        ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
-      ORDER BY block_timestamp ASC
-      LIMIT 1
-    `;
+  // Build the where clause for Prisma
+  const where = {
+    // Filter by token addresses
+    address: { in: tokens.map(t => t.toLowerCase()) },
+    // Filter by facilitator addresses
+    transaction_from: { in: facilitators.map(f => f.toLowerCase()) },
+    // Optional filter by recipient addresses (sellers)
+    ...(addresses && addresses.length > 0 && {
+      recipient: { in: addresses.map(a => a.toLowerCase()) },
+    }),
+    // Date range filters
+    ...(startDate && endDate && {
+      block_timestamp: { gte: startDate, lte: endDate },
+    }),
+    ...(startDate && !endDate && {
+      block_timestamp: { gte: startDate },
+    }),
+    ...(!startDate && endDate && {
+      block_timestamp: { lte: endDate },
+    }),
+  };
 
-  const result = await runBaseSqlQuery(
-    sql,
-    z.array(z.object({ block_timestamp: z.string() }))
-  );
+  // Get the first transfer (earliest timestamp)
+  const firstTransfer = await transfersPrisma.transferEvent.findFirst({
+    where,
+    orderBy: { block_timestamp: 'asc' },
+    select: { block_timestamp: true },
+  });
 
-  if (!result || result.length === 0) {
-    return null;
-  }
-
-  return new Date(result[0].block_timestamp);
+  return firstTransfer?.block_timestamp ?? null;
 };
