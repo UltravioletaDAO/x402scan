@@ -1,10 +1,10 @@
 import z from 'zod';
 import { subMonths } from 'date-fns';
 
-import { runBaseSqlQuery } from '../query';
-import { baseQuerySchema, formatDateForSql } from '../lib';
+import { baseQuerySchema } from '../lib';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { facilitators } from '@/lib/facilitators';
+import { transfersPrisma } from '@/services/db/transfers-client';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   startDate: z
@@ -26,106 +26,110 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
   const { startDate, endDate, numBuckets, tokens } = parseResult.data;
-  const outputSchema = z.object({
-    bucket_start: z.coerce.date(),
-    total_transactions: z.coerce.number(),
-    total_amount: z.coerce.number(),
-    unique_buyers: z.coerce.number(),
-    unique_sellers: z.coerce.number(),
-    facilitator_name: z.enum(['Unknown', ...facilitators.map(f => f.name)]),
+
+  // Build the where clause for Prisma
+  const where = {
+    // Filter by token addresses
+    address: { in: tokens.map(t => t.toLowerCase()) },
+    // Filter by known facilitator addresses
+    transaction_from: { 
+      in: facilitators.flatMap(f => f.addresses.map(a => a.toLowerCase())) 
+    },
+    // Date range filters
+    block_timestamp: { gte: startDate, lte: endDate },
+  };
+
+  // Get all transfers in the time range
+  const transfers = await transfersPrisma.transferEvent.findMany({
+    where,
+    select: {
+      block_timestamp: true,
+      amount: true,
+      sender: true,
+      recipient: true,
+      transaction_from: true,
+    },
   });
 
   // Calculate bucket size in seconds for consistent alignment
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeMs = Math.floor(timeRangeMs / numBuckets);
-  const bucketSizeSeconds = Math.max(1, Math.floor(bucketSizeMs / 1000)); // Ensure at least 1 second
+  const bucketSizeSeconds = Math.max(1, Math.floor(bucketSizeMs / 1000));
+  const startTimestamp = Math.floor(startDate.getTime() / 1000);
+  const firstBucketStartTimestamp = Math.floor(startTimestamp / bucketSizeSeconds) * bucketSizeSeconds;
 
-  // Simple query to get actual data - we'll add zeros in TypeScript
-  const sql = `SELECT
-    toDateTime(toUInt32(toUnixTimestamp(block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}) AS bucket_start,
-    COUNT(*) AS total_transactions,
-    SUM(parameters['value']::UInt256) AS total_amount,
-    COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
-    COUNT(DISTINCT parameters['to']::String) AS unique_sellers,
-    CASE
-    ${facilitators
-      .map(
-        f =>
-          `WHEN transaction_from IN (${f.addresses
-            .map(a => `'${a}'`)
-            .join(', ')}) THEN '${f.name}'`
-      )
-      .join('\n        ')}
-    ELSE 'Unknown'
-    END AS facilitator_name
-FROM base.events
-WHERE 
-    event_signature = 'Transfer(address,address,uint256)'
-    AND parameters['value']::UInt256 < 1000000000
-    AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
-    AND transaction_from IN (${facilitators
-      .flatMap(f => f.addresses)
-      .map(a => `'${a}'`)
-      .join(', ')})
-    ${
-      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ''
+  // Group transfers into buckets by facilitator
+  type FacilitatorStats = {
+    total_transactions: number;
+    total_amount: number;
+    buyers: Set<string>;
+    sellers: Set<string>;
+  };
+  const bucketMap = new Map<number, Map<string, FacilitatorStats>>();
+
+  for (const transfer of transfers) {
+    const timestamp = Math.floor(transfer.block_timestamp.getTime() / 1000);
+    const bucketIndex = Math.floor((timestamp - firstBucketStartTimestamp) / bucketSizeSeconds);
+    const bucketStartTimestamp = firstBucketStartTimestamp + bucketIndex * bucketSizeSeconds;
+
+    if (!bucketMap.has(bucketStartTimestamp)) {
+      bucketMap.set(bucketStartTimestamp, new Map());
     }
-    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
-GROUP BY 
-  CASE
-    ${facilitators
-      .map(
-        f =>
-          `WHEN transaction_from IN (${f.addresses
-            .map(a => `'${a}'`)
-            .join(', ')}) THEN '${f.name}'`
-      )
-      .join('\n        ')}
-    ELSE 'Unknown'
-  END, 
-  bucket_start
-ORDER BY bucket_start ASC;
-  `;
 
-  const result = await runBaseSqlQuery(sql, z.array(outputSchema));
+    const facilitatorMap = bucketMap.get(bucketStartTimestamp)!;
+    
+    // Map address to facilitator name
+    const facilitator = facilitators.find(f => 
+      f.addresses.some(addr => addr.toLowerCase() === transfer.transaction_from.toLowerCase())
+    );
+    const facilitatorName = facilitator?.name ?? 'Unknown';
 
-  if (!result) {
-    return [];
+    if (!facilitatorMap.has(facilitatorName)) {
+      facilitatorMap.set(facilitatorName, {
+        total_transactions: 0,
+        total_amount: 0,
+        buyers: new Set(),
+        sellers: new Set(),
+      });
+    }
+
+    const facilitatorStats = facilitatorMap.get(facilitatorName)!;
+    facilitatorStats.total_transactions++;
+    facilitatorStats.total_amount += transfer.amount;
+    facilitatorStats.buyers.add(transfer.sender);
+    facilitatorStats.sellers.add(transfer.recipient);
   }
 
-  // Collapse the result array so that each item is grouped by bucket_start, and for each bucket_start,
-  // there is a sub-object keyed by facilitator_name (or id if available), containing the statistics for that facilitator.
-  // The output will be an array of objects, each with a bucket_start and a facilitators object.
+  // Generate complete time series
+  const result = [];
+  for (let i = 0; i < numBuckets; i++) {
+    const bucketStartTimestamp = firstBucketStartTimestamp + i * bucketSizeSeconds;
+    const bucketStart = new Date(bucketStartTimestamp * 1000);
+    const facilitatorMap = bucketMap.get(bucketStartTimestamp) ?? new Map<string, FacilitatorStats>();
 
-  const collapsed = result.reduce(
-    (acc, item) => {
-      const { bucket_start, facilitator_name, ...rest } = item;
-      let bucket = acc.find(
-        b => b.bucket_start.getTime() === bucket_start.getTime()
-      );
-      if (!bucket) {
-        bucket = { bucket_start, facilitators: {} };
-        acc.push(bucket);
-      }
-      // Use facilitator_name as the key; if you have an id, replace with id
-      bucket.facilitators[facilitator_name] = rest;
-      return acc;
-    },
-    [] as {
-      bucket_start: Date;
-      facilitators: Record<
-        string,
-        {
-          total_transactions: number;
-          total_amount: number;
-          unique_buyers: number;
-          unique_sellers: number;
-        }
-      >;
-    }[]
-  );
+    const facilitatorsByName: Record<string, {
+      total_transactions: number;
+      total_amount: number;
+      unique_buyers: number;
+      unique_sellers: number;
+    }> = {};
 
-  return collapsed;
+    for (const [facilitatorName, stats] of facilitatorMap.entries()) {
+      facilitatorsByName[facilitatorName] = {
+        total_transactions: stats.total_transactions,
+        total_amount: stats.total_amount,
+        unique_buyers: stats.buyers.size,
+        unique_sellers: stats.sellers.size,
+      };
+    }
+
+    result.push({
+      bucket_start: bucketStart,
+      facilitators: facilitatorsByName,
+    });
+  }
+
+  return result;
 };
 
 export const getBucketedFacilitatorsStatistics = createCachedArrayQuery({
