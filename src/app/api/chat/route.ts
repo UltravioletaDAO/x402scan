@@ -60,10 +60,6 @@ export async function POST(request: NextRequest) {
 
   const chat = await getChat(chatId, session.user.id);
 
-  if (chat?.userId !== session.user.id) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   const wallet = await getWalletForUserId(session.user.id);
   if (!wallet) {
     return NextResponse.json(
@@ -131,6 +127,10 @@ export async function POST(request: NextRequest) {
         console.error('Failed to generate chat title:', error);
       });
   } else {
+    if (chat.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await createMessage({
       role: lastMessage.role,
       parts: JSON.stringify(lastMessage.parts),
