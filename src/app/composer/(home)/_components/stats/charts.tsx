@@ -9,48 +9,47 @@ import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { LoadingOverallStatsCard, OverallStatsCard } from './card';
 
 import { getPercentageFromBigInt } from '@/lib/utils';
-import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
+
+import { ActivityTimeframe } from '@/types/timeframes';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
-import { ActivityTimeframe } from '@/types/timeframes';
 
 export const OverallCharts = () => {
   const { startDate, endDate, timeframe } = useTimeRangeContext();
 
-  const [overallStats] = api.public.stats.overall.useSuspenseQuery({
+  const [overallStats] = api.public.agents.activity.overall.useSuspenseQuery({
     startDate,
     endDate,
   });
-  const [previousOverallStats] = api.public.stats.overall.useSuspenseQuery({
-    startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
-    endDate: startDate,
-  });
-  const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
+  const [previousOverallStats] =
+    api.public.agents.activity.overall.useSuspenseQuery({
+      startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
+      endDate: startDate,
+    });
+  const [bucketedStats] = api.public.agents.activity.bucketed.useSuspenseQuery({
     numBuckets: 32,
     startDate,
     endDate,
   });
 
   const chartData: ChartData<{
-    transactions: number;
-    totalAmount: number;
-    buyers: number;
-    sellers: number;
+    requests: number;
+    agents: number;
+    toolCalls: number;
+    users: number;
   }>[] = bucketedStats.map(stat => ({
-    transactions: stat.total_transactions,
-    totalAmount: parseFloat(
-      convertTokenAmount(BigInt(stat.total_amount)).toString()
-    ),
-    buyers: stat.unique_buyers,
-    sellers: stat.unique_sellers,
+    requests: stat.total_messages,
+    agents: stat.active_agents,
+    toolCalls: stat.total_tool_calls,
+    users: stat.unique_users,
     timestamp: stat.bucket_start.toISOString(),
   }));
 
   return (
     <>
       <OverallStatsCard
-        title="Transactions"
-        value={overallStats.total_transactions.toLocaleString(undefined, {
+        title="Requests"
+        value={overallStats.message_count.toLocaleString(undefined, {
           notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
@@ -59,19 +58,19 @@ export const OverallCharts = () => {
           timeframe === ActivityTimeframe.AllTime
             ? undefined
             : getPercentageFromBigInt(
-                BigInt(previousOverallStats.total_transactions),
-                BigInt(overallStats.total_transactions)
+                BigInt(previousOverallStats.message_count),
+                BigInt(overallStats.message_count)
               )
         }
         items={{
           type: 'bar',
-          bars: [{ dataKey: 'transactions', color: 'var(--color-primary)' }],
+          bars: [{ dataKey: 'requests', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: 'transactions',
-            label: 'Transactions',
+            key: 'requests',
+            label: 'Requests',
             getValue: data =>
               data.toLocaleString(undefined, {
                 notation: 'compact',
@@ -82,39 +81,8 @@ export const OverallCharts = () => {
         ]}
       />
       <OverallStatsCard
-        title="Volume"
-        value={formatTokenAmount(BigInt(overallStats.total_amount))}
-        percentageChange={
-          timeframe === ActivityTimeframe.AllTime
-            ? undefined
-            : getPercentageFromBigInt(
-                BigInt(previousOverallStats.total_amount),
-                BigInt(overallStats.total_amount)
-              )
-        }
-        items={{
-          type: 'area',
-          areas: [{ dataKey: 'totalAmount', color: 'var(--color-primary)' }],
-        }}
-        data={chartData}
-        tooltipRows={[
-          {
-            key: 'totalAmount',
-            label: 'Volume',
-            getValue: data =>
-              data.toLocaleString(undefined, {
-                notation: 'compact',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                style: 'currency',
-                currency: 'USD',
-              }),
-          },
-        ]}
-      />
-      <OverallStatsCard
-        title="Buyers"
-        value={overallStats.unique_buyers.toLocaleString(undefined, {
+        title="Agents"
+        value={overallStats.agent_count.toLocaleString(undefined, {
           notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 2,
@@ -123,19 +91,52 @@ export const OverallCharts = () => {
           timeframe === ActivityTimeframe.AllTime
             ? undefined
             : getPercentageFromBigInt(
-                BigInt(previousOverallStats.unique_buyers),
-                BigInt(overallStats.unique_buyers)
+                BigInt(previousOverallStats.agent_count),
+                BigInt(overallStats.agent_count)
               )
         }
         items={{
-          type: 'bar',
-          bars: [{ dataKey: 'buyers', color: 'var(--color-primary)' }],
+          type: 'area',
+          areas: [{ dataKey: 'agents', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: 'buyers',
-            label: 'Buyers',
+            key: 'agents',
+            label: 'Agents',
+            getValue: data =>
+              data.toLocaleString(undefined, {
+                notation: 'compact',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              }),
+          },
+        ]}
+      />
+      <OverallStatsCard
+        title="Tool Calls"
+        value={overallStats.tool_call_count.toLocaleString(undefined, {
+          notation: 'compact',
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 2,
+        })}
+        percentageChange={
+          timeframe === ActivityTimeframe.AllTime
+            ? undefined
+            : getPercentageFromBigInt(
+                BigInt(previousOverallStats.tool_call_count),
+                BigInt(overallStats.tool_call_count)
+              )
+        }
+        items={{
+          type: 'bar',
+          bars: [{ dataKey: 'toolCalls', color: 'var(--color-primary)' }],
+        }}
+        data={chartData}
+        tooltipRows={[
+          {
+            key: 'toolCalls',
+            label: 'Tool Calls',
             getValue: data =>
               data.toLocaleString(undefined, {
                 notation: 'compact',
@@ -146,8 +147,8 @@ export const OverallCharts = () => {
         ]}
       />
       <OverallStatsCard
-        title="Sellers"
-        value={overallStats.unique_sellers.toLocaleString(undefined, {
+        title="Users"
+        value={overallStats.user_count.toLocaleString(undefined, {
           notation: 'compact',
           minimumFractionDigits: 0,
           maximumFractionDigits: 0,
@@ -156,19 +157,19 @@ export const OverallCharts = () => {
           timeframe === ActivityTimeframe.AllTime
             ? undefined
             : getPercentageFromBigInt(
-                BigInt(previousOverallStats.unique_sellers),
-                BigInt(overallStats.unique_sellers)
+                BigInt(previousOverallStats.user_count),
+                BigInt(overallStats.user_count)
               )
         }
         items={{
           type: 'bar',
-          bars: [{ dataKey: 'sellers', color: 'var(--color-primary)' }],
+          bars: [{ dataKey: 'users', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
           {
-            key: 'sellers',
-            label: 'Sellers',
+            key: 'users',
+            label: 'Users',
             getValue: data =>
               data.toLocaleString(undefined, {
                 notation: 'compact',
@@ -185,10 +186,10 @@ export const OverallCharts = () => {
 export const LoadingOverallCharts = () => {
   return (
     <>
-      <LoadingOverallStatsCard type="bar" title="Transactions" />
-      <LoadingOverallStatsCard type="area" title="Volume" />
-      <LoadingOverallStatsCard type="bar" title="Buyers" />
-      <LoadingOverallStatsCard type="bar" title="Sellers" />
+      <LoadingOverallStatsCard type="bar" title="Requests" />
+      <LoadingOverallStatsCard type="area" title="Agents" />
+      <LoadingOverallStatsCard type="bar" title="Tool Calls" />
+      <LoadingOverallStatsCard type="bar" title="Users" />
     </>
   );
 };

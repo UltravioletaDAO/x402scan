@@ -20,26 +20,29 @@ export const getOverallActivity = async (
   input: z.infer<typeof overallActivityInputSchema>
 ) => {
   const { startDate, endDate } = input;
-  return await queryRaw(
+  const [result] = await queryRaw(
     Prisma.sql`
       SELECT
         COUNT(DISTINCT c."userId") AS user_count,
-        COUNT(DISTINCT c."agentConfigurationId") AS agent_count,
+        COUNT(DISTINCT acu."agentConfigurationId") AS agent_count,
         COALESCE((SELECT COUNT(*) FROM "Message"), 0) AS message_count,
         COALESCE((SELECT COUNT(*) FROM "ToolCall"), 0) AS tool_call_count
       FROM "Chat" c
+      LEFT JOIN "AgentUser" acu ON c."userAgentConfigurationId" = acu.id
       WHERE c."createdAt" >= ${startDate}
       AND c."createdAt" <= ${endDate}
     `,
     z.array(
       z.object({
-        user_count: z.number(),
-        agent_count: z.number(),
-        message_count: z.number(),
-        tool_call_count: z.number(),
+        user_count: z.bigint(),
+        agent_count: z.bigint(),
+        message_count: z.bigint(),
+        tool_call_count: z.bigint(),
       })
     )
   );
+
+  return result;
 };
 
 export const overallBucketedActivityInputSchema = z.object({
