@@ -1,19 +1,25 @@
 import { Suspense } from 'react';
 
+import { subMonths } from 'date-fns';
+
 import { DataTable } from '@/components/ui/data-table';
+
+import { Section } from '@/app/_components/layout/page-utils';
+
+import { RangeSelector } from '@/app/_contexts/time-range/component';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 
 import { columns } from '../../../_components/transactions/columns';
 import { LatestTransactionsTable } from '../../../_components/transactions/table';
 
 import { api, HydrateClient } from '@/trpc/server';
-import { subMonths } from 'date-fns';
+
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
-import { Section } from '@/app/(home)/(overview)/_components/utils';
-import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+
 import { firstTransfer } from '@/services/facilitator/constants';
+
 import { ActivityTimeframe } from '@/types/timeframes';
-import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 
 interface Props {
   addresses: string[];
@@ -24,7 +30,7 @@ export const LatestTransactions: React.FC<Props> = async ({ addresses }) => {
   const startDate = subMonths(endDate, 1);
   const limit = 100;
 
-  await api.transfers.list.prefetch({
+  await api.public.transfers.list.prefetch({
     limit,
     facilitators: addresses,
     startDate,

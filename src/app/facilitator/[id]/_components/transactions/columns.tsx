@@ -18,7 +18,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Seller, SellerSkeleton } from '@/app/_components/seller';
 import { TransfersSortingContext } from '@/app/_contexts/sorting/transfers/context';
 
-type ColumnType = RouterOutputs['transfers']['list']['items'][number];
+type ColumnType = RouterOutputs['public']['transfers']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {

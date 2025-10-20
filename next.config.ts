@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'www.x402.org',
       },
+      {
+        protocol: 'https',
+        hostname: 'vbdmyxikqhgfmwge.public.blob.vercel-storage.com',
+      },
     ],
   },
   // This is required to support PostHog trailing slash API requests
@@ -29,6 +33,7 @@ const nextConfig: NextConfig = {
     authInterrupts: true,
   },
   serverExternalPackages: ['@lmnr-ai/lmnr'],
+  devIndicators: false,
 };
 
 export default nextConfig;

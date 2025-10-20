@@ -22,7 +22,7 @@ export const LatestTransactionsTable: React.FC<Props> = ({
   const { startDate, endDate } = useTimeRangeContext();
   const { sorting } = useTransfersSorting();
 
-  const [latestTransactions] = api.transfers.list.useSuspenseQuery({
+  const [latestTransactions] = api.public.transfers.list.useSuspenseQuery({
     limit,
     recipient: address,
     sorting,

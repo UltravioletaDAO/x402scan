@@ -14,9 +14,3 @@ export const baseQuerySchema = z.object({
     .default(facilitators.flatMap(f => f.addresses)),
   tokens: z.array(ethereumAddressSchema).min(1).default([USDC_ADDRESS]),
 });
-
-export const sortingSchema = (sortIds: string[] | readonly string[]) =>
-  z.object({
-    id: z.enum(sortIds),
-    desc: z.boolean(),
-  });

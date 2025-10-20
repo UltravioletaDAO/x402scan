@@ -6,8 +6,8 @@ import type { RouterOutputs } from '@/trpc/client';
 import { Info } from 'lucide-react';
 
 interface Props {
-  transaction: NonNullable<RouterOutputs['transactions']['get']>;
-  transfer: NonNullable<RouterOutputs['transfers']['get']>;
+  transaction: NonNullable<RouterOutputs['public']['transactions']['get']>;
+  transfer: NonNullable<RouterOutputs['public']['transfers']['get']>;
 }
 
 export const TransactionDetails: React.FC<Props> = ({

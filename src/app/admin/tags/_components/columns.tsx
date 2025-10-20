@@ -11,7 +11,7 @@ import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 
 type ColumnType =
-  RouterOutputs['resources']['list']['paginated']['items'][number];
+  RouterOutputs['public']['resources']['list']['paginated']['items'][number];
 
 interface ColumnHandlers {
   onTagsClick?: (resource: ColumnType) => void;

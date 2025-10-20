@@ -14,9 +14,9 @@ export default function HomeLayout({
             href: '/',
           },
           {
-            label: 'Chat',
-            href: '/chat',
-            subRoutes: ['/chat/'],
+            label: 'Composer',
+            href: '/composer',
+            subRoutes: ['/composer/chat', '/composer/agent'],
             isNew: true,
           },
           {

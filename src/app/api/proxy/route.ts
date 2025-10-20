@@ -1,5 +1,5 @@
 import { registerResource } from '@/lib/resources';
-import { createResourceInvocation } from '@/services/db/resource-invocation';
+import { createResourceInvocation } from '@/services/db/resources/invocation';
 import { after, NextResponse, type NextRequest } from 'next/server';
 
 import { Prisma } from '@prisma/client';

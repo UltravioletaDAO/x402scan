@@ -2,12 +2,12 @@
 
 import type { ChatStatus } from 'ai';
 import { Loader2Icon, SendIcon, SquareIcon, XIcon } from 'lucide-react';
-import type {
-  ComponentProps,
-  HTMLAttributes,
-  KeyboardEventHandler,
+import {
+  Children,
+  type ComponentProps,
+  type HTMLAttributes,
+  type KeyboardEventHandler,
 } from 'react';
-import { Children } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -36,7 +36,7 @@ const PromptInput = ({
 const PromptInputTextarea = ({
   onChange,
   className,
-  placeholder = 'What would you like to know?',
+  placeholder = 'What is the most interesting thing you can do with x402?',
   ...props
 }: ComponentProps<typeof Textarea> & {
   minHeight?: number;

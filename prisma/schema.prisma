@@ -16,7 +16,7 @@ enum Role {
 model User {
   id            String    @id @default(uuid())
   name          String?
-  email         String?    @unique
+  email         String?   @unique
   emailVerified DateTime?
   image         String?
   createdAt     DateTime  @default(now())
@@ -91,6 +91,8 @@ model Resources {
   origin                      ResourceOrigin               @relation(fields: [originId], references: [id], map: "Resources_origin_fkey")
   agentConfigurationResources AgentConfigurationResource[]
   tags                        ResourcesTags[]
+  requestMetadata             ResourceRequestMetadata?
+  toolCalls                   ToolCall[]
 }
 
 enum AcceptsScheme {
@@ -181,6 +183,19 @@ model ResourceInvocation {
   resource Resources? @relation(fields: [resourceId], references: [id])
 }
 
+model ResourceRequestMetadata {
+  id          String @id @default(uuid())
+  resourceId  String @unique
+  headers     Json
+  body        Json
+  queryParams Json
+  inputSchema Json
+
+  resource Resources @relation(fields: [resourceId], references: [id])
+
+  @@map("ResourceRequestMetadata")
+}
+
 model OgImage {
   id          String  @id @default(uuid())
   originId    String
@@ -236,15 +251,20 @@ enum Visibility {
 }
 
 model Chat {
-  id          String     @id @default(uuid())
-  createdAt   DateTime   @default(now())
-  title       String
-  userId      String
-  visibility  Visibility @default(private)
-  lastContext Json?
+  id                   String     @id @default(uuid())
+  createdAt            DateTime   @default(now())
+  title                String
+  userId               String
+  visibility           Visibility @default(private)
+  lastContext          Json?
+  userAgentConfigurationId String?
 
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages Message[]
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages           Message[]
+  userAgentConfiguration AgentConfigurationUser? @relation(fields: [userAgentConfigurationId], references: [id], onDelete: Cascade)
+  toolCalls          ToolCall[]
+
+  @@map("Chat")
 }
 
 model Message {
@@ -260,11 +280,22 @@ model Message {
   @@map("Message")
 }
 
+model ToolCall {
+  id         String    @id @default(uuid())
+  resourceId String
+  createdAt  DateTime  @default(now())
+  chatId     String
+  resource   Resources @relation(fields: [resourceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  chat       Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
 model AgentConfiguration {
   id           String     @id @default(uuid())
   ownerId      String
   name         String
   model        String?
+  description  String?
+  image        String?
   systemPrompt String
   visibility   Visibility @default(private)
   createdAt    DateTime   @default(now())
@@ -293,9 +324,13 @@ model AgentConfigurationUser {
   userId               String
   agentConfigurationId String
 
+  joinedAt DateTime @default(now())
+
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  chats Chat[]
 
+  @@unique([userId, agentConfigurationId])
   @@map("AgentUser")
 }
 

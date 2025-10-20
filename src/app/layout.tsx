@@ -152,17 +152,14 @@ export default function RootLayout({
                                 href="https://github.com/Merit-Systems/x402scan"
                                 target="_blank"
                               >
-                                <Button variant="outline" size={'navbar'}>
+                                <Button variant="outline" size={'icon'}>
                                   <Image
                                     src="/github.png"
                                     alt="GitHub"
                                     width={16}
                                     height={16}
-                                    className="size-4"
+                                    className="size-4 dark:invert"
                                   />
-                                  <span className="hidden md:block">
-                                    Contribute
-                                  </span>
                                 </Button>
                               </a>
                               <AnimatedThemeToggler />

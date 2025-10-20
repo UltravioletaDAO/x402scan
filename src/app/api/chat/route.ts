@@ -19,11 +19,11 @@ import {
   createMessage,
   getChat,
   updateChat,
-} from '@/services/db/chats';
+} from '@/services/db/composer/chat';
 
 import { auth } from '@/auth';
 
-import { createX402AITools } from '@/services/agent/get-tools';
+import { createX402AITools } from '@/services/agent/create-tools';
 
 import { messageSchema } from '@/lib/message-schema';
 
@@ -35,6 +35,7 @@ const bodySchema = z.object({
   resourceIds: z.array(z.uuid()),
   messages: z.array(messageSchema),
   chatId: z.string(),
+  agentConfigurationId: z.uuid().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -54,7 +55,8 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { model, resourceIds, messages, chatId } = requestBody.data;
+  const { model, resourceIds, messages, chatId, agentConfigurationId } =
+    requestBody.data;
 
   const chat = await getChat(chatId, session.user.id);
 
@@ -74,7 +76,7 @@ export async function POST(request: NextRequest) {
     // Start title generation in parallel (don't await)
     const titlePromise = generateTitleFromUserMessage({
       message: lastMessage,
-      model: openai(model),
+      model: openai('gpt-4.1-nano'),
     });
 
     // Create chat with temporary title immediately
@@ -84,6 +86,22 @@ export async function POST(request: NextRequest) {
       user: {
         connect: { id: session.user.id },
       },
+      userAgentConfiguration: agentConfigurationId
+        ? {
+            connectOrCreate: {
+              where: {
+                userId_agentConfigurationId: {
+                  userId: session.user.id,
+                  agentConfigurationId: agentConfigurationId,
+                },
+              },
+              create: {
+                userId: session.user.id,
+                agentConfigurationId: agentConfigurationId,
+              },
+            },
+          }
+        : undefined,
       messages: {
         create: {
           role: lastMessage.role,
@@ -109,6 +127,10 @@ export async function POST(request: NextRequest) {
         console.error('Failed to generate chat title:', error);
       });
   } else {
+    if (chat.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await createMessage({
       role: lastMessage.role,
       parts: JSON.stringify(lastMessage.parts),
@@ -119,7 +141,11 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const tools = await createX402AITools(resourceIds, signer);
+  const tools = await createX402AITools({
+    resourceIds,
+    walletClient: signer,
+    chatId,
+  });
 
   const result = streamText({
     model: openai(model),
@@ -158,7 +184,7 @@ async function generateTitleFromUserMessage({
       {
         role: 'system',
         content: `\n
-      - you will generate a short title based on the first message a user begins a conversation with
+      - you will generate a short title in english based on the first message a user begins a conversation with
       - ensure it is not more than 80 characters long
       - the title should be a summary of the user's message
       - the title should be in the same language as the user's message

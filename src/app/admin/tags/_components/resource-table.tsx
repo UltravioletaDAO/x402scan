@@ -11,7 +11,7 @@ import { TagFilter } from './tag-filter';
 import type { RowSelectionState } from '@tanstack/react-table';
 
 type Resource =
-  RouterOutputs['resources']['list']['paginated']['items'][number];
+  RouterOutputs['public']['resources']['list']['paginated']['items'][number];
 
 const PAGE_SIZE = 25;
 
@@ -26,7 +26,7 @@ export const ResourceTable = () => {
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
 
-  const { data, isLoading } = api.resources.list.paginated.useQuery({
+  const { data, isLoading } = api.public.resources.list.paginated.useQuery({
     pagination: {
       skip: page * PAGE_SIZE,
       limit: PAGE_SIZE,

@@ -17,8 +17,8 @@ import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
   facilitator: Facilitator;
-  stats: NonNullable<RouterOutputs['facilitators']['list']>[number];
-  overallStats: NonNullable<RouterOutputs['stats']['getOverallStatistics']>;
+  stats: NonNullable<RouterOutputs['public']['facilitators']['list']>[number];
+  overallStats: NonNullable<RouterOutputs['public']['stats']['overall']>;
 }
 
 export const FacilitatorCard: React.FC<Props> = async ({

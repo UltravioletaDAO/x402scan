@@ -11,8 +11,8 @@ export default async function TransactionPage({
   const { hash } = await params;
 
   const [transaction, transfer] = await Promise.all([
-    api.transactions.get({ transaction_hash: hash }),
-    api.transfers.get({ transaction_hash: hash }),
+    api.public.transactions.get({ transaction_hash: hash }),
+    api.public.transfers.get({ transaction_hash: hash }),
   ]);
 
   if (!transaction || !transfer) {
