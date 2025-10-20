@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Tag, Plus, X } from 'lucide-react';
+import { Tag, Plus, X, Trash2 } from 'lucide-react';
 import { api } from '@/trpc/client';
 import {
   Dialog,
@@ -13,6 +13,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 import type { paginatedQuerySchema } from '@/lib/pagination';
 import type { z } from 'zod';
 
@@ -22,6 +29,8 @@ interface EditTagModalProps {
   resourceId: string;
   resourceName: string;
   pagination: z.infer<ReturnType<typeof paginatedQuerySchema>>;
+  selectedTagIds: string[];
+  setSelectedTagIds: (tagIds: string[]) => void;
 }
 
 export function EditTagModal({
@@ -30,9 +39,16 @@ export function EditTagModal({
   resourceId,
   resourceName,
   pagination,
+  selectedTagIds,
+  setSelectedTagIds,
 }: EditTagModalProps) {
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState('#3b82f6');
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [tagToDelete, setTagToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
 
   const utils = api.useUtils();
 
@@ -41,6 +57,24 @@ export function EditTagModal({
     api.public.resources.tags.getByResource.useQuery(resourceId, {
       enabled: open,
     });
+
+  function invalidateResourcesList() {
+    void utils.public.resources.list.paginated.invalidate({
+      pagination,
+      where:
+        selectedTagIds.length > 0
+          ? {
+              tags: {
+                some: {
+                  tagId: {
+                    in: selectedTagIds,
+                  },
+                },
+              },
+            }
+          : undefined,
+    });
+  }
 
   const createTag = api.admin.resources.tags.create.useMutation({
     onSuccess: () => {
@@ -54,15 +88,23 @@ export function EditTagModal({
     onSuccess: () => {
       void utils.public.resources.tags.list.invalidate();
       void utils.public.resources.tags.getByResource.invalidate(resourceId);
-      void utils.public.resources.list.paginated.invalidate(pagination);
+      invalidateResourcesList();
     },
   });
 
   const unassignTag = api.admin.resources.tags.unassign.useMutation({
     onSuccess: () => {
+      invalidateResourcesList();
+    },
+  });
+
+  const deleteTag = api.admin.resources.tags.delete.useMutation({
+    onSuccess: () => {
       void utils.public.resources.tags.list.invalidate();
       void utils.public.resources.tags.getByResource.invalidate(resourceId);
-      void utils.public.resources.list.paginated.invalidate(pagination);
+      invalidateResourcesList();
+      setTagToDelete(null);
+      setDeleteConfirmOpen(false);
     },
   });
 
@@ -90,6 +132,18 @@ export function EditTagModal({
     }
   };
 
+  const handleDeleteClick = (tag: { id: string; name: string }) => {
+    setTagToDelete(tag);
+    setDeleteConfirmOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (tagToDelete) {
+      deleteTag.mutate(tagToDelete.id);
+      setSelectedTagIds(selectedTagIds.filter(id => id !== tagToDelete.id));
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
@@ -98,7 +152,7 @@ export function EditTagModal({
             <Tag className="size-4" />
             Edit Tags
           </DialogTitle>
-          <DialogDescription className="text-xs truncate">
+          <DialogDescription className="text-xs break-all">
             {resourceName}
           </DialogDescription>
         </DialogHeader>
@@ -148,39 +202,54 @@ export function EditTagModal({
                 {allTags.map(tag => {
                   const isAssigned = assignedTagIds.has(tag.id);
                   return (
-                    <div
-                      key={tag.id}
-                      className="flex items-center justify-between p-2 rounded-md border hover:bg-accent transition-colors"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="size-4 rounded-sm"
-                          style={{ backgroundColor: tag.color }}
-                        />
-                        <span className="text-sm font-medium">{tag.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          ({tag._count.resourcesTags})
-                        </span>
-                      </div>
-                      <Button
-                        size="xs"
-                        variant={isAssigned ? 'destructive' : 'default'}
-                        onClick={() => handleToggleTag(tag.id)}
-                        disabled={assignTag.isPending || unassignTag.isPending}
-                      >
-                        {isAssigned ? (
-                          <>
-                            <X className="size-3" />
-                            Remove
-                          </>
-                        ) : (
-                          <>
-                            <Plus className="size-3" />
-                            Add
-                          </>
-                        )}
-                      </Button>
-                    </div>
+                    <ContextMenu key={tag.id}>
+                      <ContextMenuTrigger asChild>
+                        <div className="flex items-center justify-between p-2 rounded-md border hover:bg-accent transition-colors">
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            <div
+                              className="size-4 rounded-sm flex-shrink-0"
+                              style={{ backgroundColor: tag.color }}
+                            />
+                            <span className="text-sm font-medium break-all">
+                              {tag.name}
+                            </span>
+                            <span className="text-xs text-muted-foreground flex-shrink-0">
+                              ({tag._count.resourcesTags})
+                            </span>
+                          </div>
+                          <Button
+                            size="xs"
+                            variant={isAssigned ? 'destructive' : 'default'}
+                            onClick={() => handleToggleTag(tag.id)}
+                            disabled={
+                              assignTag.isPending || unassignTag.isPending
+                            }
+                          >
+                            {isAssigned ? (
+                              <>
+                                <X className="size-3" />
+                                Remove
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="size-3" />
+                                Add
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      </ContextMenuTrigger>
+                      <ContextMenuContent>
+                        <ContextMenuItem
+                          variant="destructive"
+                          onClick={() => handleDeleteClick(tag)}
+                          disabled={deleteTag.isPending}
+                        >
+                          <Trash2 className="size-4" />
+                          Delete Tag
+                        </ContextMenuItem>
+                      </ContextMenuContent>
+                    </ContextMenu>
                   );
                 })}
               </div>
@@ -188,6 +257,20 @@ export function EditTagModal({
           </div>
         </div>
       </DialogContent>
+
+      <ConfirmDialog
+        open={deleteConfirmOpen}
+        onOpenChange={setDeleteConfirmOpen}
+        title="Delete Tag"
+        description={
+          tagToDelete
+            ? `Are you sure you want to delete the tag "${tagToDelete.name}"? This will remove it from all resources.`
+            : ''
+        }
+        confirmLabel="Delete"
+        onConfirm={handleConfirmDelete}
+        variant="destructive"
+      />
     </Dialog>
   );
 }

@@ -1,4 +1,4 @@
-import { prisma } from '../client';
+import { prisma } from '@/services/db/client';
 import { z } from 'zod';
 
 export const createTagSchema = z.object({
@@ -79,6 +79,29 @@ export const listResourceTags = async (resourceId: string) => {
       tag: {
         name: 'asc',
       },
+    },
+  });
+};
+
+export const unassignAllTagsFromResource = async (resourceId: string) => {
+  return await prisma.resourcesTags.deleteMany({
+    where: {
+      resourceId,
+    },
+  });
+};
+
+export const unassignAllTagsFromAllResources = async () => {
+  return await prisma.resourcesTags.deleteMany({});
+};
+
+export const deleteResourceTag = async (tagId: string) => {
+  return await prisma.tag.delete({
+    where: {
+      id: tagId,
+    },
+    include: {
+      resourcesTags: true,
     },
   });
 };

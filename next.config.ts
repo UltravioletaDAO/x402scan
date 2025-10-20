@@ -32,6 +32,7 @@ const nextConfig: NextConfig = {
     turbopackScopeHoisting: false,
     authInterrupts: true,
   },
+  serverExternalPackages: ['@lmnr-ai/lmnr'],
   devIndicators: false,
 };
 

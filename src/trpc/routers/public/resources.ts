@@ -11,12 +11,15 @@ import {
   searchResourcesSchema,
 } from '@/services/db/resources/resource';
 
+import { prisma } from '@/services/db/client';
+
 import { ethereumAddressSchema } from '@/lib/schemas';
 
 import { Methods } from '@/types/x402';
 
 import { registerResource } from '@/lib/resources';
 import { paginatedQuerySchema } from '@/lib/pagination';
+import { Prisma } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
 import { listResourceTags, listTags } from '@/services/db/resources/tag';
 
@@ -36,9 +39,14 @@ export const resourcesRouter = createTRPCRouter({
       return await listResources();
     }),
     paginated: publicProcedure
-      .input(paginatedQuerySchema())
+      .input(
+        z.object({
+          pagination: paginatedQuerySchema(),
+          where: z.custom<Prisma.ResourcesWhereInput>().optional(),
+        })
+      )
       .query(async ({ input }) => {
-        return await listResourcesWithPagination(input);
+        return await listResourcesWithPagination(input.pagination, input.where);
       }),
     byAddress: publicProcedure
       .input(ethereumAddressSchema)
@@ -52,6 +60,16 @@ export const resourcesRouter = createTRPCRouter({
         });
       }),
   },
+  getById: publicProcedure.input(z.string()).query(async ({ input }) => {
+    return await prisma.resources.findUnique({
+      where: { id: input },
+      include: {
+        accepts: true,
+        origin: true,
+        response: true,
+      },
+    });
+  }),
   getResourceByAddress: publicProcedure
     .input(ethereumAddressSchema)
     .query(async ({ input }) => {
