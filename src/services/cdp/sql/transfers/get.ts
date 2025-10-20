@@ -1,25 +1,12 @@
-import z from 'zod';
+import type z from 'zod';
 
-import { runBaseSqlQuery } from '../query';
-
-import { ethereumAddressSchema, ethereumHashSchema } from '@/lib/schemas';
+import { ethereumHashSchema } from '@/lib/schemas';
 import { baseQuerySchema } from '../lib';
+import { transfersPrisma } from '@/services/db/transfers-client';
 
 export const getFacilitatorTransferInputSchema = baseQuerySchema.extend({
   transaction_hash: ethereumHashSchema,
 });
-
-const outputSchema = z.array(
-  z.object({
-    sender: ethereumAddressSchema,
-    recipient: ethereumAddressSchema,
-    amount: z.coerce.bigint(),
-    token_address: ethereumAddressSchema,
-    transaction_hash: ethereumHashSchema,
-    block_timestamp: z.coerce.date(),
-    log_index: z.number(),
-  })
-);
 
 export const getFacilitatorTransfer = async (
   input: z.input<typeof getFacilitatorTransferInputSchema>
@@ -29,24 +16,30 @@ export const getFacilitatorTransfer = async (
     console.error('invalid input', input);
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { transaction_hash, tokens } = parseResult.data;
+  const { transaction_hash, tokens, facilitators } = parseResult.data;
 
-  const sql = `SELECT
-  parameters['from']::String AS sender,
-  parameters['to']::String AS recipient,
-  parameters['value']::UInt256 AS amount,
-  transaction_from,
-  address AS token_address,
-  transaction_hash,
-  block_timestamp,
-  log_index
-FROM base.events
-WHERE event_signature = 'Transfer(address,address,uint256)'
-  AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
-  AND transaction_hash = '${transaction_hash}'
-ORDER BY block_timestamp DESC
-LIMIT 1;`;
-  const result = await runBaseSqlQuery(sql, outputSchema);
+  // Build the where clause for Prisma
+  const where = {
+    tx_hash: transaction_hash.toLowerCase(),
+    address: { in: tokens.map(t => t.toLowerCase()) },
+    transaction_from: { in: facilitators.map(f => f.toLowerCase()) },
+  };
 
-  return result ? result[0] : null;
+  // Get the transfer from Neon database
+  const transfer = await transfersPrisma.transferEvent.findFirst({
+    where,
+    orderBy: { block_timestamp: 'desc' },
+  });
+
+  if (!transfer) return null;
+
+  // Map to expected output format
+  return {
+    sender: transfer.sender,
+    recipient: transfer.recipient,
+    amount: BigInt(Math.floor(transfer.amount * Math.pow(10, transfer.decimals))),
+    token_address: transfer.address,
+    transaction_hash: transfer.tx_hash,
+    block_timestamp: transfer.block_timestamp,
+  };
 };
