@@ -59,16 +59,17 @@ export const updateChatSchema = z.object({
   id: z.string(),
   title: z.string().min(1).max(255).optional(),
   visibility: z.enum(['public', 'private']).optional(),
+  activeStreamId: z.string().nullable().optional(),
 });
 
 export const updateChat = async (
   userId: string,
-  updateChatData: z.infer<typeof updateChatSchema>
+  chatId: string,
+  updateChatData: Prisma.ChatUpdateInput
 ) => {
-  const { id, ...data } = updateChatSchema.parse(updateChatData);
   return await prisma.chat.update({
-    where: { id, userId },
-    data,
+    where: { id: chatId, userId },
+    data: updateChatData,
   });
 };
 

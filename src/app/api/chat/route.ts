@@ -1,26 +1,23 @@
-import { NextResponse } from 'next/server';
+import { after, NextResponse } from 'next/server';
 
 import { z } from 'zod';
 
-import type { LanguageModel, UIMessage } from 'ai';
 import {
   APICallError,
   convertToModelMessages,
   generateText,
   stepCountIs,
   streamText,
+  generateId,
 } from 'ai';
+
+import { createResumableStreamContext } from 'resumable-stream';
 
 import { toAccount } from 'viem/accounts';
 
 import { createX402OpenAI } from '@merit-systems/ai-x402/server';
 
-import {
-  createChat,
-  createMessage,
-  getChat,
-  updateChat,
-} from '@/services/db/composer/chat';
+import { createChat, getChat, updateChat } from '@/services/db/composer/chat';
 
 import { auth } from '@/auth';
 
@@ -28,7 +25,6 @@ import { createX402AITools } from '@/services/agent/create-tools';
 
 import { messageSchema } from '@/lib/message-schema';
 
-import type { NextRequest } from 'next/server';
 import { getWalletForUserId } from '@/services/cdp/server-wallet/user';
 import { ChatSDKError } from '@/lib/errors';
 import {
@@ -37,6 +33,9 @@ import {
 } from '@/services/db/user/chat';
 import { freeTierConfig } from '@/lib/free-tier';
 import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
+
+import type { NextRequest } from 'next/server';
+import type { LanguageModel, UIMessage } from 'ai';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -61,6 +60,7 @@ export async function POST(request: NextRequest) {
   const requestBody = bodySchema.safeParse(await request.json());
 
   if (!requestBody.success) {
+    console.error('Bad request:', requestBody.error);
     return new ChatSDKError('bad_request:chat').toResponse();
   }
 
@@ -116,10 +116,12 @@ export async function POST(request: NextRequest) {
           }
         : undefined,
       messages: {
-        create: {
-          role: lastMessage.role,
-          parts: JSON.stringify(lastMessage.parts),
-          attachments: {},
+        createMany: {
+          data: messages.map(message => ({
+            role: lastMessage.role,
+            parts: JSON.stringify(message.parts),
+            attachments: {},
+          })),
         },
       },
     });
@@ -128,8 +130,7 @@ export async function POST(request: NextRequest) {
     titlePromise
       .then(async generatedTitle => {
         try {
-          await updateChat(session.user.id, {
-            id: chatId,
+          await updateChat(session.user.id, chatId, {
             title: generatedTitle,
           });
         } catch (error) {
@@ -144,12 +145,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await createMessage({
-      role: lastMessage.role,
-      parts: JSON.stringify(lastMessage.parts),
-      attachments: {},
-      chat: {
-        connect: { id: chatId },
+    await updateChat(session.user.id, chatId, {
+      activeStreamId: null,
+      messages: {
+        deleteMany: {},
+        createMany: {
+          data: messages.map(message => ({
+            role: message.role,
+            parts: JSON.stringify(message.parts),
+            attachments: {},
+          })),
+        },
       },
     });
   }
@@ -170,25 +176,42 @@ export async function POST(request: NextRequest) {
   });
 
   return result.toUIMessageStreamResponse({
-    onFinish: async message => {
-      for (const msg of message.messages) {
-        await createMessage({
-          role: msg.role,
-          parts: JSON.stringify(msg.parts),
-          attachments: {},
-          chat: { connect: { id: chatId } },
-        });
-      }
+    originalMessages: messages,
+    generateMessageId: generateId,
+    onFinish: async ({ messages }) => {
+      await updateChat(session.user.id, chatId, {
+        messages: {
+          deleteMany: {},
+          createMany: {
+            data: messages.map(message => ({
+              role: message.role,
+              parts: JSON.stringify(message.parts),
+              attachments: {},
+            })),
+          },
+        },
+      });
     },
     onError: error => {
       if (error instanceof APICallError) {
         if (error.statusCode === 402) {
           return new ChatSDKError('payment_required:chat').message;
         }
-        return new ChatSDKError('bad_request:chat').message;
-      } else {
-        return new ChatSDKError('bad_request:chat').message;
       }
+      return new ChatSDKError('bad_request:chat').message;
+    },
+    async consumeSseStream({ stream }) {
+      const streamId = generateId();
+
+      // Create a resumable stream from the SSE stream
+      const streamContext = createResumableStreamContext({ waitUntil: after });
+      await streamContext.createNewResumableStream(streamId, () => stream);
+
+      // Update the chat with the active stream ID
+      await updateChat(session.user.id, chatId, {
+        id: chatId,
+        activeStreamId: streamId,
+      });
     },
   });
 }

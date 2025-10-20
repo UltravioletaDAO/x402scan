@@ -258,6 +258,7 @@ model Chat {
   visibility           Visibility @default(private)
   lastContext          Json?
   userAgentConfigurationId String?
+  activeStreamId         String?
 
   user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages           Message[]
@@ -267,10 +268,16 @@ model Chat {
   @@map("Chat")
 }
 
+enum MessageRole {
+  system
+  user
+  assistant
+}
+
 model Message {
   id          String   @id @default(uuid()) @map("Message")
   chatId      String
-  role        String
+  role        MessageRole
   parts       Json
   attachments Json
   createdAt   DateTime @default(now())

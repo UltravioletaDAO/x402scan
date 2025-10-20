@@ -11,12 +11,13 @@ import {
 import { Send } from './send';
 import { Onramp } from './onramp';
 
-import type { Address } from 'viem';
 import { CopyCode } from '@/components/ui/copy-code';
 import { useEthBalance } from '@/app/_hooks/use-eth-balance';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+
+import type { Address } from 'viem';
 
 interface Props {
   address: Address;
@@ -30,7 +31,7 @@ export const Deposit: React.FC<Props> = ({ address, onSuccess }) => {
 
   useEffect(() => {
     if (ethBalance !== undefined) {
-      if (BigInt(ethBalance) > 0) {
+      if (ethBalance > 0) {
         setTab('send');
       } else {
         setTab('onramp');

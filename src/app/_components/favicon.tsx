@@ -47,7 +47,7 @@ export const Favicons: React.FC<FaviconsProps> = ({
         containerClassName
       )}
     >
-      {favicons.map(favicon => {
+      {favicons.map((favicon, index) => {
         return (
           <div
             className={cn(
@@ -58,7 +58,7 @@ export const Favicons: React.FC<FaviconsProps> = ({
                 '-ml-2': orientation === 'horizontal',
               }
             )}
-            key={favicon}
+            key={`${favicon}-${index}`}
           >
             <Favicon url={favicon} className="size-full" />
           </div>

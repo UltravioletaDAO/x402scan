@@ -25,7 +25,6 @@ import {
   FieldTitle,
 } from '@/components/ui/field';
 import { Dropzone } from '@/components/ui/dropzone';
-import { Card } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 import { ResourceList } from '../../_components/resource-list';
@@ -79,7 +78,7 @@ export const AgentForm: React.FC<Props> = ({
   return (
     <form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-6"
     >
       <FieldSet>
         <FieldLegend>Tools</FieldLegend>
@@ -89,7 +88,7 @@ export const AgentForm: React.FC<Props> = ({
             name="resourceIds"
             render={({ field }) => (
               <Field>
-                <Card>
+                <div className="border rounded-md">
                   <ResourceList
                     selectedResourceIds={field.value}
                     onSelectResource={resource => {
@@ -100,7 +99,7 @@ export const AgentForm: React.FC<Props> = ({
                       );
                     }}
                   />
-                </Card>
+                </div>
               </Field>
             )}
           />
