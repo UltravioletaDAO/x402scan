@@ -29,6 +29,13 @@ export const getChat = async (id: string, userId?: string) => {
   });
 };
 
+export const getChatStreamId = async (id: string, userId?: string) => {
+  return await prisma.chat.findUnique({
+    where: { id, OR: [{ userId }, { visibility: 'public' }] },
+    select: { activeStreamId: true },
+  });
+};
+
 export const listChatsSchema = z.object({
   agentId: z.uuid().optional(),
 });
@@ -59,28 +66,22 @@ export const updateChatSchema = z.object({
   id: z.string(),
   title: z.string().min(1).max(255).optional(),
   visibility: z.enum(['public', 'private']).optional(),
+  activeStreamId: z.string().nullable().optional(),
 });
 
 export const updateChat = async (
   userId: string,
-  updateChatData: z.infer<typeof updateChatSchema>
+  chatId: string,
+  updateChatData: Prisma.ChatUpdateInput
 ) => {
-  const { id, ...data } = updateChatSchema.parse(updateChatData);
   return await prisma.chat.update({
-    where: { id, userId },
-    data,
+    where: { id: chatId, userId },
+    data: updateChatData,
   });
 };
 
 export const deleteChat = async (id: string, userId: string) => {
   return await prisma.chat.delete({
     where: { id, userId },
-  });
-};
-
-// Message CRUD operations
-export const createMessage = async (data: Prisma.MessageCreateInput) => {
-  return await prisma.message.create({
-    data,
   });
 };

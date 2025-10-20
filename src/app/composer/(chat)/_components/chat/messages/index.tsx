@@ -27,6 +27,9 @@ export const Messages: React.FC<MessagesProps> = ({
   model,
   emptyState,
 }) => {
+  if (status === 'streaming') {
+    console.log(messages[messages.length - 1]);
+  }
   return (
     <Conversation className="h-full w-full">
       {messages.length > 0 ? (
@@ -40,11 +43,13 @@ export const Messages: React.FC<MessagesProps> = ({
                 isLast={message.id === messages.at(-1)?.id}
               />
             ))}
-            {status === 'submitted' && (
-              <AnimatedShinyText>
-                Calling {model} with x402...
-              </AnimatedShinyText>
-            )}
+            {status === 'submitted' ||
+              (status === 'streaming' &&
+                messages[messages.length - 1].parts.length === 0 && (
+                  <AnimatedShinyText className="text-xs md:text-sm">
+                    Calling {model} with x402...
+                  </AnimatedShinyText>
+                ))}
           </ConversationContent>
           <ConversationScrollButton />
         </>

@@ -60,23 +60,29 @@ export const ChatContent: React.FC<Props> = ({
 
   const { messages, sendMessage, status } = useChat({
     messages: initialMessages ? convertToUIMessages(initialMessages) : [],
+    resume: true,
+    id,
+    generateId: () => id,
     onError: error => {
       toast.error(error.message);
       // could also open the deposit dialog here
     },
-    onFinish: () => {
-      window.history.replaceState(
-        {},
-        '',
-        agentConfig
-          ? `/composer/agent/${agentConfig.id}/chat/${id}`
-          : `/composer/chat/${id}`
-      );
-      void utils.user.chats.list.invalidate();
-      void utils.user.freeTier.usage.invalidate();
-      setTimeout(() => {
-        void utils.user.serverWallet.usdcBaseBalance.invalidate();
-      }, 3000);
+    onFinish: ({ messages }) => {
+      if (messages.length > 0) {
+        console.log('onFinish');
+        window.history.replaceState(
+          {},
+          '',
+          agentConfig
+            ? `/composer/agent/${agentConfig.id}/chat/${id}`
+            : `/composer/chat/${id}`
+        );
+        void utils.user.chats.list.invalidate();
+        void utils.user.freeTier.usage.invalidate();
+        setTimeout(() => {
+          void utils.user.serverWallet.usdcBaseBalance.invalidate();
+        }, 3000);
+      }
     },
   });
 
@@ -99,9 +105,10 @@ export const ChatContent: React.FC<Props> = ({
       { text },
       {
         body: {
-          model,
-          resourceIds: selectedResources.map(resource => resource.id),
           chatId: id,
+          model,
+          messages,
+          resourceIds: selectedResources.map(resource => resource.id),
           agentConfigurationId: agentConfig?.id,
         },
       }
