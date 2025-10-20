@@ -47,11 +47,11 @@ const aurraCloudFacilitator = {
 
 const thirdwebFacilitator = {
   id: 'thirdweb',
-  name: 'Thirdweb' as const,
+  name: 'thirdweb' as const,
   image: '/thirdweb.png',
   link: 'https://portal.thirdweb.com/payments/x402/facilitator',
-  addresses: ['0x758D2532FF6A304D1A0c2FdF46264590E4Ef0637'],
-  color: 'var(--color-blue-600)',
+  addresses: ['0x80c08de1a05df2bd633cf520754e40fde3c794d3'],
+  color: 'var(--color-pink-600)',
 } satisfies Facilitator;
 
 export const facilitators = [
