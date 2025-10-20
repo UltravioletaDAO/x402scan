@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { checkCronSecret } from '@/lib/cron';
-import { listResourcesWithPagination } from '@/services/db/resources';
+import { listResourcesWithPagination } from '@/services/db/resources/resource';
 import { labelingPass } from '@/services/labeling/label';
 import type { Prisma } from '@prisma/client';
 import { prisma } from '@/services/db/client';

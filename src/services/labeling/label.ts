@@ -1,10 +1,10 @@
 import { prisma } from '@/services/db/client';
 import {
-  getAllResourceTags,
-  createResourceTag,
+  listTags,
+  createTag,
   assignTagToResource,
-} from '@/services/db/resource-tag';
-import { type listResourcesWithPagination } from '@/services/db/resources';
+} from '@/services/db/resources/tag';
+import { listResourcesWithPagination } from '@/services/db/resources/resource';
 import { generateObject } from 'ai';
 import { openai } from '@ai-sdk/openai';
 import { z } from 'zod';
@@ -55,7 +55,7 @@ export const labelingPass = async (
     sessionId: string;
   }
 ) => {
-  const tags = await getAllResourceTags();
+  const tags = await listTags();
   const resourceDescription = `
     RESOURCE DESCRIPTIONS:
     ${resource.accepts.map(accept => `- ${accept.description}`).join('\n')}
@@ -94,7 +94,7 @@ export const labelingPass = async (
   const tag = result.object.tag;
   const tagData = await prisma.tag.findFirst({ where: { name: tag } });
   if (!tagData) {
-    const newTag = await createResourceTag({ name: tag, color: randomColor() });
+    const newTag = await createTag({ name: tag, color: randomColor() });
     await assignTagToResource({ resourceId: resource.id, tagId: newTag.id });
     return { resource, tag: newTag };
   } else {

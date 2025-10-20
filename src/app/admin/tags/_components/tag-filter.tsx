@@ -31,7 +31,11 @@ export const TagFilter: React.FC<TagFilterProps> = ({
   onSelectedTagIdsChange,
 }) => {
   const [open, setOpen] = useState(false);
-  const { data: tags, isLoading, refetch } = api.public.resources.tags.list.useQuery();
+  const {
+    data: tags,
+    isLoading,
+    refetch,
+  } = api.public.resources.tags.list.useQuery();
 
   const selectedTags =
     tags?.filter((tag: Tag) => selectedTagIds.includes(tag.id)) ?? [];
