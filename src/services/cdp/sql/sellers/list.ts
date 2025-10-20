@@ -1,15 +1,15 @@
 import z from 'zod';
 
-import { runBaseSqlQuery } from '../query';
 import { ethereumAddressSchema, facilitatorAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
-import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
+import { baseQuerySchema, sortingSchema } from '../lib';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
+import { transfersPrisma } from '@/services/db/transfers-client';
 
 const sellerSortIds = [
   'tx_count',
@@ -38,51 +38,78 @@ const listTopSellersUncached = async (
   const { sorting, addresses, startDate, endDate, facilitators, tokens } =
     parseResult.data;
   const { limit } = pagination;
-  const outputSchema = z.array(
-    z.object({
-      recipient: ethereumAddressSchema,
-      facilitators: z.array(facilitatorAddressSchema),
-      tx_count: z.coerce.number(),
-      total_amount: z.coerce.number(),
-      latest_block_timestamp: z.coerce.date(),
-      unique_buyers: z.coerce.number(),
+
+  // Build the where clause for Prisma
+  const where = {
+    // Filter by token addresses
+    address: { in: tokens.map(t => t.toLowerCase()) },
+    // Filter by facilitator addresses
+    transaction_from: { in: facilitators.map(f => f.toLowerCase()) },
+    // Optional filter by recipient addresses (sellers)
+    ...(addresses && addresses.length > 0 && {
+      recipient: { in: addresses.map(a => a.toLowerCase()) },
+    }),
+    // Date range filters
+    ...(startDate && endDate && {
+      block_timestamp: { gte: startDate, lte: endDate },
+    }),
+    ...(startDate && !endDate && {
+      block_timestamp: { gte: startDate },
+    }),
+    ...(!startDate && endDate && {
+      block_timestamp: { lte: endDate },
+    }),
+  };
+
+  // Group by recipient
+  const grouped = await transfersPrisma.transferEvent.groupBy({
+    by: ['recipient'],
+    where,
+    _count: true,
+    _sum: { amount: true },
+    _max: { block_timestamp: true },
+  });
+
+  // For each seller, get unique buyers and facilitators
+  const results = await Promise.all(
+    grouped.map(async (group) => {
+      const sellerWhere = { ...where, recipient: group.recipient };
+      
+      const [uniqueBuyers, facilitatorsList] = await Promise.all([
+        transfersPrisma.transferEvent.groupBy({
+          by: ['sender'],
+          where: sellerWhere,
+        }),
+        transfersPrisma.transferEvent.groupBy({
+          by: ['transaction_from'],
+          where: sellerWhere,
+        }),
+      ]);
+
+      return {
+        recipient: group.recipient,
+        facilitators: facilitatorsList.map(f => f.transaction_from),
+        tx_count: group._count,
+        total_amount: group._sum.amount ?? 0,
+        latest_block_timestamp: group._max.block_timestamp ?? new Date(),
+        unique_buyers: uniqueBuyers.length,
+      };
     })
   );
 
-  const sql = `SELECT 
-    parameters['to']::String AS recipient, 
-    COUNT(*) AS tx_count, 
-    SUM(parameters['value']::UInt256) AS total_amount,
-    max(block_timestamp) AS latest_block_timestamp,
-    COUNT(DISTINCT parameters['from']::String) AS unique_buyers,
-    groupArray(DISTINCT transaction_from) AS facilitators
-FROM base.events 
-WHERE event_signature = 'Transfer(address,address,uint256)'
-    AND address IN (${tokens.map(t => `'${t}'`).join(', ')})
-    AND transaction_from IN (${facilitators.map(f => `'${f}'`).join(', ')})
-    ${
-      addresses && addresses.length > 0
-        ? `AND recipient IN (${addresses.map(a => `'${a}'`).join(', ')})`
-        : ''
-    }
-    ${
-      startDate ? `AND block_timestamp >= '${formatDateForSql(startDate)}'` : ''
-    }
-    ${endDate ? `AND block_timestamp <= '${formatDateForSql(endDate)}'` : ''}
-GROUP BY recipient 
-ORDER BY ${sorting.id} ${sorting.desc ? 'DESC' : 'ASC'}
-LIMIT ${limit + 1};
-  `;
+  // Sort results in TypeScript
+  type SortableResult = typeof results[number];
+  const sortKey = sorting.id as keyof SortableResult;
+  results.sort((a, b) => {
+    const aVal = a[sortKey];
+    const bVal = b[sortKey];
+    const comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
+    return sorting.desc ? -comparison : comparison;
+  });
 
-  const items = await runBaseSqlQuery(sql, outputSchema);
-  if (!items) {
-    return toPaginatedResponse({
-      items: [],
-      limit,
-    });
-  }
+  // Return paginated response
   return toPaginatedResponse({
-    items,
+    items: results.slice(0, limit + 1),
     limit,
   });
 };
