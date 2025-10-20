@@ -1,7 +1,7 @@
 import {
-  BaseAreaChart,
-  LoadingAreaChart,
-} from '@/components/ui/charts/chart/area';
+  BaseBarChart,
+  LoadingBarChart,
+} from '@/components/ui/charts/chart/bar';
 
 import { api } from '@/trpc/server';
 
@@ -27,12 +27,12 @@ export const AgentCardChart: React.FC<Props> = async ({ agentConfigId }) => {
   }));
 
   return (
-    <BaseAreaChart
+    <BaseBarChart
       data={chartData}
-      areas={[
+      bars={[
         {
           dataKey: 'total_messages',
-          color: 'blue',
+          color: 'var(--primary)',
         },
       ]}
       height={height}
@@ -41,5 +41,5 @@ export const AgentCardChart: React.FC<Props> = async ({ agentConfigId }) => {
 };
 
 export const LoadingAgentCardChart = () => {
-  return <LoadingAreaChart height={height} />;
+  return <LoadingBarChart height={height} />;
 };

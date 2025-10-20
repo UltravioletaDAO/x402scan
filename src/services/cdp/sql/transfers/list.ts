@@ -1,6 +1,7 @@
 import z from 'zod';
 
 import { runBaseSqlQuery } from '../query';
+import { baseQuerySchema, formatDateForSql } from '../lib';
 
 import {
   ethereumAddressSchema,
@@ -8,11 +9,11 @@ import {
   facilitatorAddressSchema,
 } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
-import { baseQuerySchema, formatDateForSql, sortingSchema } from '../lib';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
+import { sortingSchema } from '@/lib/schemas';
 
 const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 

@@ -16,3 +16,9 @@ export const ethereumHashSchema = z
   .string()
   .regex(/^0x[a-fA-F0-9]{64}$/, 'Invalid transaction hash')
   .transform(hash => hash.toLowerCase() as Hash);
+
+export const sortingSchema = (sortIds: string[] | readonly string[]) =>
+  z.object({
+    id: z.enum(sortIds),
+    desc: z.boolean(),
+  });
