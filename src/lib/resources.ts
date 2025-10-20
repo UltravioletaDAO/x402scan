@@ -4,10 +4,7 @@ import { scrapeOriginData } from '@/services/scraper';
 import { upsertResource } from '@/services/db/resources/resource';
 import { upsertOrigin } from '@/services/db/resources/origin';
 
-import {
-  parseX402Response,
-  type EnhancedOutputSchema,
-} from '@/lib/x402/schema';
+import { enhancedAcceptsSchema, parseX402Response } from '@/lib/x402/schema';
 import { getOriginFromUrl } from '@/lib/url';
 
 import type { AcceptsNetwork } from '@prisma/client';
@@ -28,6 +25,7 @@ export const registerResource = async (url: string, data: unknown) => {
     })
     .extend({
       error: z3.string().optional(),
+      accepts: z3.array(enhancedAcceptsSchema).optional(),
     })
     .safeParse(data);
 
@@ -85,7 +83,7 @@ export const registerResource = async (url: string, data: unknown) => {
         ...accept,
         network: accept.network.replace('-', '_') as AcceptsNetwork,
         maxAmountRequired: accept.maxAmountRequired,
-        outputSchema: accept.outputSchema as EnhancedOutputSchema,
+        outputSchema: accept.outputSchema,
         extra: accept.extra,
       })) ?? [],
   });
