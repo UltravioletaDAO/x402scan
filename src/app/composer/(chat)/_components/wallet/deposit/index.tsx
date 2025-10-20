@@ -13,12 +13,31 @@ import { Onramp } from './onramp';
 
 import type { Address } from 'viem';
 import { CopyCode } from '@/components/ui/copy-code';
+import { useEthBalance } from '@/app/_hooks/use-eth-balance';
+import { useEffect } from 'react';
+import { useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   address: Address;
+  onSuccess?: () => void;
 }
 
-export const Deposit: React.FC<Props> = ({ address }) => {
+export const Deposit: React.FC<Props> = ({ address, onSuccess }) => {
+  const [tab, setTab] = useState<'send' | 'onramp'>();
+
+  const { data: ethBalance, isLoading: isEthBalanceLoading } = useEthBalance();
+
+  useEffect(() => {
+    if (ethBalance !== undefined) {
+      if (BigInt(ethBalance) > 0) {
+        setTab('send');
+      } else {
+        setTab('onramp');
+      }
+    }
+  }, [ethBalance]);
+
   return (
     <div className="flex flex-col gap-4 px-4">
       <div className="flex flex-col gap-1">
@@ -27,7 +46,11 @@ export const Deposit: React.FC<Props> = ({ address }) => {
       </div>
       <div className="flex flex-col gap-1">
         <span className="font-medium text-sm">Add Funds</span>
-        <Tabs defaultValue="send" className="flex flex-col gap-0">
+        <Tabs
+          className="flex flex-col gap-0"
+          value={tab ?? ''}
+          onValueChange={value => setTab(value as 'send' | 'onramp')}
+        >
           <TabsList className="w-full justify-start gap-2 rounded-md h-fit">
             <TabsTrigger
               value="send"
@@ -50,14 +73,21 @@ export const Deposit: React.FC<Props> = ({ address }) => {
               Onramp
             </TabsTrigger>
           </TabsList>
-          <TabsContents className="mt-1">
-            <TabsContent value="send" className="p-1">
-              <Send address={address} />
-            </TabsContent>
-            <TabsContent value="onramp" className="m-2">
-              <Onramp />
-            </TabsContent>
-          </TabsContents>
+          {isEthBalanceLoading && ethBalance === undefined ? (
+            <div className="mt-1 p-2 flex flex-col gap-2">
+              <Skeleton className="w-full h-[44px]" />
+              <Skeleton className="w-full h-9" />
+            </div>
+          ) : (
+            <TabsContents className="mt-1">
+              <TabsContent value="send" className="p-1">
+                <Send address={address} onSuccess={onSuccess} />
+              </TabsContent>
+              <TabsContent value="onramp" className="m-2">
+                <Onramp />
+              </TabsContent>
+            </TabsContents>
+          )}
         </Tabs>
       </div>
     </div>

@@ -57,11 +57,11 @@ export const WelcomeContent: React.FC<Props> = ({ initialStep }) => {
 
   return (
     <AlertDialog open={isOpen}>
-      <AlertDialogContent className="p-0 overflow-hidden gap-0">
+      <AlertDialogContent className="p-0 overflow-hidden gap-0 sm:max-w-sm">
         <AlertDialogHeader className="flex flex-row items-center gap-4 space-y-0 bg-muted border-b p-4">
           <Logo className="size-12" />
           <div>
-            <AlertDialogTitle>Set up Your Agent</AlertDialogTitle>
+            <AlertDialogTitle>Sign in to x402Scan</AlertDialogTitle>
             <AlertDialogDescription className="text-xs font-mono">
               Build agents that pay for their inference and invoke resources and
               pay for them with x402.

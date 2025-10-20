@@ -1,4 +1,4 @@
-import { ArrowDown, Key, Wallet } from 'lucide-react';
+import { AlertCircle, ArrowDown, Key, Wallet } from 'lucide-react';
 
 import {
   Dialog,
@@ -12,11 +12,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/components/logo';
 
 import { WalletDisplay } from './display';
-
+import { ExportWallet } from './export';
 import { Deposit } from './deposit';
 
+import { api } from '@/trpc/client';
+
 import type { Address } from 'viem';
-import { ExportWallet } from './export';
+import { useEffect, useState } from 'react';
 
 interface Props {
   children: React.ReactNode;
@@ -24,8 +26,23 @@ interface Props {
 }
 
 export const WalletDialog: React.FC<Props> = ({ children, address }) => {
+  const { data: usdcBalance } =
+    api.user.serverWallet.usdcBaseBalance.useQuery();
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [tab, setTab] = useState<'wallet' | 'deposit' | 'export'>('wallet');
+
+  const isOutOfFunds = usdcBalance !== undefined && usdcBalance <= 0.01;
+
+  useEffect(() => {
+    if (isOutOfFunds) {
+      setTab('deposit');
+      setIsOpen(true);
+    }
+  }, [isOutOfFunds]);
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         className="p-0 overflow-hidden sm:max-w-md"
@@ -33,7 +50,10 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
       >
         <Tabs
           className="w-full overflow-hidden flex flex-col gap-4"
-          defaultValue="wallet"
+          value={tab}
+          onValueChange={value =>
+            setTab(value as 'wallet' | 'deposit' | 'export')
+          }
         >
           <DialogHeader className=" gap-2 bg-muted">
             <div className="flex flex-row gap-2 items-center p-4">
@@ -84,6 +104,17 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
             value="deposit"
             className="w-full overflow-hidden mt-0 flex flex-col gap-2 pb-4"
           >
+            {isOutOfFunds && (
+              <div className="flex flex-row gap-2 items-center mx-4 border-yellow-600 border p-2 bg-yellow-600/20 rounded-md mb-2">
+                <AlertCircle className="size-4 text-yellow-600 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium">Agent Out of Funds</p>
+                  <p className="text-xs">
+                    Please deposit more funds to continue.
+                  </p>
+                </div>
+              </div>
+            )}
             <Deposit address={address} />
           </TabsContent>
           <TabsContent value="export" className="w-full overflow-hidden mt-0">

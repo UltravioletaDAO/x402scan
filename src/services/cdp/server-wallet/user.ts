@@ -1,9 +1,7 @@
 import { USDC_ADDRESS } from '@/lib/utils';
 import { convertTokenAmount } from '@/lib/token';
-import { CdpClient } from '@coinbase/cdp-sdk';
+import { cdpClient } from './client';
 import { getWalletNameForUserId } from '@/services/db/user/server-wallets';
-
-const cdpClient = new CdpClient();
 
 export const getWalletForUserId = async (userId: string) => {
   const walletName = await getWalletNameForUserId(userId);

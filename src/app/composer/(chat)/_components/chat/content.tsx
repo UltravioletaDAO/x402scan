@@ -53,12 +53,16 @@ export const ChatContent: React.FC<Props> = ({
       enabled: !!session,
     }
   );
-  const hasBalance = usdcBalance && usdcBalance > 0;
+  const { data: freeTierUsage } = api.user.freeTier.usage.useQuery(undefined, {
+    enabled: !!session,
+  });
+  const hasBalance = (usdcBalance ?? 0) > 0 || freeTierUsage?.hasFreeTier;
 
   const { messages, sendMessage, status } = useChat({
     messages: initialMessages ? convertToUIMessages(initialMessages) : [],
     onError: error => {
       toast.error(error.message);
+      // could also open the deposit dialog here
     },
     onFinish: () => {
       window.history.replaceState(
@@ -69,6 +73,7 @@ export const ChatContent: React.FC<Props> = ({
           : `/composer/chat/${id}`
       );
       void utils.user.chats.list.invalidate();
+      void utils.user.freeTier.usage.invalidate();
       setTimeout(() => {
         void utils.user.serverWallet.usdcBaseBalance.invalidate();
       }, 3000);

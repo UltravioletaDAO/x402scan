@@ -16,7 +16,7 @@ import {
 } from '@/services/cdp/onramp/create-onramp-session';
 
 import { SessionStatus } from '@prisma/client';
-import { getWalletAddressFromUserId } from '@/services/cdp/server-wallet';
+import { getWalletAddressFromUserId } from '@/services/cdp/server-wallet/user';
 
 export const onrampSessionsRouter = createTRPCRouter({
   get: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {

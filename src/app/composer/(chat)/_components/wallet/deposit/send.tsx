@@ -23,9 +23,10 @@ import { base } from 'viem/chains';
 
 interface Props {
   address: Address;
+  onSuccess?: () => void;
 }
 
-export const Send: React.FC<Props> = ({ address }) => {
+export const Send: React.FC<Props> = ({ address, onSuccess }) => {
   const [amount, setAmount] = useState(0);
   const {
     data: ethBalance,
@@ -65,6 +66,7 @@ export const Send: React.FC<Props> = ({ address }) => {
           setTimeout(() => {
             resetSending();
           }, 2000);
+          onSuccess?.();
         },
         onError: error => {
           toast.error('Failed to send USDC', {
@@ -85,12 +87,6 @@ export const Send: React.FC<Props> = ({ address }) => {
         showMaxButton
         decimalPlaces={6}
       />
-      {!isEthBalanceLoading && ethBalance === 0 && (
-        <p className="text-yellow-600 bg-yellow-600/10 p-2 rounded-md text-xs">
-          Insufficient gas to pay for this transaction. Please add some ETH to
-          your wallet.
-        </p>
-      )}
       <Button
         variant="turbo"
         disabled={
@@ -103,7 +99,11 @@ export const Send: React.FC<Props> = ({ address }) => {
         }
         onClick={handleSubmit}
       >
-        {isSending ? (
+        {isEthBalanceLoading ? (
+          'Loading...'
+        ) : !ethBalance ? (
+          'Insufficient ETH'
+        ) : isSending ? (
           <>
             <Loader2 className="size-4 animate-spin" />
             Sending...

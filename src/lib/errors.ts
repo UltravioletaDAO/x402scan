@@ -100,7 +100,7 @@ function getMessageByErrorCode(errorCode: ErrorCode): string {
     case 'offline:chat':
       return "We're having trouble sending your message. Please check your internet connection and try again.";
     case 'payment_required:chat':
-      return 'You need to upgrade to a paid plan to use this feature. Please upgrade and try again.';
+      return paymentRequiredText;
     case 'server:chat':
       return 'An error occurred while processing your request. Please try again later.';
 
@@ -138,3 +138,6 @@ function getStatusCodeByType(type: ErrorType) {
       return 500;
   }
 }
+
+export const paymentRequiredText =
+  'Out of funds. Please deposit more funds to continue.';

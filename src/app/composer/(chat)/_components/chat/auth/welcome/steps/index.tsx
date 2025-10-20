@@ -1,9 +1,8 @@
-import { DollarSign, Pen, Wallet } from 'lucide-react';
+import { Pen, Wallet } from 'lucide-react';
 
 import { Verify } from './verify';
 
 import type { WelcomeStep } from './types';
-import { FundWallet } from './fund-wallet';
 
 export const welcomeSteps: WelcomeStep[] = [
   {
@@ -15,10 +14,5 @@ export const welcomeSteps: WelcomeStep[] = [
     icon: <Pen className="size-4" />,
     title: 'Verify Wallet',
     component: <Verify />,
-  },
-  {
-    icon: <DollarSign className="size-4" />,
-    title: 'Fund Agent',
-    component: <FundWallet />,
   },
 ];

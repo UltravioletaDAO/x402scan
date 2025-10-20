@@ -10,11 +10,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { api } from '@/trpc/client';
 
 export const NavMain = () => {
+  const router = useRouter();
   const pathname = usePathname();
   const { data: session } = useSession();
 
@@ -27,12 +28,14 @@ export const NavMain = () => {
     enabled: isAgent && !!session?.user.id,
   });
 
+  const newChatUrl = isAgent
+    ? (`/composer/agent/${agentId}/chat` as const)
+    : ('/composer/chat' as const);
+
   const items = [
     {
       title: 'New Chat',
-      url: isAgent
-        ? (`/composer/agent/${agentId}` as const)
-        : ('/composer/chat' as const),
+      url: newChatUrl,
       icon: Edit,
     },
     ...(isAgent && session?.user.id === agentConfiguration?.ownerId
@@ -51,7 +54,17 @@ export const NavMain = () => {
       <SidebarMenu>
         {items.map(item => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton key={item.title} tooltip={item.title} asChild>
+            <SidebarMenuButton
+              key={item.title}
+              tooltip={item.title}
+              asChild
+              onClick={() => {
+                if (pathname === item.url) {
+                  console.log('refreshing');
+                  router.refresh();
+                }
+              }}
+            >
               <Link href={item.url}>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>
