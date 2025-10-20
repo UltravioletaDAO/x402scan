@@ -1,17 +1,27 @@
-import type { JsonValue } from '@/components/ai-elements/json-viewer';
-import { JsonViewer } from '@/components/ai-elements/json-viewer';
 import type { OutputComponent } from '../types';
 
 import z from 'zod';
 
+const aiBeatsOrigin = 'https://www.aibeats.fun';
+
 const aibeatsOutputSchema = z.object({
   success: z.literal(true),
   result: z.object({
-    audioUrl: z.string(),
+    audioUrl: z
+      .string()
+      .transform(url => new URL(url, aiBeatsOrigin).toString()),
     fileName: z.string(),
     finalLyrics: z.string(),
     aiTitle: z.string(),
-    artwork: z.string().nullable(),
+    artwork: z
+      .object({
+        fileName: z.string(),
+        imageUrl: z
+          .string()
+          .transform(url => new URL(url, aiBeatsOrigin).toString()),
+        prompt: z.string(),
+      })
+      .nullable(),
     metadata: z.object({
       originalPrompt: z.string(),
       enhancedPrompt: z.string(),
@@ -23,9 +33,9 @@ const aibeatsOutputSchema = z.object({
     }),
   }),
   usage: z.object({
-    totalCost: z.number(),
+    totalCost: z.number().optional(),
     paymentMethod: z.string(),
-    remainingCredits: z.number(),
+    remainingCredits: z.number().optional(),
   }),
 });
 
@@ -37,12 +47,15 @@ export const AibeatsOutput: OutputComponent = ({ output, errorText }) => {
   const parseResult = aibeatsOutputSchema.safeParse(output);
 
   if (!parseResult.success) {
-    return <JsonViewer data={JSON.parse(output as string) as JsonValue} />;
+    console.error(parseResult.error);
+    return <p>Error parsing output</p>;
   }
 
   return (
     <div className="flex flex-col gap-2">
-      {parseResult.data.result.finalLyrics}
+      <audio controls src={parseResult.data.result.audioUrl} className="w-full">
+        Your browser does not support the audio element.
+      </audio>
     </div>
   );
 };
