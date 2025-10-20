@@ -24,7 +24,7 @@ interface Props {
 export const AgentCard: React.FC<Props> = ({ agentConfiguration }) => {
   return (
     <Link href={`/composer/agent/${agentConfiguration.id}`}>
-      <Card className="justify-between flex flex-col hover:border-primary transition-colors">
+      <Card className="justify-between flex flex-col hover:border-primary transition-colors overflow-hidden">
         <CardHeader>
           <div className="flex flex-row items-center gap-3">
             {agentConfiguration.image ? (
@@ -43,10 +43,12 @@ export const AgentCard: React.FC<Props> = ({ agentConfiguration }) => {
             {agentConfiguration.description ?? 'No description'}
           </CardDescription>
         </CardHeader>
-        <Suspense fallback={<LoadingAgentCardChart />}>
-          <AgentCardChart agentConfigId={agentConfiguration.id} />
-        </Suspense>
-        <CardFooter className="justify-between text-xs pt-2">
+        <div className="pb-2">
+          <Suspense fallback={<LoadingAgentCardChart />}>
+            <AgentCardChart agentConfigId={agentConfiguration.id} />
+          </Suspense>
+        </div>
+        <CardFooter className="justify-between text-xs pt-4 border-t">
           <div className="flex flex-row items-center gap-2">
             <Favicons
               favicons={agentConfiguration.resources.map(

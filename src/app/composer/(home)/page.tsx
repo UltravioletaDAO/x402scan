@@ -6,7 +6,7 @@ import { OverallStats } from './_components/stats';
 
 export default function ComposerPage() {
   return (
-    <div className="py-6 md:py-8">
+    <div>
       <ComposerHomeHeading />
       <Body>
         <Agents />
