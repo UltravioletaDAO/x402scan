@@ -9,8 +9,6 @@ import {
   Wrench,
 } from 'lucide-react';
 
-import Image from 'next/image';
-
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { formatCompactAgo } from '@/lib/utils';
@@ -57,17 +55,11 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <div className="flex items-center gap-2 mr-auto px-2 text-muted-foreground text-xs font-mono font-medium overflow-hidden">
         {row.original.agentConfiguration ? (
           <>
-            {row.original.agentConfiguration.image ? (
-              <Image
-                src={row.original.agentConfiguration.image}
-                alt={row.original.agentConfiguration.name}
-                width={16}
-                height={16}
-                className="size-3"
-              />
-            ) : (
-              <Bot className="size-3" />
-            )}
+            <Favicon
+              url={row.original.agentConfiguration.image}
+              className="size-3"
+              Fallback={Bot}
+            />
             <span className="truncate">
               {row.original.agentConfiguration.name || 'Untitled Agent'}
             </span>

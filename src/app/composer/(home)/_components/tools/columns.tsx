@@ -33,6 +33,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         <Favicon
           url={row.original.origin.favicon}
           className="size-6 rounded-md"
+          Fallback={Wrench}
         />
         <div className="flex flex-col flex-1 w-0 overflow-hidden">
           <p className="truncate w-full text-xs md:text-sm font-mono font-semibold">

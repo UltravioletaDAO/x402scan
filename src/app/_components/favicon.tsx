@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 
 import type { LucideIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar } from '@/components/ui/avatar';
 
 interface Props {
   url: string | null;
@@ -19,7 +20,11 @@ export const Favicon = ({
   if (!url) return <Fallback className={className} />;
 
   return (
-    <img src={url} alt="Favicon" className={cn('rounded-md', className)} />
+    <Avatar
+      src={url}
+      className={className}
+      fallback={<Fallback className={className} />}
+    />
   );
 };
 

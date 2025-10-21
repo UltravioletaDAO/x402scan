@@ -25,7 +25,7 @@ export const LoadingToolsTable = () => {
       columns={columns}
       data={[]}
       isLoading={true}
-      loadingRowCount={3}
+      loadingRowCount={10}
     />
   );
 };
