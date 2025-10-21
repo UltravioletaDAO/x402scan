@@ -14,19 +14,20 @@ import {
 
 import { ModelSelect } from './model-select';
 import { ResourcesSelect } from './resources-select';
+import { WalletButton } from './wallet';
 
 import { api } from '@/trpc/client';
 
 import type { ChatStatus } from 'ai';
 import type { SelectedResource } from '../../../_types/chat-config';
-import { WalletButton } from './wallet';
+import type { LanguageModel } from './model-select/types';
 
 interface Props {
   input: string;
   setInput: (value: string) => void;
   handleSubmit: (e: React.FormEvent) => void;
-  model: string;
-  setModel: (value: string) => void;
+  model: LanguageModel;
+  setModel: (value: LanguageModel) => void;
   selectedResources: SelectedResource[];
   onSelectResource: (resource: SelectedResource) => void;
   status: ChatStatus;

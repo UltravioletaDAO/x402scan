@@ -9,13 +9,6 @@ import {
   type KeyboardEventHandler,
 } from 'react';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 
@@ -162,45 +155,6 @@ const PromptInputSubmit = ({
   );
 };
 
-const PromptInputModelSelect = (props: ComponentProps<typeof Select>) => (
-  <Select {...props} />
-);
-
-const PromptInputModelSelectTrigger = ({
-  className,
-  ...props
-}: ComponentProps<typeof SelectTrigger>) => (
-  <SelectTrigger
-    className={cn(
-      'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
-      'h-8! rounded-md px-3 text-xs md:text-xs font-medium',
-      className
-    )}
-    {...props}
-  />
-);
-
-const PromptInputModelSelectContent = ({
-  className,
-  ...props
-}: ComponentProps<typeof SelectContent>) => (
-  <SelectContent className={cn(className)} {...props} />
-);
-
-const PromptInputModelSelectItem = ({
-  className,
-  ...props
-}: ComponentProps<typeof SelectItem>) => (
-  <SelectItem className={cn(className)} {...props} />
-);
-
-const PromptInputModelSelectValue = ({
-  className,
-  ...props
-}: ComponentProps<typeof SelectValue>) => (
-  <SelectValue className={cn(className)} {...props} />
-);
-
 export {
   PromptInput,
   PromptInputTextarea,
@@ -208,9 +162,4 @@ export {
   PromptInputTools,
   PromptInputButton,
   PromptInputSubmit,
-  PromptInputModelSelect,
-  PromptInputModelSelectTrigger,
-  PromptInputModelSelectContent,
-  PromptInputModelSelectItem,
-  PromptInputModelSelectValue,
 };

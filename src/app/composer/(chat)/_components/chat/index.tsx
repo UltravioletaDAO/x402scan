@@ -36,7 +36,10 @@ export const Chat: React.FC<Props> = async ({
 
   const initialConfig = agentConfig
     ? {
-        model: agentConfig.model ?? undefined,
+        model:
+          agentConfig.model ??
+          (await serverCookieUtils.getConfig().then(config => config.model)) ??
+          undefined,
         resources: agentConfig.resources.map(resource => ({
           id: resource.id,
           favicon: resource.favicon ?? null,
