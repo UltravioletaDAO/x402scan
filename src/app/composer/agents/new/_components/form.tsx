@@ -44,7 +44,7 @@ export const CreateAgentForm: React.FC<Props> = ({ initialStep = 0 }) => {
     api.user.agentConfigurations.create.useMutation({
       onSuccess: agentConfiguration => {
         toast.success('Agent configuration created successfully');
-        router.push(`/composer/agent/${agentConfiguration.id}`);
+        router.push(`/composer/agent/${agentConfiguration.id}/chat`);
       },
       onError: error => {
         toast.error(error.message);
@@ -74,11 +74,7 @@ export const CreateAgentForm: React.FC<Props> = ({ initialStep = 0 }) => {
       onSubmit={form.handleSubmit(handleSubmit)}
       className="flex flex-col gap-4"
     >
-      <Stepper
-        steps={stepsConfig}
-        currentStep={step}
-        setCurrentStep={setStep}
-      />
+      <Stepper steps={stepsConfig} currentStep={step} />
       <Card className="overflow-hidden">
         <CardHeader className="bg-muted border-b">
           <CardTitle>{stepsConfig[step].card.title}</CardTitle>

@@ -7,7 +7,7 @@ export default async function NewAgentPage() {
   const session = await auth();
 
   return (
-    <div className="flex w-full flex-1 h-0 flex-col pt-8 md:pt-12 overflow-y-auto relative">
+    <div className="flex w-full flex-1 h-0 flex-col overflow-y-auto relative">
       <Heading
         title="Create an Agent"
         description="Design an agent with x402 resources and custom behavior."

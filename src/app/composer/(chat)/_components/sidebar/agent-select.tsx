@@ -88,7 +88,7 @@ export const AgentSelect = () => {
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
-              <Link href="/composer/agent/new">
+              <Link href="/composer/agents/new">
                 <DropdownMenuItem className="gap-2 p-2">
                   <Plus className="size-4" />
                   <div className="text-muted-foreground font-medium">
@@ -126,7 +126,7 @@ const AgentSelectButton = React.forwardRef<
 
   const isAgent =
     pathname.includes('/composer/agent/') &&
-    !pathname.includes('/composer/agent/new');
+    !pathname.includes('/composer/agents/new');
   const agentId = pathname.split('/')[3];
 
   const { data: agentConfiguration, isLoading: isAgentConfigurationLoading } =
