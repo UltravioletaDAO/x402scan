@@ -2,10 +2,10 @@ import { facilitatorNameMap, facilitators } from '@/lib/facilitators';
 import { sortingSchema } from '../lib';
 import z from 'zod';
 import { ethereumAddressSchema } from '@/lib/schemas';
-import { USDC_ADDRESS } from '@/lib/utils';
+import { USDC_ADDRESS, SOLANA_USDC_ADDRESS } from '@/lib/utils';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { transfersPrisma } from '@/services/db/transfers-client';
-import { DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
+import { Chain, DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
 
 const listTopFacilitatorsSortIds = [
   'tx_count',
@@ -26,24 +26,37 @@ export const listTopFacilitatorsInputSchema = z.object({
     id: 'tx_count',
     desc: true,
   }),
-  tokens: z.array(ethereumAddressSchema).default([USDC_ADDRESS]),
+  // No default here - set it based on chain
+  tokens: z.array(ethereumAddressSchema).optional(),
 });
 
 const listTopFacilitatorsUncached = async (
   input: z.input<typeof listTopFacilitatorsInputSchema>
 ) => {
-  const { startDate, endDate, limit, sorting, tokens, chain } =
-    listTopFacilitatorsInputSchema.parse(input);
+  const parsed = listTopFacilitatorsInputSchema.parse(input);
+  const { startDate, endDate, limit, sorting, chain } = parsed;
+  
+  // Set default tokens based on chain
+  const tokens = parsed.tokens ?? (chain === Chain.SOLANA ? [SOLANA_USDC_ADDRESS] : [USDC_ADDRESS]);
+
+  const chainFacilitators = facilitators.filter(f => f.chain === chain);
 
   // Build the where clause for Prisma
   const where = {
     // Filter by chain
     chain: chain,
     // Filter by token addresses
-    address: { in: tokens.map(t => t.toLowerCase()) },
+    address: { 
+      in: chain === Chain.SOLANA ? tokens : tokens.map(t => t.toLowerCase()) 
+    },
     // Filter by known facilitator addresses only
     transaction_from: { 
-      in: facilitators.flatMap(f => f.addresses.map(a => a.toLowerCase())) 
+      in: chainFacilitators.flatMap(f => 
+        // Only lowercase for non-Solana chains
+        chain === Chain.SOLANA 
+          ? f.addresses 
+          : f.addresses.map(a => a.toLowerCase())
+      ) 
     },
     // Date range filters
     ...(startDate && endDate && {
@@ -83,8 +96,12 @@ const listTopFacilitatorsUncached = async (
       ]);
 
       // Map address to facilitator name
-      const facilitator = facilitators.find(f => 
-        f.addresses.some(addr => addr.toLowerCase() === group.transaction_from.toLowerCase())
+      const facilitator = chainFacilitators.find(f => 
+        f.addresses.some(addr => 
+          chain === Chain.SOLANA
+            ? addr === group.transaction_from
+            : addr.toLowerCase() === group.transaction_from.toLowerCase()
+        )
       );
 
       return {

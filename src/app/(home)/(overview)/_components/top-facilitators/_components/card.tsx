@@ -14,17 +14,22 @@ import { FacilitatorStats, LoadingFacilitatorStats } from './stats';
 
 import type { Facilitator } from '@/lib/facilitators';
 import type { RouterOutputs } from '@/trpc/client';
+import type { ChartData } from '@/components/ui/charts/chart/types';
 
 interface Props {
   facilitator: Facilitator;
   stats: NonNullable<RouterOutputs['facilitators']['list']>[number];
   overallStats: NonNullable<RouterOutputs['stats']['getOverallStatistics']>;
+  chartData: ChartData<{
+    total_transactions: number;
+  }>[];
 }
 
-export const FacilitatorCard: React.FC<Props> = async ({
+export const FacilitatorCard: React.FC<Props> = ({
   facilitator,
   stats,
   overallStats,
+  chartData,
 }) => {
   return (
     <Link href={`/facilitator/${facilitator.id}`} prefetch={false}>
@@ -47,7 +52,7 @@ export const FacilitatorCard: React.FC<Props> = async ({
             </div>
           </div>
           <FacilitatorChart
-            facilitator={facilitator}
+            chartData={chartData}
             total_transactions={Number(overallStats.total_transactions)}
           />
         </div>

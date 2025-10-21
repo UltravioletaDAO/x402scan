@@ -1,5 +1,3 @@
-import 'server-only';
-
 import { PrismaClient as TransfersPrismaClient } from '@prisma/client-transfers';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { neonConfig } from '@neondatabase/serverless';
