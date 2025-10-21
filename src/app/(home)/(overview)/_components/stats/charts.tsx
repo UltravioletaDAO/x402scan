@@ -13,20 +13,26 @@ import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { ActivityTimeframe } from '@/types/timeframes';
+import { useChain } from '@/app/_contexts/chain/hook';
 
 export const OverallCharts = () => {
   const { startDate, endDate, timeframe } = useTimeRangeContext();
+  const { chain } = useChain();
 
   const [overallStats] = api.stats.getOverallStatistics.useSuspenseQuery({
+    chain,
     startDate,
     endDate,
   });
+  
   const [previousOverallStats] =
     api.stats.getOverallStatistics.useSuspenseQuery({
+      chain,
       startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
       endDate: startDate,
     });
   const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery({
+    chain,
     numBuckets: 32,
     startDate,
     endDate,
