@@ -62,22 +62,6 @@ const openAiLanguageModelsData: Omit<LanguageModel, 'provider'>[] = [
     contextLength: 128000,
   },
   {
-    name: 'GPT-4o Search Preview',
-    modelId: 'gpt-4o-search-preview',
-    description: 'GPT-4o with web search capabilities',
-    capabilities: [LanguageModelCapability.WebSearch],
-    bestFor: ['Research', 'Current events', 'Fact-checking'],
-    contextLength: 128000,
-  },
-  {
-    name: 'GPT-4o Mini Search',
-    modelId: 'gpt-4o-mini-search',
-    description: 'GPT-4o with web search capabilities',
-    capabilities: [LanguageModelCapability.WebSearch],
-    bestFor: ['Research', 'Current events', 'Fact-checking'],
-    contextLength: 128000,
-  },
-  {
     name: 'O3 Mini',
     modelId: 'o3-mini',
     description: 'Next-generation reasoning model',
