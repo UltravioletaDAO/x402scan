@@ -12,8 +12,8 @@ export default function ComposerPage() {
       <Body>
         <Agents />
         <Tools />
-        <OverallStats />
         <Feed />
+        <OverallStats />
       </Body>
     </div>
   );

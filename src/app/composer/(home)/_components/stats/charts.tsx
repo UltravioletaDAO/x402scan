@@ -66,11 +66,11 @@ export const OverallCharts = () => {
         value={overallStats.agent_count.toLocaleString(undefined, {
           notation: 'compact',
           minimumFractionDigits: 0,
-          maximumFractionDigits: 2,
+          maximumFractionDigits: 0,
         })}
         items={{
-          type: 'area',
-          areas: [{ dataKey: 'agents', color: 'var(--color-primary)' }],
+          type: 'bar',
+          bars: [{ dataKey: 'agents', color: 'var(--color-primary)' }],
         }}
         data={chartData}
         tooltipRows={[
@@ -80,8 +80,8 @@ export const OverallCharts = () => {
             getValue: data =>
               data.toLocaleString(undefined, {
                 notation: 'compact',
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0,
               }),
           },
         ]}

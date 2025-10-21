@@ -31,24 +31,24 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={CircleDot} label="Name" className="mr-auto" />
     ),
     cell: ({ row }) => (
-      <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium overflow-hidden">
         {row.original.image ? (
           <Image
             src={row.original.image}
             alt={row.original.name}
             width={32}
             height={32}
-            className="size-5 rounded-md"
+            className="size-4 md:size-5 rounded-md shrink-0"
           />
         ) : (
-          <Bot className="size-5" />
+          <Bot className="size-4 md:size-5 shrink-0" />
         )}
-        <span className="text-sm text-muted-foreground font-medium">
-          {row.original.name}
+        <span className="text-sm text-muted-foreground font-medium truncate">
+          {row.original.name || 'Untitled Agent'}
         </span>
       </div>
     ),
-    size: 100,
+    size: 200,
     loading: () => <Skeleton className="h-4 w-16 mr-auto" />,
   },
   {
@@ -66,7 +66,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         />
       </div>
     ),
-    size: 100,
+    size: 125,
     loading: () => (
       <LoadingFavicons count={2} iconContainerClassName="size-5" />
     ),
@@ -93,7 +93,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    size: 100, // Fixed width for transaction count
+    size: 125, // Fixed width for transaction count
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -118,7 +118,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    size: 100, // Fixed width for tool calls column
+    size: 125, // Fixed width for tool calls column
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -143,7 +143,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    size: 100, // Fixed width for buyers count
+    size: 125, // Fixed width for buyers count
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -168,7 +168,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    size: 100, // Fixed width for timestamp
+    size: 125, // Fixed width for timestamp
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
 ];

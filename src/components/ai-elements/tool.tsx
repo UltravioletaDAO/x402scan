@@ -43,33 +43,33 @@ const ToolHeader = ({
   return (
     <CollapsibleTrigger
       className={cn(
-        'flex w-full items-center justify-between gap-4 p-3 bg-muted/50 cursor-pointer hover:bg-muted/80 transition-all duration-200',
+        'flex w-full items-center justify-between gap-4 p-3 bg-muted/50 cursor-pointer hover:bg-muted/80 transition-all duration-200 overflow-hidden',
         className
       )}
       {...props}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-1 overflow-hidden">
         <Loading
           value={resource}
           isLoading={isResourceLoading ?? state === 'input-streaming'}
           component={resource => (
             <Favicon
               url={resource.origin.favicon ?? null}
-              className="size-8 rounded-md"
+              className="size-6 md:size-8 rounded-md"
             />
           )}
-          loadingComponent={<Skeleton className="size-8" />}
+          loadingComponent={<Skeleton className="size-6 md:size-8" />}
         />
-        <div className="flex flex-col">
+        <div className="flex flex-col flex-1 overflow-hidden">
           <Loading
             value={resource}
             isLoading={isResourceLoading ?? state === 'input-streaming'}
             component={resource => (
-              <div className="flex items-center gap-2">
-                <span className="font-semibold text-sm font-mono text-left">
+              <div className="flex items-center gap-2 w-full overflow-hidden">
+                <span className="font-semibold text-xs md:text-sm font-mono text-left truncate">
                   {resource.resource}
                 </span>
-                <span className="text-sm font-semibold text-primary font-mono">
+                <span className="text-xs md:text-sm font-semibold text-primary font-mono">
                   {formatTokenAmount(resource.accepts[0].maxAmountRequired)}
                 </span>
                 {state === 'output-available' ? (
@@ -87,7 +87,7 @@ const ToolHeader = ({
             value={resource}
             isLoading={isResourceLoading ?? state === 'input-streaming'}
             component={resource => (
-              <span className="text-xs text-muted-foreground text-left">
+              <span className="text-[10px] md:text-xs text-muted-foreground text-left">
                 {resource.accepts[0].description}
               </span>
             )}
@@ -95,7 +95,7 @@ const ToolHeader = ({
           />
         </div>
       </div>
-      <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+      <ChevronDownIcon className="size-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180 hidden md:block" />
     </CollapsibleTrigger>
   );
 };

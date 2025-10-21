@@ -12,8 +12,8 @@ export default function ComposerLoading() {
       <Body>
         <LoadingAgents />
         <LoadingTools />
-        <LoadingOverallStats />
         <LoadingFeed />
+        <LoadingOverallStats />
       </Body>
     </div>
   );

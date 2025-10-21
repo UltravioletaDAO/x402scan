@@ -13,6 +13,7 @@ export default function ComposerBreadcrumbsLayout({
         image={null}
         name="Composer"
         Fallback={Network}
+        mobileHideText
       />
       {children}
     </>

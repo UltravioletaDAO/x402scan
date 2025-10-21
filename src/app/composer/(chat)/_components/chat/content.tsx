@@ -27,6 +27,7 @@ import type { ChatConfig, SelectedResource } from '../../_types/chat-config';
 import type { RouterOutputs } from '@/trpc/client';
 import type { LanguageModel } from './input/model-select/types';
 import { languageModels } from './input/model-select/models';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 
 interface Props {
   id: string;
@@ -151,6 +152,7 @@ export const ChatContent: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col relative flex-1 h-0 overflow-hidden">
+      <SidebarTrigger className="absolute top-2 left-2 bg-card z-2 md:hidden" />
       <Messages
         messages={messages}
         status={status}
