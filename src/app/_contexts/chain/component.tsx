@@ -18,7 +18,6 @@ export const ChainSelector = () => {
     <Select 
       value={chain} 
       onValueChange={(value) => {
-        console.log('Changing chain to:', value);
         setChain(value as Chain);
       }}
     >

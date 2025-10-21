@@ -1,4 +1,4 @@
-import { USDC_ADDRESS } from '@/lib/utils';
+import { BASE_USDC_ADDRESS } from '@/lib/utils';
 import { useAccount, useBalance as useBalanceWagmi } from 'wagmi';
 import { base } from 'viem/chains';
 
@@ -7,7 +7,7 @@ export const useBalance = () => {
 
   const result = useBalanceWagmi({
     address: address ?? undefined,
-    token: USDC_ADDRESS,
+    token: BASE_USDC_ADDRESS,
     chainId: base.id,
   });
 

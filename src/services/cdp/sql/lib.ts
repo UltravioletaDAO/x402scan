@@ -1,6 +1,6 @@
 import { facilitators } from '@/lib/facilitators';
 import { mixedAddressSchema } from '@/lib/schemas';
-import { USDC_ADDRESS } from '@/lib/utils';
+import { BASE_USDC_ADDRESS } from '@/lib/utils';
 import { DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
 import z from 'zod';
 
@@ -18,7 +18,7 @@ export const baseQuerySchema = z.object({
         .filter(f => f.chain === DEFAULT_CHAIN)
         .flatMap(f => f.addresses)
     ),
-  tokens: z.array(mixedAddressSchema).min(1).default([USDC_ADDRESS]),
+  tokens: z.array(mixedAddressSchema).min(1).default([BASE_USDC_ADDRESS]),
 });
 
 export const sortingSchema = (sortIds: string[] | readonly string[]) =>

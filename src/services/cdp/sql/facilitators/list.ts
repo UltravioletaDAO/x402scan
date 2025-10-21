@@ -1,8 +1,8 @@
 import { facilitatorNameMap, facilitators } from '@/lib/facilitators';
 import { sortingSchema } from '../lib';
 import z from 'zod';
-import { ethereumAddressSchema } from '@/lib/schemas';
-import { USDC_ADDRESS, SOLANA_USDC_ADDRESS } from '@/lib/utils';
+import { mixedAddressSchema } from '@/lib/schemas';
+import { getUSDCAddress } from '@/lib/utils';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { transfersPrisma } from '@/services/db/transfers-client';
 import { Chain, DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
@@ -26,8 +26,7 @@ export const listTopFacilitatorsInputSchema = z.object({
     id: 'tx_count',
     desc: true,
   }),
-  // No default here - set it based on chain
-  tokens: z.array(ethereumAddressSchema).optional(),
+  tokens: z.array(mixedAddressSchema).optional(),
 });
 
 const listTopFacilitatorsUncached = async (
@@ -35,9 +34,6 @@ const listTopFacilitatorsUncached = async (
 ) => {
   const parsed = listTopFacilitatorsInputSchema.parse(input);
   const { startDate, endDate, limit, sorting, chain } = parsed;
-  
-  // Set default tokens based on chain
-  const tokens = parsed.tokens ?? (chain === Chain.SOLANA ? [SOLANA_USDC_ADDRESS] : [USDC_ADDRESS]);
 
   const chainFacilitators = facilitators.filter(f => f.chain === chain);
 
@@ -47,7 +43,7 @@ const listTopFacilitatorsUncached = async (
     chain: chain,
     // Filter by token addresses
     address: { 
-      in: chain === Chain.SOLANA ? tokens : tokens.map(t => t.toLowerCase()) 
+      in: getUSDCAddress(chain)
     },
     // Filter by known facilitator addresses only
     transaction_from: { 

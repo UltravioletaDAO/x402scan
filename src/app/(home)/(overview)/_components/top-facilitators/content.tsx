@@ -19,8 +19,6 @@ export const TopFacilitatorsContent = () => {
     limit: 3,
   });
 
-  console.log('facilitatorsData', facilitatorsData);
-
   return (
     <Section
       title="Top Facilitators"
