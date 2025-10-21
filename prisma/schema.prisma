@@ -268,16 +268,10 @@ model Chat {
   @@map("Chat")
 }
 
-enum MessageRole {
-  system
-  user
-  assistant
-}
-
 model Message {
   id          String   @id @default(uuid()) @map("Message")
   chatId      String
-  role        MessageRole
+  role        String
   parts       Json
   attachments Json
   createdAt   DateTime @default(now())
