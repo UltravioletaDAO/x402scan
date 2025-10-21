@@ -17,6 +17,7 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
+import { DEFAULT_CHAIN } from '@/types/chain';
 
 export const TopServers = async () => {
   const endDate = new Date();
@@ -24,11 +25,13 @@ export const TopServers = async () => {
 
   await Promise.all([
     api.sellers.list.bazaar.prefetch({
+      chain: DEFAULT_CHAIN,
       startDate,
       endDate,
       sorting: defaultSellersSorting,
     }),
     api.stats.bazaar.overallStatistics.prefetch({
+      chain: DEFAULT_CHAIN,
       startDate,
       endDate,
     }),

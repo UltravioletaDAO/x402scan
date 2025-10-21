@@ -1,4 +1,4 @@
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import {
   listOriginsByAddress,
@@ -11,7 +11,7 @@ import {
 export const originsRouter = createTRPCRouter({
   list: {
     byAddress: publicProcedure
-      .input(ethereumAddressSchema)
+      .input(mixedAddressSchema)
       .query(async ({ input }) => {
         return await listOriginsByAddress(input);
       }),
@@ -21,7 +21,7 @@ export const originsRouter = createTRPCRouter({
         return await listOriginsWithResources();
       }),
       byAddress: publicProcedure
-        .input(ethereumAddressSchema)
+        .input(mixedAddressSchema)
         .query(async ({ input }) => {
           return await listOriginsWithResourcesByAddress(input);
         }),

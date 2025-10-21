@@ -14,6 +14,7 @@ import { Section } from '../../utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { subMonths } from 'date-fns';
 import { ActivityTimeframe } from '@/types/timeframes';
+import { DEFAULT_CHAIN } from '@/types/chain';
 
 export const AllSellers = async () => {
   const endDate = new Date();
@@ -22,6 +23,7 @@ export const AllSellers = async () => {
   const limit = 100;
 
   await api.sellers.list.all.prefetch({
+    chain: DEFAULT_CHAIN, 
     sorting: defaultSellersSorting,
     limit,
     startDate,

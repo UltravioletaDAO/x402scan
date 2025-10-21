@@ -13,6 +13,7 @@ import { subMonths } from 'date-fns';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
+import { DEFAULT_CHAIN } from '@/types/chain';
 
 export const LatestTransactions = async () => {
   const endDate = new Date();
@@ -20,6 +21,7 @@ export const LatestTransactions = async () => {
   const limit = 100;
 
   await api.transfers.list.prefetch({
+    chain: DEFAULT_CHAIN,
     limit,
     sorting: defaultTransfersSorting,
     startDate,

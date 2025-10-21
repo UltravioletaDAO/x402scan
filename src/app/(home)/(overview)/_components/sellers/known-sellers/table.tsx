@@ -7,12 +7,14 @@ import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
 import { columns } from './columns';
 import { api } from '@/trpc/client';
+import { DEFAULT_CHAIN } from '@/types/chain';
 
 export const KnownSellersTable = () => {
   const { sorting } = useSellersSorting();
   const { startDate, endDate } = useTimeRangeContext();
 
   const [topSellers] = api.sellers.list.bazaar.useSuspenseQuery({
+    chain: DEFAULT_CHAIN,
     startDate,
     endDate,
     sorting,
