@@ -97,7 +97,11 @@ export const upsertResource = async (
         payTo: baseAccepts.payTo.toLowerCase(),
       },
       create: {
-        resourceId: resource.id,
+        resourceRel: {
+          connect: {
+            id: resource.id,
+          },
+        },
         scheme: baseAccepts.scheme,
         description: baseAccepts.description,
         network: 'base',
@@ -111,6 +115,11 @@ export const upsertResource = async (
         extra: baseAccepts.extra,
       },
       update: {
+        resourceRel: {
+          connect: {
+            id: resource.id,
+          },
+        },
         description: baseAccepts.description,
         maxAmountRequired: BigInt(baseAccepts.maxAmountRequired),
         mimeType: baseAccepts.mimeType,
