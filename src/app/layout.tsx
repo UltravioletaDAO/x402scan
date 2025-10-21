@@ -21,6 +21,7 @@ import { CDPHooksProvider } from './_contexts/cdp';
 import { SearchProvider } from './_contexts/search/provider';
 import { WagmiProvider } from './_contexts/wagmi';
 import { PostHogProvider } from './_contexts/posthog';
+import { ChainProvider } from './_contexts/chain/provider';
 
 import { TRPCReactProvider } from '@/trpc/client';
 
@@ -30,6 +31,8 @@ import type { Metadata, Viewport } from 'next';
 
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
+import { DEFAULT_CHAIN } from '@/types/chain';
+import { ChainSelector } from './_contexts/chain/component';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -123,6 +126,7 @@ export default function RootLayout({
         <SpeedInsights />
         <Analytics />
         <SessionProvider>
+          <ChainProvider initialChain={DEFAULT_CHAIN}>
           <TRPCReactProvider>
             <SearchProvider>
               <CDPHooksProvider>
@@ -146,6 +150,7 @@ export default function RootLayout({
                               {breadcrumbs}
                             </div>
                             <div className="flex items-center gap-1 md:gap-2">
+                              <ChainSelector />
                               <NavbarSearchButton />
                               <NavbarAuthButton />
                               <a
@@ -179,6 +184,7 @@ export default function RootLayout({
               </CDPHooksProvider>
             </SearchProvider>
           </TRPCReactProvider>
+          </ChainProvider>
         </SessionProvider>
       </body>
     </html>

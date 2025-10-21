@@ -17,6 +17,7 @@ import { api, HydrateClient } from '@/trpc/server';
 import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
+import { DEFAULT_CHAIN } from '@/types/chain';
 
 export const OverallStats = async () => {
   const endDate = new Date();
@@ -24,14 +25,17 @@ export const OverallStats = async () => {
 
   await Promise.all([
     api.stats.getOverallStatistics.prefetch({
+      chain: DEFAULT_CHAIN,
       startDate,
       endDate,
     }),
     api.stats.getOverallStatistics.prefetch({
+      chain: DEFAULT_CHAIN,
       startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
       endDate: startDate,
     }),
     api.stats.getBucketedStatistics.prefetch({
+      chain: DEFAULT_CHAIN,
       startDate,
       endDate,
       numBuckets: 32,
