@@ -18,7 +18,7 @@ export const ComposerHomeHeading = () => {
               New Chat
             </Button>
           </Link>
-          <Link href="/composer/agent/new">
+          <Link href="/composer/agents/new">
             <Button variant="turbo">
               <Bot className="size-4" />
               New Agent

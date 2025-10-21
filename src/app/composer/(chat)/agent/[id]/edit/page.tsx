@@ -3,7 +3,7 @@ import { auth } from '@/auth';
 import { api } from '@/trpc/server';
 
 import { notFound, unauthorized } from 'next/navigation';
-import { EditAgentForm } from './_components/form';
+import { EditAgentForm } from './_components/edit-form';
 import { DeleteAgentButton } from './_components/delete';
 
 export default async function EditAgentPage({

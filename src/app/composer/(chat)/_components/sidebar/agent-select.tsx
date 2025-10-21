@@ -82,7 +82,7 @@ export const AgentSelect = () => {
                       <BotMessageSquare className="size-4 flex-shrink-0" />
                     )}
                     <span className="truncate font-medium">
-                      {agent.agentConfiguration.name}
+                      {agent.agentConfiguration.name || 'Untitled Agent'}
                     </span>
                   </Link>
                 </DropdownMenuItem>
@@ -171,7 +171,9 @@ const AgentSelectButton = React.forwardRef<
                 <Loading
                   value={agentConfiguration?.name}
                   isLoading={isAgentConfigurationLoading}
-                  component={name => <span className="truncate">{name}</span>}
+                  component={name => (
+                    <span className="truncate">{name || 'Untitled Agent'}</span>
+                  )}
                   loadingComponent={<Skeleton className="h-4 w-24" />}
                   errorComponent={<span className="truncate">Agent</span>}
                 />

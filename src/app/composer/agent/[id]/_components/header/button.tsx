@@ -1,21 +1,51 @@
-import { Skeleton } from '@/components/ui/skeleton';
+import React, { Suspense } from 'react';
 
 import Link from 'next/link';
+
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+
+import { auth } from '@/auth';
+
+import type { RouterOutputs } from '@/trpc/client';
+import { MessageSquare, Pencil } from 'lucide-react';
 
 interface Props {
-  agentConfigurationId: string;
+  agentConfiguration: NonNullable<RouterOutputs['public']['agents']['get']>;
 }
 
 export const HeaderButtons: React.FC<Props> = async ({
-  agentConfigurationId,
+  agentConfiguration,
 }) => {
   return (
     <ButtonsContainer>
-      <Link href={`/composer/agent/${agentConfigurationId}/chat`}>
-        <Button variant="turbo">Use Agent</Button>
+      <Link href={`/composer/agent/${agentConfiguration.id}/chat`}>
+        <Button variant="turbo">
+          <MessageSquare className="size-4" />
+          Use Agent
+        </Button>
       </Link>
+      <Suspense>
+        <EditButton agentConfiguration={agentConfiguration} />
+      </Suspense>
     </ButtonsContainer>
+  );
+};
+
+const EditButton: React.FC<Props> = async ({ agentConfiguration }) => {
+  const session = await auth();
+
+  if (session?.user.id !== agentConfiguration.ownerId) {
+    return null;
+  }
+
+  return (
+    <Link href={`/composer/agent/${agentConfiguration.id}/edit`}>
+      <Button variant="outline">
+        <Pencil className="size-4" />
+        Edit
+      </Button>
+    </Link>
   );
 };
 

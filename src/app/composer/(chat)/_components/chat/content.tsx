@@ -158,8 +158,11 @@ export const ChatContent: React.FC<Props> = ({
         emptyState={
           agentConfig
             ? {
-                title: agentConfig.name,
-                description: agentConfig.description ?? 'No description',
+                title: agentConfig.name || 'Untitled Agent',
+                description:
+                  agentConfig.description && agentConfig.description.length > 0
+                    ? agentConfig.description
+                    : 'No description',
                 icon: agentConfig.image ? (
                   <Image
                     src={agentConfig.image}
