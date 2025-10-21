@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
   });
 
   const result = streamText({
-    model: openai(model),
+    model: openai.chat(model),
     messages: convertToModelMessages(messages),
     system: agentConfigurationId
       ? (await getAgentConfiguration(agentConfigurationId)).systemPrompt

@@ -25,6 +25,8 @@ import { clientCookieUtils } from '../../chat/_lib/cookies/client';
 import type { Message } from '@prisma/client';
 import type { ChatConfig, SelectedResource } from '../../_types/chat-config';
 import type { RouterOutputs } from '@/trpc/client';
+import type { LanguageModel } from './input/model-select/types';
+import { languageModels } from './input/model-select/models';
 
 interface Props {
   id: string;
@@ -87,7 +89,13 @@ export const ChatContent: React.FC<Props> = ({
   });
 
   const [input, setInput] = useState('');
-  const [model, setModel] = useState(initialConfig?.model ?? 'gpt-4o');
+  const [model, setModel] = useState<LanguageModel>(
+    initialConfig?.model
+      ? (languageModels.find(
+          model => `${model.provider}/${model.modelId}` === initialConfig.model
+        ) ?? languageModels[0])
+      : languageModels[0]
+  );
   const [selectedResources, setSelectedResources] = useState<
     SelectedResource[]
   >(initialConfig?.resources ?? []);
@@ -106,7 +114,7 @@ export const ChatContent: React.FC<Props> = ({
       {
         body: {
           chatId: id,
-          model,
+          model: `${model.provider}/${model.modelId}`,
           messages,
           resourceIds: selectedResources.map(resource => resource.id),
           agentConfigurationId: agentConfig?.id,
@@ -121,11 +129,11 @@ export const ChatContent: React.FC<Props> = ({
     setInput('');
   };
 
-  const handleSetModel = (model: string) => {
+  const handleSetModel = (model: LanguageModel) => {
     setModel(model);
-    if (storeConfig) {
-      clientCookieUtils.setSelectedChatModel(model);
-    }
+    void clientCookieUtils.setSelectedChatModel(
+      `${model.provider}/${model.modelId}`
+    );
   };
 
   const onSelectResource = (resource: SelectedResource) => {
@@ -147,7 +155,7 @@ export const ChatContent: React.FC<Props> = ({
       <Messages
         messages={messages}
         status={status}
-        model={model}
+        model={model.name}
         emptyState={
           agentConfig
             ? {

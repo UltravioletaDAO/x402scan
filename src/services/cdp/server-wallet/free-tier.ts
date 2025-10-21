@@ -6,7 +6,6 @@ export const getFreeTierWallet = async () => {
   if (!freeTierWalletName) {
     throw new Error('FREE_TIER_WALLET_NAME is not set');
   }
-  console.log('freeTierWalletName', freeTierWalletName);
   const wallet = await cdpClient.evm.getOrCreateAccount({
     name: freeTierWalletName,
   });
