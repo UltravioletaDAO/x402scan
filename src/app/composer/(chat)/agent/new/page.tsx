@@ -3,9 +3,14 @@ import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { CreateAgentForm } from '../../../_components/new-agent/form';
 
 import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 
 export default async function NewAgentPage() {
   const session = await auth();
+
+  if (!session) {
+    return redirect('/composer/agents/new');
+  }
 
   return (
     <div className="flex w-full flex-1 h-0 flex-col py-8 md:py-12 overflow-y-auto relative">
