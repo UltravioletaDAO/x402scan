@@ -19,7 +19,7 @@ export const Agents = async () => {
 export const LoadingAgents = () => {
   return (
     <AgentsContainer>
-      {Array.from({ length: 3 }).map((_, index) => (
+      {Array.from({ length: 4 }).map((_, index) => (
         <LoadingAgentCard key={index} />
       ))}
     </AgentsContainer>
@@ -29,7 +29,7 @@ export const LoadingAgents = () => {
 const AgentsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section title="Top Agents" description="Discover the most popular agents">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {children}
       </div>
     </Section>
