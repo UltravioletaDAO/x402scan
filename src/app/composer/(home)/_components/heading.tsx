@@ -12,20 +12,21 @@ export const ComposerHomeHeading = () => {
       description="A playground for building agents that pay for inference and resources with x402"
       actions={
         <div className="flex items-center gap-2">
-          <Link href="/composer/chat">
-            <Button variant="outline">
-              <Edit className="size-4" />
-              New Chat
-            </Button>
-          </Link>
           <Link href="/composer/agents/new">
-            <Button variant="turbo">
+            <Button variant="turbo" size="lg">
               <Bot className="size-4" />
               New Agent
             </Button>
           </Link>
+          <Link href="/composer/chat">
+            <Button variant="outline" size="lg">
+              <Edit className="size-4" />
+              New Chat
+            </Button>
+          </Link>
         </div>
       }
+      className="flex-col md:flex-col items-start md:items-start"
     />
   );
 };
