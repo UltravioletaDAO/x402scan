@@ -3,8 +3,32 @@ import z from 'zod';
 import { queryRaw } from '../query';
 
 import { Prisma } from '@prisma/client';
+import { sortingSchema } from '@/lib/schemas';
 
-export const listTopAgentConfigurations = async () => {
+const agentsSortingIds = [
+  'message_count',
+  'tool_call_count',
+  'user_count',
+  'chat_count',
+  'createdAt',
+] as const;
+
+export type AgentSortId = (typeof agentsSortingIds)[number];
+
+export const listTopAgentConfigurationsSchema = z.object({
+  limit: z.number().default(10),
+  offset: z.number().default(0),
+  sorting: sortingSchema(agentsSortingIds).default({
+    id: 'message_count',
+    desc: true,
+  }),
+});
+
+export const listTopAgentConfigurations = async (
+  input: z.infer<typeof listTopAgentConfigurationsSchema>
+) => {
+  const { limit, offset, sorting } = input;
+
   const agentConfigurations = await queryRaw(
     Prisma.sql`
       SELECT 
@@ -55,7 +79,20 @@ export const listTopAgentConfigurations = async () => {
       WHERE ac.visibility = 'public'
       GROUP BY 
         ac.id, ac.name, ac.description, ac.image, ac."systemPrompt", ac.visibility, ac."createdAt", m.message_count, tc.tool_call_count
-      ORDER BY message_count DESC
+      ORDER BY 
+        ${
+          sorting.id === 'message_count'
+            ? Prisma.sql`message_count`
+            : sorting.id === 'tool_call_count'
+              ? Prisma.sql`tool_call_count`
+              : sorting.id === 'user_count'
+                ? Prisma.sql`user_count`
+                : sorting.id === 'chat_count'
+                  ? Prisma.sql`chat_count`
+                  : Prisma.sql`createdAt`
+        } ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
+      LIMIT ${limit}
+      OFFSET ${offset}
     `,
     z.array(
       z.object({

@@ -3,7 +3,9 @@ import { api } from '@/trpc/server';
 import { AgentCard, LoadingAgentCard } from './card';
 
 export const Agents = async () => {
-  const topAgents = await api.public.agents.list();
+  const topAgents = await api.public.agents.list({
+    limit: 4,
+  });
 
   return (
     <AgentsContainer>

@@ -16,7 +16,7 @@ export default function ComposerLayout({ children }: LayoutProps<'/composer'>) {
           },
           {
             label: 'Agents',
-            href: '/resources',
+            href: '/composer/agents',
             subRoutes: ['/composer/agent/'],
           },
           {

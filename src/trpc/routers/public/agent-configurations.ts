@@ -3,7 +3,10 @@ import { z } from 'zod';
 import { createTRPCRouter, publicProcedure } from '@/trpc/trpc';
 
 import { getAgentConfiguration } from '@/services/db/agent-config/get';
-import { listTopAgentConfigurations } from '@/services/db/agent-config/list';
+import {
+  listTopAgentConfigurations,
+  listTopAgentConfigurationsSchema,
+} from '@/services/db/agent-config/list';
 import {
   agentConfigBucketedActivityInputSchema,
   getAgentConfigBucketedActivity,
@@ -27,9 +30,11 @@ export const publicAgentConfigurationsRouter = createTRPCRouter({
     return await getAgentConfiguration(input, session?.user?.id);
   }),
 
-  list: publicProcedure.query(async () => {
-    return await listTopAgentConfigurations();
-  }),
+  list: publicProcedure
+    .input(listTopAgentConfigurationsSchema)
+    .query(async ({ input }) => {
+      return await listTopAgentConfigurations(input);
+    }),
 
   activity: {
     agent: {
