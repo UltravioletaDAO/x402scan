@@ -84,7 +84,7 @@ export const Deposit: React.FC<Props> = ({ address, onSuccess }) => {
               <TabsContent value="send" className="p-1">
                 <Send address={address} onSuccess={onSuccess} />
               </TabsContent>
-              <TabsContent value="onramp" className="m-2">
+              <TabsContent value="onramp">
                 <Onramp />
               </TabsContent>
             </TabsContents>

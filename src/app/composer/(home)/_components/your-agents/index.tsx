@@ -12,6 +12,10 @@ export const YourAgents = async ({ userId }: Props) => {
     userId,
   });
 
+  if (yourAgents.length === 0) {
+    return null;
+  }
+
   return (
     <AgentsContainer>
       {yourAgents.map(agent => (

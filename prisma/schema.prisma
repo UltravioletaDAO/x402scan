@@ -218,9 +218,11 @@ model OnrampSession {
   date          DateTime      @default(now())
   txHash        String?       @unique
   failureReason String?
+  serverWalletId String?
   status        SessionStatus @default(ONRAMP_TRANSACTION_STATUS_IN_PROGRESS)
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serverWallet ServerWallet? @relation(fields: [serverWalletId], references: [id], onDelete: Cascade)
 }
 
 enum SessionStatus {
@@ -243,6 +245,7 @@ model ServerWallet {
   updatedAt  DateTime         @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  onrampSessions OnrampSession[]
 }
 
 enum Visibility {

@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
   const wallet = isFreeTier
     ? await getFreeTierWallet()
-    : await getWalletForUserId(session.user.id);
+    : await getWalletForUserId(session.user.id).then(wallet => wallet.wallet);
 
   if (!wallet) {
     return new ChatSDKError('not_found:chat').toResponse();

@@ -32,7 +32,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <div className="flex items-center gap-2 w-full overflow-hidden">
         <Favicon
           url={row.original.origin.favicon}
-          className="size-6 rounded-md"
+          className="size-6 rounded-md border-none"
           Fallback={Wrench}
         />
         <div className="flex flex-col flex-1 w-0 overflow-hidden">
