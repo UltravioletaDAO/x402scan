@@ -1,10 +1,11 @@
 import z from 'zod';
 import { subMonths } from 'date-fns';
 
-import { baseQuerySchema } from '../lib';
+import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { facilitators } from '@/lib/facilitators';
 import { transfersPrisma } from '@/services/db/transfers-client';
+import { normalizeAddresses } from '@/lib/utils';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   startDate: z
@@ -25,17 +26,23 @@ const getBucketedFacilitatorsStatisticsUncached = async (
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { startDate, endDate, numBuckets, tokens, chain } = parseResult.data;
+  const parsed = applyBaseQueryDefaults(parseResult.data);
+  const { startDate, endDate, numBuckets, tokens, chain } = parsed;
+
+  const chainFacilitators = facilitators.filter(f => f.chain === chain);
 
   // Build the where clause for Prisma
   const where = {
     // Filter by chain
     chain: chain,
     // Filter by token addresses
-    address: { in: tokens.map(t => t.toLowerCase()) },
+    address: { in: normalizeAddresses(tokens, chain) },
     // Filter by known facilitator addresses
     transaction_from: { 
-      in: facilitators.flatMap(f => f.addresses.map(a => a.toLowerCase())) 
+      in: normalizeAddresses(
+        chainFacilitators.flatMap(f => f.addresses),
+        chain
+      )
     },
     // Date range filters
     block_timestamp: { gte: startDate, lte: endDate },

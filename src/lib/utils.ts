@@ -66,3 +66,13 @@ export const getUSDCAddress = (chain: Chain): string[] => {
   }
   return [BASE_USDC_ADDRESS.toLowerCase()];
 };
+
+// Helper to handle chain-specific address normalization
+// Solana addresses are case-sensitive, Ethereum addresses are not
+export const normalizeAddress = (address: string, chain: Chain): string => {
+  return chain === Chain.SOLANA ? address : address.toLowerCase();
+};
+
+export const normalizeAddresses = (addresses: string[], chain: Chain): string[] => {
+  return chain === Chain.SOLANA ? addresses : addresses.map(a => a.toLowerCase());
+};

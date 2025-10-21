@@ -1,10 +1,11 @@
 import z from 'zod';
 import { subMonths } from 'date-fns';
 
-import { baseQuerySchema } from '../lib';
+import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { transfersPrisma } from '@/services/db/transfers-client';
+import { normalizeAddresses } from '@/lib/utils';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   addresses: z.array(ethereumAddressSchema).optional(),
@@ -26,20 +27,20 @@ const getBucketedStatisticsUncached = async (
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { addresses, startDate, endDate, numBuckets, facilitators, tokens, chain } =
-    parseResult.data;
+  const parsed = applyBaseQueryDefaults(parseResult.data);
+  const { addresses, startDate, endDate, numBuckets, facilitators, tokens, chain } = parsed;
 
   // Build the where clause for Prisma
   const where = {
     // Filter by chain
     chain: chain,
     // Filter by token addresses
-    address: { in: tokens.map(t => t.toLowerCase()) },
+    address: { in: normalizeAddresses(tokens, chain) },
     // Filter by facilitator addresses
-    transaction_from: { in: facilitators.map(f => f.toLowerCase()) },
+    transaction_from: { in: normalizeAddresses(facilitators, chain) },
     // Optional filter by recipient addresses (sellers)
     ...(addresses && addresses.length > 0 && {
-      recipient: { in: addresses.map(a => a.toLowerCase()) },
+      recipient: { in: normalizeAddresses(addresses, chain) },
     }),
     // Date range filters
     block_timestamp: { gte: startDate, lte: endDate },

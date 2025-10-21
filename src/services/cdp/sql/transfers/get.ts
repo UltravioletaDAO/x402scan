@@ -1,8 +1,9 @@
 import type z from 'zod';
 
 import { ethereumHashSchema } from '@/lib/schemas';
-import { baseQuerySchema } from '../lib';
+import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
 import { transfersPrisma } from '@/services/db/transfers-client';
+import { normalizeAddresses, normalizeAddress } from '@/lib/utils';
 
 export const getFacilitatorTransferInputSchema = baseQuerySchema.extend({
   transaction_hash: ethereumHashSchema,
@@ -16,13 +17,14 @@ export const getFacilitatorTransfer = async (
     console.error('invalid input', input);
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { transaction_hash, tokens, facilitators } = parseResult.data;
+  const parsed = applyBaseQueryDefaults(parseResult.data);
+  const { transaction_hash, tokens, facilitators, chain } = parsed;
 
   // Build the where clause for Prisma
   const where = {
-    tx_hash: transaction_hash.toLowerCase(),
-    address: { in: tokens.map(t => t.toLowerCase()) },
-    transaction_from: { in: facilitators.map(f => f.toLowerCase()) },
+    tx_hash: normalizeAddress(transaction_hash, chain),
+    address: { in: normalizeAddresses(tokens, chain) },
+    transaction_from: { in: normalizeAddresses(facilitators, chain) },
   };
 
   // Get the transfer from Neon database

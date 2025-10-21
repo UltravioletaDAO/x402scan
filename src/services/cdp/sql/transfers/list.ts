@@ -4,12 +4,13 @@ import {
   ethereumAddressSchema,
 } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
-import { baseQuerySchema, sortingSchema } from '../lib';
+import { baseQuerySchema, sortingSchema, applyBaseQueryDefaults } from '../lib';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
 import { transfersPrisma } from '@/services/db/transfers-client';
+import { normalizeAddresses, normalizeAddress } from '@/lib/utils';
 
 const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 
@@ -34,6 +35,7 @@ const listFacilitatorTransfersUncached = async (
     console.error('invalid input', input);
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
+  const parsed = applyBaseQueryDefaults(parseResult.data);
   const {
     recipient,
     startDate,
@@ -43,26 +45,30 @@ const listFacilitatorTransfersUncached = async (
     tokens,
     sorting,
     chain,
-  } = parseResult.data;
+  } = parsed;
 
   // Build the where clause for Prisma
   const where = {
     // Filter by chain
     chain: chain,
     // Filter by token addresses
-    address: { in: tokens.map(t => t.toLowerCase()) },
+    address: { in: normalizeAddresses(tokens, chain) },
     // Filter by facilitator addresses
-    transaction_from: { in: facilitators.map(f => f.toLowerCase()) },
-    ...(recipient && { recipient: recipient.toLowerCase() }),
-    ...(startDate && endDate && {
-      block_timestamp: { gte: startDate, lte: endDate },
-    }),
-    ...(startDate && !endDate && {
-      block_timestamp: { gte: startDate },
-    }),
-    ...(!startDate && endDate && {
-      block_timestamp: { lte: endDate },
-    }),
+    transaction_from: { in: normalizeAddresses(facilitators, chain) },
+    // Optional recipient filter
+    ...(recipient 
+      ? { recipient: normalizeAddress(recipient, chain) }
+      : {}),
+    // Date range filters
+    ...(startDate && endDate 
+      ? { block_timestamp: { gte: startDate, lte: endDate } }
+      : {}),
+    ...(startDate && !endDate 
+      ? { block_timestamp: { gte: startDate } }
+      : {}),
+    ...(!startDate && endDate 
+      ? { block_timestamp: { lte: endDate } }
+      : {}),
   };
 
   // Fetch transfers from Neon database
