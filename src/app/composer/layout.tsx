@@ -20,8 +20,8 @@ export default function ComposerLayout({ children }: LayoutProps<'/composer'>) {
             subRoutes: ['/composer/agent/', '/composer/agents/'],
           },
           {
-            label: 'Transactions',
-            href: '/transactions',
+            label: 'Feed',
+            href: '/composer/feed',
           },
         ]}
       />

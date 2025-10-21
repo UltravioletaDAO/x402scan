@@ -21,7 +21,8 @@ import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { Favicon } from '@/app/_components/favicon';
 
-type ColumnType = RouterOutputs['public']['agents']['activity']['feed'][number];
+type ColumnType =
+  RouterOutputs['public']['agents']['activity']['feed']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {

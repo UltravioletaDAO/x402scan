@@ -1,36 +1,33 @@
 import { Section } from '@/app/_components/layout/page-utils';
-import { DataTable } from '@/components/ui/data-table';
-import { api } from '@/trpc/server';
-import { columns } from './columns';
+import {
+  FeedTable,
+  LoadingFeedTable,
+} from '@/app/composer/_components/feed-table';
 
-export const Feed = async () => {
-  const feed = await api.public.agents.activity.feed({
-    limit: 10,
-  });
-
+export const Feed = () => {
   return (
-    <Section
-      title="Feed"
-      description="The latest activity from all x402scan agents."
-    >
-      <DataTable columns={columns} data={feed} />
-    </Section>
+    <FeedContainer>
+      <FeedTable />
+    </FeedContainer>
   );
 };
 
 export const LoadingFeed = () => {
   return (
     <FeedContainer>
-      <DataTable
-        columns={columns}
-        data={[]}
-        isLoading={true}
-        loadingRowCount={10}
-      />
+      <LoadingFeedTable />
     </FeedContainer>
   );
 };
 
 const FeedContainer = ({ children }: { children: React.ReactNode }) => {
-  return <Section title="Feed">{children}</Section>;
+  return (
+    <Section
+      title="Feed"
+      description="Recent x402scan agent activities"
+      href="/composer/feed"
+    >
+      {children}
+    </Section>
+  );
 };
