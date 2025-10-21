@@ -2,21 +2,30 @@ import { Section } from '@/app/_components/layout/page-utils';
 import { api } from '@/trpc/server';
 import { AgentCard, LoadingAgentCard } from '../lib/agent-card';
 
-export const Agents = async () => {
-  const topAgents = await api.public.agents.list({
-    limit: 4,
+interface Props {
+  userId: string;
+}
+
+export const YourAgents = async ({ userId }: Props) => {
+  const yourAgents = await api.public.agents.list({
+    limit: 100,
+    userId,
   });
 
   return (
     <AgentsContainer>
-      {topAgents.map(agent => (
-        <AgentCard key={agent.id} agentConfiguration={agent} />
+      {yourAgents.map(agent => (
+        <AgentCard
+          key={agent.id}
+          agentConfiguration={agent}
+          href={`/composer/agent/${agent.id}/chat`}
+        />
       ))}
     </AgentsContainer>
   );
 };
 
-export const LoadingAgents = () => {
+export const LoadingYourAgents = () => {
   return (
     <AgentsContainer>
       {Array.from({ length: 4 }).map((_, index) => (
@@ -28,11 +37,7 @@ export const LoadingAgents = () => {
 
 const AgentsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Section
-      title="Top Agents"
-      description="Discover the most popular agents"
-      href="/composer/agents"
-    >
+    <Section title="Your Agents" description="Agents you have created or used">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
         {children}
       </div>

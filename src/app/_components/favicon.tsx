@@ -18,7 +18,9 @@ export const Favicon = ({
 }: Props) => {
   if (!url) return <Fallback className={className} />;
 
-  return <img src={url} alt="Favicon" className={className} />;
+  return (
+    <img src={url} alt="Favicon" className={cn('rounded-md', className)} />
+  );
 };
 
 interface FaviconsProps {

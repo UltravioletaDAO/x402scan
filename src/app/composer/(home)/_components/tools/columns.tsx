@@ -30,7 +30,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     header: () => <HeaderCell Icon={Wrench} label="Tool" className="mr-auto" />,
     cell: ({ row }) => (
       <div className="flex items-center gap-2 w-full overflow-hidden">
-        <Favicon url={row.original.origin.favicon} className="size-6" />
+        <Favicon
+          url={row.original.origin.favicon}
+          className="size-6 rounded-md"
+        />
         <div className="flex flex-col flex-1 w-0 overflow-hidden">
           <p className="truncate w-full text-xs md:text-sm font-mono font-semibold">
             {row.original.resource}
