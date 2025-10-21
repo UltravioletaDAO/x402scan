@@ -82,13 +82,13 @@ export const AgentSelect = () => {
                       <BotMessageSquare className="size-4 flex-shrink-0" />
                     )}
                     <span className="truncate font-medium">
-                      {agent.agentConfiguration.name}
+                      {agent.agentConfiguration.name || 'Untitled Agent'}
                     </span>
                   </Link>
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
-              <Link href="/composer/agents/new">
+              <Link href="/composer/agent/new">
                 <DropdownMenuItem className="gap-2 p-2">
                   <Plus className="size-4" />
                   <div className="text-muted-foreground font-medium">
@@ -126,7 +126,7 @@ const AgentSelectButton = React.forwardRef<
 
   const isAgent =
     pathname.includes('/composer/agent/') &&
-    !pathname.includes('/composer/agents/new');
+    !pathname.includes('/composer/agent/new');
   const agentId = pathname.split('/')[3];
 
   const { data: agentConfiguration, isLoading: isAgentConfigurationLoading } =
@@ -171,7 +171,9 @@ const AgentSelectButton = React.forwardRef<
                 <Loading
                   value={agentConfiguration?.name}
                   isLoading={isAgentConfigurationLoading}
-                  component={name => <span className="truncate">{name}</span>}
+                  component={name => (
+                    <span className="truncate">{name || 'Untitled Agent'}</span>
+                  )}
                   loadingComponent={<Skeleton className="h-4 w-24" />}
                   errorComponent={<span className="truncate">Agent</span>}
                 />

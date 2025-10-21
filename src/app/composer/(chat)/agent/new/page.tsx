@@ -1,13 +1,14 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 
-import { CreateAgentForm } from '../../_components/new-agent/form';
+import { CreateAgentForm } from '../../../_components/new-agent/form';
+
 import { auth } from '@/auth';
 
 export default async function NewAgentPage() {
   const session = await auth();
 
   return (
-    <div className="flex w-full flex-1 h-0 flex-col overflow-y-auto relative">
+    <div className="flex w-full flex-1 h-0 flex-col py-8 md:py-12 overflow-y-auto relative">
       <Heading
         title="Create an Agent"
         description="Design an agent with x402 resources and custom behavior."
