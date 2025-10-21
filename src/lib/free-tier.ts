@@ -1,5 +1,5 @@
 export const freeTierConfig = {
-  numMessages: 14,
-  numToolCalls: 10,
+  numMessages: 0,
+  numToolCalls: 0,
   maxAmount: 0.25,
 };

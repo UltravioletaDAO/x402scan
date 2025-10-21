@@ -1,6 +1,6 @@
 import { Section } from '@/app/_components/layout/page-utils';
 import { api } from '@/trpc/server';
-import { AgentCard, LoadingAgentCard } from '../lib/agent-card';
+import { AgentCard } from '../lib/agent-card';
 
 interface Props {
   userId: string;
@@ -20,16 +20,6 @@ export const YourAgents = async ({ userId }: Props) => {
           agentConfiguration={agent}
           href={`/composer/agent/${agent.id}/chat`}
         />
-      ))}
-    </AgentsContainer>
-  );
-};
-
-export const LoadingYourAgents = () => {
-  return (
-    <AgentsContainer>
-      {Array.from({ length: 4 }).map((_, index) => (
-        <LoadingAgentCard key={index} />
       ))}
     </AgentsContainer>
   );
