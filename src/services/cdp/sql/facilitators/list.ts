@@ -1,4 +1,8 @@
-import { facilitatorNameMap, facilitators, type Facilitator } from '@/lib/facilitators';
+import {
+  facilitatorNameMap,
+  facilitators,
+  type Facilitator,
+} from '@/lib/facilitators';
 import { sortingSchema } from '../lib';
 import z from 'zod';
 import { mixedAddressSchema } from '@/lib/schemas';

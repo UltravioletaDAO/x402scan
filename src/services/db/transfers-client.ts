@@ -13,8 +13,7 @@ const globalForTransfersPrisma = global as unknown as {
   transfersPrisma: TransfersPrismaClient;
 };
 
-export const transfersPrisma =
-  (globalForTransfersPrisma.transfersPrisma ||
+export const transfersPrisma = (globalForTransfersPrisma.transfersPrisma ||
   new TransfersPrismaClient({ adapter })) as TransfersPrismaClient;
 
 if (process.env.NODE_ENV !== 'production') {

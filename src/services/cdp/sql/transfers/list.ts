@@ -84,15 +84,17 @@ const listFacilitatorTransfersUncached = async (
   });
 
   // Map to expected output format
-  const items = transfers.map((transfer): TransferItem => ({
-    sender: transfer.sender as Address,
-    recipient: transfer.recipient as Address,
-    amount: transfer.amount,
-    token_address: transfer.address as Address,
-    transaction_from: transfer.transaction_from as Address,
-    transaction_hash: transfer.tx_hash,
-    block_timestamp: transfer.block_timestamp,
-  }));
+  const items = transfers.map(
+    (transfer): TransferItem => ({
+      sender: transfer.sender as Address,
+      recipient: transfer.recipient as Address,
+      amount: transfer.amount,
+      token_address: transfer.address as Address,
+      transaction_from: transfer.transaction_from as Address,
+      transaction_hash: transfer.tx_hash,
+      block_timestamp: transfer.block_timestamp,
+    })
+  );
 
   return toPaginatedResponse({
     items,
