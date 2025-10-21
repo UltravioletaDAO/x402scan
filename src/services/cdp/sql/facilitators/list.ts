@@ -5,6 +5,7 @@ import { ethereumAddressSchema } from '@/lib/schemas';
 import { USDC_ADDRESS } from '@/lib/utils';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { transfersPrisma } from '@/services/db/transfers-client';
+import { DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
 
 const listTopFacilitatorsSortIds = [
   'tx_count',
@@ -17,6 +18,7 @@ const listTopFacilitatorsSortIds = [
 export type FacilitatorsSortId = (typeof listTopFacilitatorsSortIds)[number];
 
 export const listTopFacilitatorsInputSchema = z.object({
+  chain: z.enum(SUPPORTED_CHAINS).default(DEFAULT_CHAIN),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   limit: z.number().default(100),
@@ -30,11 +32,13 @@ export const listTopFacilitatorsInputSchema = z.object({
 const listTopFacilitatorsUncached = async (
   input: z.input<typeof listTopFacilitatorsInputSchema>
 ) => {
-  const { startDate, endDate, limit, sorting, tokens } =
+  const { startDate, endDate, limit, sorting, tokens, chain } =
     listTopFacilitatorsInputSchema.parse(input);
 
   // Build the where clause for Prisma
   const where = {
+    // Filter by chain
+    chain: chain,
     // Filter by token addresses
     address: { in: tokens.map(t => t.toLowerCase()) },
     // Filter by known facilitator addresses only

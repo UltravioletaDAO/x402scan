@@ -42,11 +42,16 @@ const listFacilitatorTransfersUncached = async (
     facilitators,
     tokens,
     sorting,
+    chain,
   } = parseResult.data;
 
   // Build the where clause for Prisma
   const where = {
+    // Filter by chain
+    chain: chain,
+    // Filter by token addresses
     address: { in: tokens.map(t => t.toLowerCase()) },
+    // Filter by facilitator addresses
     transaction_from: { in: facilitators.map(f => f.toLowerCase()) },
     ...(recipient && { recipient: recipient.toLowerCase() }),
     ...(startDate && endDate && {

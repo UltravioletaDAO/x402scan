@@ -35,12 +35,14 @@ const listTopSellersUncached = async (
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { sorting, addresses, startDate, endDate, facilitators, tokens } =
+  const { sorting, addresses, startDate, endDate, facilitators, tokens, chain } =
     parseResult.data;
   const { limit } = pagination;
 
   // Build the where clause for Prisma
   const where = {
+    // Filter by chain
+    chain: chain,
     // Filter by token addresses
     address: { in: tokens.map(t => t.toLowerCase()) },
     // Filter by facilitator addresses

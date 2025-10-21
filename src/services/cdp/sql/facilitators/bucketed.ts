@@ -25,10 +25,12 @@ const getBucketedFacilitatorsStatisticsUncached = async (
   if (!parseResult.success) {
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
-  const { startDate, endDate, numBuckets, tokens } = parseResult.data;
+  const { startDate, endDate, numBuckets, tokens, chain } = parseResult.data;
 
   // Build the where clause for Prisma
   const where = {
+    // Filter by chain
+    chain: chain,
     // Filter by token addresses
     address: { in: tokens.map(t => t.toLowerCase()) },
     // Filter by known facilitator addresses
