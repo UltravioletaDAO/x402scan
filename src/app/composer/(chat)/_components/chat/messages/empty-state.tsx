@@ -14,7 +14,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   description = 'A playground for building agents that pay for inference and resources with x402',
   icon = (
     <Card className="p-2 border-primary/70 shadow-[0_0_4px_0px_color-mix(in_oklch,var(--primary)_70%,transparent)]">
-      <Logo className="size-12" />
+      <Logo className="size-8 md:size-12" />
     </Card>
   ),
 }) => {

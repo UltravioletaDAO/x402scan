@@ -217,7 +217,7 @@ export const ModelSelect: React.FC<Props> = ({ model, setModel }) => {
   const triggerButton = (
     <PromptInputButton
       variant="outline"
-      size="sm"
+      size={isMobile ? 'icon' : 'sm'}
       className={cn('justify-center bg-transparent md:justify-start')}
       onClick={event => {
         const target = event.target as HTMLElement;

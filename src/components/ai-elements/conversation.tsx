@@ -50,9 +50,9 @@ const ConversationEmptyState = ({
       <>
         {icon && <div className="text-muted-foreground">{icon}</div>}
         <div className="space-y-2">
-          <h3 className="font-bold text-2xl">{title}</h3>
+          <h3 className="font-bold text-xl md:text-2xl">{title}</h3>
           {description && (
-            <p className="text-muted-foreground text-sm font-mono max-w-xs">
+            <p className="text-muted-foreground text-xs md:text-sm font-mono max-w-xs">
               {description}
             </p>
           )}

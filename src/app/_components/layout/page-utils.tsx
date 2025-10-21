@@ -122,7 +122,7 @@ export const Section = <T extends string>({
           href && 'group cursor-pointer'
         )}
       >
-        <h1 className="font-bold text-2xl">{title}</h1>
+        <h1 className="font-bold text-xl md:text-2xl">{title}</h1>
         {href && (
           <div className="flex items-center gap-2 bg-muted/0 hover:bg-muted rounded-md p-0.5 transition-all hover:scale-105 group-hover:translate-x-1">
             <ChevronRight className="size-4 text-foreground/60 group-hover:text-muted-foreground" />
@@ -133,7 +133,7 @@ export const Section = <T extends string>({
   };
 
   return (
-    <div className={cn('flex flex-col gap-6', className)}>
+    <div className={cn('flex flex-col gap-4 md:gap-6', className)}>
       <div className="flex flex-col gap-1">
         <div className="flex justify-between items-center">
           {href ? (
@@ -145,7 +145,11 @@ export const Section = <T extends string>({
           )}
           {actions}
         </div>
-        {description && <p className="text-muted-foreground">{description}</p>}
+        {description && (
+          <p className="text-muted-foreground text-sm md:text-base">
+            {description}
+          </p>
+        )}
       </div>
       {children}
     </div>

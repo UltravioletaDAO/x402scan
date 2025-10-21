@@ -21,11 +21,13 @@ interface Props {
 export const ToolCard: React.FC<Props> = ({ resource }) => {
   return (
     <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 space-y-0">
+      <CardHeader className="overflow-hidden">
+        <div className="flex items-center justify-between gap-2 w-full overflow-hidden">
+          <div className="flex items-center gap-2 space-y-0 flex-1 overflow-hidden">
             <Favicon url={resource.favicon} Fallback={Wrench} />
-            <CardTitle>{resource.resource} </CardTitle>
+            <CardTitle className="flex-1 truncate text-sm md:text-base">
+              {resource.resource}
+            </CardTitle>
             <span className="text-sm font-mono text-primary font-bold">
               {formatTokenAmount(BigInt(resource.accepts[0].maxAmountRequired))}
             </span>
@@ -37,7 +39,7 @@ export const ToolCard: React.FC<Props> = ({ resource }) => {
             </p>
           </div>
         </div>
-        <CardDescription className="line-clamp-2">
+        <CardDescription className="line-clamp-2 text-xs md:text-sm">
           {resource.accepts[0].description}
         </CardDescription>
       </CardHeader>

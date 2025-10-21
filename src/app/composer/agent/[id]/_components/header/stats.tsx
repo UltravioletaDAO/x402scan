@@ -88,10 +88,12 @@ interface BaseStatCardProps {
 
 const BaseStatCard: React.FC<BaseStatCardProps> = ({ title, value, Icon }) => {
   return (
-    <div className="flex justify-between flex-1 px-4 gap-2 py-1">
-      <div className="flex items-center gap-2 text-muted-foreground">
-        <Icon className="size-4 shrink-0" />
-        <span className="text-xs font-medium tracking-wider">{title}</span>
+    <div className="flex justify-between flex-1 px-2 md:px-4 gap-2 py-1">
+      <div className="flex items-center gap-1 md:gap-2 text-muted-foreground">
+        <Icon className="size-3 md:size-4 shrink-0" />
+        <span className="text-xs md:text-sm font-medium tracking-wider">
+          {title}
+        </span>
       </div>
       {value}
     </div>
@@ -106,7 +108,9 @@ const StatCard: React.FC<StatsCardProps> = ({ title, Icon, value }) => {
   return (
     <BaseStatCard
       title={title}
-      value={<div className="text-lg font-bold font-mono">{value}</div>}
+      value={
+        <div className="text-sm md:text-lg font-bold font-mono">{value}</div>
+      }
       Icon={Icon}
     />
   );

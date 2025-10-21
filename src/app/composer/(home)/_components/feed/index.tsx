@@ -9,7 +9,10 @@ export const Feed = async () => {
   });
 
   return (
-    <Section title="Feed">
+    <Section
+      title="Feed"
+      description="The latest activity from all x402scan agents."
+    >
       <DataTable columns={columns} data={feed} />
     </Section>
   );
@@ -17,13 +20,17 @@ export const Feed = async () => {
 
 export const LoadingFeed = () => {
   return (
-    <Section title="Feed">
+    <FeedContainer>
       <DataTable
         columns={columns}
         data={[]}
         isLoading={true}
         loadingRowCount={10}
       />
-    </Section>
+    </FeedContainer>
   );
+};
+
+const FeedContainer = ({ children }: { children: React.ReactNode }) => {
+  return <Section title="Feed">{children}</Section>;
 };

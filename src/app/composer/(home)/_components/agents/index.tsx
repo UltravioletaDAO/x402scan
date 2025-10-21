@@ -28,8 +28,12 @@ export const LoadingAgents = () => {
 
 const AgentsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Section title="Top Agents" description="Discover the most popular agents">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <Section
+      title="Top Agents"
+      description="Discover the most popular agents"
+      href="/composer/agents"
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
         {children}
       </div>
     </Section>

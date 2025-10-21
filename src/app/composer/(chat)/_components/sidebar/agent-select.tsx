@@ -33,7 +33,7 @@ import { Loading } from '@/components/ui/loading';
 import { useState } from 'react';
 
 export const AgentSelect = () => {
-  const { isMobile } = useSidebar();
+  const { isMobile, setOpenMobile, openMobile } = useSidebar();
 
   const [agentConfigurations] =
     api.user.agentConfigurations.list.useSuspenseQuery();
@@ -58,14 +58,23 @@ export const AgentSelect = () => {
                 Agents
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 p-2" asChild>
+              <DropdownMenuItem
+                className="gap-2 p-2"
+                asChild
+                onClick={() => isMobile && openMobile && setOpenMobile(false)}
+              >
                 <Link href="/composer/chat">
                   <BotMessageSquare className="size-4 flex-shrink-0" />
                   <span className="truncate font-medium">Playground</span>
                 </Link>
               </DropdownMenuItem>
               {agentConfigurations.map(agent => (
-                <DropdownMenuItem key={agent.id} className="gap-2 p-2" asChild>
+                <DropdownMenuItem
+                  key={agent.id}
+                  className="gap-2 p-2"
+                  asChild
+                  onClick={() => isMobile && openMobile && setOpenMobile(false)}
+                >
                   <Link
                     href={`/composer/agent/${agent.agentConfiguration.id}/chat`}
                     key={agent.id}
