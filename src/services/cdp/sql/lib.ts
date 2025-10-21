@@ -4,10 +4,6 @@ import { getUSDCAddress } from '@/lib/utils';
 import { DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
 import z from 'zod';
 
-export const formatDateForSql = (date: Date) => {
-  return date.toISOString().replace('T', ' ').replace('Z', '');
-};
-
 // Helper function to apply chain-specific defaults
 export const applyBaseQueryDefaults = <
   T extends z.infer<typeof baseQuerySchema>,
