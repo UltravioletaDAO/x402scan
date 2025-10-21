@@ -27,9 +27,6 @@ export const Messages: React.FC<MessagesProps> = ({
   model,
   emptyState,
 }) => {
-  if (status === 'streaming') {
-    console.log(messages[messages.length - 1]);
-  }
   return (
     <Conversation className="h-full w-full">
       {messages.length > 0 ? (

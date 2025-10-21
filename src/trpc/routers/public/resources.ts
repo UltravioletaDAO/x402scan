@@ -91,7 +91,6 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      console.log(input);
       let parseErrorData: {
         parseErrors: string[];
         data: unknown;
@@ -113,11 +112,10 @@ export const resourcesRouter = createTRPCRouter({
           continue;
         }
 
-        const data = (await response.json()) as unknown;
-
-        console.log(data);
-
-        const result = await registerResource(input.url.toString(), data);
+        const result = await registerResource(
+          input.url.toString(),
+          await response.json()
+        );
 
         if (result.success === false) {
           if (result.error.type === 'parseResponse') {

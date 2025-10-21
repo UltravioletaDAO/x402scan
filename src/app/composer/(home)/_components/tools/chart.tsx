@@ -13,8 +13,6 @@ interface Props {
 }
 
 export const KnownSellerChart = ({ addresses }: Props) => {
-  console.log(addresses);
-
   const { data: bucketedStats, isLoading } = api.public.stats.bucketed.useQuery(
     {
       addresses,

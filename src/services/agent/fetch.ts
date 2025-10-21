@@ -59,7 +59,6 @@ export function fetchWithX402Payment(
         walletClient,
         maxAmount
       );
-      console.log('paymentHeader', paymentHeader);
       headers['x-payment'] = paymentHeader;
       const newResponse = await fetch(input, {
         ...init,

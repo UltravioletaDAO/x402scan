@@ -226,7 +226,6 @@ export const searchResources = async (
   input: z.input<typeof searchResourcesSchema>
 ) => {
   const { search, limit, tagIds } = searchResourcesSchema.parse(input);
-  console.log(search, limit, tagIds);
   return await prisma.resources.findMany({
     where: {
       ...(search

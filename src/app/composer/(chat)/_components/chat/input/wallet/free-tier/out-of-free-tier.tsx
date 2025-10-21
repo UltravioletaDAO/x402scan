@@ -32,8 +32,6 @@ export const OutOfFreeTier: React.FC<Props> = ({
     }
   };
 
-  console.log('out of free tier');
-
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>

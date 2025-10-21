@@ -71,7 +71,6 @@ export const ChatContent: React.FC<Props> = ({
     },
     onFinish: ({ messages }) => {
       if (messages.length > 0) {
-        console.log('onFinish');
         window.history.replaceState(
           {},
           '',

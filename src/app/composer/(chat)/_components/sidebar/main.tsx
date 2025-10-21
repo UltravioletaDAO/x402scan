@@ -60,7 +60,6 @@ export const NavMain = () => {
               asChild
               onClick={() => {
                 if (pathname === item.url) {
-                  console.log('refreshing');
                   router.refresh();
                 }
               }}
