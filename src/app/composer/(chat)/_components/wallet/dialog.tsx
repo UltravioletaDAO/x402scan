@@ -1,4 +1,4 @@
-import { AlertCircle, ArrowDown, Key, Wallet } from 'lucide-react';
+import { AlertCircle, ArrowDown, ArrowUp, Wallet } from 'lucide-react';
 
 import {
   Dialog,
@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/components/logo';
 
 import { WalletDisplay } from './display';
-import { ExportWallet } from './export';
+import { Send } from './send';
 import { Deposit } from './deposit';
 
 import { api } from '@/trpc/client';
@@ -30,7 +30,7 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
     api.user.serverWallet.usdcBaseBalance.useQuery();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [tab, setTab] = useState<'wallet' | 'deposit' | 'export'>('wallet');
+  const [tab, setTab] = useState<'wallet' | 'deposit' | 'send'>('send');
 
   const isOutOfFunds = usdcBalance !== undefined && usdcBalance <= 0.01;
 
@@ -52,7 +52,7 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
           className="w-full overflow-hidden flex flex-col gap-4"
           value={tab}
           onValueChange={value =>
-            setTab(value as 'wallet' | 'deposit' | 'export')
+            setTab(value as 'wallet' | 'deposit' | 'send')
           }
         >
           <DialogHeader className=" gap-2 bg-muted">
@@ -84,11 +84,11 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
                 <ArrowDown className="size-4" /> Deposit
               </TabsTrigger>
               <TabsTrigger
-                value="export"
+                value="send"
                 variant="github"
                 className="data-[state=active]:bg-background"
               >
-                <Key className="size-4" /> Export
+                <ArrowUp className="size-4" /> Send
               </TabsTrigger>
               <div className="h-[34px] border-b flex-1" />
             </TabsList>
@@ -117,8 +117,11 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
             )}
             <Deposit address={address} />
           </TabsContent>
-          <TabsContent value="export" className="w-full overflow-hidden mt-0">
-            <ExportWallet />
+          <TabsContent
+            value="send"
+            className="w-full overflow-hidden mt-0 px-4 pb-4"
+          >
+            <Send />
           </TabsContent>
         </Tabs>
       </DialogContent>

@@ -18,6 +18,7 @@ export type AgentSortId = (typeof agentsSortingIds)[number];
 export const listTopAgentConfigurationsSchema = z.object({
   limit: z.number().default(10),
   offset: z.number().default(0),
+  userId: z.string().optional(),
   sorting: sortingSchema(agentsSortingIds).default({
     id: 'message_count',
     desc: true,
@@ -27,7 +28,7 @@ export const listTopAgentConfigurationsSchema = z.object({
 export const listTopAgentConfigurations = async (
   input: z.infer<typeof listTopAgentConfigurationsSchema>
 ) => {
-  const { limit, offset, sorting } = input;
+  const { limit, offset, sorting, userId } = input;
 
   const agentConfigurations = await queryRaw(
     Prisma.sql`
@@ -76,7 +77,7 @@ export const listTopAgentConfigurations = async (
       LEFT JOIN "AgentConfigurationResource" acr ON acr."agentConfigurationId" = ac.id
       LEFT JOIN "Resources" r ON acr."resourceId" = r.id
       LEFT JOIN "ResourceOrigin" o ON r."originId" = o.id
-      WHERE ac.visibility = 'public'
+      WHERE ${userId ? Prisma.sql`au."userId" = ${userId}` : Prisma.sql`ac.visibility = 'public'`}
       GROUP BY 
         ac.id, ac.name, ac.description, ac.image, ac."systemPrompt", ac.visibility, ac."createdAt", m.message_count, tc.tool_call_count
       ORDER BY 

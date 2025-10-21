@@ -21,14 +21,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 import type { LucideIcon } from 'lucide-react';
+import type { Route } from 'next';
 
-interface Props {
+interface Props<T extends string> {
   agentConfiguration: RouterOutputs['public']['agents']['list'][number];
+  href?: Route<T>;
 }
 
-export const AgentCard: React.FC<Props> = ({ agentConfiguration }) => {
+export const AgentCard = <T extends string>({
+  agentConfiguration,
+  href,
+}: Props<T>) => {
   return (
-    <Link href={`/composer/agent/${agentConfiguration.id}`}>
+    <Link
+      href={href ?? (`/composer/agent/${agentConfiguration.id}` as Route<T>)}
+    >
       <Card className="hover:border-primary transition-colors overflow-hidden flex flex-col justify-between h-full">
         <CardHeader className="border-b flex-1">
           <div className="flex flex-row items-center gap-3">
@@ -37,7 +44,7 @@ export const AgentCard: React.FC<Props> = ({ agentConfiguration }) => {
               <img
                 src={agentConfiguration.image}
                 alt={agentConfiguration.name}
-                className="size-5 rounded object-cover bg-muted"
+                className="size-5 rounded-md object-cover bg-muted"
               />
             ) : (
               <BotMessageSquare className="size-5" />

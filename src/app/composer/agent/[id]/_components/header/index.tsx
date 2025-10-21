@@ -25,7 +25,7 @@ export const HeaderCard: React.FC<Props> = async ({ agentConfiguration }) => {
       <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
         <Avatar
           src={agentConfiguration.image}
-          className="size-8 border-none rounded-none"
+          className="size-full border-none rounded-md"
           fallback={<BotMessageSquare className="size-8" />}
         />
       </Card>
@@ -74,7 +74,7 @@ export const LoadingHeaderCard = () => {
         <Avatar
           src={undefined}
           className="size-full"
-          fallback={<Skeleton className="size-8" />}
+          fallback={<Skeleton className="size-full" />}
         />
       </Card>
 

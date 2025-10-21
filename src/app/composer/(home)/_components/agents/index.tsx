@@ -1,6 +1,6 @@
 import { Section } from '@/app/_components/layout/page-utils';
 import { api } from '@/trpc/server';
-import { AgentCard, LoadingAgentCard } from './card';
+import { AgentCard, LoadingAgentCard } from '../lib/agent-card';
 
 export const Agents = async () => {
   const topAgents = await api.public.agents.list({
@@ -30,7 +30,7 @@ const AgentsContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <Section
       title="Top Agents"
-      description="Discover the most popular agents"
+      description="Try out the most popular agents"
       href="/composer/agents"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">

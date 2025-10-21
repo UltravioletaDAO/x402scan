@@ -63,6 +63,7 @@ export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
 };
 
 export const USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+export const ETH_ADDRESS = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE';
 
 export function convertToUIMessages(messages: Message[]): UIMessage[] {
   return messages.map(message => ({
