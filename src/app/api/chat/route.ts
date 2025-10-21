@@ -36,6 +36,7 @@ import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
 
 import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
+import { getAgentConfiguration } from '@/services/db/agent-config/get';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -170,6 +171,9 @@ export async function POST(request: NextRequest) {
   const result = streamText({
     model: openai(model),
     messages: convertToModelMessages(messages),
+    system: agentConfigurationId
+      ? (await getAgentConfiguration(agentConfigurationId)).systemPrompt
+      : undefined,
     stopWhen: stepCountIs(50),
     tools,
     maxOutputTokens: 10000,
