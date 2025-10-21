@@ -23,7 +23,10 @@ export const HomeHeading = () => {
       </div>
       <div className="flex flex-col md:flex-row items-center gap-2">
         <SearchButton />
-        <Link href="/resources/register" className="w-full md:w-fit">
+        <Link
+          href="/resources/register"
+          className="w-full md:w-fit hidden md:block"
+        >
           <Button
             variant="outline"
             className="shrink-0 w-full md:w-fit px-4"

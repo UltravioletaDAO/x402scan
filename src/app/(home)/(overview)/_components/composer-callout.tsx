@@ -6,15 +6,15 @@ export const ComposerCallout = () => {
   return (
     <Link
       href="/composer"
-      className="border border-primary bg-primary/5 p-4 rounded-md flex items-center gap-2 justify-between"
+      className="border border-primary bg-primary/5 p-4 rounded-md flex flex-col md:flex-row items-center gap-2 justify-between"
     >
       <div className="flex items-center gap-4">
         <Network className="size-8 text-primary" />
         <div className="flex flex-col">
-          <h2 className="font-mono text-lg font-bold text-primary">
+          <h2 className="font-mono text-base md:text-lg font-bold text-primary">
             Introducing The Composer
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs md:text-sm text-muted-foreground">
             Build and use agents that pay for resources and inference with x402.
           </p>
         </div>
