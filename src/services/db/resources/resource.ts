@@ -94,7 +94,6 @@ export const upsertResource = async (
           scheme: baseAccepts.scheme,
           network: 'base',
         },
-        payTo: baseAccepts.payTo.toLowerCase(),
       },
       create: {
         resourceRel: {
