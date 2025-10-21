@@ -1,4 +1,4 @@
-import { PrismaClient as TransfersPrismaClient } from '@prisma/client-transfers';
+import { PrismaClient as TransfersPrismaClient } from '.prisma/client-transfers';
 import { PrismaNeon } from '@prisma/adapter-neon';
 import { neonConfig } from '@neondatabase/serverless';
 import ws from 'ws';
@@ -14,8 +14,8 @@ const globalForTransfersPrisma = global as unknown as {
 };
 
 export const transfersPrisma =
-  globalForTransfersPrisma.transfersPrisma ||
-  new TransfersPrismaClient({ adapter });
+  (globalForTransfersPrisma.transfersPrisma ||
+  new TransfersPrismaClient({ adapter })) as TransfersPrismaClient;
 
 if (process.env.NODE_ENV !== 'production') {
   globalForTransfersPrisma.transfersPrisma = transfersPrisma;

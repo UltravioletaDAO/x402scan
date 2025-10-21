@@ -1,4 +1,5 @@
 import z from 'zod';
+import type { Address } from 'viem';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
@@ -27,6 +28,15 @@ export const listTopSellersInputSchema = baseQuerySchema.extend({
   startDate: z.date().optional(),
   endDate: z.date().optional(),
 });
+
+export type TopSellerItem = {
+  recipient: Address;
+  facilitators: Address[];
+  tx_count: number;
+  total_amount: number;
+  latest_block_timestamp: Date;
+  unique_buyers: number;
+};
 
 const listTopSellersUncached = async (
   input: z.input<typeof listTopSellersInputSchema>,
@@ -94,13 +104,13 @@ const listTopSellersUncached = async (
       ]);
 
       return {
-        recipient: group.recipient,
-        facilitators: facilitatorsList.map(f => f.transaction_from),
+        recipient: group.recipient as Address,
+        facilitators: facilitatorsList.map(f => f.transaction_from as Address),
         tx_count: group._count,
         total_amount: group._sum.amount ?? 0,
         latest_block_timestamp: group._max.block_timestamp ?? new Date(),
         unique_buyers: uniqueBuyers.length,
-      };
+      } satisfies TopSellerItem;
     })
   );
 

@@ -1,4 +1,4 @@
-import { facilitatorNameMap, facilitators } from '@/lib/facilitators';
+import { facilitatorNameMap, facilitators, type Facilitator } from '@/lib/facilitators';
 import { sortingSchema } from '../lib';
 import z from 'zod';
 import { mixedAddressSchema } from '@/lib/schemas';
@@ -28,6 +28,16 @@ export const listTopFacilitatorsInputSchema = z.object({
   }),
   tokens: z.array(mixedAddressSchema).optional(),
 });
+
+export type FacilitatorItem = {
+  facilitator_name: string;
+  facilitator: Facilitator;
+  tx_count: number;
+  total_amount: number;
+  latest_block_timestamp: Date;
+  unique_buyers: number;
+  unique_sellers: number;
+};
 
 const listTopFacilitatorsUncached = async (
   input: z.input<typeof listTopFacilitatorsInputSchema>
@@ -114,7 +124,7 @@ const listTopFacilitatorsUncached = async (
         latest_block_timestamp: group._max.block_timestamp ?? new Date(),
         unique_buyers: uniqueBuyers.length,
         unique_sellers: uniqueSellers.length,
-      };
+      } satisfies FacilitatorItem;
     })
   );
 
