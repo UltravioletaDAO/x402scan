@@ -28,13 +28,6 @@ export const capabilityColors: Record<LanguageModelCapability, string> = {
   [LanguageModelCapability.ToolCalling]: 'bg-yellow-100 text-yellow-800',
 };
 
-export const formatContextLength = (length?: number) => {
-  if (!length) return null;
-  if (length >= 1000000) return `${(length / 1000000).toFixed(1)}M tokens`;
-  if (length >= 1000) return `${(length / 1000).toFixed(0)}K tokens`;
-  return `${length} tokens`;
-};
-
 export const modelProviderNames: Record<string, string> = {
   openai: 'OpenAI',
   google: 'Google',

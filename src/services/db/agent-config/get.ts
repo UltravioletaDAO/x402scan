@@ -3,6 +3,17 @@ import z from 'zod';
 import { queryRaw } from '../query';
 
 import { Prisma } from '@prisma/client';
+import { prisma } from '../client';
+
+export const getAgentConfigSystemPrompt = async (id: string) => {
+  const agentConfiguration = await prisma.agentConfiguration.findUnique({
+    where: { id },
+    select: {
+      systemPrompt: true,
+    },
+  });
+  return agentConfiguration?.systemPrompt;
+};
 
 export const getAgentConfiguration = async (id: string, userId?: string) => {
   const [agentConfiguration] = await queryRaw(

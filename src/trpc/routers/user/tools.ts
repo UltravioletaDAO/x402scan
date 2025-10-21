@@ -1,8 +1,9 @@
+import { createTRPCRouter, protectedProcedure } from '../../trpc';
 import {
   fetchFreepikMysticTask,
   fetchFreepikMysticTaskInputSchema,
 } from '@/services/tools/freepik';
-import { createTRPCRouter, protectedProcedure } from '../../trpc';
+import { getSoraVideo, getSoraVideoInputSchema } from '@/services/tools/echo';
 
 export const userToolsRouter = createTRPCRouter({
   freepik: {
@@ -11,5 +12,15 @@ export const userToolsRouter = createTRPCRouter({
       .query(async ({ input }) => {
         return await fetchFreepikMysticTask(input);
       }),
+  },
+
+  echo: {
+    sora: {
+      getVideo: protectedProcedure
+        .input(getSoraVideoInputSchema)
+        .query(async ({ input }) => {
+          return await getSoraVideo(input);
+        }),
+    },
   },
 });
