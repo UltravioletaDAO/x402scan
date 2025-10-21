@@ -1,10 +1,11 @@
-'use client';
-
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 
 import { CreateAgentForm } from './_components/form';
+import { auth } from '@/auth';
 
-export default function NewAgentPage() {
+export default async function NewAgentPage() {
+  const session = await auth();
+
   return (
     <div className="flex w-full flex-1 h-0 flex-col pt-8 md:pt-12 overflow-y-auto relative">
       <Heading
@@ -13,7 +14,7 @@ export default function NewAgentPage() {
         className="md:max-w-2xl"
       />
       <Body className="max-w-2xl">
-        <CreateAgentForm />
+        <CreateAgentForm initialStep={session ? 1 : 0} />
       </Body>
     </div>
   );

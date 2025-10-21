@@ -6,12 +6,41 @@ import { toast } from 'sonner';
 
 import { api } from '@/trpc/client';
 
-import { AgentForm } from '../../_components/form';
+import { useCallback, useMemo, useState } from 'react';
+import { steps } from './steps';
+import { Stepper } from '@/components/ui/stepper';
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { agentConfigurationSchema } from '@/services/db/agent-config/mutate/schema';
+import type z from 'zod';
 
-export const CreateAgentForm: React.FC = () => {
+interface Props {
+  initialStep?: number;
+}
+
+export const CreateAgentForm: React.FC<Props> = ({ initialStep = 0 }) => {
   const router = useRouter();
 
-  const { mutate: createAgent, isPending } =
+  const [step, setStep] = useState(initialStep);
+
+  const form = useForm({
+    resolver: zodResolver(agentConfigurationSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      systemPrompt: '',
+      resourceIds: [],
+    },
+    mode: 'onChange',
+  });
+
+  const { mutate: createAgent, isPending: isSubmitting } =
     api.user.agentConfigurations.create.useMutation({
       onSuccess: agentConfiguration => {
         toast.success('Agent configuration created successfully');
@@ -22,16 +51,43 @@ export const CreateAgentForm: React.FC = () => {
       },
     });
 
+  const handleSubmit = (data: z.infer<typeof agentConfigurationSchema>) => {
+    createAgent(data);
+  };
+
+  const onNext = useCallback(() => {
+    setStep(prev => prev + 1);
+  }, [setStep]);
+
+  const onPrevious = useCallback(() => {
+    setStep(prev => prev - 1);
+  }, [setStep]);
+
+  const stepsConfig = useMemo(
+    () => steps({ onNext, onPrevious, form, isSubmitting }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [onNext, onPrevious, form, isSubmitting, form.formState]
+  );
+
   return (
-    <AgentForm
-      onSubmit={data => {
-        createAgent(data);
-      }}
-      isSubmitting={isPending}
-      submitText={{
-        default: 'Create Agent',
-        submitting: 'Creating...',
-      }}
-    />
+    <form
+      onSubmit={form.handleSubmit(handleSubmit)}
+      className="flex flex-col gap-4"
+    >
+      <Stepper
+        steps={stepsConfig}
+        currentStep={step}
+        setCurrentStep={setStep}
+      />
+      <Card className="overflow-hidden">
+        <CardHeader className="bg-muted border-b">
+          <CardTitle>{stepsConfig[step].card.title}</CardTitle>
+          <CardDescription>
+            {stepsConfig[step].card.description}
+          </CardDescription>
+        </CardHeader>
+        {stepsConfig[step].component}
+      </Card>
+    </form>
   );
 };
