@@ -42,10 +42,13 @@ export const AgentCard: React.FC<Props> = ({ agentConfiguration }) => {
             ) : (
               <BotMessageSquare className="size-5" />
             )}
-            <CardTitle>{agentConfiguration.name}</CardTitle>
+            <CardTitle>{agentConfiguration.name || 'Untitled'}</CardTitle>
           </div>
           <CardDescription className="text-xs line-clamp-2">
-            {agentConfiguration.description ?? 'No description'}
+            {agentConfiguration.description &&
+            agentConfiguration.description.length > 0
+              ? agentConfiguration.description
+              : 'No description'}
           </CardDescription>
         </CardHeader>
         <div

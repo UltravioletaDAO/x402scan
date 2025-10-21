@@ -32,16 +32,16 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <div className="flex items-center gap-2 w-full overflow-hidden">
         <Favicon url={row.original.origin.favicon} className="size-6" />
         <div className="flex flex-col flex-1 w-0 overflow-hidden">
-          <p className="truncate w-full text-sm font-mono font-semibold">
+          <p className="truncate w-full text-xs md:text-sm font-mono font-semibold">
             {row.original.resource}
           </p>
-          <p className="text-xs text-muted-foreground w-full break-words whitespace-normal line-clamp-2">
+          <p className="text-[10px] md:text-xs text-muted-foreground w-full break-words whitespace-normal line-clamp-2">
             {row.original.accepts[0].description}
           </p>
         </div>
       </div>
     ),
-    size: 225,
+    size: 250,
     loading: () => (
       <div className="flex items-center gap-2 w-full overflow-hidden">
         <Skeleton className="size-6 rounded-md" />
@@ -79,7 +79,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    size: 75, // Fixed width for transaction count
+    size: 125, // Fixed width for transaction count
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -104,7 +104,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    size: 75, // Fixed width for volume column
+    size: 125, // Fixed width for volume column
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -119,7 +119,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         })}
       </div>
     ),
-    size: 75, // Fixed width for users count
+    size: 125, // Fixed width for users count
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
@@ -140,7 +140,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
         {formatCompactAgo(row.original.latest_call_time ?? new Date())}
       </div>
     ),
-    size: 75, // Fixed width for timestamp
+    size: 125, // Fixed width for timestamp
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
 ];

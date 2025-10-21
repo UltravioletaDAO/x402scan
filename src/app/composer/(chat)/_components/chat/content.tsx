@@ -171,11 +171,11 @@ export const ChatContent: React.FC<Props> = ({
                     alt={agentConfig.name}
                     width={96}
                     height={96}
-                    className="size-16 rounded-md overflow-hidden"
+                    className="size-12 md:size-16 rounded-md overflow-hidden"
                   />
                 ) : (
                   <Card className="p-2 border">
-                    <Bot className="size-12" />
+                    <Bot className="size-8 md:size-12" />
                   </Card>
                 ),
               }
