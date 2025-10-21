@@ -1,6 +1,7 @@
 import z from 'zod';
 import { queryRaw } from '../query';
 import { Prisma } from '@prisma/client';
+import { toPaginatedResponse } from '@/lib/pagination';
 
 const agentConfigurationSchema = z
   .object({
@@ -48,7 +49,7 @@ export const getAgentConfigFeed = async (
 ) => {
   const { agentConfigurationId, userId, limit, offset } = input;
 
-  return await queryRaw(
+  const items = await queryRaw(
     Prisma.sql`
     WITH message_events AS (
       SELECT 
@@ -105,9 +106,14 @@ export const getAgentConfigFeed = async (
     )
     SELECT * FROM combined_events
     ORDER BY "createdAt" DESC
-    LIMIT ${limit}
+    LIMIT ${limit + 1}
     OFFSET ${offset}
     `,
     z.array(feedEventSchema)
   );
+
+  return toPaginatedResponse({
+    items,
+    limit,
+  });
 };
