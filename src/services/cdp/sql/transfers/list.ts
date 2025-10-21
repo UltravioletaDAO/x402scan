@@ -1,8 +1,6 @@
 import z from 'zod';
 
-import {
-  ethereumAddressSchema,
-} from '@/lib/schemas';
+import { ethereumAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 import { baseQuerySchema, sortingSchema, applyBaseQueryDefaults } from '../lib';
 import {
@@ -56,19 +54,13 @@ const listFacilitatorTransfersUncached = async (
     // Filter by facilitator addresses
     transaction_from: { in: normalizeAddresses(facilitators, chain) },
     // Optional recipient filter
-    ...(recipient 
-      ? { recipient: normalizeAddress(recipient, chain) }
-      : {}),
+    ...(recipient ? { recipient: normalizeAddress(recipient, chain) } : {}),
     // Date range filters
-    ...(startDate && endDate 
+    ...(startDate && endDate
       ? { block_timestamp: { gte: startDate, lte: endDate } }
       : {}),
-    ...(startDate && !endDate 
-      ? { block_timestamp: { gte: startDate } }
-      : {}),
-    ...(!startDate && endDate 
-      ? { block_timestamp: { lte: endDate } }
-      : {}),
+    ...(startDate && !endDate ? { block_timestamp: { gte: startDate } } : {}),
+    ...(!startDate && endDate ? { block_timestamp: { lte: endDate } } : {}),
   };
 
   // Fetch transfers from Neon database

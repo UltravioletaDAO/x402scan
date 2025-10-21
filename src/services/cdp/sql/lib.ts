@@ -9,13 +9,16 @@ export const formatDateForSql = (date: Date) => {
 };
 
 // Helper function to apply chain-specific defaults
-export const applyBaseQueryDefaults = <T extends z.infer<typeof baseQuerySchema>>(
+export const applyBaseQueryDefaults = <
+  T extends z.infer<typeof baseQuerySchema>,
+>(
   data: T
 ): Required<T> => {
   const chainFacilitators = facilitators.filter(f => f.chain === data.chain);
   return {
     ...data,
-    facilitators: data.facilitators ?? chainFacilitators.flatMap(f => f.addresses),
+    facilitators:
+      data.facilitators ?? chainFacilitators.flatMap(f => f.addresses),
     tokens: data.tokens ?? getUSDCAddress(data.chain),
   } as Required<T>;
 };

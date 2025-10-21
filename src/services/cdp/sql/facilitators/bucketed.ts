@@ -38,11 +38,11 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     // Filter by token addresses
     address: { in: normalizeAddresses(tokens, chain) },
     // Filter by known facilitator addresses
-    transaction_from: { 
+    transaction_from: {
       in: normalizeAddresses(
         chainFacilitators.flatMap(f => f.addresses),
         chain
-      )
+      ),
     },
     // Date range filters
     block_timestamp: { gte: startDate, lte: endDate },
@@ -65,7 +65,8 @@ const getBucketedFacilitatorsStatisticsUncached = async (
   const bucketSizeMs = Math.floor(timeRangeMs / numBuckets);
   const bucketSizeSeconds = Math.max(1, Math.floor(bucketSizeMs / 1000));
   const startTimestamp = Math.floor(startDate.getTime() / 1000);
-  const firstBucketStartTimestamp = Math.floor(startTimestamp / bucketSizeSeconds) * bucketSizeSeconds;
+  const firstBucketStartTimestamp =
+    Math.floor(startTimestamp / bucketSizeSeconds) * bucketSizeSeconds;
 
   // Group transfers into buckets by facilitator
   type FacilitatorStats = {
@@ -78,18 +79,23 @@ const getBucketedFacilitatorsStatisticsUncached = async (
 
   for (const transfer of transfers) {
     const timestamp = Math.floor(transfer.block_timestamp.getTime() / 1000);
-    const bucketIndex = Math.floor((timestamp - firstBucketStartTimestamp) / bucketSizeSeconds);
-    const bucketStartTimestamp = firstBucketStartTimestamp + bucketIndex * bucketSizeSeconds;
+    const bucketIndex = Math.floor(
+      (timestamp - firstBucketStartTimestamp) / bucketSizeSeconds
+    );
+    const bucketStartTimestamp =
+      firstBucketStartTimestamp + bucketIndex * bucketSizeSeconds;
 
     if (!bucketMap.has(bucketStartTimestamp)) {
       bucketMap.set(bucketStartTimestamp, new Map());
     }
 
     const facilitatorMap = bucketMap.get(bucketStartTimestamp)!;
-    
+
     // Map address to facilitator name
-    const facilitator = facilitators.find(f => 
-      f.addresses.some(addr => addr.toLowerCase() === transfer.transaction_from.toLowerCase())
+    const facilitator = facilitators.find(f =>
+      f.addresses.some(
+        addr => addr.toLowerCase() === transfer.transaction_from.toLowerCase()
+      )
     );
     const facilitatorName = facilitator?.name ?? 'Unknown';
 
@@ -112,16 +118,22 @@ const getBucketedFacilitatorsStatisticsUncached = async (
   // Generate complete time series
   const result = [];
   for (let i = 0; i < numBuckets; i++) {
-    const bucketStartTimestamp = firstBucketStartTimestamp + i * bucketSizeSeconds;
+    const bucketStartTimestamp =
+      firstBucketStartTimestamp + i * bucketSizeSeconds;
     const bucketStart = new Date(bucketStartTimestamp * 1000);
-    const facilitatorMap = bucketMap.get(bucketStartTimestamp) ?? new Map<string, FacilitatorStats>();
+    const facilitatorMap =
+      bucketMap.get(bucketStartTimestamp) ??
+      new Map<string, FacilitatorStats>();
 
-    const facilitatorsByName: Record<string, {
-      total_transactions: number;
-      total_amount: number;
-      unique_buyers: number;
-      unique_sellers: number;
-    }> = {};
+    const facilitatorsByName: Record<
+      string,
+      {
+        total_transactions: number;
+        total_amount: number;
+        unique_buyers: number;
+        unique_sellers: number;
+      }
+    > = {};
 
     for (const [facilitatorName, stats] of facilitatorMap.entries()) {
       facilitatorsByName[facilitatorName] = {

@@ -23,7 +23,7 @@ export const AllSellers = async () => {
   const limit = 100;
 
   await api.sellers.list.all.prefetch({
-    chain: DEFAULT_CHAIN, 
+    chain: DEFAULT_CHAIN,
     sorting: defaultSellersSorting,
     limit,
     startDate,

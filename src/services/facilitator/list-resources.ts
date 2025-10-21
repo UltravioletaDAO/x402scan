@@ -30,7 +30,10 @@ const listResourcesFromListEndpoint = async (
 ): Promise<ListDiscoveryResourcesResponse> => {
   const params = new URLSearchParams(
     Object.fromEntries(
-      Object.entries(config ?? {}).map(([key, value]) => [key, value?.toString() ?? ''])
+      Object.entries(config ?? {}).map(([key, value]) => [
+        key,
+        value?.toString() ?? '',
+      ])
     )
   ).toString();
   const url = `${facilitator.url}/list`;
@@ -40,7 +43,9 @@ const listResourcesFromListEndpoint = async (
   });
 
   if (res.status !== 200) {
-    throw new Error(`Failed to list resources: ${res.status} ${res.statusText}`);
+    throw new Error(
+      `Failed to list resources: ${res.status} ${res.statusText}`
+    );
   }
 
   const data = (await res.json()) as ListDiscoveryResourcesResponse;

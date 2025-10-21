@@ -37,7 +37,15 @@ const listTopSellersUncached = async (
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
   const parsed = applyBaseQueryDefaults(parseResult.data);
-  const { sorting, addresses, startDate, endDate, facilitators, tokens, chain } = parsed;
+  const {
+    sorting,
+    addresses,
+    startDate,
+    endDate,
+    facilitators,
+    tokens,
+    chain,
+  } = parsed;
   const { limit } = pagination;
 
   // Build the where clause for Prisma
@@ -49,19 +57,15 @@ const listTopSellersUncached = async (
     // Filter by facilitator addresses
     transaction_from: { in: normalizeAddresses(facilitators, chain) },
     // Optional filter by recipient addresses (sellers)
-    ...(addresses && addresses.length > 0 
+    ...(addresses && addresses.length > 0
       ? { recipient: { in: normalizeAddresses(addresses, chain) } }
       : {}),
     // Date range filters
-    ...(startDate && endDate 
+    ...(startDate && endDate
       ? { block_timestamp: { gte: startDate, lte: endDate } }
       : {}),
-    ...(startDate && !endDate 
-      ? { block_timestamp: { gte: startDate } }
-      : {}),
-    ...(!startDate && endDate 
-      ? { block_timestamp: { lte: endDate } }
-      : {}),
+    ...(startDate && !endDate ? { block_timestamp: { gte: startDate } } : {}),
+    ...(!startDate && endDate ? { block_timestamp: { lte: endDate } } : {}),
   };
 
   // Group by recipient
@@ -75,9 +79,9 @@ const listTopSellersUncached = async (
 
   // For each seller, get unique buyers and facilitators
   const results = await Promise.all(
-    grouped.map(async (group) => {
+    grouped.map(async group => {
       const sellerWhere = { ...where, recipient: group.recipient };
-      
+
       const [uniqueBuyers, facilitatorsList] = await Promise.all([
         transfersPrisma.transferEvent.groupBy({
           by: ['sender'],
@@ -101,7 +105,7 @@ const listTopSellersUncached = async (
   );
 
   // Sort results in TypeScript
-  type SortableResult = typeof results[number];
+  type SortableResult = (typeof results)[number];
   const sortKey = sorting.id as keyof SortableResult;
   results.sort((a, b) => {
     const aVal = a[sortKey];

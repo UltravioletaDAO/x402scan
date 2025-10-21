@@ -42,28 +42,31 @@ const listTopFacilitatorsUncached = async (
     // Filter by chain
     chain: chain,
     // Filter by token addresses
-    address: { 
-      in: getUSDCAddress(chain)
+    address: {
+      in: getUSDCAddress(chain),
     },
     // Filter by known facilitator addresses only
-    transaction_from: { 
-      in: chainFacilitators.flatMap(f => 
+    transaction_from: {
+      in: chainFacilitators.flatMap(f =>
         // Only lowercase for non-Solana chains
-        chain === Chain.SOLANA 
-          ? f.addresses 
+        chain === Chain.SOLANA
+          ? f.addresses
           : f.addresses.map(a => a.toLowerCase())
-      ) 
+      ),
     },
     // Date range filters
-    ...(startDate && endDate && {
-      block_timestamp: { gte: startDate, lte: endDate },
-    }),
-    ...(startDate && !endDate && {
-      block_timestamp: { gte: startDate },
-    }),
-    ...(!startDate && endDate && {
-      block_timestamp: { lte: endDate },
-    }),
+    ...(startDate &&
+      endDate && {
+        block_timestamp: { gte: startDate, lte: endDate },
+      }),
+    ...(startDate &&
+      !endDate && {
+        block_timestamp: { gte: startDate },
+      }),
+    ...(!startDate &&
+      endDate && {
+        block_timestamp: { lte: endDate },
+      }),
   };
 
   // Group by transaction_from (facilitator address)
@@ -77,9 +80,12 @@ const listTopFacilitatorsUncached = async (
 
   // For each facilitator, get unique buyers and sellers
   const results = await Promise.all(
-    grouped.map(async (group) => {
-      const facilitatorWhere = { ...where, transaction_from: group.transaction_from };
-      
+    grouped.map(async group => {
+      const facilitatorWhere = {
+        ...where,
+        transaction_from: group.transaction_from,
+      };
+
       const [uniqueBuyers, uniqueSellers] = await Promise.all([
         transfersPrisma.transferEvent.groupBy({
           by: ['sender'],
@@ -92,8 +98,8 @@ const listTopFacilitatorsUncached = async (
       ]);
 
       // Map address to facilitator name
-      const facilitator = chainFacilitators.find(f => 
-        f.addresses.some(addr => 
+      const facilitator = chainFacilitators.find(f =>
+        f.addresses.some(addr =>
           chain === Chain.SOLANA
             ? addr === group.transaction_from
             : addr.toLowerCase() === group.transaction_from.toLowerCase()
@@ -113,7 +119,7 @@ const listTopFacilitatorsUncached = async (
   );
 
   // Sort results
-  type SortableResult = typeof results[number];
+  type SortableResult = (typeof results)[number];
   const sortKey = sorting.id as keyof SortableResult;
   results.sort((a, b) => {
     const aVal = a[sortKey];

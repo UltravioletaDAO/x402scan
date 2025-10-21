@@ -39,7 +39,9 @@ export const getFacilitatorTransfer = async (
   return {
     sender: transfer.sender,
     recipient: transfer.recipient,
-    amount: BigInt(Math.floor(transfer.amount * Math.pow(10, transfer.decimals))),
+    amount: BigInt(
+      Math.floor(transfer.amount * Math.pow(10, transfer.decimals))
+    ),
     token_address: transfer.address,
     transaction_hash: transfer.tx_hash,
     block_timestamp: transfer.block_timestamp,

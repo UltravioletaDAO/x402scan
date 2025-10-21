@@ -28,7 +28,15 @@ const getBucketedStatisticsUncached = async (
     throw new Error('Invalid input: ' + parseResult.error.message);
   }
   const parsed = applyBaseQueryDefaults(parseResult.data);
-  const { addresses, startDate, endDate, numBuckets, facilitators, tokens, chain } = parsed;
+  const {
+    addresses,
+    startDate,
+    endDate,
+    numBuckets,
+    facilitators,
+    tokens,
+    chain,
+  } = parsed;
 
   // Build the where clause for Prisma
   const where = {
@@ -39,9 +47,10 @@ const getBucketedStatisticsUncached = async (
     // Filter by facilitator addresses
     transaction_from: { in: normalizeAddresses(facilitators, chain) },
     // Optional filter by recipient addresses (sellers)
-    ...(addresses && addresses.length > 0 && {
-      recipient: { in: normalizeAddresses(addresses, chain) },
-    }),
+    ...(addresses &&
+      addresses.length > 0 && {
+        recipient: { in: normalizeAddresses(addresses, chain) },
+      }),
     // Date range filters
     block_timestamp: { gte: startDate, lte: endDate },
     // NOTE(shafu): There is one big 45k transfer that destroys the chart, so we filter it out.
@@ -70,17 +79,23 @@ const getBucketedStatisticsUncached = async (
     Math.floor(startTimestamp / bucketSizeSeconds) * bucketSizeSeconds;
 
   // Group transfers into buckets
-  const bucketMap = new Map<number, {
-    total_transactions: number;
-    total_amount: number;
-    buyers: Set<string>;
-    sellers: Set<string>;
-  }>();
+  const bucketMap = new Map<
+    number,
+    {
+      total_transactions: number;
+      total_amount: number;
+      buyers: Set<string>;
+      sellers: Set<string>;
+    }
+  >();
 
   for (const transfer of transfers) {
     const timestamp = Math.floor(transfer.block_timestamp.getTime() / 1000);
-    const bucketIndex = Math.floor((timestamp - firstBucketStartTimestamp) / bucketSizeSeconds);
-    const bucketStartTimestamp = firstBucketStartTimestamp + bucketIndex * bucketSizeSeconds;
+    const bucketIndex = Math.floor(
+      (timestamp - firstBucketStartTimestamp) / bucketSizeSeconds
+    );
+    const bucketStartTimestamp =
+      firstBucketStartTimestamp + bucketIndex * bucketSizeSeconds;
 
     if (!bucketMap.has(bucketStartTimestamp)) {
       bucketMap.set(bucketStartTimestamp, {
@@ -103,7 +118,8 @@ const getBucketedStatisticsUncached = async (
 
   // Generate all expected time buckets
   for (let i = 0; i < numBuckets; i++) {
-    const bucketStartTimestamp = firstBucketStartTimestamp + i * bucketSizeSeconds;
+    const bucketStartTimestamp =
+      firstBucketStartTimestamp + i * bucketSizeSeconds;
     const bucketStart = new Date(bucketStartTimestamp * 1000);
     const bucket = bucketMap.get(bucketStartTimestamp);
 

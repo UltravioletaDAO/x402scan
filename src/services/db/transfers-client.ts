@@ -9,12 +9,12 @@ neonConfig.webSocketConstructor = ws;
 const connectionString = env.TRANSFERS_DB_URL;
 const adapter = new PrismaNeon({ connectionString });
 
-const globalForTransfersPrisma = global as unknown as { 
-  transfersPrisma: TransfersPrismaClient 
+const globalForTransfersPrisma = global as unknown as {
+  transfersPrisma: TransfersPrismaClient;
 };
 
-export const transfersPrisma = 
-  globalForTransfersPrisma.transfersPrisma || 
+export const transfersPrisma =
+  globalForTransfersPrisma.transfersPrisma ||
   new TransfersPrismaClient({ adapter });
 
 if (process.env.NODE_ENV !== 'production') {

@@ -31,51 +31,48 @@ const getOverallStatisticsUncached = async (
     // Filter by facilitator addresses
     transaction_from: { in: normalizeAddresses(facilitators, chain) },
     // Optional filter by recipient addresses (sellers)
-    ...(addresses && addresses.length > 0 
+    ...(addresses && addresses.length > 0
       ? { recipient: { in: normalizeAddresses(addresses, chain) } }
       : {}),
     // Date range filters
-    ...(startDate && endDate 
+    ...(startDate && endDate
       ? { block_timestamp: { gte: startDate, lte: endDate } }
       : {}),
-    ...(startDate && !endDate 
-      ? { block_timestamp: { gte: startDate } }
-      : {}),
-    ...(!startDate && endDate 
-      ? { block_timestamp: { lte: endDate } }
-      : {}),
+    ...(startDate && !endDate ? { block_timestamp: { gte: startDate } } : {}),
+    ...(!startDate && endDate ? { block_timestamp: { lte: endDate } } : {}),
   };
 
   // Get aggregated data
-  const [count, aggregates, latestTransfer, uniqueBuyers, uniqueSellers] = await Promise.all([
-    // Total transactions count
-    transfersPrisma.transferEvent.count({ where }),
-    
-    // Total amount sum
-    transfersPrisma.transferEvent.aggregate({
-      where,
-      _sum: { amount: true },
-    }),
-    
-    // Latest transfer timestamp
-    transfersPrisma.transferEvent.findFirst({
-      where,
-      orderBy: { block_timestamp: 'desc' },
-      select: { block_timestamp: true },
-    }),
-    
-    // Unique buyers (distinct senders)
-    transfersPrisma.transferEvent.groupBy({
-      by: ['sender'],
-      where,
-    }),
-    
-    // Unique sellers (distinct recipients)
-    transfersPrisma.transferEvent.groupBy({
-      by: ['recipient'],
-      where,
-    }),
-  ]);
+  const [count, aggregates, latestTransfer, uniqueBuyers, uniqueSellers] =
+    await Promise.all([
+      // Total transactions count
+      transfersPrisma.transferEvent.count({ where }),
+
+      // Total amount sum
+      transfersPrisma.transferEvent.aggregate({
+        where,
+        _sum: { amount: true },
+      }),
+
+      // Latest transfer timestamp
+      transfersPrisma.transferEvent.findFirst({
+        where,
+        orderBy: { block_timestamp: 'desc' },
+        select: { block_timestamp: true },
+      }),
+
+      // Unique buyers (distinct senders)
+      transfersPrisma.transferEvent.groupBy({
+        by: ['sender'],
+        where,
+      }),
+
+      // Unique sellers (distinct recipients)
+      transfersPrisma.transferEvent.groupBy({
+        by: ['recipient'],
+        where,
+      }),
+    ]);
 
   return {
     total_transactions: count,

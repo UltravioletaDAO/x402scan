@@ -24,7 +24,7 @@ export const OverallCharts = () => {
     startDate,
     endDate,
   });
-  
+
   const [previousOverallStats] =
     api.stats.getOverallStatistics.useSuspenseQuery({
       chain,

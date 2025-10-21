@@ -31,19 +31,15 @@ export const getFirstTransferTimestamp = async (
     // Filter by facilitator addresses
     transaction_from: { in: normalizeAddresses(facilitators, chain) },
     // Optional filter by recipient addresses (sellers)
-    ...(addresses && addresses.length > 0 
+    ...(addresses && addresses.length > 0
       ? { recipient: { in: normalizeAddresses(addresses, chain) } }
       : {}),
     // Date range filters
-    ...(startDate && endDate 
+    ...(startDate && endDate
       ? { block_timestamp: { gte: startDate, lte: endDate } }
       : {}),
-    ...(startDate && !endDate 
-      ? { block_timestamp: { gte: startDate } }
-      : {}),
-    ...(!startDate && endDate 
-      ? { block_timestamp: { lte: endDate } }
-      : {}),
+    ...(startDate && !endDate ? { block_timestamp: { gte: startDate } } : {}),
+    ...(!startDate && endDate ? { block_timestamp: { lte: endDate } } : {}),
   };
 
   // Get the first transfer (earliest timestamp)

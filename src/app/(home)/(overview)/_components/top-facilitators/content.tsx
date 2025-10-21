@@ -11,7 +11,7 @@ export const TopFacilitatorsContent = () => {
   const { chain } = useChain();
 
   const [overallStats] = api.stats.getOverallStatistics.useSuspenseQuery({
-    chain
+    chain,
   });
 
   const [facilitatorsData] = api.facilitators.list.useSuspenseQuery({
@@ -72,4 +72,3 @@ const FacilitatorCardWithChart: React.FC<FacilitatorCardWithChartProps> = ({
     />
   );
 };
-

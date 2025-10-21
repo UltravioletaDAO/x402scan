@@ -1,11 +1,11 @@
-import { Chain } from "@/types/chain";
+import { Chain } from '@/types/chain';
 
 export type Facilitator = {
   id: string;
   name: string;
   image: string;
   link: string;
-  addresses: string[];  // NOTE(shafu): should be mixed address type
+  addresses: string[]; // NOTE(shafu): should be mixed address type
   color: string;
   chain: Chain;
 };

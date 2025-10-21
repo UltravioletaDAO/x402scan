@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useChain } from './hook';
-import type { Chain} from '@/types/chain';
+import type { Chain } from '@/types/chain';
 import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 import {
   Select,
@@ -16,17 +16,17 @@ export const ChainSelector = () => {
   const { chain, setChain } = useChain();
 
   return (
-    <Select 
-      value={chain} 
-      onValueChange={(value) => {
+    <Select
+      value={chain}
+      onValueChange={value => {
         setChain(value as Chain);
       }}
     >
       <SelectTrigger className="w-[140px]">
         <SelectValue>
           <div className="flex items-center gap-2">
-            <Image 
-              src={CHAIN_ICONS[chain]} 
+            <Image
+              src={CHAIN_ICONS[chain]}
               alt={CHAIN_LABELS[chain]}
               width={16}
               height={16}
@@ -39,8 +39,8 @@ export const ChainSelector = () => {
       <SelectContent>
         {Object.entries(CHAIN_LABELS).map(([value, label]) => (
           <SelectItem key={value} value={value}>
-            <Image 
-              src={CHAIN_ICONS[value as Chain]} 
+            <Image
+              src={CHAIN_ICONS[value as Chain]}
               alt={label}
               width={16}
               height={16}
