@@ -42,6 +42,7 @@ export const upsertResource = async (
   resourceInput: z.input<typeof upsertResourceSchema>
 ) => {
   const baseResource = upsertResourceSchema.parse(resourceInput);
+  // NOTE(shafu): we only support base network for now
   const baseAccepts = baseResource.accepts.find(
     accept => accept.network === 'base'
   );
