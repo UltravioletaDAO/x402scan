@@ -58,8 +58,7 @@ export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
 };
 
 export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // Base USDC
-const SOLANA_USDC_ADDRESS =
-  'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'; // Solana USDC
+const SOLANA_USDC_ADDRESS = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'; // Solana USDC
 
 export const getUSDCAddress = (chain: Chain): string[] => {
   if (chain === Chain.SOLANA) {
