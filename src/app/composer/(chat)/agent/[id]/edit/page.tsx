@@ -4,6 +4,7 @@ import { api } from '@/trpc/server';
 
 import { notFound, unauthorized } from 'next/navigation';
 import { EditAgentForm } from './_components/form';
+import { DeleteAgentButton } from './_components/delete';
 
 export default async function EditAgentPage({
   params,
@@ -31,6 +32,7 @@ export default async function EditAgentPage({
       <Heading title="Edit Agent" className="md:max-w-2xl" />
       <Body className="max-w-2xl">
         <EditAgentForm agentConfiguration={agentConfiguration} />
+        <DeleteAgentButton agentId={id} />
       </Body>
     </div>
   );
