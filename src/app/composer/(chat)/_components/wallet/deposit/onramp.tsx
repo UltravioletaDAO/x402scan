@@ -30,7 +30,7 @@ export const Onramp = () => {
   }, [amount, createOnrampSession]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 p-2">
       <MoneyInput
         setAmount={setAmount}
         placeholder="0.00"

@@ -19,6 +19,8 @@ import { api } from '@/trpc/client';
 
 import type { Address } from 'viem';
 import { useEffect, useState } from 'react';
+import { OnrampSessionDialog } from './onramp-session-dialog';
+import { useSearchParams } from 'next/navigation';
 
 interface Props {
   children: React.ReactNode;
@@ -26,105 +28,109 @@ interface Props {
 }
 
 export const WalletDialog: React.FC<Props> = ({ children, address }) => {
+  const searchParams = useSearchParams();
   const { data: usdcBalance } =
     api.user.serverWallet.usdcBaseBalance.useQuery();
 
   const [isOpen, setIsOpen] = useState(false);
-  const [tab, setTab] = useState<'wallet' | 'deposit' | 'send'>('send');
+  const [tab, setTab] = useState<'wallet' | 'deposit' | 'send'>('wallet');
 
   const isOutOfFunds = usdcBalance !== undefined && usdcBalance <= 0.01;
 
   useEffect(() => {
-    if (isOutOfFunds) {
+    if (isOutOfFunds && !searchParams.get('server_wallet_onramp_token')) {
       setTab('deposit');
       setIsOpen(true);
     }
-  }, [isOutOfFunds]);
+  }, [searchParams, isOutOfFunds]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent
-        className="p-0 overflow-hidden sm:max-w-md"
-        showCloseButton={false}
-      >
-        <Tabs
-          className="w-full overflow-hidden flex flex-col gap-4"
-          value={tab}
-          onValueChange={value =>
-            setTab(value as 'wallet' | 'deposit' | 'send')
-          }
+    <>
+      <OnrampSessionDialog />
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogContent
+          className="p-0 overflow-hidden sm:max-w-md"
+          showCloseButton={false}
         >
-          <DialogHeader className=" gap-2 bg-muted">
-            <div className="flex flex-row gap-2 items-center p-4">
-              <Logo className="size-8" />
-              <div className="flex flex-col gap-2">
-                <DialogTitle className="text-primary text-xl">
-                  Your Server Wallet
-                </DialogTitle>
-                <DialogDescription className="hidden">
-                  This is your wallet.
-                </DialogDescription>
-              </div>
-            </div>
-            <TabsList className="w-full h-fit">
-              <div className="h-[34px] border-b w-4" />
-              <TabsTrigger
-                value="wallet"
-                variant="github"
-                className="data-[state=active]:bg-background"
-              >
-                <Wallet className="size-4" /> Overview
-              </TabsTrigger>
-              <TabsTrigger
-                value="deposit"
-                variant="github"
-                className="data-[state=active]:bg-background"
-              >
-                <ArrowDown className="size-4" /> Deposit
-              </TabsTrigger>
-              <TabsTrigger
-                value="send"
-                variant="github"
-                className="data-[state=active]:bg-background"
-              >
-                <ArrowUp className="size-4" /> Send
-              </TabsTrigger>
-              <div className="h-[34px] border-b flex-1" />
-            </TabsList>
-          </DialogHeader>
-
-          <TabsContent
-            value="wallet"
-            className="px-4 w-full overflow-hidden mt-0 pb-4"
+          <Tabs
+            className="w-full overflow-hidden flex flex-col gap-4"
+            value={tab}
+            onValueChange={value =>
+              setTab(value as 'wallet' | 'deposit' | 'send')
+            }
           >
-            <WalletDisplay address={address} />
-          </TabsContent>
-          <TabsContent
-            value="deposit"
-            className="w-full overflow-hidden mt-0 flex flex-col gap-2 pb-4"
-          >
-            {isOutOfFunds && (
-              <div className="flex flex-row gap-2 items-center mx-4 border-yellow-600 border p-2 bg-yellow-600/20 rounded-md mb-2">
-                <AlertCircle className="size-4 text-yellow-600 shrink-0" />
-                <div>
-                  <p className="text-sm font-medium">Agent Out of Funds</p>
-                  <p className="text-xs">
-                    Please deposit more funds to continue.
-                  </p>
+            <DialogHeader className=" gap-2 bg-muted">
+              <div className="flex flex-row gap-2 items-center p-4">
+                <Logo className="size-8" />
+                <div className="flex flex-col gap-2">
+                  <DialogTitle className="text-primary text-xl">
+                    Your Server Wallet
+                  </DialogTitle>
+                  <DialogDescription className="hidden">
+                    This is your wallet.
+                  </DialogDescription>
                 </div>
               </div>
-            )}
-            <Deposit address={address} />
-          </TabsContent>
-          <TabsContent
-            value="send"
-            className="w-full overflow-hidden mt-0 px-4 pb-4"
-          >
-            <Send />
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+              <TabsList className="w-full h-fit">
+                <div className="h-[34px] border-b w-4" />
+                <TabsTrigger
+                  value="wallet"
+                  variant="github"
+                  className="data-[state=active]:bg-background"
+                >
+                  <Wallet className="size-4" /> Overview
+                </TabsTrigger>
+                <TabsTrigger
+                  value="deposit"
+                  variant="github"
+                  className="data-[state=active]:bg-background"
+                >
+                  <ArrowDown className="size-4" /> Deposit
+                </TabsTrigger>
+                <TabsTrigger
+                  value="send"
+                  variant="github"
+                  className="data-[state=active]:bg-background"
+                >
+                  <ArrowUp className="size-4" /> Send
+                </TabsTrigger>
+                <div className="h-[34px] border-b flex-1" />
+              </TabsList>
+            </DialogHeader>
+
+            <TabsContent
+              value="wallet"
+              className="px-4 w-full overflow-hidden mt-0 pb-4"
+            >
+              <WalletDisplay address={address} />
+            </TabsContent>
+            <TabsContent
+              value="deposit"
+              className="w-full overflow-hidden mt-0 flex flex-col gap-2 pb-4"
+            >
+              {isOutOfFunds && (
+                <div className="flex flex-row gap-2 items-center mx-4 border-yellow-600 border p-2 bg-yellow-600/20 rounded-md mb-2">
+                  <AlertCircle className="size-4 text-yellow-600 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium">Agent Out of Funds</p>
+                    <p className="text-xs">
+                      Please deposit more funds to continue.
+                    </p>
+                  </div>
+                </div>
+              )}
+              <Deposit address={address} />
+            </TabsContent>
+            <TabsContent
+              value="send"
+              className="w-full overflow-hidden mt-0 px-4 pb-4"
+            >
+              <Send />
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

@@ -1,18 +1,21 @@
 import { ETH_ADDRESS, USDC_ADDRESS } from '@/lib/utils';
 import { convertTokenAmount } from '@/lib/token';
 import { cdpClient } from './client';
-import { getWalletNameForUserId } from '@/services/db/user/server-wallets';
+import { getWalletForUserId as getWalletForUserIdDb } from '@/services/db/user/server-wallets';
 import { encodeFunctionData, erc20Abi, parseUnits } from 'viem';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import z from 'zod';
 
 export const getWalletForUserId = async (userId: string) => {
-  const walletName = await getWalletNameForUserId(userId);
+  const dbWallet = await getWalletForUserIdDb(userId);
   const wallet = await cdpClient.evm.getOrCreateAccount({
-    name: walletName,
+    name: dbWallet.walletName,
   });
 
-  return wallet;
+  return {
+    wallet,
+    id: dbWallet.id,
+  };
 };
 
 export const getUSDCBaseBalanceFromUserId = async (
@@ -20,7 +23,7 @@ export const getUSDCBaseBalanceFromUserId = async (
 ): Promise<number> => {
   const wallet = await getWalletForUserId(userId);
   const balances = await cdpClient.evm.listTokenBalances({
-    address: wallet.address,
+    address: wallet.wallet.address,
     network: 'base',
   });
 
@@ -44,7 +47,7 @@ export const getEthBaseBalanceFromUserId = async (
 ): Promise<number> => {
   const wallet = await getWalletForUserId(userId);
   const balances = await cdpClient.evm.listTokenBalances({
-    address: wallet.address,
+    address: wallet.wallet.address,
     network: 'base',
   });
 
@@ -65,7 +68,7 @@ export const getEthBaseBalanceFromUserId = async (
 
 export const getWalletAddressFromUserId = async (userId: string) => {
   const wallet = await getWalletForUserId(userId);
-  return wallet.address;
+  return wallet.wallet.address;
 };
 
 export const sendUsdcSchema = z.object({
@@ -79,7 +82,7 @@ export const sendServerWalletUSDC = async (
 ) => {
   const wallet = await getWalletForUserId(userId);
   const { amount, toAddress } = input;
-  return await wallet.sendTransaction({
+  return await wallet.wallet.sendTransaction({
     network: 'base',
     transaction: {
       to: USDC_ADDRESS as `0x${string}`,
@@ -96,7 +99,7 @@ export const sendServerWalletUSDC = async (
 export const exportWalletFromUserId = async (userId: string) => {
   const wallet = await getWalletForUserId(userId);
   return await cdpClient.evm.exportAccount({
-    address: wallet.address,
-    name: wallet.name,
+    address: wallet.wallet.address,
+    name: wallet.wallet.name,
   });
 };
