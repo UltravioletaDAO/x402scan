@@ -82,6 +82,7 @@ const ToolHeader = ({
               </div>
             )}
             loadingComponent={<Skeleton className="h-[14px] my-[3px] w-32" />}
+            errorComponent={<p>Unknown resource</p>}
           />
           <Loading
             value={resource}
@@ -92,6 +93,7 @@ const ToolHeader = ({
               </span>
             )}
             loadingComponent={<Skeleton className="h-[12px] my-[2px] w-32" />}
+            errorComponent={<p>Unknown resource</p>}
           />
         </div>
       </div>

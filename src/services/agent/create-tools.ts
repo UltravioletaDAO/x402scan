@@ -1,5 +1,8 @@
 import { parseUnits } from 'viem';
 
+import z from 'zod';
+import { tool } from 'ai';
+
 import { createToolCall } from '@/services/db/composer/tool-call';
 import { listResourcesForTools } from '@/services/db/resources/resource';
 
@@ -69,48 +72,59 @@ export async function createX402AITools({
         const method =
           parsedAccept.data.outputSchema.input.method.toUpperCase();
 
-        aiTools[resource.id] = {
+        const hasParameters = Object.keys(parametersSchema.shape).length > 0;
+
+        aiTools[resource.id] = tool({
           description: `${toolName}: ${parsedAccept.data.description} (Paid API - ${parsedAccept.data.maxAmountRequired} on ${parsedAccept.data.network})`,
-          inputSchema: parametersSchema,
-          execute: async (params: Record<string, unknown>) => {
+          inputSchema:
+            Object.keys(parametersSchema.shape).length > 0
+              ? parametersSchema
+              : z.object({ continue: z.boolean() }),
+          execute: async (params: z.infer<typeof parametersSchema>) => {
             let url = resource.resource;
             const requestInit: RequestInit = { method };
 
-            // For GET/HEAD/OPTIONS: append query params to URL
-            if (method === 'GET' || method === 'HEAD' || method === 'OPTIONS') {
-              const queryParams = new URLSearchParams();
-              for (const [key, value] of Object.entries(params)) {
-                if (value !== undefined && value !== null) {
-                  if (typeof value === 'object') {
-                    queryParams.append(key, JSON.stringify(value));
-                  } else if (typeof value === 'number') {
-                    queryParams.append(key, String(value));
-                  } else {
-                    // eslint-disable-next-line @typescript-eslint/no-base-to-string
-                    queryParams.append(key, String(value));
+            if (hasParameters) {
+              // For GET/HEAD/OPTIONS: append query params to URL
+              if (
+                method === 'GET' ||
+                method === 'HEAD' ||
+                method === 'OPTIONS'
+              ) {
+                const queryParams = new URLSearchParams();
+                for (const [key, value] of Object.entries(params)) {
+                  if (value !== undefined && value !== null) {
+                    if (typeof value === 'object') {
+                      queryParams.append(key, JSON.stringify(value));
+                    } else if (typeof value === 'number') {
+                      queryParams.append(key, String(value));
+                    } else {
+                      // eslint-disable-next-line @typescript-eslint/no-base-to-string
+                      queryParams.append(key, String(value));
+                    }
                   }
                 }
+                url = `${resource.resource}?${queryParams.toString()}`;
               }
-              url = `${resource.resource}?${queryParams.toString()}`;
-            }
-            // For POST/PUT/PATCH/DELETE: send as JSON body
-            else {
-              requestInit.body = JSON.stringify(params);
-              requestInit.headers = { 'Content-Type': 'application/json' };
-            }
+              // For POST/PUT/PATCH/DELETE: send as JSON body
+              else {
+                requestInit.body = JSON.stringify(params);
+                requestInit.headers = { 'Content-Type': 'application/json' };
+              }
 
-            if (
-              resource.requestMetadata &&
-              typeof resource.requestMetadata.headers === 'object' &&
-              resource.requestMetadata.headers !== null &&
-              !Array.isArray(resource.requestMetadata.headers) &&
-              resource.requestMetadata.headers !== undefined &&
-              Object.keys(resource.requestMetadata.headers).length > 0
-            ) {
-              requestInit.headers = {
-                ...(requestInit.headers ?? {}),
-                ...resource.requestMetadata.headers,
-              } as HeadersInit;
+              if (
+                resource.requestMetadata &&
+                typeof resource.requestMetadata.headers === 'object' &&
+                resource.requestMetadata.headers !== null &&
+                !Array.isArray(resource.requestMetadata.headers) &&
+                resource.requestMetadata.headers !== undefined &&
+                Object.keys(resource.requestMetadata.headers).length > 0
+              ) {
+                requestInit.headers = {
+                  ...(requestInit.headers ?? {}),
+                  ...resource.requestMetadata.headers,
+                } as HeadersInit;
+              }
             }
 
             try {
@@ -140,7 +154,7 @@ export async function createX402AITools({
               throw error;
             }
           },
-        };
+        });
       }
     }
   }
