@@ -91,18 +91,22 @@ export const resourcesRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
+      console.log(input);
       let parseErrorData: {
         parseErrors: string[];
         data: unknown;
       } | null = null;
 
-      for (const method of [Methods.GET, Methods.POST]) {
+      for (const method of [Methods.POST, Methods.GET]) {
         // ping resource
-        const response = await fetch(input.url, {
-          method,
-          headers: input.headers,
-          body: input.body ? JSON.stringify(input.body) : undefined,
-        });
+        const response = await fetch(
+          input.url.replace('{', '').replace('}', ''),
+          {
+            method,
+            headers: input.headers,
+            body: input.body ? JSON.stringify(input.body) : undefined,
+          }
+        );
 
         // if it doesn't respond with a 402, return error
         if (response.status !== 402) {
@@ -110,6 +114,8 @@ export const resourcesRouter = createTRPCRouter({
         }
 
         const data = (await response.json()) as unknown;
+
+        console.log(data);
 
         const result = await registerResource(input.url.toString(), data);
 

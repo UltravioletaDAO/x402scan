@@ -36,7 +36,7 @@ import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
 
 import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
-import { getAgentConfiguration } from '@/services/db/agent-config/get';
+import { getAgentConfigSystemPrompt } from '@/services/db/agent-config/get';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -172,7 +172,7 @@ export async function POST(request: NextRequest) {
     model: openai.chat(model),
     messages: convertToModelMessages(messages),
     system: agentConfigurationId
-      ? (await getAgentConfiguration(agentConfigurationId)).systemPrompt
+      ? await getAgentConfigSystemPrompt(agentConfigurationId)
       : undefined,
     stopWhen: stepCountIs(50),
     tools,
