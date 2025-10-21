@@ -33,7 +33,7 @@ export const listTopFacilitatorsInputSchema = z.object({
   tokens: z.array(mixedAddressSchema).optional(),
 });
 
-export type FacilitatorItem = {
+type FacilitatorItem = {
   facilitator_name: string;
   facilitator: Facilitator;
   tx_count: number;

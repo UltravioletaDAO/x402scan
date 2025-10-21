@@ -38,7 +38,6 @@
     "@octokit/rest": "^22.0.0",
     "@prisma/adapter-neon": "^6.16.3",
     "@prisma/client": "^6.16.2",
-    "@prisma/client-transfers": "npm:@prisma/client@^6.16.2",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-dialog": "^1.1.15",

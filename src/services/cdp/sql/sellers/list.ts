@@ -29,7 +29,7 @@ export const listTopSellersInputSchema = baseQuerySchema.extend({
   endDate: z.date().optional(),
 });
 
-export type TopSellerItem = {
+type TopSellerItem = {
   recipient: Address;
   facilitators: Address[];
   tx_count: number;

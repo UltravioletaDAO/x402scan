@@ -26,7 +26,7 @@ export const listFacilitatorTransfersInputSchema = baseQuerySchema.extend({
   }),
 });
 
-export type TransferItem = {
+type TransferItem = {
   sender: Address;
   recipient: Address;
   amount: number;
