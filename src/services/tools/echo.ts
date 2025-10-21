@@ -6,7 +6,7 @@ const getSoraVideoOutputSchema = z.object({
   completed_at: z.number().int().nullable(),
   created_at: z.number().int(),
   error: z.record(z.string(), z.any()).nullable(),
-  expires_at: z.number().int().optional(),
+  expires_at: z.number().int().nullable(),
   id: z.string(),
   model: z.string(),
   object: z.literal('video'),
