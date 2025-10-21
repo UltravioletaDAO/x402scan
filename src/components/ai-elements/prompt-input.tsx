@@ -62,7 +62,7 @@ const PromptInputTextarea = ({
         'w-full resize-none rounded-none border-none p-3 pb-2 md:pb-0 shadow-none outline-none ring-0',
         'field-sizing-content max-h-[6lh] bg-transparent dark:bg-transparent min-h-[2lh]',
         'focus-visible:ring-0',
-        'text-xs md:text-base',
+        'text-xs md:text-sm',
         className
       )}
       name="message"

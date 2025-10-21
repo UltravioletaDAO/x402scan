@@ -55,7 +55,10 @@ const SoraVideoDisplay: React.FC<{ id: string }> = ({ id }) => {
   });
 
   useEffect(() => {
-    if (task && task.status === 'completed') {
+    if (
+      task &&
+      ['completed', 'failed', 'cancelled', 'expired'].includes(task.status)
+    ) {
       setIsTaskFetched(true);
     }
   }, [task, id]);
@@ -64,12 +67,18 @@ const SoraVideoDisplay: React.FC<{ id: string }> = ({ id }) => {
     return <div className="text-destructive text-sm">{taskError.message}</div>;
   }
 
-  if (isTaskLoading || task?.status === 'in_progress') {
-    return <Skeleton className="size-48" />;
+  if (isTaskLoading || !isTaskFetched) {
+    return <Skeleton className="h-48 w-72" />;
+  }
+
+  if (task?.status !== 'completed') {
+    return (
+      <div className="text-destructive text-sm">Failed to generate video</div>
+    );
   }
 
   return (
-    <div className="max-h-48">
+    <div className="max-h-48 w-auto">
       <video
         src={`https://echo.router.merit.systems/v1/videos/${id}/content`}
         controls

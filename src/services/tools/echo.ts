@@ -14,7 +14,16 @@ const getSoraVideoOutputSchema = z.object({
   remixed_from_video_id: z.string().nullable(),
   seconds: z.string(),
   size: z.string(),
-  status: z.string(),
+  status: z.enum([
+    'queued',
+    'in_progress',
+    'completed',
+    'failed',
+    'cancelled',
+    'cancelling',
+    'expired',
+    'requires_action',
+  ]),
 });
 
 export const getSoraVideo = async (
