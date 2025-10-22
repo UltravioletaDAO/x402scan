@@ -20,7 +20,7 @@ export const WalletDialog: React.FC<Props> = ({ children }) => {
     <Dialog defaultOpen={searchParams.get('onramp') === 'true'}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
-        className="p-0 overflow-hidden sm:max-w-sm"
+        className="p-0 overflow-hidden sm:max-w-md"
         showCloseButton={false}
       >
         {address ? (

@@ -4,32 +4,16 @@ import { useState } from 'react';
 import { useExportEvmAccount } from '@coinbase/cdp-hooks';
 import { Button } from '@/components/ui/button';
 import { CopyCode } from '@/components/ui/copy-code';
-import {
-  AlertTriangle,
-  Download,
-  Eye,
-  EyeOff,
-  Loader2,
-  ArrowUp,
-} from 'lucide-react';
+import { AlertTriangle, Download, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import type { Address } from 'viem';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 
 interface Props {
   accountAddress: Address;
-  onToggleView: () => void;
 }
 
-export const ExportWallet: React.FC<Props> = ({
-  accountAddress,
-  onToggleView,
-}) => {
+export const ExportWallet: React.FC<Props> = ({ accountAddress }) => {
   const { exportEvmAccount } = useExportEvmAccount();
   const [isExporting, setIsExporting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -199,21 +183,6 @@ export const ExportWallet: React.FC<Props> = ({
           />
           <span className="font-bold text-sm">Export Wallet</span>
         </div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="size-7"
-              onClick={onToggleView}
-            >
-              <ArrowUp className="size-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Send</p>
-          </TooltipContent>
-        </Tooltip>
       </div>
       <div className="bg-yellow-600/10 border border-yellow-600/20 rounded-lg p-4 flex items-start gap-3">
         <AlertTriangle className="size-5 text-yellow-600 flex-shrink-0 mt-0.5" />
