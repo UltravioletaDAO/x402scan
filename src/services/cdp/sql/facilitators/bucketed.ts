@@ -46,7 +46,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
   const { startDate, endDate, numBuckets, tokens, chain } = parsed;
 
   const chainFacilitators = facilitators.filter(f => f.chain === chain);
-  
+
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(
     1,
@@ -59,12 +59,15 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     chain
   );
 
-  const facilitatorMapping = chainFacilitators.reduce((acc, f) => {
-    f.addresses.forEach(addr => {
-      acc[addr.toLowerCase()] = f.name;
-    });
-    return acc;
-  }, {} as Record<string, string>);
+  const facilitatorMapping = chainFacilitators.reduce(
+    (acc, f) => {
+      f.addresses.forEach(addr => {
+        acc[addr.toLowerCase()] = f.name;
+      });
+      return acc;
+    },
+    {} as Record<string, string>
+  );
 
   const sql = Prisma.sql`
     WITH all_buckets AS (
@@ -90,8 +93,9 @@ const getBucketedFacilitatorsStatisticsUncached = async (
           floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
         ) AS bucket_start,
         CASE ${Prisma.join(
-          Object.entries(facilitatorMapping).map(([addr, name]) => 
-            Prisma.sql`WHEN LOWER(t.transaction_from) = ${addr.toLowerCase()} THEN ${name}`
+          Object.entries(facilitatorMapping).map(
+            ([addr, name]) =>
+              Prisma.sql`WHEN LOWER(t.transaction_from) = ${addr.toLowerCase()} THEN ${name}`
           ),
           ' '
         )}
