@@ -121,15 +121,15 @@ export const resourcesRouter = createTRPCRouter({
             ? getFaviconUrl(og.favicon, scrapedOrigin)
             : undefined,
           ogImages:
-            og?.ogImage?.map(
-              (image: { url: string; height: number; width: number }) => ({
+            og?.ogImage
+              ?.filter((image) => image.height && image.width)
+              .map((image) => ({
                 url: image.url,
-                height: image.height,
-                width: image.width,
+                height: image.height!,
+                width: image.width!,
                 title: og.ogTitle,
                 description: og.ogDescription,
-              })
-            ) ?? [],
+              })) ?? [],
         });
 
         // upsert the resource

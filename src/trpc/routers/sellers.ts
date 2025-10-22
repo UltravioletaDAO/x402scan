@@ -63,8 +63,8 @@ export const sellersRouter = createTRPCRouter({
             }
             // Merge facilitators (deduplicated)
             for (const facilitator of item.facilitators) {
-              if (!existing.facilitators.includes(facilitator)) {
-                existing.facilitators.push(facilitator);
+              if (!existing.facilitators.includes(facilitator as FacilitatorAddress)) {
+                existing.facilitators.push(facilitator as FacilitatorAddress);
               }
             }
           } else {
@@ -72,7 +72,7 @@ export const sellersRouter = createTRPCRouter({
               originId,
               origins,
               recipients: [item.recipient],
-              facilitators: [...item.facilitators],
+              facilitators: item.facilitators as FacilitatorAddress[],
               tx_count: item.tx_count,
               total_amount: item.total_amount,
               latest_block_timestamp: item.latest_block_timestamp,
