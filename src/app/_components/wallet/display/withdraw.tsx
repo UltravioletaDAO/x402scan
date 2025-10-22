@@ -6,13 +6,14 @@ import { useWriteContract } from 'wagmi';
 import { useCallback, useState } from 'react';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { erc20Abi, parseUnits } from 'viem';
-import { BASE_USDC_ADDRESS } from '@/lib/utils';
+import { USDC_ADDRESS } from '@/lib/utils';
 import { toast } from 'sonner';
 import { Check, Loader2, Wallet } from 'lucide-react';
 import { useBalance } from '@/app/_hooks/use-balance';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEthBalance } from '@/app/_hooks/use-eth-balance';
+import { Chain } from '@/types/chain';
 
 export const Withdraw: React.FC = () => {
   const [amount, setAmount] = useState(0);
@@ -45,7 +46,7 @@ export const Withdraw: React.FC = () => {
     const parsedAddress = parseResult.data;
     writeContract(
       {
-        address: BASE_USDC_ADDRESS,
+        address: USDC_ADDRESS[Chain.BASE] as `0x${string}`,
         abi: erc20Abi,
         functionName: 'transfer',
         args: [parsedAddress, parseUnits(amount.toString(), 6)],

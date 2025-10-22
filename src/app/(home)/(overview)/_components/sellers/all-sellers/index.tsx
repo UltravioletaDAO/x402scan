@@ -15,6 +15,7 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { subMonths } from 'date-fns';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { DEFAULT_CHAIN } from '@/types/chain';
+import { ErrorBoundary } from 'react-error-boundary';
 
 export const AllSellers = async () => {
   const endDate = new Date();
@@ -40,9 +41,13 @@ export const AllSellers = async () => {
       >
         <SellersSortingProvider initialSorting={defaultSellersSorting}>
           <AllSellersContainer>
-            <Suspense fallback={<LoadingAllSellersTable />}>
-              <AllSellersTable />
-            </Suspense>
+            <ErrorBoundary
+              fallback={<p>There was an error loading the all sellers data</p>}
+            >
+              <Suspense fallback={<LoadingAllSellersTable />}>
+                <AllSellersTable />
+              </Suspense>
+            </ErrorBoundary>
           </AllSellersContainer>
         </SellersSortingProvider>
       </TimeRangeProvider>
