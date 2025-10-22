@@ -1,5 +1,6 @@
 import z from 'zod';
 import { subMonths } from 'date-fns';
+import { Prisma } from '@prisma/client';
 
 import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
 import { ethereumAddressSchema } from '@/lib/schemas';
@@ -20,6 +21,16 @@ export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   numBuckets: z.number().optional().default(48),
 });
 
+const bucketedResultSchema = z.array(
+  z.object({
+    bucket_start: z.date(),
+    total_transactions: z.number(),
+    total_amount: z.number(),
+    unique_buyers: z.number(),
+    unique_sellers: z.number(),
+  })
+);
+
 const getBucketedStatisticsUncached = async (
   input: z.input<typeof bucketedStatisticsInputSchema>
 ) => {
@@ -38,101 +49,78 @@ const getBucketedStatisticsUncached = async (
     chain,
   } = parsed;
 
-  // Build the where clause for Prisma
-  const where = {
-    // Filter by chain
-    chain: chain,
-    // Filter by token addresses
-    address: { in: normalizeAddresses(tokens, chain) },
-    // Filter by facilitator addresses
-    transaction_from: { in: normalizeAddresses(facilitators, chain) },
-    // Optional filter by recipient addresses (sellers)
-    ...(addresses &&
-      addresses.length > 0 && {
-        recipient: { in: normalizeAddresses(addresses, chain) },
-      }),
-    // Date range filters
-    block_timestamp: { gte: startDate, lte: endDate },
-    // NOTE(shafu): There is one big 45k transfer that destroys the chart, so we filter it out.
-    amount: { lt: 1000000000 },
-  };
-
-  // Get all transfers in the time range
-  const transfers = await transfersPrisma.transferEvent.findMany({
-    where,
-    select: {
-      block_timestamp: true,
-      amount: true,
-      sender: true,
-      recipient: true,
-    },
-  });
-
-  // Calculate bucket size in seconds for consistent alignment
   const timeRangeMs = endDate.getTime() - startDate.getTime();
-  const bucketSizeMs = Math.floor(timeRangeMs / numBuckets);
-  const bucketSizeSeconds = Math.max(1, Math.floor(bucketSizeMs / 1000));
+  const bucketSizeSeconds = Math.max(
+    1,
+    Math.floor(timeRangeMs / numBuckets / 1000)
+  );
 
-  // Calculate the first bucket start time aligned to the bucket size
-  const startTimestamp = Math.floor(startDate.getTime() / 1000);
-  const firstBucketStartTimestamp =
-    Math.floor(startTimestamp / bucketSizeSeconds) * bucketSizeSeconds;
+  const normalizedTokens = normalizeAddresses(tokens, chain);
+  const normalizedFacilitators = normalizeAddresses(facilitators, chain);
+  const normalizedAddresses = addresses && normalizeAddresses(addresses, chain);
+  const recipientFilter = normalizedAddresses
+    ? Prisma.sql`AND t.recipient = ANY(${normalizedAddresses}::text[])`
+    : Prisma.empty;
 
-  // Group transfers into buckets
-  const bucketMap = new Map<
-    number,
-    {
-      total_transactions: number;
-      total_amount: number;
-      buyers: Set<string>;
-      sellers: Set<string>;
-    }
-  >();
+  const sql = Prisma.sql`
+    WITH all_buckets AS (
+      SELECT generate_series(
+        to_timestamp(
+          floor(extract(epoch from ${startDate}::timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
+        ),
+        ${endDate}::timestamp,
+        (${bucketSizeSeconds} || ' seconds')::interval
+      ) AS bucket_start
+    ),
+    bucket_stats AS (
+      SELECT 
+        to_timestamp(
+          floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
+        ) AS bucket_start,
+        COUNT(*)::int AS total_transactions,
+        SUM(t.amount)::float AS total_amount,
+        COUNT(DISTINCT t.sender)::int AS unique_buyers,
+        COUNT(DISTINCT t.recipient)::int AS unique_sellers
+      FROM "TransferEvent" t
+      WHERE t.chain = ${chain}
+        AND t.address = ANY(${normalizedTokens}::text[])
+        AND t.transaction_from = ANY(${normalizedFacilitators}::text[])
+        ${recipientFilter}
+        AND t.block_timestamp >= ${startDate}
+        AND t.block_timestamp <= ${endDate}
+        AND t.amount < 1000000000
+      GROUP BY bucket_start
+    )
+    SELECT 
+      ab.bucket_start,
+      COALESCE(bs.total_transactions, 0)::int AS total_transactions,
+      COALESCE(bs.total_amount, 0)::float AS total_amount,
+      COALESCE(bs.unique_buyers, 0)::int AS unique_buyers,
+      COALESCE(bs.unique_sellers, 0)::int AS unique_sellers
+    FROM all_buckets ab
+    LEFT JOIN bucket_stats bs ON ab.bucket_start = bs.bucket_start
+    ORDER BY ab.bucket_start
+    LIMIT ${numBuckets}
+  `;
 
-  for (const transfer of transfers) {
-    const timestamp = Math.floor(transfer.block_timestamp.getTime() / 1000);
-    const bucketIndex = Math.floor(
-      (timestamp - firstBucketStartTimestamp) / bucketSizeSeconds
-    );
-    const bucketStartTimestamp =
-      firstBucketStartTimestamp + bucketIndex * bucketSizeSeconds;
+  // TODO(shafu): I need to fix this.
+  const rawResult = await transfersPrisma.$queryRaw<Array<{
+    bucket_start: Date;
+    total_transactions: number;
+    total_amount: number | string | bigint;
+    unique_buyers: number;
+    unique_sellers: number;
+  }>>(sql);
 
-    if (!bucketMap.has(bucketStartTimestamp)) {
-      bucketMap.set(bucketStartTimestamp, {
-        total_transactions: 0,
-        total_amount: 0,
-        buyers: new Set(),
-        sellers: new Set(),
-      });
-    }
+  const transformedResult = rawResult.map(row => ({
+    ...row,
+    total_amount: typeof row.total_amount === 'number' 
+      ? row.total_amount 
+      : Number(row.total_amount),
+  }));
 
-    const bucket = bucketMap.get(bucketStartTimestamp)!;
-    bucket.total_transactions++;
-    bucket.total_amount += transfer.amount;
-    bucket.buyers.add(transfer.sender);
-    bucket.sellers.add(transfer.recipient);
-  }
-
-  // Generate complete time series with zero values for missing periods
-  const completeTimeSeries = [];
-
-  // Generate all expected time buckets
-  for (let i = 0; i < numBuckets; i++) {
-    const bucketStartTimestamp =
-      firstBucketStartTimestamp + i * bucketSizeSeconds;
-    const bucketStart = new Date(bucketStartTimestamp * 1000);
-    const bucket = bucketMap.get(bucketStartTimestamp);
-
-    completeTimeSeries.push({
-      bucket_start: bucketStart,
-      total_transactions: bucket?.total_transactions ?? 0,
-      total_amount: bucket?.total_amount ?? 0,
-      unique_buyers: bucket?.buyers.size ?? 0,
-      unique_sellers: bucket?.sellers.size ?? 0,
-    });
-  }
-
-  return completeTimeSeries;
+  // Now validate with schema
+  return bucketedResultSchema.parse(transformedResult);
 };
 
 export const getBucketedStatistics = createCachedArrayQuery({
