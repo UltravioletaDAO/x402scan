@@ -63,10 +63,12 @@ export const RegisterResourceForm = () => {
       }
       void utils.resources.list.invalidate();
       void utils.origins.list.withResources.invalidate();
-      void utils.resources.getResourceByAddress.invalidate(data.accepts.payTo);
-      void utils.origins.list.withResources.byAddress.invalidate(
-        data.accepts.payTo
-      );
+      for (const accept of data.accepts) {
+        void utils.resources.getResourceByAddress.invalidate(accept.payTo);
+        void utils.origins.list.withResources.byAddress.invalidate(
+          accept.payTo
+        );
+      }
       void utils.sellers.list.bazaar.invalidate();
       if (data.enhancedParseWarnings) {
         toast.warning(
@@ -112,15 +114,7 @@ export const RegisterResourceForm = () => {
                       new URL(data.resource.origin.origin).hostname}
                   </h1>
                 </div>
-                <p className="text-lg text-primary font-bold">
-                  {data.accepts.maxAmountRequired}
-                </p>
               </div>
-              {data.accepts.description && (
-                <p className="text-sm text-muted-foreground">
-                  {data.accepts.description}
-                </p>
-              )}
             </div>
 
             {data.enhancedParseWarnings && (

@@ -12,10 +12,10 @@ import { Address, Addresses } from '@/components/ui/address';
 import { cn } from '@/lib/utils';
 
 import type { ResourceOrigin } from '@prisma/client';
-import type { Address as ViemAddress } from 'viem';
+import type { MixedAddress } from '@/types/address';
 
 interface Props {
-  addresses: ViemAddress[];
+  addresses: MixedAddress[];
   origins: ResourceOrigin[];
   disableCopy?: boolean;
 }

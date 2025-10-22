@@ -1,6 +1,7 @@
 import z from 'zod';
 
 import type { Address, Hash } from 'viem';
+import type { MixedAddress, SolanaAddress } from '@/types/address';
 
 export const ethereumAddressSchema = z
   .string()
@@ -15,10 +16,10 @@ export const ethereumHashSchema = z
 // Add a Solana address schema
 const solanaAddressSchema = z
   .string()
-  .regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/, 'Invalid Solana address');
+  .regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/, 'Invalid Solana address')
+  .transform(address => address as SolanaAddress);
 
 // Create a mixed address schema
-export const mixedAddressSchema = z.union([
-  ethereumAddressSchema,
-  solanaAddressSchema,
-]);
+export const mixedAddressSchema = z
+  .union([ethereumAddressSchema, solanaAddressSchema])
+  .transform(address => address as MixedAddress);

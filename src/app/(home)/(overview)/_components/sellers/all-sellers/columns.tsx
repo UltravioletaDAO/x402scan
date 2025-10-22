@@ -14,7 +14,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
-import type { FacilitatorAddress } from '@/lib/facilitators';
 import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/context';
 import Link from 'next/link';
 
@@ -137,7 +136,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <Facilitators
-        addresses={row.original.facilitators as FacilitatorAddress[]}
+        addresses={row.original.facilitators}
         className="mx-auto justify-center"
       />
     ),

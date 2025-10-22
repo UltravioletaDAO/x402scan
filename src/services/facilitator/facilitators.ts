@@ -10,13 +10,8 @@ const thirdwebFacilitator: FacilitatorConfig = {
   url: 'https://api.thirdweb.com/v1/payments/x402',
 };
 
-const payAiSolanaFacilitator: FacilitatorConfig = {
-  url: 'https://facilitator.payai.network',
-};
-
 export const facilitators: FacilitatorConfig[] = [
   baseFacilitator,
   payAiFacilitator,
   thirdwebFacilitator,
-  payAiSolanaFacilitator,
 ];

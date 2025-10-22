@@ -14,7 +14,7 @@ import {
 import { upsertOrigin } from '@/services/db/origin';
 import { upsertResourceResponse } from '@/services/db/resource-responses';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 import {
   EnhancedPaymentRequirementsSchema,
   parseX402Response,
@@ -34,7 +34,7 @@ export const resourcesRouter = createTRPCRouter({
       return await listResources();
     }),
     byAddress: publicProcedure
-      .input(ethereumAddressSchema)
+      .input(mixedAddressSchema)
       .query(async ({ input }) => {
         return await listResources({
           accepts: {
@@ -46,7 +46,7 @@ export const resourcesRouter = createTRPCRouter({
       }),
   },
   getResourceByAddress: publicProcedure
-    .input(ethereumAddressSchema)
+    .input(mixedAddressSchema)
     .query(async ({ input }) => {
       return await getResourceByAddress(input);
     }),
@@ -121,15 +121,13 @@ export const resourcesRouter = createTRPCRouter({
             ? getFaviconUrl(og.favicon, scrapedOrigin)
             : undefined,
           ogImages:
-            og?.ogImage
-              ?.filter(image => image.height && image.width)
-              .map(image => ({
-                url: image.url,
-                height: image.height!,
-                width: image.width!,
-                title: og.ogTitle,
-                description: og.ogDescription,
-              })) ?? [],
+            og?.ogImage?.map(image => ({
+              url: image.url,
+              height: image.height,
+              width: image.width,
+              title: og.ogTitle,
+              description: og.ogDescription,
+            })) ?? [],
         });
 
         // upsert the resource
@@ -167,12 +165,10 @@ export const resourcesRouter = createTRPCRouter({
         return {
           error: false as const,
           resource,
-          accepts: {
-            ...resource.accepts,
-            maxAmountRequired: formatTokenAmount(
-              resource.accepts.maxAmountRequired
-            ),
-          },
+          accepts: resource.accepts.map(accept => ({
+            ...accept,
+            maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
+          })),
           enhancedParseWarnings,
           response: data,
         };

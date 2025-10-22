@@ -36,7 +36,7 @@ export const statisticsRouter = createTRPCRouter({
     overallStatistics: publicProcedure
       .input(overallStatisticsInputSchema)
       .query(async ({ input }) => {
-        const originsByAddress = await getAcceptsAddresses();
+        const originsByAddress = await getAcceptsAddresses(input.chain);
         return await getOverallStatistics({
           ...input,
           addresses: Object.keys(originsByAddress),

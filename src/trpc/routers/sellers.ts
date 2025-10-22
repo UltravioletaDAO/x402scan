@@ -5,8 +5,9 @@ import {
   listTopSellersInputSchema,
 } from '@/services/cdp/sql/sellers/list';
 import { getAcceptsAddresses } from '@/services/db/accepts';
+
 import type { FacilitatorAddress } from '@/lib/facilitators';
-import type { Address } from 'viem';
+import type { MixedAddress } from '@/types/address';
 
 export const sellersRouter = createTRPCRouter({
   list: {
@@ -18,7 +19,9 @@ export const sellersRouter = createTRPCRouter({
     bazaar: infiniteQueryProcedure(z.bigint())
       .input(listTopSellersInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
-        const originsByAddress = await getAcceptsAddresses();
+        const originsByAddress = await getAcceptsAddresses(input.chain);
+
+        console.log(Object.keys(originsByAddress));
 
         const result = await listTopSellers(
           {
@@ -34,7 +37,7 @@ export const sellersRouter = createTRPCRouter({
           {
             originId: string;
             origins: (typeof originsByAddress)[string];
-            recipients: Address[];
+            recipients: MixedAddress[];
             facilitators: FacilitatorAddress[];
             tx_count: number;
             total_amount: number;
@@ -63,20 +66,16 @@ export const sellersRouter = createTRPCRouter({
             }
             // Merge facilitators (deduplicated)
             for (const facilitator of item.facilitators) {
-              if (
-                !existing.facilitators.includes(
-                  facilitator as FacilitatorAddress
-                )
-              ) {
-                existing.facilitators.push(facilitator as FacilitatorAddress);
+              if (!existing.facilitators.includes(facilitator)) {
+                existing.facilitators.push(facilitator);
               }
             }
           } else {
             originMap.set(originId, {
               originId,
               origins,
-              recipients: [item.recipient],
-              facilitators: item.facilitators as FacilitatorAddress[],
+              recipients: [item.recipient as MixedAddress],
+              facilitators: [...item.facilitators],
               tx_count: item.tx_count,
               total_amount: item.total_amount,
               latest_block_timestamp: item.latest_block_timestamp,
