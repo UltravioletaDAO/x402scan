@@ -6,7 +6,7 @@ import {
 import { sortingSchema } from '../lib';
 import z from 'zod';
 import { mixedAddressSchema } from '@/lib/schemas';
-import { getUSDCAddress } from '@/lib/utils';
+import { USDC_ADDRESS } from '@/lib/utils';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { transfersPrisma } from '@/services/db/transfers-client';
 import { Chain, DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
@@ -56,9 +56,7 @@ const listTopFacilitatorsUncached = async (
     // Filter by chain
     chain: chain,
     // Filter by token addresses
-    address: {
-      in: getUSDCAddress(chain),
-    },
+    address: USDC_ADDRESS[chain],
     // Filter by known facilitator addresses only
     transaction_from: {
       in: chainFacilitators.flatMap(f =>

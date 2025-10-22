@@ -57,14 +57,9 @@ export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
   return ((Number(current) - Number(previous)) / Number(previous)) * 100;
 };
 
-export const BASE_USDC_ADDRESS = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'; // Base USDC
-const SOLANA_USDC_ADDRESS = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'; // Solana USDC
-
-export const getUSDCAddress = (chain: Chain): string[] => {
-  if (chain === Chain.SOLANA) {
-    return [SOLANA_USDC_ADDRESS];
-  }
-  return [BASE_USDC_ADDRESS.toLowerCase()];
+export const USDC_ADDRESS: Record<Chain, string> = {
+  [Chain.BASE]: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+  [Chain.SOLANA]: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
 };
 
 export const normalizeAddress = (address: string, chain: Chain): string => {

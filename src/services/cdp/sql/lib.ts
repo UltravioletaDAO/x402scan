@@ -1,6 +1,6 @@
 import { facilitators } from '@/lib/facilitators';
 import { mixedAddressSchema } from '@/lib/schemas';
-import { getUSDCAddress } from '@/lib/utils';
+import { USDC_ADDRESS } from '@/lib/utils';
 import { DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
 import z from 'zod';
 
@@ -15,7 +15,7 @@ export const applyBaseQueryDefaults = <
     ...data,
     facilitators:
       data.facilitators ?? chainFacilitators.flatMap(f => f.addresses),
-    tokens: data.tokens ?? getUSDCAddress(data.chain),
+    tokens: data.tokens ?? [USDC_ADDRESS[data.chain]],
   } as Required<T>;
 };
 
