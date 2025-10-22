@@ -5,18 +5,32 @@ import { Button } from '@/components/ui/button';
 import { useWriteContract } from 'wagmi';
 import { useCallback, useState } from 'react';
 import { ethereumAddressSchema } from '@/lib/schemas';
+import type { Address } from 'viem';
 import { erc20Abi, parseUnits } from 'viem';
 import { USDC_ADDRESS } from '@/lib/utils';
 import { toast } from 'sonner';
-import { Check, Loader2, Wallet } from 'lucide-react';
+import { Check, Loader2, Wallet, Download } from 'lucide-react';
 import { useBalance } from '@/app/_hooks/use-balance';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEthBalance } from '@/app/_hooks/use-eth-balance';
+import { useCurrentUser } from '@coinbase/cdp-hooks';
+import { ExportWallet } from './export-wallet';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
-export const Withdraw: React.FC = () => {
+interface Props {
+  accountAddress: Address;
+}
+
+export const Withdraw: React.FC<Props> = ({ accountAddress }) => {
   const [amount, setAmount] = useState(0);
   const [address, setAddress] = useState('');
+  const [showExport, setShowExport] = useState(false);
+  const { currentUser } = useCurrentUser();
 
   const {
     data: ethBalance,
@@ -77,17 +91,45 @@ export const Withdraw: React.FC = () => {
     resetSending,
   ]);
 
+  if (showExport && currentUser) {
+    return (
+      <ExportWallet
+        accountAddress={accountAddress}
+        onToggleView={() => setShowExport(false)}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
-      <div className="gap-1 flex items-center">
-        <Image
-          src="/coinbase.png"
-          alt="Base"
-          height={16}
-          width={16}
-          className="size-4 inline-block mr-1 rounded-full"
-        />
-        <span className="font-bold text-sm">Send USDC on Base</span>
+      <div className="gap-1 flex items-center justify-between">
+        <div className="flex items-center gap-1">
+          <Image
+            src="/coinbase.png"
+            alt="Base"
+            height={16}
+            width={16}
+            className="size-4 inline-block mr-1 rounded-full"
+          />
+          <span className="font-bold text-sm">Send USDC on Base</span>
+        </div>
+        {currentUser && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-7"
+                onClick={() => setShowExport(true)}
+              >
+                <Download className="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Export</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
       </div>
       <div className="flex flex-col gap-1">
         <div className="flex justify-between">

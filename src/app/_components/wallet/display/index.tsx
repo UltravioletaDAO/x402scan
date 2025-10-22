@@ -90,7 +90,7 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
           value="withdraw"
           className="px-4 w-full overflow-hidden mt-0"
         >
-          <Withdraw />
+          <Withdraw accountAddress={address} />
         </TabsContent>
       </Tabs>
       <DialogFooter className="bg-muted border-t p-4">
