@@ -1,5 +1,6 @@
 import z from 'zod';
 import type { Address } from 'viem';
+import { Prisma } from '@prisma/client';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
@@ -58,75 +59,63 @@ const listTopSellersUncached = async (
   } = parsed;
   const { limit } = pagination;
 
-  // Build the where clause for Prisma
-  const where = {
-    // Filter by chain
-    chain: chain,
-    // Filter by token addresses
-    address: { in: normalizeAddresses(tokens, chain) },
-    // Filter by facilitator addresses
-    transaction_from: { in: normalizeAddresses(facilitators, chain) },
-    // Optional filter by recipient addresses (sellers)
-    ...(addresses && addresses.length > 0
-      ? { recipient: { in: normalizeAddresses(addresses, chain) } }
-      : {}),
-    // Date range filters
-    ...(startDate && endDate
-      ? { block_timestamp: { gte: startDate, lte: endDate } }
-      : {}),
-    ...(startDate && !endDate ? { block_timestamp: { gte: startDate } } : {}),
-    ...(!startDate && endDate ? { block_timestamp: { lte: endDate } } : {}),
+  const normalizedTokens = normalizeAddresses(tokens, chain);
+  const normalizedFacilitators = normalizeAddresses(facilitators, chain);
+  const normalizedAddresses = addresses && addresses.length > 0 
+    ? normalizeAddresses(addresses, chain) 
+    : null;
+
+  const orderByMap: Record<SellerSortId, string> = {
+    tx_count: 'tx_count',
+    total_amount: 'total_amount',
+    latest_block_timestamp: 'latest_block_timestamp',
+    unique_buyers: 'unique_buyers',
   };
+  const orderByField = orderByMap[sorting.id as SellerSortId];
+  const orderDirection = sorting.desc ? 'DESC' : 'ASC';
 
-  // Group by recipient
-  const grouped = await transfersPrisma.transferEvent.groupBy({
-    by: ['recipient'],
-    where,
-    _count: true,
-    _sum: { amount: true },
-    _max: { block_timestamp: true },
-  });
-
-  // For each seller, get unique buyers and facilitators
-  const results = await Promise.all(
-    grouped.map(async group => {
-      const sellerWhere = { ...where, recipient: group.recipient };
-
-      const [uniqueBuyers, facilitatorsList] = await Promise.all([
-        transfersPrisma.transferEvent.groupBy({
-          by: ['sender'],
-          where: sellerWhere,
-        }),
-        transfersPrisma.transferEvent.groupBy({
-          by: ['transaction_from'],
-          where: sellerWhere,
-        }),
-      ]);
-
-      return {
-        recipient: group.recipient as Address,
-        facilitators: facilitatorsList.map(f => f.transaction_from as Address),
-        tx_count: group._count,
-        total_amount: group._sum.amount ?? 0,
-        latest_block_timestamp: group._max.block_timestamp ?? new Date(),
-        unique_buyers: uniqueBuyers.length,
-      } satisfies TopSellerItem;
-    })
+  const results = await transfersPrisma.$queryRaw<
+    Array<{
+      recipient: string;
+      facilitators: string[];
+      tx_count: bigint;
+      total_amount: bigint;
+      latest_block_timestamp: Date;
+      unique_buyers: bigint;
+    }>
+  >(
+    Prisma.sql`
+      SELECT 
+        recipient,
+        ARRAY_AGG(DISTINCT transaction_from) as facilitators,
+        COUNT(*) as tx_count,
+        SUM(amount) as total_amount,
+        MAX(block_timestamp) as latest_block_timestamp,
+        COUNT(DISTINCT sender) as unique_buyers
+      FROM "TransferEvent"
+      WHERE chain = ${chain}
+        AND address = ANY(${normalizedTokens})
+        AND transaction_from = ANY(${normalizedFacilitators})
+        ${normalizedAddresses ? Prisma.sql`AND recipient = ANY(${normalizedAddresses})` : Prisma.empty}
+        ${startDate ? Prisma.sql`AND block_timestamp >= ${startDate}` : Prisma.empty}
+        ${endDate ? Prisma.sql`AND block_timestamp <= ${endDate}` : Prisma.empty}
+      GROUP BY recipient
+      ORDER BY ${Prisma.raw(orderByField)} ${Prisma.raw(orderDirection)}
+      LIMIT ${limit + 1}
+    `
   );
 
-  // Sort results in TypeScript
-  type SortableResult = (typeof results)[number];
-  const sortKey = sorting.id as keyof SortableResult;
-  results.sort((a, b) => {
-    const aVal = a[sortKey];
-    const bVal = b[sortKey];
-    const comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
-    return sorting.desc ? -comparison : comparison;
-  });
+  const formattedResults: TopSellerItem[] = results.map(row => ({
+    recipient: row.recipient as Address,
+    facilitators: row.facilitators as Address[],
+    tx_count: Number(row.tx_count),
+    total_amount: Number(row.total_amount),
+    latest_block_timestamp: row.latest_block_timestamp,
+    unique_buyers: Number(row.unique_buyers),
+  }));
 
-  // Return paginated response
   return toPaginatedResponse({
-    items: results.slice(0, limit + 1),
+    items: formattedResults,
     limit,
   });
 };
