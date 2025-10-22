@@ -24,10 +24,10 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 export const queryRaw = async <T>(sql: Sql, resultSchema: z.ZodSchema<T>) => {
-    const result = await transfersPrisma.$queryRaw<T>(sql);
-    const parseResult = resultSchema.safeParse(result);
-    if (!parseResult.success) {
-        throw new Error('Invalid result: ' + parseResult.error.message);
-    }
-    return parseResult.data;
-}
+  const result = await transfersPrisma.$queryRaw<T>(sql);
+  const parseResult = resultSchema.safeParse(result);
+  if (!parseResult.success) {
+    throw new Error('Invalid result: ' + parseResult.error.message);
+  }
+  return parseResult.data;
+};

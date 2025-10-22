@@ -104,19 +104,22 @@ const getBucketedStatisticsUncached = async (
   `;
 
   // TODO(shafu): I need to fix this.
-  const rawResult = await transfersPrisma.$queryRaw<Array<{
-    bucket_start: Date;
-    total_transactions: number;
-    total_amount: number | string | bigint;
-    unique_buyers: number;
-    unique_sellers: number;
-  }>>(sql);
+  const rawResult = await transfersPrisma.$queryRaw<
+    Array<{
+      bucket_start: Date;
+      total_transactions: number;
+      total_amount: number | string | bigint;
+      unique_buyers: number;
+      unique_sellers: number;
+    }>
+  >(sql);
 
   const transformedResult = rawResult.map(row => ({
     ...row,
-    total_amount: typeof row.total_amount === 'number' 
-      ? row.total_amount 
-      : Number(row.total_amount),
+    total_amount:
+      typeof row.total_amount === 'number'
+        ? row.total_amount
+        : Number(row.total_amount),
   }));
 
   // Now validate with schema
