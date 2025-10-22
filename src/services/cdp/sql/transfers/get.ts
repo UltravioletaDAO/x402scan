@@ -20,14 +20,12 @@ export const getFacilitatorTransfer = async (
   const parsed = applyBaseQueryDefaults(parseResult.data);
   const { transaction_hash, tokens, facilitators, chain } = parsed;
 
-  // Build the where clause for Prisma
   const where = {
     tx_hash: normalizeAddress(transaction_hash, chain),
     address: { in: normalizeAddresses(tokens, chain) },
     transaction_from: { in: normalizeAddresses(facilitators, chain) },
   };
 
-  // Get the transfer from Neon database
   const transfer = await transfersPrisma.transferEvent.findFirst({
     where,
     orderBy: { block_timestamp: 'desc' },
@@ -35,7 +33,6 @@ export const getFacilitatorTransfer = async (
 
   if (!transfer) return null;
 
-  // Map to expected output format
   return {
     sender: transfer.sender,
     recipient: transfer.recipient,
