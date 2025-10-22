@@ -32,7 +32,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
 import { DEFAULT_CHAIN } from '@/types/chain';
-import { ChainSelector } from './_contexts/chain/component';
+import { ChainSelector } from './_components/layout/navbar/chain-selector';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
