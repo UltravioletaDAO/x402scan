@@ -58,7 +58,7 @@ export const getPercentageFromBigInt = (previous: bigint, current: bigint) => {
 };
 
 export const USDC_ADDRESS: Record<Chain, string> = {
-  [Chain.BASE]: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+  [Chain.BASE]: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
   [Chain.SOLANA]: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
 };
 
