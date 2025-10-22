@@ -1,9 +1,10 @@
 import z from 'zod';
+import { Prisma } from '@prisma/client';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
-import { transfersPrisma } from '@/services/db/transfers-client';
+import { queryRaw } from '@/services/db/transfers-client';
 import { normalizeAddresses } from '@/lib/utils';
 
 export const overallStatisticsInputSchema = baseQuerySchema.extend({
@@ -11,6 +12,16 @@ export const overallStatisticsInputSchema = baseQuerySchema.extend({
   startDate: z.date().optional(),
   endDate: z.date().optional(),
 });
+
+const overallStatisticsResultSchema = z.array(
+  z.object({
+    total_transactions: z.number(),
+    total_amount: z.number(),
+    unique_buyers: z.number(),
+    unique_sellers: z.number(),
+    latest_block_timestamp: z.date().nullable(),
+  })
+);
 
 const getOverallStatisticsUncached = async (
   input: z.input<typeof overallStatisticsInputSchema>
@@ -22,64 +33,55 @@ const getOverallStatisticsUncached = async (
   const parsed = applyBaseQueryDefaults(parseResult.data);
   const { addresses, startDate, endDate, facilitators, tokens, chain } = parsed;
 
-  // Build the where clause for Prisma
-  const where = {
-    // Filter by chain
-    chain: chain,
-    // Filter by token addresses
-    address: { in: normalizeAddresses(tokens, chain) },
-    // Filter by facilitator addresses
-    transaction_from: { in: normalizeAddresses(facilitators, chain) },
-    // Optional filter by recipient addresses (sellers)
-    ...(addresses && addresses.length > 0
-      ? { recipient: { in: normalizeAddresses(addresses, chain) } }
-      : {}),
-    // Date range filters
-    ...(startDate && endDate
-      ? { block_timestamp: { gte: startDate, lte: endDate } }
-      : {}),
-    ...(startDate && !endDate ? { block_timestamp: { gte: startDate } } : {}),
-    ...(!startDate && endDate ? { block_timestamp: { lte: endDate } } : {}),
-  };
+  const normalizedTokens = normalizeAddresses(tokens, chain);
+  const normalizedFacilitators = normalizeAddresses(facilitators, chain);
+  const normalizedAddresses = addresses && normalizeAddresses(addresses, chain);
 
-  // Get aggregated data
-  const [count, aggregates, latestTransfer, uniqueBuyers, uniqueSellers] =
-    await Promise.all([
-      // Total transactions count
-      transfersPrisma.transferEvent.count({ where }),
+  const recipientFilter =
+    normalizedAddresses && normalizedAddresses.length > 0
+      ? Prisma.sql`AND t.recipient = ANY(${normalizedAddresses}::text[])`
+      : Prisma.empty;
 
-      // Total amount sum
-      transfersPrisma.transferEvent.aggregate({
-        where,
-        _sum: { amount: true },
-      }),
+  const dateFilter =
+    startDate && endDate
+      ? Prisma.sql`AND t.block_timestamp >= ${startDate} AND t.block_timestamp <= ${endDate}`
+      : startDate
+        ? Prisma.sql`AND t.block_timestamp >= ${startDate}`
+        : endDate
+          ? Prisma.sql`AND t.block_timestamp <= ${endDate}`
+          : Prisma.empty;
 
-      // Latest transfer timestamp
-      transfersPrisma.transferEvent.findFirst({
-        where,
-        orderBy: { block_timestamp: 'desc' },
-        select: { block_timestamp: true },
-      }),
+  const sql = Prisma.sql`
+    SELECT 
+      COUNT(*)::int AS total_transactions,
+      COALESCE(SUM(t.amount), 0)::float AS total_amount,
+      COUNT(DISTINCT t.sender)::int AS unique_buyers,
+      COUNT(DISTINCT t.recipient)::int AS unique_sellers,
+      MAX(t.block_timestamp) AS latest_block_timestamp
+    FROM "TransferEvent" t
+    WHERE t.chain = ${chain}
+      AND t.address = ANY(${normalizedTokens}::text[])
+      AND t.transaction_from = ANY(${normalizedFacilitators}::text[])
+      ${recipientFilter}
+      ${dateFilter}
+  `;
 
-      // Unique buyers (distinct senders)
-      transfersPrisma.transferEvent.groupBy({
-        by: ['sender'],
-        where,
-      }),
+  const result = await queryRaw(sql, overallStatisticsResultSchema);
 
-      // Unique sellers (distinct recipients)
-      transfersPrisma.transferEvent.groupBy({
-        by: ['recipient'],
-        where,
-      }),
-    ]);
+  const {
+    total_transactions = 0,
+    total_amount = 0,
+    unique_buyers = 0,
+    unique_sellers = 0,
+    latest_block_timestamp = new Date(),
+  } = result[0] ?? {};
 
   return {
-    total_transactions: count,
-    total_amount: aggregates._sum.amount ?? 0,
-    unique_buyers: uniqueBuyers.length,
-    unique_sellers: uniqueSellers.length,
-    latest_block_timestamp: latestTransfer?.block_timestamp ?? new Date(),
+    total_transactions,
+    total_amount: Number(total_amount),
+    unique_buyers,
+    unique_sellers,
+    latest_block_timestamp,
   };
 };
 
