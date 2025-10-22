@@ -2,12 +2,17 @@ import { api } from '@/trpc/server';
 import { Section } from '../utils';
 import { FacilitatorCard, LoadingFacilitatorCard } from './_components/card';
 import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 export const TopFacilitators = async () => {
   return (
-    <Suspense fallback={<LoadingTopFacilitators />}>
-      <TopFacilitatorsContent />
-    </Suspense>
+    <ErrorBoundary
+      fallback={<p>There was an error loading the top facilitators data</p>}
+    >
+      <Suspense fallback={<LoadingTopFacilitators />}>
+        <TopFacilitatorsContent />
+      </Suspense>
+    </ErrorBoundary>
   );
 };
 
