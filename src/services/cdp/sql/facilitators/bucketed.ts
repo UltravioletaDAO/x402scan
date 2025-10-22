@@ -40,7 +40,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     // Filter by known facilitator addresses
     transaction_from: {
       in: normalizeAddresses(
-        chainFacilitators.flatMap(f => f.addresses),
+        chainFacilitators.flatMap(f => f.addresses as string[]),
         chain
       ),
     },

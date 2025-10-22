@@ -1,11 +1,15 @@
 import { Chain } from '@/types/chain';
 
+export type EthereumAddress = `0x${Lowercase<string>}`;
+export type SolanaAddress = string & { readonly __brand: unique symbol };
+export type MixedAddress = EthereumAddress | SolanaAddress;
+
 export type Facilitator = {
   id: string;
   name: string;
   image: string;
   link: string;
-  addresses: string[]; // NOTE(shafu): should be mixed address type
+  addresses: MixedAddress[];
   color: string;
   chain: Chain;
 };
@@ -65,7 +69,7 @@ const payAiSolanaFacilitator = {
   name: 'PayAI Solana' as const,
   image: '/payai.png',
   link: 'https://payai.network',
-  addresses: ['2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4'],
+  addresses: ['2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4' as SolanaAddress],
   color: 'var(--color-purple-600)',
   chain: Chain.SOLANA,
 } satisfies Facilitator;
