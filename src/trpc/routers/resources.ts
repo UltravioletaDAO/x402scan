@@ -122,8 +122,8 @@ export const resourcesRouter = createTRPCRouter({
             : undefined,
           ogImages:
             og?.ogImage
-              ?.filter((image) => image.height && image.width)
-              .map((image) => ({
+              ?.filter(image => image.height && image.width)
+              .map(image => ({
                 url: image.url,
                 height: image.height!,
                 width: image.width!,
