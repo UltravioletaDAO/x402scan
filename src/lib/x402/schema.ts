@@ -44,18 +44,20 @@ const EnhancedOutputSchema = z3.object({
 
 export type EnhancedOutputSchema = z3.infer<typeof EnhancedOutputSchema>;
 
+const namedNetwork = z3.enum([
+  'base-sepolia',
+  'avalanche-fuji',
+  'base',
+  'sei',
+  'sei-testnet',
+  'avalanche',
+  'iotex',
+  'solana-devnet',
+  'solana',
+]);
+
 const EnhancedNetworkSchema = z3.union([
-  z3.enum([
-    'base-sepolia',
-    'avalanche-fuji',
-    'base',
-    'sei',
-    'sei-testnet',
-    'avalanche',
-    'iotex',
-    'solana-devnet',
-    'solana',
-  ]),
+  namedNetwork,
   z3
     .string()
     .refine(
