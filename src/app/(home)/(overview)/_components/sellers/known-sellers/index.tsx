@@ -18,6 +18,7 @@ import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 import { DEFAULT_CHAIN } from '@/types/chain';
+import { ErrorBoundary } from 'react-error-boundary';
 
 export const TopServers = async () => {
   const endDate = new Date();
@@ -47,9 +48,15 @@ export const TopServers = async () => {
           initialTimeframe={ActivityTimeframe.ThirtyDays}
         >
           <TopServersContainer>
-            <Suspense fallback={<LoadingKnownSellersTable />}>
-              <KnownSellersTable />
-            </Suspense>
+            <ErrorBoundary
+              fallback={
+                <p>There was an error loading the known sellers data</p>
+              }
+            >
+              <Suspense fallback={<LoadingKnownSellersTable />}>
+                <KnownSellersTable />
+              </Suspense>
+            </ErrorBoundary>
           </TopServersContainer>
         </TimeRangeProvider>
       </SellersSortingProvider>
