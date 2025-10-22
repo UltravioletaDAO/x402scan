@@ -142,7 +142,7 @@ export const resourcesRouter = createTRPCRouter({
               ...accept,
               network: accept.network.replace('-', '_') as AcceptsNetwork,
               maxAmountRequired: accept.maxAmountRequired,
-              outputSchema: accept.outputSchema as EnhancedOutputSchema,
+              outputSchema: accept.outputSchema!,
               extra: accept.extra,
             })) ?? [],
         });

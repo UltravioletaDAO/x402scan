@@ -66,8 +66,6 @@ const EnhancedNetworkSchema = z3.union([
     .transform(v => ChainIdToNetwork[Number(v.split(':')[1])]),
 ]);
 
-export type EnhancedNetworkSchema = z3.infer<typeof EnhancedNetworkSchema>;
-
 export const EnhancedPaymentRequirementsSchema =
   PaymentRequirementsSchema.extend({
     network: EnhancedNetworkSchema,
