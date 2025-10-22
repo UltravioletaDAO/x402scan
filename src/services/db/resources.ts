@@ -9,8 +9,6 @@ import type { Chain } from '@/types/chain';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 import { ChainIdToNetwork } from 'x402/types';
 
-console.log(ChainIdToNetwork);
-
 export const upsertResourceSchema = z.object({
   resource: z.string(),
   type: z.enum(['http']),

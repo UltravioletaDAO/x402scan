@@ -1,8 +1,6 @@
 import { Chain } from '@/types/chain';
 
-type EthereumAddress = `0x${Lowercase<string>}`;
-type SolanaAddress = string & { readonly __brand: unique symbol };
-type MixedAddress = EthereumAddress | SolanaAddress;
+import type { MixedAddress, SolanaAddress } from '@/types/address';
 
 export type Facilitator = {
   id: string;
@@ -69,7 +67,9 @@ const payAiSolanaFacilitator = {
   name: 'PayAI Solana' as const,
   image: '/payai.png',
   link: 'https://payai.network',
-  addresses: ['2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4' as SolanaAddress],
+  addresses: [
+    '2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4',
+  ] as SolanaAddress[],
   color: 'var(--color-purple-600)',
   chain: Chain.SOLANA,
 } satisfies Facilitator;

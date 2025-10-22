@@ -1,8 +1,7 @@
 import z from 'zod';
-import type { Address } from 'viem';
 import { Prisma } from '@prisma/client';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
@@ -13,6 +12,7 @@ import {
 } from '@/lib/cache';
 import { queryRaw } from '@/services/db/transfers-client';
 import { normalizeAddresses } from '@/lib/utils';
+import type { FacilitatorAddress } from '@/lib/facilitators';
 
 const sellerSortIds = [
   'tx_count',
@@ -25,19 +25,10 @@ export type SellerSortId = (typeof sellerSortIds)[number];
 
 export const listTopSellersInputSchema = baseQuerySchema.extend({
   sorting: sortingSchema(sellerSortIds),
-  addresses: z.array(ethereumAddressSchema).optional(),
+  addresses: z.array(mixedAddressSchema).optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
 });
-
-type TopSellerItem = {
-  recipient: Address;
-  facilitators: Address[];
-  tx_count: number;
-  total_amount: number;
-  latest_block_timestamp: Date;
-  unique_buyers: number;
-};
 
 const listTopSellersUncached = async (
   input: z.input<typeof listTopSellersInputSchema>,
@@ -79,10 +70,10 @@ const listTopSellersUncached = async (
     SELECT 
       recipient,
       ARRAY_AGG(DISTINCT transaction_from) as facilitators,
-      COUNT(*) as tx_count,
-      SUM(amount) as total_amount,
+      COUNT(*)::bigint as tx_count,
+      SUM(amount)::bigint as total_amount,
       MAX(block_timestamp) as latest_block_timestamp,
-      COUNT(DISTINCT sender) as unique_buyers
+      COUNT(DISTINCT sender)::bigint as unique_buyers
     FROM "TransferEvent"
     WHERE chain = ${chain}
       AND address = ANY(${normalizedTokens})
@@ -99,8 +90,10 @@ const listTopSellersUncached = async (
     sql,
     z.array(
       z.object({
-        recipient: z.string(),
-        facilitators: z.array(z.string()),
+        recipient: mixedAddressSchema,
+        facilitators: z
+          .array(mixedAddressSchema)
+          .transform(addresses => addresses as FacilitatorAddress[]),
         tx_count: z.bigint(),
         total_amount: z.bigint(),
         latest_block_timestamp: z.date(),
@@ -109,9 +102,8 @@ const listTopSellersUncached = async (
     )
   );
 
-  const formattedResults: TopSellerItem[] = rawResults.map(row => ({
-    recipient: row.recipient as Address,
-    facilitators: row.facilitators as Address[],
+  const formattedResults = rawResults.map(row => ({
+    ...row,
     tx_count: Number(row.tx_count),
     total_amount: Number(row.total_amount),
     latest_block_timestamp: row.latest_block_timestamp,

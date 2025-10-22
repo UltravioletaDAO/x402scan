@@ -1,7 +1,6 @@
 import z from 'zod';
-import type { Address } from 'viem';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 import { baseQuerySchema, sortingSchema, applyBaseQueryDefaults } from '../lib';
 import {
@@ -10,13 +9,15 @@ import {
 } from '@/lib/cache';
 import { transfersPrisma } from '@/services/db/transfers-client';
 import { normalizeAddresses, normalizeAddress } from '@/lib/utils';
+import type { MixedAddress } from '@/types/address';
+import type { FacilitatorAddress } from '@/lib/facilitators';
 
 const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 
 export type TransfersSortId = (typeof listFacilitatorTransfersSortIds)[number];
 
 export const listFacilitatorTransfersInputSchema = baseQuerySchema.extend({
-  recipient: ethereumAddressSchema.optional(),
+  recipient: mixedAddressSchema.optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   limit: z.number().default(100),
@@ -75,11 +76,11 @@ const listFacilitatorTransfersUncached = async (
 
   // Map to expected output format
   const items = transfers.map(transfer => ({
-    sender: transfer.sender as Address,
-    recipient: transfer.recipient as Address,
+    sender: transfer.sender as MixedAddress,
+    recipient: transfer.recipient as MixedAddress,
     amount: transfer.amount,
-    token_address: transfer.address as Address,
-    transaction_from: transfer.transaction_from as Address,
+    token_address: transfer.address as MixedAddress,
+    transaction_from: transfer.transaction_from as FacilitatorAddress,
     transaction_hash: transfer.tx_hash,
     block_timestamp: transfer.block_timestamp,
   }));

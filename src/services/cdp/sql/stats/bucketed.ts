@@ -3,13 +3,13 @@ import { subMonths } from 'date-fns';
 import { Prisma } from '@prisma/client';
 
 import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/db/transfers-client';
 import { normalizeAddresses } from '@/lib/utils';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
-  addresses: z.array(ethereumAddressSchema).optional(),
+  addresses: z.array(mixedAddressSchema).optional(),
   startDate: z
     .date()
     .optional()

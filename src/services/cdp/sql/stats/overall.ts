@@ -1,13 +1,13 @@
 import z from 'zod';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
 import { createCachedQuery, createStandardCacheKey } from '@/lib/cache';
 import { transfersPrisma } from '@/services/db/transfers-client';
 import { normalizeAddresses } from '@/lib/utils';
 
 export const overallStatisticsInputSchema = baseQuerySchema.extend({
-  addresses: z.array(ethereumAddressSchema).optional(),
+  addresses: z.array(mixedAddressSchema).optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
 });

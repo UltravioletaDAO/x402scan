@@ -1,6 +1,7 @@
 import { unstable_cache } from 'next/cache';
 import type { ResourceOrigin } from '@prisma/client';
 import { prisma } from './client';
+import { mixedAddressSchema } from '@/lib/schemas';
 
 const getAcceptsAddressesUncached = async () => {
   const accepts = await prisma.accepts.findMany({
@@ -14,25 +15,27 @@ const getAcceptsAddressesUncached = async () => {
     },
   });
 
-  return accepts.reduce(
-    (acc, accept) => {
-      if (!accept.payTo) {
-        return acc;
-      }
-      if (acc[accept.payTo]) {
-        const existingOrigin = acc[accept.payTo].find(
-          origin => origin.id === accept.resourceRel.origin.id
-        );
-        if (!existingOrigin) {
-          acc[accept.payTo].push(accept.resourceRel.origin);
+  return accepts
+    .filter(accept => mixedAddressSchema.safeParse(accept.payTo).success)
+    .reduce(
+      (acc, accept) => {
+        if (!accept.payTo) {
+          return acc;
         }
-      } else {
-        acc[accept.payTo] = [accept.resourceRel.origin];
-      }
-      return acc;
-    },
-    {} as Record<string, Array<ResourceOrigin>>
-  );
+        if (acc[accept.payTo]) {
+          const existingOrigin = acc[accept.payTo].find(
+            origin => origin.id === accept.resourceRel.origin.id
+          );
+          if (!existingOrigin) {
+            acc[accept.payTo].push(accept.resourceRel.origin);
+          }
+        } else {
+          acc[accept.payTo] = [accept.resourceRel.origin];
+        }
+        return acc;
+      },
+      {} as Record<string, Array<ResourceOrigin>>
+    );
 };
 
 export const getAcceptsAddresses = async () => {

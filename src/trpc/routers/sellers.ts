@@ -5,8 +5,9 @@ import {
   listTopSellersInputSchema,
 } from '@/services/cdp/sql/sellers/list';
 import { getAcceptsAddresses } from '@/services/db/accepts';
+
 import type { FacilitatorAddress } from '@/lib/facilitators';
-import type { Address } from 'viem';
+import type { MixedAddress } from '@/types/address';
 
 export const sellersRouter = createTRPCRouter({
   list: {
@@ -34,7 +35,7 @@ export const sellersRouter = createTRPCRouter({
           {
             originId: string;
             origins: (typeof originsByAddress)[string];
-            recipients: Address[];
+            recipients: MixedAddress[];
             facilitators: FacilitatorAddress[];
             tx_count: number;
             total_amount: number;
@@ -71,7 +72,7 @@ export const sellersRouter = createTRPCRouter({
             originMap.set(originId, {
               originId,
               origins,
-              recipients: [item.recipient],
+              recipients: [item.recipient as MixedAddress],
               facilitators: [...item.facilitators],
               tx_count: item.tx_count,
               total_amount: item.total_amount,
