@@ -61,9 +61,10 @@ const listTopSellersUncached = async (
 
   const normalizedTokens = normalizeAddresses(tokens, chain);
   const normalizedFacilitators = normalizeAddresses(facilitators, chain);
-  const normalizedAddresses = addresses && addresses.length > 0 
-    ? normalizeAddresses(addresses, chain) 
-    : null;
+  const normalizedAddresses =
+    addresses && addresses.length > 0
+      ? normalizeAddresses(addresses, chain)
+      : null;
 
   const orderByMap: Record<SellerSortId, string> = {
     tx_count: 'tx_count',
@@ -94,14 +95,19 @@ const listTopSellersUncached = async (
     LIMIT ${limit + 1}
   `;
 
-  const rawResults = await queryRaw(sql, z.array(z.object({
-    recipient: z.string(),
-    facilitators: z.array(z.string()),
-    tx_count: z.bigint(),
-    total_amount: z.bigint(),
-    latest_block_timestamp: z.date(),
-    unique_buyers: z.bigint(),
-  })));
+  const rawResults = await queryRaw(
+    sql,
+    z.array(
+      z.object({
+        recipient: z.string(),
+        facilitators: z.array(z.string()),
+        tx_count: z.bigint(),
+        total_amount: z.bigint(),
+        latest_block_timestamp: z.date(),
+        unique_buyers: z.bigint(),
+      })
+    )
+  );
 
   const formattedResults: TopSellerItem[] = rawResults.map(row => ({
     recipient: row.recipient as Address,

@@ -1,8 +1,8 @@
 import { Chain } from '@/types/chain';
 
-export type EthereumAddress = `0x${Lowercase<string>}`;
-export type SolanaAddress = string & { readonly __brand: unique symbol };
-export type MixedAddress = EthereumAddress | SolanaAddress;
+type EthereumAddress = `0x${Lowercase<string>}`;
+type SolanaAddress = string & { readonly __brand: unique symbol };
+type MixedAddress = EthereumAddress | SolanaAddress;
 
 export type Facilitator = {
   id: string;

@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/db/transfers-client'
+import { queryRaw } from '@/services/db/transfers-client';
 import { normalizeAddresses } from '@/lib/utils';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
@@ -102,7 +102,6 @@ const getBucketedStatisticsUncached = async (
     ORDER BY ab.bucket_start
     LIMIT ${numBuckets}
   `;
-
 
   const rawResult = await queryRaw(sql, bucketedResultSchema);
 
