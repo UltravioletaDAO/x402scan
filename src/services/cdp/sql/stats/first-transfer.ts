@@ -1,9 +1,10 @@
 import z from 'zod';
+import { Prisma } from '@prisma/client';
 
 import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
 
 import { mixedAddressSchema } from '@/lib/schemas';
-import { transfersPrisma } from '@/services/db/transfers-client';
+import { queryRaw } from '@/services/db/transfers-client';
 import { normalizeAddresses } from '@/lib/utils';
 
 export const getFirstTransferTimestampInputSchema = baseQuerySchema.extend({
@@ -11,6 +12,12 @@ export const getFirstTransferTimestampInputSchema = baseQuerySchema.extend({
   startDate: z.date().optional(),
   endDate: z.date().optional(),
 });
+
+const firstTransferResultSchema = z.array(
+  z.object({
+    block_timestamp: z.date(),
+  })
+);
 
 export const getFirstTransferTimestamp = async (
   input: z.input<typeof getFirstTransferTimestampInputSchema>
@@ -22,32 +29,37 @@ export const getFirstTransferTimestamp = async (
   const parsed = applyBaseQueryDefaults(parseResult.data);
   const { addresses, startDate, endDate, facilitators, tokens, chain } = parsed;
 
-  // Build the where clause for Prisma
-  const where = {
-    // Filter by chain
-    chain: chain,
-    // Filter by token addresses
-    address: { in: normalizeAddresses(tokens, chain) },
-    // Filter by facilitator addresses
-    transaction_from: { in: normalizeAddresses(facilitators, chain) },
-    // Optional filter by recipient addresses (sellers)
-    ...(addresses && addresses.length > 0
-      ? { recipient: { in: normalizeAddresses(addresses, chain) } }
-      : {}),
-    // Date range filters
-    ...(startDate && endDate
-      ? { block_timestamp: { gte: startDate, lte: endDate } }
-      : {}),
-    ...(startDate && !endDate ? { block_timestamp: { gte: startDate } } : {}),
-    ...(!startDate && endDate ? { block_timestamp: { lte: endDate } } : {}),
-  };
+  const normalizedTokens = normalizeAddresses(tokens, chain);
+  const normalizedFacilitators = normalizeAddresses(facilitators, chain);
+  const normalizedAddresses = addresses && normalizeAddresses(addresses, chain);
 
-  // Get the first transfer (earliest timestamp)
-  const firstTransfer = await transfersPrisma.transferEvent.findFirst({
-    where,
-    orderBy: { block_timestamp: 'asc' },
-    select: { block_timestamp: true },
-  });
+  const recipientFilter =
+    normalizedAddresses && normalizedAddresses.length > 0
+      ? Prisma.sql`AND t.recipient = ANY(${normalizedAddresses}::text[])`
+      : Prisma.empty;
 
-  return firstTransfer?.block_timestamp ?? null;
+  const dateFilter =
+    startDate && endDate
+      ? Prisma.sql`AND t.block_timestamp >= ${startDate} AND t.block_timestamp <= ${endDate}`
+      : startDate
+        ? Prisma.sql`AND t.block_timestamp >= ${startDate}`
+        : endDate
+          ? Prisma.sql`AND t.block_timestamp <= ${endDate}`
+          : Prisma.empty;
+
+  const sql = Prisma.sql`
+    SELECT t.block_timestamp
+    FROM "TransferEvent" t
+    WHERE t.chain = ${chain}
+      AND t.address = ANY(${normalizedTokens}::text[])
+      AND t.transaction_from = ANY(${normalizedFacilitators}::text[])
+      ${recipientFilter}
+      ${dateFilter}
+    ORDER BY t.block_timestamp ASC
+    LIMIT 1
+  `;
+
+  const result = await queryRaw(sql, firstTransferResultSchema);
+
+  return result[0]?.block_timestamp ?? null;
 };

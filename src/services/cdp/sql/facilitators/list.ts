@@ -6,10 +6,11 @@ import {
 import { sortingSchema } from '../lib';
 import z from 'zod';
 import { mixedAddressSchema } from '@/lib/schemas';
-import { USDC_ADDRESS } from '@/lib/utils';
+import { USDC_ADDRESS, normalizeAddresses } from '@/lib/utils';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { transfersPrisma } from '@/services/db/transfers-client';
+import { queryRaw } from '@/services/db/transfers-client';
 import { Chain, DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
+import { Prisma } from '@prisma/client';
 
 const listTopFacilitatorsSortIds = [
   'tx_count',
@@ -43,6 +44,17 @@ type FacilitatorItem = {
   unique_sellers: number;
 };
 
+const facilitatorRowSchema = z.object({
+  transaction_from: z.string(),
+  tx_count: z.number(),
+  total_amount: z.number(),
+  latest_block_timestamp: z.date(),
+  unique_buyers: z.number(),
+  unique_sellers: z.number(),
+});
+
+const facilitatorResultSchema = z.array(facilitatorRowSchema);
+
 const listTopFacilitatorsUncached = async (
   input: z.input<typeof listTopFacilitatorsInputSchema>
 ) => {
@@ -50,98 +62,76 @@ const listTopFacilitatorsUncached = async (
   const { startDate, endDate, limit, sorting, chain } = parsed;
 
   const chainFacilitators = facilitators.filter(f => f.chain === chain);
-
-  // Build the where clause for Prisma
-  const where = {
-    // Filter by chain
-    chain: chain,
-    // Filter by token addresses
-    address: USDC_ADDRESS[chain],
-    // Filter by known facilitator addresses only
-    transaction_from: {
-      in: chainFacilitators.flatMap(f =>
-        // Only lowercase for non-Solana chains
-        chain === Chain.SOLANA
-          ? f.addresses
-          : f.addresses.map(a => a.toLowerCase())
-      ),
-    },
-    // Date range filters
-    ...(startDate &&
-      endDate && {
-        block_timestamp: { gte: startDate, lte: endDate },
-      }),
-    ...(startDate &&
-      !endDate && {
-        block_timestamp: { gte: startDate },
-      }),
-    ...(!startDate &&
-      endDate && {
-        block_timestamp: { lte: endDate },
-      }),
-  };
-
-  // Group by transaction_from (facilitator address)
-  const grouped = await transfersPrisma.transferEvent.groupBy({
-    by: ['transaction_from'],
-    where,
-    _count: true,
-    _sum: { amount: true },
-    _max: { block_timestamp: true },
-  });
-
-  // For each facilitator, get unique buyers and sellers
-  const results = await Promise.all(
-    grouped.map(async group => {
-      const facilitatorWhere = {
-        ...where,
-        transaction_from: group.transaction_from,
-      };
-
-      const [uniqueBuyers, uniqueSellers] = await Promise.all([
-        transfersPrisma.transferEvent.groupBy({
-          by: ['sender'],
-          where: facilitatorWhere,
-        }),
-        transfersPrisma.transferEvent.groupBy({
-          by: ['recipient'],
-          where: facilitatorWhere,
-        }),
-      ]);
-
-      // Map address to facilitator name
-      const facilitator = chainFacilitators.find(f =>
-        f.addresses.some(addr =>
-          chain === Chain.SOLANA
-            ? addr === group.transaction_from
-            : addr.toLowerCase() === group.transaction_from.toLowerCase()
-        )
-      );
-
-      return {
-        facilitator_name: facilitator?.name ?? ('Unknown' as const),
-        facilitator: facilitator ?? facilitatorNameMap.get('Coinbase')!,
-        tx_count: group._count,
-        total_amount: group._sum.amount ?? 0,
-        latest_block_timestamp: group._max.block_timestamp ?? new Date(),
-        unique_buyers: uniqueBuyers.length,
-        unique_sellers: uniqueSellers.length,
-      } satisfies FacilitatorItem;
-    })
+  const normalizedFacilitatorAddresses = normalizeAddresses(
+    chainFacilitators.flatMap(f => f.addresses as string[]),
+    chain
   );
 
-  // Sort results
-  type SortableResult = (typeof results)[number];
-  const sortKey = sorting.id as keyof SortableResult;
-  results.sort((a, b) => {
-    const aVal = a[sortKey];
-    const bVal = b[sortKey];
-    const comparison = aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
-    return sorting.desc ? -comparison : comparison;
+  // Build date filters
+  const dateFilter =
+    startDate && endDate
+      ? Prisma.sql`AND t.block_timestamp >= ${startDate} AND t.block_timestamp <= ${endDate}`
+      : startDate
+        ? Prisma.sql`AND t.block_timestamp >= ${startDate}`
+        : endDate
+          ? Prisma.sql`AND t.block_timestamp <= ${endDate}`
+          : Prisma.empty;
+
+  const sortColumnMap: Record<FacilitatorsSortId, string> = {
+    tx_count: 'tx_count',
+    total_amount: 'total_amount',
+    latest_block_timestamp: 'latest_block_timestamp',
+    unique_buyers: 'unique_buyers',
+    unique_sellers: 'unique_sellers',
+  };
+  const sortColumn = sortColumnMap[sorting.id as FacilitatorsSortId];
+  const sortDirection = Prisma.raw(sorting.desc ? 'DESC' : 'ASC');
+
+  const sql = Prisma.sql`
+    SELECT 
+      t.transaction_from,
+      COUNT(*)::int AS tx_count,
+      SUM(t.amount)::float AS total_amount,
+      MAX(t.block_timestamp) AS latest_block_timestamp,
+      COUNT(DISTINCT t.sender)::int AS unique_buyers,
+      COUNT(DISTINCT t.recipient)::int AS unique_sellers
+    FROM "TransferEvent" t
+    WHERE t.chain = ${chain}
+      AND t.address = ${USDC_ADDRESS[chain]}
+      AND t.transaction_from = ANY(${normalizedFacilitatorAddresses}::text[])
+      ${dateFilter}
+    GROUP BY t.transaction_from
+    ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
+    LIMIT ${limit}
+  `;
+
+  const rawResult = await queryRaw(sql, facilitatorResultSchema);
+
+  // Map results to include facilitator objects
+  const results: FacilitatorItem[] = rawResult.map(row => {
+    const facilitator = chainFacilitators.find(f =>
+      f.addresses.some(addr =>
+        chain === Chain.SOLANA
+          ? addr === row.transaction_from
+          : addr.toLowerCase() === row.transaction_from.toLowerCase()
+      )
+    );
+
+    return {
+      facilitator_name: facilitator?.name ?? ('Unknown' as const),
+      facilitator: facilitator ?? facilitatorNameMap.get('Coinbase')!,
+      tx_count: row.tx_count,
+      total_amount:
+        typeof row.total_amount === 'number'
+          ? row.total_amount
+          : Number(row.total_amount),
+      latest_block_timestamp: row.latest_block_timestamp,
+      unique_buyers: row.unique_buyers,
+      unique_sellers: row.unique_sellers,
+    };
   });
 
-  // Return limited results
-  return results.slice(0, limit);
+  return results;
 };
 
 export const listTopFacilitators = createCachedArrayQuery({
