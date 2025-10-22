@@ -18,7 +18,6 @@ import { formatTokenAmount } from '@/lib/token';
 
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
-import type { FacilitatorAddress } from '@/lib/facilitators';
 import { TransfersSortingContext } from '@/app/_contexts/sorting/transfers/context';
 
 type ColumnType = RouterOutputs['transfers']['list']['items'][number];
@@ -121,7 +120,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <Facilitator
-        address={row.original.transaction_from as FacilitatorAddress}
+        address={row.original.transaction_from}
         className="mx-auto justify-center"
       />
     ),

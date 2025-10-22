@@ -20,12 +20,17 @@ export const Seller: React.FC<Props> = ({
   addressClassName,
   disableCopy,
 }) => {
-  const { data: origins, isLoading } = api.origins.list.byAddress.useQuery(
-    address,
-    {
-      enabled: !!address,
-    }
-  );
+  const {
+    data: origins,
+    isLoading,
+    error,
+  } = api.origins.list.byAddress.useQuery(address, {
+    enabled: !!address,
+  });
+
+  if (error) {
+    console.log(address);
+  }
 
   if (isLoading) {
     return <SellerSkeleton />;

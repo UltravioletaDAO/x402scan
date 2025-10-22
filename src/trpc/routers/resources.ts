@@ -14,7 +14,7 @@ import {
 import { upsertOrigin } from '@/services/db/origin';
 import { upsertResourceResponse } from '@/services/db/resource-responses';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 import {
   EnhancedPaymentRequirementsSchema,
   parseX402Response,
@@ -34,7 +34,7 @@ export const resourcesRouter = createTRPCRouter({
       return await listResources();
     }),
     byAddress: publicProcedure
-      .input(ethereumAddressSchema)
+      .input(mixedAddressSchema)
       .query(async ({ input }) => {
         return await listResources({
           accepts: {
@@ -46,7 +46,7 @@ export const resourcesRouter = createTRPCRouter({
       }),
   },
   getResourceByAddress: publicProcedure
-    .input(ethereumAddressSchema)
+    .input(mixedAddressSchema)
     .query(async ({ input }) => {
       return await getResourceByAddress(input);
     }),

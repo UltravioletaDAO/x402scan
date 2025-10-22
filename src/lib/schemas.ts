@@ -17,7 +17,7 @@ export const ethereumHashSchema = z
 const solanaAddressSchema = z
   .string()
   .regex(/^[1-9A-HJ-NP-Za-km-z]{32,44}$/, 'Invalid Solana address')
-  .transform(address => address.toLowerCase() as SolanaAddress);
+  .transform(address => address as SolanaAddress);
 
 // Create a mixed address schema
 export const mixedAddressSchema = z

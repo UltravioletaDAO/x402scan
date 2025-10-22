@@ -19,7 +19,9 @@ export const sellersRouter = createTRPCRouter({
     bazaar: infiniteQueryProcedure(z.bigint())
       .input(listTopSellersInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
-        const originsByAddress = await getAcceptsAddresses();
+        const originsByAddress = await getAcceptsAddresses(input.chain);
+
+        console.log(Object.keys(originsByAddress));
 
         const result = await listTopSellers(
           {
