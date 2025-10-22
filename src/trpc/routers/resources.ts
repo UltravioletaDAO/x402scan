@@ -121,7 +121,7 @@ export const resourcesRouter = createTRPCRouter({
             ? getFaviconUrl(og.favicon, scrapedOrigin)
             : undefined,
           ogImages:
-            og?.ogImage?.map(image => ({
+            og?.ogImage?.map((image: { url: string; height: number; width: number }) => ({
               url: image.url,
               height: image.height,
               width: image.width,
