@@ -30,9 +30,8 @@ export const cdpFetch = async <T>(
   });
 
   if (!response.ok) {
-    const errorText = await response.text();
     throw new Error(
-      `Failed to ${requestMethod} ${requestPath} from ${requestHost}: ${errorText}`
+      `Failed to ${requestMethod} ${requestPath} from ${requestHost}: ${response.status}`
     );
   }
   return outputSchema.parse(await response.json());
