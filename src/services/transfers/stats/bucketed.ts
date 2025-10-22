@@ -2,11 +2,10 @@ import z from 'zod';
 import { subMonths } from 'date-fns';
 import { Prisma } from '@prisma/client';
 
-import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
+import { baseQuerySchema } from '../lib';
 import { mixedAddressSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/db/transfers-client';
-import { normalizeAddresses } from '@/lib/utils';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   addresses: z.array(mixedAddressSchema).optional(),
@@ -19,6 +18,7 @@ export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
     .optional()
     .default(() => new Date()),
   numBuckets: z.number().optional().default(48),
+  facilitators: z.array(mixedAddressSchema).optional(),
 });
 
 const bucketedResultSchema = z.array(
@@ -32,35 +32,16 @@ const bucketedResultSchema = z.array(
 );
 
 const getBucketedStatisticsUncached = async (
-  input: z.input<typeof bucketedStatisticsInputSchema>
+  input: z.infer<typeof bucketedStatisticsInputSchema>
 ) => {
-  const parseResult = bucketedStatisticsInputSchema.safeParse(input);
-  if (!parseResult.success) {
-    throw new Error('Invalid input: ' + parseResult.error.message);
-  }
-  const parsed = applyBaseQueryDefaults(parseResult.data);
-  const {
-    addresses,
-    startDate,
-    endDate,
-    numBuckets,
-    facilitators,
-    tokens,
-    chain,
-  } = parsed;
+  const { addresses, startDate, endDate, numBuckets, facilitators, chain } =
+    input;
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(
     1,
     Math.floor(timeRangeMs / numBuckets / 1000)
   );
-
-  const normalizedTokens = normalizeAddresses(tokens, chain);
-  const normalizedFacilitators = normalizeAddresses(facilitators, chain);
-  const normalizedAddresses = addresses && normalizeAddresses(addresses, chain);
-  const recipientFilter = normalizedAddresses
-    ? Prisma.sql`AND t.recipient = ANY(${normalizedAddresses}::text[])`
-    : Prisma.empty;
 
   const sql = Prisma.sql`
     WITH all_buckets AS (
@@ -82,12 +63,12 @@ const getBucketedStatisticsUncached = async (
         COUNT(DISTINCT t.sender)::int AS unique_buyers,
         COUNT(DISTINCT t.recipient)::int AS unique_sellers
       FROM "TransferEvent" t
-      WHERE t.chain = ${chain}
-        AND t.address = ANY(${normalizedTokens}::text[])
-        AND t.transaction_from = ANY(${normalizedFacilitators}::text[])
-        ${recipientFilter}
-        AND t.block_timestamp >= ${startDate}
-        AND t.block_timestamp <= ${endDate}
+      WHERE 1=1
+        ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
+        ${facilitators ? Prisma.sql`AND t.transaction_from = ANY(${facilitators}::text[])` : Prisma.empty}
+        ${addresses ? Prisma.sql`AND t.recipient = ANY(${addresses}::text[])` : Prisma.empty}
+        ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
+        ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
         AND t.amount < 1000000000
       GROUP BY bucket_start
     )

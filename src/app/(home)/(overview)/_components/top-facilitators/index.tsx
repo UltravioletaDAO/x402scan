@@ -7,17 +7,19 @@ import { facilitators } from '@/lib/facilitators';
 
 export const TopFacilitators = async () => {
   // Get facilitators for the default chain
-  const chainFacilitators = facilitators.filter(f => f.chain === DEFAULT_CHAIN);
+  const facilitatorAddresses = facilitators.flatMap(
+    f => f.addresses[DEFAULT_CHAIN] ?? []
+  );
 
   // Prefetch all data including chart data for each facilitator
   await Promise.all([
     api.stats.getOverallStatistics.prefetch({ chain: DEFAULT_CHAIN }),
     api.facilitators.list.prefetch({ chain: DEFAULT_CHAIN, limit: 3 }),
     // Prefetch chart data for each facilitator on this chain
-    ...chainFacilitators.map(facilitator =>
+    ...facilitatorAddresses.map(address =>
       api.stats.getBucketedStatistics.prefetch({
         numBuckets: 48,
-        facilitators: facilitator.addresses,
+        facilitators: [address],
       })
     ),
   ]);

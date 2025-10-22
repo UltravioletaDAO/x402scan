@@ -53,7 +53,7 @@ const FacilitatorCardWithChart: React.FC<FacilitatorCardWithChartProps> = ({
   const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery({
     chain,
     numBuckets: 48,
-    facilitators: stats.facilitator.addresses,
+    facilitators: chain ? stats.facilitator.addresses[chain] : undefined,
   });
 
   const chartData: ChartData<{

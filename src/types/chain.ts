@@ -3,7 +3,7 @@ export enum Chain {
   SOLANA = 'solana',
 }
 
-export const SUPPORTED_CHAINS = [Chain.BASE, Chain.SOLANA];
+export const SUPPORTED_CHAINS = Object.values(Chain);
 
 export const CHAIN_LABELS: Record<Chain, string> = {
   [Chain.BASE]: 'Base',

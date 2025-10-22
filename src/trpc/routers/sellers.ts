@@ -3,11 +3,11 @@ import z from 'zod';
 import {
   listTopSellers,
   listTopSellersInputSchema,
-} from '@/services/cdp/sql/sellers/list';
+} from '@/services/transfers/sellers/list';
 import { getAcceptsAddresses } from '@/services/db/accepts';
 
-import type { FacilitatorAddress } from '@/lib/facilitators';
 import type { MixedAddress } from '@/types/address';
+import { mixedAddressSchema } from '@/lib/schemas';
 
 export const sellersRouter = createTRPCRouter({
   list: {
@@ -21,12 +21,12 @@ export const sellersRouter = createTRPCRouter({
       .query(async ({ input, ctx: { pagination } }) => {
         const originsByAddress = await getAcceptsAddresses(input.chain);
 
-        console.log(Object.keys(originsByAddress));
-
         const result = await listTopSellers(
           {
             ...input,
-            addresses: Object.keys(originsByAddress),
+            addresses: Object.keys(originsByAddress).map(addr =>
+              mixedAddressSchema.parse(addr)
+            ),
           },
           pagination
         );
@@ -38,7 +38,7 @@ export const sellersRouter = createTRPCRouter({
             originId: string;
             origins: (typeof originsByAddress)[string];
             recipients: MixedAddress[];
-            facilitators: FacilitatorAddress[];
+            facilitators: MixedAddress[];
             tx_count: number;
             total_amount: number;
             latest_block_timestamp: Date;

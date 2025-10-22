@@ -10,6 +10,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Globe } from 'lucide-react';
 
 export const ChainSelector = () => {
   const { chain, setChain } = useChain();
@@ -18,16 +19,28 @@ export const ChainSelector = () => {
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="icon">
-          <Image
-            src={CHAIN_ICONS[chain]}
-            alt={CHAIN_LABELS[chain]}
-            width={16}
-            height={16}
-            className="rounded-sm"
-          />
+          {chain ? (
+            <Image
+              src={CHAIN_ICONS[chain]}
+              alt={CHAIN_LABELS[chain]}
+              width={16}
+              height={16}
+              className="rounded-sm"
+            />
+          ) : (
+            <Globe className="size-4" />
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[140px] p-1">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-2 h-8"
+          onClick={() => setChain(undefined)}
+        >
+          <Globe className="size-4" />
+          All
+        </Button>
         {Object.entries(CHAIN_LABELS).map(([value, label]) => (
           <Button
             key={value}

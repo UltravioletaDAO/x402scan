@@ -6,7 +6,6 @@ import {
 import { sortingSchema } from '../lib';
 import z from 'zod';
 import { mixedAddressSchema } from '@/lib/schemas';
-import { USDC_ADDRESS, normalizeAddresses } from '@/lib/utils';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/db/transfers-client';
 import { Chain, DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
@@ -61,21 +60,13 @@ const listTopFacilitatorsUncached = async (
   const parsed = listTopFacilitatorsInputSchema.parse(input);
   const { startDate, endDate, limit, sorting, chain } = parsed;
 
-  const chainFacilitators = facilitators.filter(f => f.chain === chain);
-  const normalizedFacilitatorAddresses = normalizeAddresses(
-    chainFacilitators.flatMap(f => f.addresses as string[]),
-    chain
-  );
+  const chainFacilitators = chain
+    ? facilitators.filter(f => f.addresses[chain] !== undefined)
+    : facilitators;
 
-  // Build date filters
-  const dateFilter =
-    startDate && endDate
-      ? Prisma.sql`AND t.block_timestamp >= ${startDate} AND t.block_timestamp <= ${endDate}`
-      : startDate
-        ? Prisma.sql`AND t.block_timestamp >= ${startDate}`
-        : endDate
-          ? Prisma.sql`AND t.block_timestamp <= ${endDate}`
-          : Prisma.empty;
+  const facilitatorAddresses = chainFacilitators.flatMap(
+    f => f.addresses[chain]
+  );
 
   const sortColumnMap: Record<FacilitatorsSortId, string> = {
     tx_count: 'tx_count',
@@ -96,10 +87,11 @@ const listTopFacilitatorsUncached = async (
       COUNT(DISTINCT t.sender)::int AS unique_buyers,
       COUNT(DISTINCT t.recipient)::int AS unique_sellers
     FROM "TransferEvent" t
-    WHERE t.chain = ${chain}
-      AND t.address = ${USDC_ADDRESS[chain]}
-      AND t.transaction_from = ANY(${normalizedFacilitatorAddresses}::text[])
-      ${dateFilter}
+    WHERE 1=1
+      ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
+      ${facilitatorAddresses.length > 0 ? Prisma.sql`AND t.transaction_from = ANY(${facilitatorAddresses}::text[])` : Prisma.empty}
+      ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
+      ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
     GROUP BY t.transaction_from
     ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
     LIMIT ${limit}
@@ -110,7 +102,7 @@ const listTopFacilitatorsUncached = async (
   // Map results to include facilitator objects
   const results: FacilitatorItem[] = rawResult.map(row => {
     const facilitator = chainFacilitators.find(f =>
-      f.addresses.some(addr =>
+      f.addresses[chain]?.some(addr =>
         chain === Chain.SOLANA
           ? addr === row.transaction_from
           : addr.toLowerCase() === row.transaction_from.toLowerCase()

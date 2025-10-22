@@ -1,16 +1,15 @@
 'use client';
 
 import type { Chain } from '@/types/chain';
-import { DEFAULT_CHAIN } from '@/types/chain';
 import { createContext } from 'react';
 
 interface ChainContextType {
-  chain: Chain;
-  setChain: (chain: Chain) => void;
+  chain: Chain | undefined;
+  setChain: (chain: Chain | undefined) => void;
 }
 
 export const ChainContext = createContext<ChainContextType>({
-  chain: DEFAULT_CHAIN,
+  chain: undefined,
   setChain: () => {
     void 0;
   },

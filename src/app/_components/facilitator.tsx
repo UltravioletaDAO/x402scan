@@ -5,10 +5,10 @@ import { facilitatorAddressMap } from '@/lib/facilitators';
 
 import { cn } from '@/lib/utils';
 
-import type { FacilitatorAddress } from '@/lib/facilitators';
+import type { MixedAddress } from '@/types/address';
 
 interface Props {
-  address: FacilitatorAddress;
+  address: MixedAddress;
   className?: string;
 }
 
@@ -34,7 +34,7 @@ export const Facilitator: React.FC<Props> = ({ address, className }) => {
 };
 
 interface FacilitatorsProps {
-  addresses: FacilitatorAddress[];
+  addresses: MixedAddress[];
   className?: string;
 }
 
