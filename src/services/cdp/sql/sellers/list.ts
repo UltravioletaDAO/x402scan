@@ -102,7 +102,7 @@ const listTopSellersUncached = async (
         recipient: z.string(),
         facilitators: z.array(z.string()),
         tx_count: z.bigint(),
-        total_amount: z.bigint(),
+        total_amount: z.number(),
         latest_block_timestamp: z.date(),
         unique_buyers: z.bigint(),
       })
