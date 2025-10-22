@@ -40,7 +40,7 @@ const ConnectEOAButton = ({ connector }: { connector: Connector }) => {
   return (
     <Button
       variant="outline"
-      className="user-message w-full"
+      className="user-message w-full h-12 md:h-12"
       onClick={() => onConnect(connector)}
       disabled={isPending}
     >
