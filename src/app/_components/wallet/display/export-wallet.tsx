@@ -88,8 +88,6 @@ export const ExportWallet: React.FC<Props> = ({
                 Anyone with your private key has complete control of your wallet
               </li>
               <li>Never share your private key with anyone</li>
-              <li>Store it securely offline</li>
-              <li>Clear your clipboard after copying</li>
             </ul>
             <p className="text-sm font-medium">
               Do you understand these risks and want to proceed?
@@ -136,8 +134,7 @@ export const ExportWallet: React.FC<Props> = ({
               Warning: Keep your key safe
             </p>
             <p className="text-xs text-muted-foreground">
-              Your private key has been copied to clipboard. Store it securely
-              offline and clear your clipboard.
+              Your private key has been copied to clipboard.
             </p>
           </div>
         </div>
@@ -223,14 +220,13 @@ export const ExportWallet: React.FC<Props> = ({
           </p>
           <p className="text-xs text-muted-foreground">
             Never share your private key with anyone. Anyone with access to it
-            can access your funds. Store it securely offline.
+            can access your funds.
           </p>
         </div>
       </div>
 
       <p className="text-sm text-muted-foreground">
-        Export your private key to backup or import into another wallet. This
-        will reveal sensitive information about your wallet.
+        Export your private key to backup or import into another wallet.
       </p>
 
       <Button
