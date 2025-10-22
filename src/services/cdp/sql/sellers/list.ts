@@ -11,7 +11,7 @@ import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
-import { transfersPrisma } from '@/services/db/transfers-client';
+import { queryRaw } from '@/services/db/transfers-client';
 import { normalizeAddresses } from '@/lib/utils';
 
 const sellerSortIds = [
@@ -74,38 +74,36 @@ const listTopSellersUncached = async (
   const orderByField = orderByMap[sorting.id as SellerSortId];
   const orderDirection = sorting.desc ? 'DESC' : 'ASC';
 
-  const results = await transfersPrisma.$queryRaw<
-    Array<{
-      recipient: string;
-      facilitators: string[];
-      tx_count: bigint;
-      total_amount: bigint;
-      latest_block_timestamp: Date;
-      unique_buyers: bigint;
-    }>
-  >(
-    Prisma.sql`
-      SELECT 
-        recipient,
-        ARRAY_AGG(DISTINCT transaction_from) as facilitators,
-        COUNT(*) as tx_count,
-        SUM(amount) as total_amount,
-        MAX(block_timestamp) as latest_block_timestamp,
-        COUNT(DISTINCT sender) as unique_buyers
-      FROM "TransferEvent"
-      WHERE chain = ${chain}
-        AND address = ANY(${normalizedTokens})
-        AND transaction_from = ANY(${normalizedFacilitators})
-        ${normalizedAddresses ? Prisma.sql`AND recipient = ANY(${normalizedAddresses})` : Prisma.empty}
-        ${startDate ? Prisma.sql`AND block_timestamp >= ${startDate}` : Prisma.empty}
-        ${endDate ? Prisma.sql`AND block_timestamp <= ${endDate}` : Prisma.empty}
-      GROUP BY recipient
-      ORDER BY ${Prisma.raw(orderByField)} ${Prisma.raw(orderDirection)}
-      LIMIT ${limit + 1}
-    `
-  );
+  const sql = Prisma.sql`
+    SELECT 
+      recipient,
+      ARRAY_AGG(DISTINCT transaction_from) as facilitators,
+      COUNT(*) as tx_count,
+      SUM(amount) as total_amount,
+      MAX(block_timestamp) as latest_block_timestamp,
+      COUNT(DISTINCT sender) as unique_buyers
+    FROM "TransferEvent"
+    WHERE chain = ${chain}
+      AND address = ANY(${normalizedTokens})
+      AND transaction_from = ANY(${normalizedFacilitators})
+      ${normalizedAddresses ? Prisma.sql`AND recipient = ANY(${normalizedAddresses})` : Prisma.empty}
+      ${startDate ? Prisma.sql`AND block_timestamp >= ${startDate}` : Prisma.empty}
+      ${endDate ? Prisma.sql`AND block_timestamp <= ${endDate}` : Prisma.empty}
+    GROUP BY recipient
+    ORDER BY ${Prisma.raw(orderByField)} ${Prisma.raw(orderDirection)}
+    LIMIT ${limit + 1}
+  `;
 
-  const formattedResults: TopSellerItem[] = results.map(row => ({
+  const rawResults = await queryRaw(sql, z.array(z.object({
+    recipient: z.string(),
+    facilitators: z.array(z.string()),
+    tx_count: z.bigint(),
+    total_amount: z.bigint(),
+    latest_block_timestamp: z.date(),
+    unique_buyers: z.bigint(),
+  })));
+
+  const formattedResults: TopSellerItem[] = rawResults.map(row => ({
     recipient: row.recipient as Address,
     facilitators: row.facilitators as Address[],
     tx_count: Number(row.tx_count),

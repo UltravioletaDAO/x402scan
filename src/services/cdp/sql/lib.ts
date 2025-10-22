@@ -14,7 +14,8 @@ export const applyBaseQueryDefaults = <
   return {
     ...data,
     facilitators:
-      data.facilitators ?? chainFacilitators.flatMap(f => f.addresses as string[]),
+      data.facilitators ??
+      chainFacilitators.flatMap(f => f.addresses as string[]),
     tokens: data.tokens ?? [USDC_ADDRESS[data.chain]],
   } as Required<T>;
 };

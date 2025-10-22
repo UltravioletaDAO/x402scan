@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { transfersPrisma } from '@/services/db/transfers-client';
+import { queryRaw } from '@/services/db/transfers-client'
 import { normalizeAddresses } from '@/lib/utils';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
@@ -103,16 +103,8 @@ const getBucketedStatisticsUncached = async (
     LIMIT ${numBuckets}
   `;
 
-  // TODO(shafu): I need to fix this.
-  const rawResult = await transfersPrisma.$queryRaw<
-    Array<{
-      bucket_start: Date;
-      total_transactions: number;
-      total_amount: number | string | bigint;
-      unique_buyers: number;
-      unique_sellers: number;
-    }>
-  >(sql);
+
+  const rawResult = await queryRaw(sql, bucketedResultSchema);
 
   const transformedResult = rawResult.map(row => ({
     ...row,
