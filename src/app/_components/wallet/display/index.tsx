@@ -49,7 +49,7 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
             </div>
           </div>
           <TabsList className="w-full h-fit overflow-x-auto justify-start no-scrollbar">
-            <div className="h-[34px] border-b w-4 shrink-0" />
+            <div className="h-[34px] border-b w-2 shrink-0" />
             <TabsTrigger
               value="wallet"
               variant="github"
@@ -80,7 +80,7 @@ export const DisplayWalletDialogContent: React.FC<Props> = ({
                 <Key className="size-4" /> Export
               </TabsTrigger>
             )}
-            <div className="h-[34px] border-b flex-1 min-w-4" />
+            <div className="h-[34px] border-b flex-1 min-w-2" />
           </TabsList>
         </DialogHeader>
 
