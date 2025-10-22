@@ -95,7 +95,7 @@ const listTopSellersUncached = async (
           .array(mixedAddressSchema)
           .transform(addresses => addresses as FacilitatorAddress[]),
         tx_count: z.bigint(),
-        total_amount: z.bigint(),
+        total_amount: z.number(),
         latest_block_timestamp: z.date(),
         unique_buyers: z.bigint(),
       })
