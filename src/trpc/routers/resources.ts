@@ -15,7 +15,6 @@ import { upsertOrigin } from '@/services/db/origin';
 import { upsertResourceResponse } from '@/services/db/resource-responses';
 
 import { ethereumAddressSchema } from '@/lib/schemas';
-import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import {
   EnhancedPaymentRequirementsSchema,
   parseX402Response,
