@@ -20,11 +20,13 @@ export default defineConfig(
     ],
   },
   ...compat.extends('next/core-web-vitals'),
-  ...tseslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
   {
     files: ['**/*.ts', '**/*.tsx'],
+    extends: [
+      ...tseslint.configs.recommended,
+      ...tseslint.configs.recommendedTypeChecked,
+      ...tseslint.configs.stylisticTypeChecked,
+    ],
     rules: {
       '@typescript-eslint/array-type': 'off',
       '@typescript-eslint/consistent-type-definitions': 'off',
