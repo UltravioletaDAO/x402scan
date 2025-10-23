@@ -36,7 +36,7 @@ export const TopFacilitatorsContent = () => {
       >
         {facilitatorsData.map(stats => (
           <FacilitatorCardWithChart
-            key={stats.facilitator_name}
+            key={stats.facilitator.id}
             stats={stats}
             overallStats={overallStats}
           />

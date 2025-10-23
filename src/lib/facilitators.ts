@@ -95,10 +95,6 @@ export const facilitators: Facilitator[] = [
 type FacilitatorId = (typeof facilitators)[number]['id'];
 export type FacilitatorName = (typeof facilitators)[number]['name'];
 
-export const facilitatorNameMap = new Map<FacilitatorName, Facilitator>(
-  facilitators.map(f => [f.name, f])
-);
-
 export const facilitatorIdMap = new Map<FacilitatorId, Facilitator>(
   facilitators.map(f => [f.id, f])
 );
@@ -107,21 +103,6 @@ export const facilitatorAddresses = facilitators.flatMap(f =>
   Object.values(f.addresses)
     .flat()
     .map(address => mixedAddressSchema.parse(address))
-);
-
-export const facilitatorAddressesByChain = facilitators.reduce(
-  (acc, f) => {
-    Object.entries(f.addresses).forEach(([chain, addresses]) => {
-      if (!acc[chain as Chain]) {
-        acc[chain as Chain] = [];
-      }
-      acc[chain as Chain].push(
-        ...addresses.map(address => mixedAddressSchema.parse(address))
-      );
-    });
-    return acc;
-  },
-  {} as Record<Chain, MixedAddress[]>
 );
 
 export const facilitatorAddressMap = new Map<MixedAddress, Facilitator>(
