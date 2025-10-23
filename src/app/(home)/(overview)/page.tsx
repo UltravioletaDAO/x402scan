@@ -22,9 +22,11 @@ import Link from 'next/link';
 import { getChain } from '@/app/_lib/chain';
 import { Suspense } from 'react';
 import { LoadingTopFacilitators } from './_components/top-facilitators/loading';
+import { connection } from 'next/server';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
+  await connection();
   return (
     <div>
       <HeadingContainer className="flex flex-col gap-4">

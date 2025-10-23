@@ -32,8 +32,9 @@ import type { Metadata, Viewport } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { ChainSelector } from './_components/layout/navbar/chain-selector';
 
-import './globals.css';
 import { connection } from 'next/server';
+
+import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
