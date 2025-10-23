@@ -1,14 +1,12 @@
-import {
-  facilitatorNameMap,
-  facilitators,
-  type Facilitator,
-} from '@/lib/facilitators';
+import { facilitators, type Facilitator } from '@/lib/facilitators';
 import { baseQuerySchema, sortingSchema } from '../lib';
 import z from 'zod';
-import { mixedAddressSchema } from '@/lib/schemas';
+import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/db/transfers-client';
 import { Prisma } from '@prisma/client';
+
+import type { Chain } from '@/types/chain';
 
 const listTopFacilitatorsSortIds = [
   'tx_count',
@@ -31,25 +29,14 @@ export const listTopFacilitatorsInputSchema = baseQuerySchema.extend({
 });
 
 type FacilitatorItem = {
-  facilitator_name: string;
   facilitator: Facilitator;
   tx_count: number;
   total_amount: number;
   latest_block_timestamp: Date;
   unique_buyers: number;
   unique_sellers: number;
+  chains: Set<Chain>;
 };
-
-const facilitatorRowSchema = z.object({
-  transaction_from: z.string(),
-  tx_count: z.number(),
-  total_amount: z.number(),
-  latest_block_timestamp: z.date(),
-  unique_buyers: z.number(),
-  unique_sellers: z.number(),
-});
-
-const facilitatorResultSchema = z.array(facilitatorRowSchema);
 
 const listTopFacilitatorsUncached = async (
   input: z.input<typeof listTopFacilitatorsInputSchema>
@@ -74,7 +61,8 @@ const listTopFacilitatorsUncached = async (
       SUM(t.amount)::float AS total_amount,
       MAX(t.block_timestamp) AS latest_block_timestamp,
       COUNT(DISTINCT t.sender)::int AS unique_buyers,
-      COUNT(DISTINCT t.recipient)::int AS unique_sellers
+      COUNT(DISTINCT t.recipient)::int AS unique_sellers,
+      ARRAY_AGG(DISTINCT t.chain) as chains
     FROM "TransferEvent" t
     WHERE 1=1
       ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
@@ -85,11 +73,24 @@ const listTopFacilitatorsUncached = async (
     LIMIT ${limit}
   `;
 
-  const rawResult = await queryRaw(sql, facilitatorResultSchema);
+  const results = await queryRaw(
+    sql,
+    z.array(
+      z.object({
+        transaction_from: z.string(),
+        tx_count: z.number(),
+        total_amount: z.number(),
+        latest_block_timestamp: z.date(),
+        unique_buyers: z.number(),
+        unique_sellers: z.number(),
+        chains: z.array(chainSchema),
+      })
+    )
+  );
 
   // Map results to include facilitator objects
-  const results = rawResult
-    .map(row => {
+  const mappedResults = results.reduce(
+    (acc, row) => {
       const facilitator = facilitators.find(f =>
         Object.values(f.addresses)
           .flat()
@@ -97,25 +98,42 @@ const listTopFacilitatorsUncached = async (
       );
 
       if (!facilitator) {
-        return null;
+        return acc;
       }
 
-      return {
-        facilitator_name: facilitator?.name ?? ('Unknown' as const),
-        facilitator: facilitator ?? facilitatorNameMap.get('Coinbase')!,
-        tx_count: row.tx_count,
-        total_amount:
-          typeof row.total_amount === 'number'
-            ? row.total_amount
-            : Number(row.total_amount),
-        latest_block_timestamp: row.latest_block_timestamp,
-        unique_buyers: row.unique_buyers,
-        unique_sellers: row.unique_sellers,
-      };
-    })
-    .filter(Boolean) as FacilitatorItem[];
+      if (!acc[facilitator.id]) {
+        acc[facilitator.id] = {
+          facilitator: facilitator,
+          tx_count: 0,
+          total_amount: 0,
+          latest_block_timestamp: new Date(0),
+          unique_buyers: 0,
+          unique_sellers: 0,
+          chains: new Set(),
+        };
+      }
 
-  return results;
+      acc[facilitator.id].tx_count += row.tx_count;
+      acc[facilitator.id].total_amount += row.total_amount;
+      acc[facilitator.id].latest_block_timestamp = new Date(
+        Math.max(
+          acc[facilitator.id].latest_block_timestamp.getTime(),
+          row.latest_block_timestamp.getTime()
+        )
+      );
+      acc[facilitator.id].unique_buyers += row.unique_buyers;
+      acc[facilitator.id].unique_sellers += row.unique_sellers;
+      row.chains.forEach(chain => acc[facilitator.id].chains.add(chain));
+
+      return acc;
+    },
+    {} as Record<string, FacilitatorItem>
+  );
+
+  return Object.values(mappedResults).map(item => ({
+    ...item,
+    chains: Array.from(item.chains),
+  }));
 };
 
 export const listTopFacilitators = createCachedArrayQuery({

@@ -1,7 +1,7 @@
 import z from 'zod';
 import { Prisma } from '@prisma/client';
 
-import { mixedAddressSchema } from '@/lib/schemas';
+import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
@@ -52,7 +52,8 @@ const listTopSellersUncached = async (
       COUNT(*)::bigint as tx_count,
       SUM(amount)::bigint as total_amount,
       MAX(block_timestamp) as latest_block_timestamp,
-      COUNT(DISTINCT sender)::bigint as unique_buyers
+      COUNT(DISTINCT sender)::bigint as unique_buyers,
+      ARRAY_AGG(DISTINCT chain) as chains
     FROM "TransferEvent"
     WHERE 1=1
       ${chain ? Prisma.sql`AND chain = ${chain}` : Prisma.empty}
@@ -75,6 +76,7 @@ const listTopSellersUncached = async (
         total_amount: z.bigint(),
         latest_block_timestamp: z.date(),
         unique_buyers: z.bigint(),
+        chains: z.array(chainSchema),
       })
     )
   );

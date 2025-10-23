@@ -9,6 +9,7 @@ import {
 } from '@/lib/cache';
 import { transfersPrisma } from '@/services/db/transfers-client';
 import type { MixedAddress } from '@/types/address';
+import type { Chain } from '@/types/chain';
 
 const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 
@@ -66,6 +67,7 @@ const listFacilitatorTransfersUncached = async (
     transaction_from: transfer.transaction_from as MixedAddress,
     transaction_hash: transfer.tx_hash,
     block_timestamp: transfer.block_timestamp,
+    chain: transfer.chain as Chain,
   }));
 
   return toPaginatedResponse({

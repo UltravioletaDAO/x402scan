@@ -8,6 +8,7 @@ import { getAcceptsAddresses } from '@/services/db/accepts';
 
 import type { MixedAddress } from '@/types/address';
 import { mixedAddressSchema } from '@/lib/schemas';
+import type { Chain } from '@/types/chain';
 
 export const sellersRouter = createTRPCRouter({
   list: {
@@ -43,6 +44,7 @@ export const sellersRouter = createTRPCRouter({
             total_amount: number;
             latest_block_timestamp: Date;
             unique_buyers: number;
+            chains: Set<Chain>;
           }
         >();
 
@@ -70,6 +72,10 @@ export const sellersRouter = createTRPCRouter({
                 existing.facilitators.push(facilitator);
               }
             }
+            // Merge chains (deduplicated)
+            for (const chain of item.chains) {
+              existing.chains.add(chain);
+            }
           } else {
             originMap.set(originId, {
               originId,
@@ -80,6 +86,7 @@ export const sellersRouter = createTRPCRouter({
               total_amount: item.total_amount,
               latest_block_timestamp: item.latest_block_timestamp,
               unique_buyers: item.unique_buyers,
+              chains: new Set(item.chains),
             });
           }
         }
@@ -93,6 +100,7 @@ export const sellersRouter = createTRPCRouter({
           total_amount: item.total_amount,
           latest_block_timestamp: item.latest_block_timestamp,
           unique_buyers: item.unique_buyers,
+          chains: Array.from(item.chains),
         }));
 
         return {
