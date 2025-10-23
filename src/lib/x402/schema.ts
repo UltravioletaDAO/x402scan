@@ -74,15 +74,10 @@ const EnhancedNetworkSchema = z3.union([
 
 type EnhancedNetworkSchema = z3.infer<typeof EnhancedNetworkSchema>;
 
-export const EnhancedPaymentRequirementsSchema =
-  PaymentRequirementsSchema.extend({
-    network: EnhancedNetworkSchema,
-    outputSchema: enhancedOutputSchema.optional(),
-  });
-
-type EnhancedPaymentRequirementsSchema = z3.infer<
-  typeof EnhancedPaymentRequirementsSchema
->;
+const EnhancedPaymentRequirementsSchema = PaymentRequirementsSchema.extend({
+  network: EnhancedNetworkSchema,
+  outputSchema: enhancedOutputSchema.optional(),
+});
 
 const EnhancedX402ResponseSchema = x402ResponseSchema
   .omit({

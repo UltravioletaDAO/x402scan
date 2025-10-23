@@ -35,7 +35,7 @@ const x402rsFacilitator: Facilitator = {
 };
 
 const payAiFacilitator: Facilitator = {
-  id: 'payai',
+  id: 'payAI',
   name: 'PayAI' as const,
   image: '/payai.png',
   link: 'https://payai.network',

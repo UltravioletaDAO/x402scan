@@ -13,7 +13,7 @@ import {
 
 import { prisma } from '@/services/db/client';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 
 import { Methods } from '@/types/x402';
 
@@ -50,12 +50,12 @@ export const resourcesRouter = createTRPCRouter({
         return await listResourcesWithPagination(input.pagination, input.where);
       }),
     byAddress: publicProcedure
-      .input(ethereumAddressSchema)
+      .input(mixedAddressSchema)
       .query(async ({ input }) => {
         return await listResources({
           accepts: {
             some: {
-              payTo: input.toLowerCase(),
+              payTo: input,
             },
           },
         });
@@ -72,7 +72,7 @@ export const resourcesRouter = createTRPCRouter({
     });
   }),
   getResourceByAddress: publicProcedure
-    .input(ethereumAddressSchema)
+    .input(mixedAddressSchema)
     .query(async ({ input }) => {
       return await getResourceByAddress(input);
     }),

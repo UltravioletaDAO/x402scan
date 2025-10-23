@@ -47,37 +47,21 @@ const listTopFacilitatorsUncached = async (
   const sortDirection = Prisma.raw(sorting.desc ? 'DESC' : 'ASC');
 
   const sql = Prisma.sql`
-    WITH facilitators_expanded AS (
-      SELECT
-        f.id AS facilitator_id,
-        f.addresses AS facilitator_addresses,
-        unnest(f.addresses) AS facilitator_address
-      FROM "Facilitator" f
-    ),
-    transfers_with_facilitator AS (
-      SELECT
-        t.*,
-        fe.facilitator_id,
-        fe.facilitator_addresses
-      FROM "TransferEvent" t
-      JOIN facilitators_expanded fe
-        ON t.transaction_from = fe.facilitator_address
-    )
     SELECT
-      twf.facilitator_id,
-      twf.facilitator_addresses,
+      t.facilitator_id,
       COUNT(*)::int AS tx_count,
-      SUM(twf.amount)::float AS total_amount,
-      MAX(twf.block_timestamp) AS latest_block_timestamp,
-      COUNT(DISTINCT twf.sender)::int AS unique_buyers,
-      COUNT(DISTINCT twf.recipient)::int AS unique_sellers,
-      ARRAY_AGG(DISTINCT twf.chain) as chains
-    FROM transfers_with_facilitator twf
+      SUM(t.amount)::float AS total_amount,
+      MAX(t.block_timestamp) AS latest_block_timestamp,
+      COUNT(DISTINCT t.sender)::int AS unique_buyers,
+      COUNT(DISTINCT t.recipient)::int AS unique_sellers,
+      ARRAY_AGG(DISTINCT t.transaction_from) as facilitator_addresses,
+      ARRAY_AGG(DISTINCT t.chain) as chains
+    FROM "TransferEvent" t
     WHERE 1=1
-      ${chain ? Prisma.sql`AND twf.chain = ${chain}` : Prisma.empty}
-      ${startDate ? Prisma.sql`AND twf.block_timestamp >= ${startDate}` : Prisma.empty}
-      ${endDate ? Prisma.sql`AND twf.block_timestamp <= ${endDate}` : Prisma.empty}
-    GROUP BY twf.facilitator_id
+      ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
+      ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
+      ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
+    GROUP BY t.facilitator_id
     ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
     LIMIT ${limit}
   `;
@@ -98,10 +82,19 @@ const listTopFacilitatorsUncached = async (
     )
   );
 
-  return results.map(result => ({
-    ...result,
-    facilitator: facilitatorIdMap.get(result.facilitator_id)!,
-  }));
+  return results
+    .map(result => {
+      const facilitator = facilitatorIdMap.get(result.facilitator_id);
+      if (!facilitator) {
+        return null;
+      }
+
+      return {
+        ...result,
+        facilitator,
+      };
+    })
+    .filter((result): result is NonNullable<typeof result> => result !== null);
 };
 
 export const listTopFacilitators = createCachedArrayQuery({
