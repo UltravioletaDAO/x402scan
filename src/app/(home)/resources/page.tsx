@@ -1,10 +1,12 @@
-import { Body, Heading } from '../../_components/layout/page-utils';
+import { Body } from '../../_components/layout/page-utils';
 import { api, HydrateClient } from '@/trpc/server';
-import { ResourcesByOrigin } from '@/app/_components/resources/by-origin';
-import Link from 'next/link';
-import { Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import {
+  LoadingResourcesByOrigin,
+  ResourcesByOrigin,
+} from '@/app/_components/resources/by-origin';
 import { getChain } from '@/app/_lib/chain';
+import { Suspense } from 'react';
+import { ResourcesHeading } from './_components/heading';
 
 export default async function ResourcesPage({
   searchParams,
@@ -13,22 +15,15 @@ export default async function ResourcesPage({
 
   await api.origins.list.withResources.prefetch({ chain });
 
+  await new Promise(resolve => setTimeout(resolve, 10000));
+
   return (
     <HydrateClient>
-      <Heading
-        title="All Resources"
-        description="x402 resources registered on x402scan. Coinbase Bazaar resources are automatically registered."
-        actions={
-          <Link href="/resources/register">
-            <Button variant="turbo">
-              <Plus className="size-4" />
-              Register Resource
-            </Button>
-          </Link>
-        }
-      />
+      <ResourcesHeading />
       <Body>
-        <ResourcesByOrigin emptyText="No resources found" />
+        <Suspense fallback={<LoadingResourcesByOrigin loadingRowCount={6} />}>
+          <ResourcesByOrigin emptyText="No resources found" />
+        </Suspense>
       </Body>
     </HydrateClient>
   );

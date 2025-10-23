@@ -26,7 +26,10 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-import { OriginCard } from '@/app/_components/resources/origin';
+import {
+  LoadingOriginCard,
+  OriginCard,
+} from '@/app/_components/resources/origin';
 
 import { useChain } from '@/app/_contexts/chain/hook';
 import { useState } from 'react';
@@ -119,5 +122,29 @@ export const ResourcesByOrigin: React.FC<Props> = ({
         </AccordionItem>
       ))}
     </Accordion>
+  );
+};
+
+interface LoadingResourcesByOriginProps {
+  loadingRowCount?: number;
+}
+
+export const LoadingResourcesByOrigin: React.FC<
+  LoadingResourcesByOriginProps
+> = ({ loadingRowCount = 2 }) => {
+  return (
+    <div>
+      {Array.from({ length: loadingRowCount }).map((_, index) => (
+        <div key={index}>
+          <LoadingOriginCard />
+          <div className="pl-4">
+            <div className="h-4 w-[1px] bg-border" />
+            {index === loadingRowCount - 1 && (
+              <div className="size-3 bg-border rounded-full -ml-[5px]" />
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 };
