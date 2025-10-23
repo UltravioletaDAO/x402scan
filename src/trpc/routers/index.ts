@@ -2,6 +2,7 @@ import { createCallerFactory, createTRPCRouter } from '../trpc';
 
 import { acceptsRouter } from './accepts';
 import { facilitatorsRouter } from './facilitators';
+import { networksRouter } from './networks';
 import { onrampSessionsRouter } from './onramp-sessions';
 import { originsRouter } from './origins';
 import { resourcesRouter } from './resources';
@@ -17,6 +18,7 @@ export const appRouter = createTRPCRouter({
   origins: originsRouter,
   transfers: transfersRouter,
   facilitators: facilitatorsRouter,
+  networks: networksRouter,
   onrampSessions: onrampSessionsRouter,
 });
 
