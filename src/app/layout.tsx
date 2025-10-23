@@ -33,6 +33,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ChainSelector } from './_components/layout/navbar/chain-selector';
 
 import './globals.css';
+import Footer from './_components/layout/footer';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -177,6 +178,7 @@ export default function RootLayout({
                           <div className="bg-background flex-1 flex flex-col">
                             {children}
                           </div>
+                          <Footer />
                         </div>
                       </ThemeProvider>
                     </PostHogProvider>

@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'www.x402.org',
       },
+      {
+        protocol: 'https',
+        hostname: 'terminal.merit.systems',
+      },
     ],
   },
   // This is required to support PostHog trailing slash API requests
