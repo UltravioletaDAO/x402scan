@@ -15,8 +15,6 @@ export default async function ResourcesPage({
 
   await api.origins.list.withResources.prefetch({ chain });
 
-  await new Promise(resolve => setTimeout(resolve, 10000));
-
   return (
     <HydrateClient>
       <ResourcesHeading />

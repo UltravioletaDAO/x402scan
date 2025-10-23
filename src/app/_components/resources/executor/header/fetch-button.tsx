@@ -1,11 +1,11 @@
 import { useIsInitialized } from '@coinbase/cdp-hooks';
 import { useWalletClient } from 'wagmi';
 import { Button } from '@/components/ui/button';
-import { Loader2, Play } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
 import { useResourceFetch } from '../contexts/fetch/hook';
 import { WalletDialog } from '@/app/_components/wallet/dialog';
-import type { Chain } from '@/types/chain';
+import { Chain } from '@/types/chain';
 import { Chains } from '@/app/_components/chains';
 
 interface Props {
@@ -19,6 +19,10 @@ export const FetchButton: React.FC<Props> = ({ chains }) => {
 
   const { execute, isPending, allRequiredFieldsFilled, maxAmountRequired } =
     useResourceFetch();
+
+  console.log('chains', chains);
+
+  const includesBase = chains.includes(Chain.BASE);
 
   if (!walletClient) {
     return (
@@ -40,7 +44,7 @@ export const FetchButton: React.FC<Props> = ({ chains }) => {
 
   return (
     <Button
-      variant="turbo"
+      variant="primaryOutline"
       size="lg"
       className="w-full"
       disabled={
@@ -48,11 +52,14 @@ export const FetchButton: React.FC<Props> = ({ chains }) => {
         !allRequiredFieldsFilled ||
         isLoadingWalletClient ||
         !isInitialized ||
-        !walletClient
+        !walletClient ||
+        !includesBase
       }
       onClick={() => execute()}
     >
-      {isLoadingWalletClient || !isInitialized || !walletClient ? (
+      {!includesBase ? (
+        <p className="text-xs">Solana Support Coming Soon</p>
+      ) : isLoadingWalletClient || !isInitialized || !walletClient ? (
         <Loader2 className="size-4 animate-spin" />
       ) : isPending ? (
         <>
@@ -61,7 +68,7 @@ export const FetchButton: React.FC<Props> = ({ chains }) => {
         </>
       ) : (
         <>
-          <Play className="size-4" />
+          <Chains chains={chains} />
           Fetch
           <span>{formatTokenAmount(maxAmountRequired)}</span>
         </>

@@ -100,17 +100,18 @@ export function Form({ x402Response }: Props) {
               ))}
             </div>
           )}
-          <FetchButton
-            chains={
-              (x402Response.accepts
-                ?.map(accept => accept.network)
-                .filter(network =>
-                  Object.values(Chain).includes(network as Chain)
-                ) ?? []) as Chain[]
-            }
-          />
         </div>
       )}
+
+      <FetchButton
+        chains={
+          (x402Response.accepts
+            ?.map(accept => accept.network)
+            .filter(network =>
+              Object.values(Chain).includes(network as Chain)
+            ) ?? []) as Chain[]
+        }
+      />
 
       {/* Error and response display - always visible */}
       {error && (
