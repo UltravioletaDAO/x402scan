@@ -32,10 +32,8 @@ function SiweProvider(options?: Partial<CredentialsConfig>) {
       email: { label: 'Email', type: 'text', optional: true },
     },
     async authorize(credentials) {
-      console.log(credentials);
       const parseResult = siweCredentialsSchema.safeParse(credentials);
       if (!parseResult.success) {
-        console.log(parseResult.error);
         throw new Error('Invalid credentials');
       }
       const { message } = parseResult.data;

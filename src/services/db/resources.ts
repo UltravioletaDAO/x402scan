@@ -2,9 +2,12 @@ import { prisma } from './client';
 
 import { getOriginFromUrl } from '@/lib/url';
 import { z } from 'zod';
-import type { Prisma } from '@prisma/client';
-import { ethereumAddressSchema } from '@/lib/schemas';
-import type { EnhancedOutputSchema } from '@/lib/x402/schema';
+import type { AcceptsNetwork, Prisma } from '@prisma/client';
+import { mixedAddressSchema } from '@/lib/schemas';
+import { type EnhancedOutputSchema } from '@/lib/x402/schema';
+import type { Chain } from '@/types/chain';
+import { SUPPORTED_CHAINS } from '@/types/chain';
+import { ChainIdToNetwork } from 'x402/types';
 
 export const upsertResourceSchema = z.object({
   resource: z.string(),
@@ -15,18 +18,35 @@ export const upsertResourceSchema = z.object({
   accepts: z.array(
     z.object({
       scheme: z.enum(['exact']),
-      network: z.enum([
-        'base_sepolia',
-        'avalanche_fuji',
-        'base',
-        'sei',
-        'sei_testnet',
-        'avalanche',
-        'iotex',
-        'solana_devnet',
-        'solana',
+      network: z.union([
+        z.enum([
+          'base_sepolia',
+          'avalanche_fuji',
+          'base',
+          'sei',
+          'sei_testnet',
+          'avalanche',
+          'iotex',
+          'solana_devnet',
+          'solana',
+        ]),
+        z
+          .string()
+          .refine(v => {
+            return (
+              v.startsWith('eip155:') &&
+              !!ChainIdToNetwork[Number(v.split(':')[1])]
+            );
+          })
+          .transform(
+            v =>
+              ChainIdToNetwork[Number(v.split(':')[1])].replace(
+                '-',
+                '_'
+              ) as AcceptsNetwork
+          ),
       ]),
-      payTo: ethereumAddressSchema,
+      payTo: mixedAddressSchema,
       description: z.string(),
       maxAmountRequired: z.string(),
       mimeType: z.string(),
@@ -41,12 +61,15 @@ export const upsertResourceSchema = z.object({
 export const upsertResource = async (
   resourceInput: z.input<typeof upsertResourceSchema>
 ) => {
-  const baseResource = upsertResourceSchema.parse(resourceInput);
-  const baseAccepts = baseResource.accepts.find(
-    accept => accept.network === 'base'
+  const parsedResourceInput = upsertResourceSchema.safeParse(resourceInput);
+  if (!parsedResourceInput.success) {
+    return;
+  }
+  const baseResource = parsedResourceInput.data;
+  const supportedAccepts = baseResource.accepts.filter(accept =>
+    SUPPORTED_CHAINS.includes(accept.network as Chain)
   );
   const originStr = getOriginFromUrl(baseResource.resource);
-  if (!baseAccepts) return;
   return await prisma.$transaction(async tx => {
     const { origin, ...resource } = await tx.resources.upsert({
       where: {
@@ -85,40 +108,44 @@ export const upsertResource = async (
       },
     });
 
-    const accepts = await tx.accepts.upsert({
-      where: {
-        resourceId_scheme_network: {
-          resourceId: resource.id,
-          scheme: baseAccepts.scheme,
-          network: 'base',
-        },
-        payTo: baseAccepts.payTo.toLowerCase(),
-      },
-      create: {
-        resourceId: resource.id,
-        scheme: baseAccepts.scheme,
-        description: baseAccepts.description,
-        network: 'base',
-        maxAmountRequired: BigInt(baseAccepts.maxAmountRequired),
-        resource: resource.resource,
-        mimeType: baseAccepts.mimeType,
-        payTo: baseAccepts.payTo.toLowerCase(),
-        maxTimeoutSeconds: baseAccepts.maxTimeoutSeconds,
-        asset: baseAccepts.asset,
-        outputSchema: baseAccepts.outputSchema,
-        extra: baseAccepts.extra,
-      },
-      update: {
-        description: baseAccepts.description,
-        maxAmountRequired: BigInt(baseAccepts.maxAmountRequired),
-        mimeType: baseAccepts.mimeType,
-        payTo: baseAccepts.payTo.toLowerCase(),
-        maxTimeoutSeconds: baseAccepts.maxTimeoutSeconds,
-        asset: baseAccepts.asset,
-        outputSchema: baseAccepts.outputSchema,
-        extra: baseAccepts.extra,
-      },
-    });
+    const accepts = await Promise.all(
+      supportedAccepts.map(async baseAccepts =>
+        tx.accepts.upsert({
+          where: {
+            resourceId_scheme_network: {
+              resourceId: resource.id,
+              scheme: baseAccepts.scheme,
+              network: baseAccepts.network as AcceptsNetwork,
+            },
+            payTo: baseAccepts.payTo,
+          },
+          create: {
+            resourceId: resource.id,
+            scheme: baseAccepts.scheme,
+            description: baseAccepts.description,
+            network: baseAccepts.network as AcceptsNetwork,
+            maxAmountRequired: BigInt(baseAccepts.maxAmountRequired),
+            resource: resource.resource,
+            mimeType: baseAccepts.mimeType,
+            payTo: baseAccepts.payTo,
+            maxTimeoutSeconds: baseAccepts.maxTimeoutSeconds,
+            asset: baseAccepts.asset,
+            outputSchema: baseAccepts.outputSchema,
+            extra: baseAccepts.extra,
+          },
+          update: {
+            description: baseAccepts.description,
+            maxAmountRequired: BigInt(baseAccepts.maxAmountRequired),
+            mimeType: baseAccepts.mimeType,
+            payTo: baseAccepts.payTo,
+            maxTimeoutSeconds: baseAccepts.maxTimeoutSeconds,
+            asset: baseAccepts.asset,
+            outputSchema: baseAccepts.outputSchema,
+            extra: baseAccepts.extra,
+          },
+        })
+      )
+    );
 
     return {
       resource,

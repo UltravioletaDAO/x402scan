@@ -7,7 +7,6 @@ import { originsRouter } from './origins';
 import { resourcesRouter } from './resources';
 import { sellersRouter } from './sellers';
 import { statisticsRouter } from './statistics';
-import { transactionsRouter } from './transactions';
 import { transfersRouter } from './transfers';
 
 export const appRouter = createTRPCRouter({
@@ -16,7 +15,6 @@ export const appRouter = createTRPCRouter({
   sellers: sellersRouter,
   resources: resourcesRouter,
   origins: originsRouter,
-  transactions: transactionsRouter,
   transfers: transfersRouter,
   facilitators: facilitatorsRouter,
   onrampSessions: onrampSessionsRouter,

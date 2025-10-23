@@ -22,7 +22,7 @@ export const GET = async (request: NextRequest) => {
 
   try {
     // Step 1: Fetch facilitator resources
-    console.log('Fetching facilitator resources from CDP');
+    console.log('Fetching facilitator resources');
     const resources = (
       await Promise.all(
         facilitators.map(facilitator =>
@@ -39,8 +39,6 @@ export const GET = async (request: NextRequest) => {
     console.log('Successfully fetched facilitator resources', {
       totalResources: resources.length,
     });
-
-    console.log('resources', resources);
 
     if (resources.length === 0) {
       console.warn('No resources found from facilitator');
@@ -71,10 +69,6 @@ export const GET = async (request: NextRequest) => {
     }
 
     const uniqueOrigins = Array.from(origins);
-    console.log('Extracted unique origins', {
-      totalOrigins: uniqueOrigins.length,
-      origins: uniqueOrigins.slice(0, 10), // Log first 10 for debugging
-    });
 
     // Step 3: Process origins (scrape metadata and OG data)
     console.log('Starting origin processing with metadata scraping');
@@ -83,7 +77,6 @@ export const GET = async (request: NextRequest) => {
     const originResults = await Promise.allSettled(
       uniqueOrigins.map(async origin => {
         const originStart = Date.now();
-        console.log('Processing origin', { origin });
 
         try {
           // Scrape OG and metadata in parallel
@@ -116,21 +109,10 @@ export const GET = async (request: NextRequest) => {
           // Upsert origin to database
           await upsertOrigin(originData);
 
-          console.log('Successfully processed origin', {
-            origin,
-            hasTitle: !!originData.title,
-            hasDescription: !!originData.description,
-            hasFavicon: !!originData.favicon,
-            ogImagesCount: originData.ogImages.length,
-            durationMs: Date.now() - originStart,
-          });
-
           return { origin, success: true };
         } catch (error) {
           console.error('Failed to process origin', {
             origin,
-            error: error instanceof Error ? error.message : 'Unknown error',
-            stack: error instanceof Error ? error.stack : undefined,
             durationMs: Date.now() - originStart,
           });
           return { origin, success: false, error };
@@ -162,11 +144,6 @@ export const GET = async (request: NextRequest) => {
 
     const resourceResults = await Promise.allSettled(
       resources.map(async facilitatorResource => {
-        const resourceStart = Date.now();
-        console.log('Processing resource', {
-          resource: facilitatorResource.resource,
-        });
-
         try {
           await upsertResource({
             ...facilitatorResource,
@@ -175,18 +152,8 @@ export const GET = async (request: NextRequest) => {
               network: accept.network.replace('-', '_') as AcceptsNetwork,
             })) as z.input<typeof upsertResourceSchema>['accepts'],
           });
-          console.log('Successfully processed resource', {
-            resource: facilitatorResource.resource,
-            durationMs: Date.now() - resourceStart,
-          });
           return { resource: facilitatorResource.resource, success: true };
         } catch (error) {
-          console.error('Failed to process resource', {
-            resource: facilitatorResource.resource,
-            error: error instanceof Error ? error.message : 'Unknown error',
-            stack: error instanceof Error ? error.stack : undefined,
-            durationMs: Date.now() - resourceStart,
-          });
           return {
             resource: facilitatorResource.resource,
             success: false,

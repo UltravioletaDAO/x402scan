@@ -1,68 +1,37 @@
-import { api } from '@/trpc/server';
-import { Section } from '../utils';
-import { FacilitatorCard, LoadingFacilitatorCard } from './_components/card';
+import { api, HydrateClient } from '@/trpc/server';
 import { Suspense } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { TopFacilitatorsContent } from './content';
+import { LoadingTopFacilitators } from './loading';
+import { facilitatorAddresses, facilitators } from '@/lib/facilitators';
+import type { Chain } from '@/types/chain';
 
-export const TopFacilitators = async () => {
+interface Props {
+  chain?: Chain;
+}
+
+export const TopFacilitators: React.FC<Props> = async ({ chain }: Props) => {
+  // Get facilitators for the default chain
+  const chainFacilitators = chain
+    ? facilitators.flatMap(f => f.addresses[chain] ?? [])
+    : facilitatorAddresses;
+
+  // Prefetch all data including chart data for each facilitator
+  await Promise.all([
+    api.stats.getOverallStatistics.prefetch({ chain }),
+    api.facilitators.list.prefetch({ chain, limit: 3 }),
+    ...chainFacilitators.map(address =>
+      api.stats.getBucketedStatistics.prefetch({
+        numBuckets: 48,
+        facilitators: [address],
+      })
+    ),
+  ]);
+
   return (
-    <ErrorBoundary
-      fallback={<p>There was an error loading the top facilitators data</p>}
-    >
+    <HydrateClient>
       <Suspense fallback={<LoadingTopFacilitators />}>
         <TopFacilitatorsContent />
       </Suspense>
-    </ErrorBoundary>
-  );
-};
-
-const TopFacilitatorsContent = async () => {
-  const [overallStats, facilitatorsData] = await Promise.all([
-    api.stats.getOverallStatistics({}),
-    api.facilitators.list({
-      limit: 3,
-    }),
-  ]);
-
-  if (!facilitatorsData) {
-    return null;
-  }
-
-  return (
-    <Container>
-      {facilitatorsData.map(stats => (
-        <FacilitatorCard
-          key={stats.facilitator_name}
-          facilitator={stats.facilitator}
-          stats={stats}
-          overallStats={overallStats}
-        />
-      ))}
-    </Container>
-  );
-};
-
-export const LoadingTopFacilitators = () => {
-  return (
-    <Container>
-      {Array.from({ length: 3 }).map((_, index) => (
-        <LoadingFacilitatorCard key={index} />
-      ))}
-    </Container>
-  );
-};
-
-const Container = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <Section
-      title="Top Facilitators"
-      description="Analytics on facilitators processing x402 transfers"
-      className="gap-4"
-      href="/facilitators"
-    >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {children}
-      </div>
-    </Section>
+    </HydrateClient>
   );
 };

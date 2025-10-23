@@ -14,6 +14,7 @@ import { useBalance } from '@/app/_hooks/use-balance';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEthBalance } from '@/app/_hooks/use-eth-balance';
+import { Chain } from '@/types/chain';
 
 interface Props {
   accountAddress: Address;
@@ -50,7 +51,7 @@ export const Withdraw: React.FC<Props> = () => {
     const parsedAddress = parseResult.data;
     writeContract(
       {
-        address: USDC_ADDRESS,
+        address: USDC_ADDRESS[Chain.BASE] as `0x${string}`,
         abi: erc20Abi,
         functionName: 'transfer',
         args: [parsedAddress, parseUnits(amount.toString(), 6)],

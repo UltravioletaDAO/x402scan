@@ -9,7 +9,7 @@ import { LoadingOverallStats } from './_components/stats';
 import { LoadingTopServers } from './_components/sellers/known-sellers';
 import { LoadingLatestTransactions } from './_components/latest-transactions';
 import { SearchButtonContent } from './_components/search-button';
-import { LoadingTopFacilitators } from './_components/top-facilitators';
+import { LoadingTopFacilitators } from './_components/top-facilitators/loading';
 
 export default function LoadingOverview() {
   return (
