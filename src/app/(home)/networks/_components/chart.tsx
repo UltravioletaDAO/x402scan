@@ -55,6 +55,21 @@ export const NetworksChart = () => {
       ),
     }));
 
+  const getValueHandler = (
+    data: number,
+    id: string,
+    allData?: Record<NetworkKey, number>
+  ) => {
+    if (!allData) return '0.0%';
+    const total = networks.reduce(
+      (sum, network) =>
+        sum + (allData[`${network.chain}-${id}` as NetworkKey] || 0),
+      0
+    );
+    const percentage = total > 0 ? (data / total) * 100 : 0;
+    return `${percentage.toFixed(1)}%`;
+  };
+
   return (
     <MultiCharts
       chartData={chartData}
@@ -78,17 +93,8 @@ export const NetworksChart = () => {
           tooltipRows: networks.map(n => ({
             key: `${n.chain}-transactions` as NetworkKey,
             label: n.name,
-            getValue: (data: number, allData?: Record<NetworkKey, number>) => {
-              if (!allData) return '0.0%';
-              const total = networks.reduce(
-                (sum, network) =>
-                  sum +
-                  (allData[`${network.chain}-transactions` as NetworkKey] || 0),
-                0
-              );
-              const percentage = total > 0 ? (data / total) * 100 : 0;
-              return `${percentage.toFixed(1)}%`;
-            },
+            getValue: (data: number, allData?: Record<NetworkKey, number>) =>
+              getValueHandler(data, 'transactions', allData),
             labelClassName: 'text-xs font-mono',
             valueClassName: 'text-xs font-mono',
             dotColor: n.color,
@@ -112,16 +118,8 @@ export const NetworksChart = () => {
           tooltipRows: networks.map(n => ({
             key: `${n.chain}-amount` as NetworkKey,
             label: n.name,
-            getValue: (data: number, allData?: Record<NetworkKey, number>) => {
-              if (!allData) return '0.0%';
-              const total = networks.reduce(
-                (sum, network) =>
-                  sum + (allData[`${network.chain}-amount` as NetworkKey] || 0),
-                0
-              );
-              const percentage = total > 0 ? (data / total) * 100 : 0;
-              return `${percentage.toFixed(1)}%`;
-            },
+            getValue: (data: number, allData?: Record<NetworkKey, number>) =>
+              getValueHandler(data, 'amount', allData),
             labelClassName: 'text-xs font-mono',
             valueClassName: 'text-xs font-mono',
             dotColor: n.color,
