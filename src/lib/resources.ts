@@ -112,10 +112,10 @@ export const registerResource = async (url: string, data: unknown) => {
   return {
     success: true as const,
     resource,
-    accepts: {
-      ...resource.accepts,
-      maxAmountRequired: formatTokenAmount(resource.accepts.maxAmountRequired),
-    },
+    accepts: resource.accepts.map(accept => ({
+      ...accept,
+      maxAmountRequired: formatTokenAmount(accept.maxAmountRequired),
+    })),
     enhancedParseWarnings,
     response: data,
   };

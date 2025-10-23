@@ -1,10 +1,11 @@
-import { unstable_cache } from 'next/cache';
-
 import { prisma } from '../client';
 
-import type { ResourceOrigin } from '@prisma/client';
+import { mixedAddressSchema } from '@/lib/schemas';
 
-const getAcceptsAddressesUncached = async () => {
+import type { Chain } from '@/types/chain';
+import type { AcceptsNetwork, ResourceOrigin } from '@prisma/client';
+
+export const getAcceptsAddresses = async (chain?: Chain) => {
   const accepts = await prisma.accepts.findMany({
     include: {
       resourceRel: {
@@ -14,36 +15,30 @@ const getAcceptsAddressesUncached = async () => {
         },
       },
     },
+    where: {
+      network: chain as AcceptsNetwork,
+    },
   });
 
-  return accepts.reduce(
-    (acc, accept) => {
-      if (!accept.payTo) {
-        return acc;
-      }
-      if (acc[accept.payTo]) {
-        const existingOrigin = acc[accept.payTo].find(
-          origin => origin.id === accept.resourceRel.origin.id
-        );
-        if (!existingOrigin) {
-          acc[accept.payTo].push(accept.resourceRel.origin);
+  return accepts
+    .filter(accept => mixedAddressSchema.safeParse(accept.payTo).success)
+    .reduce(
+      (acc, accept) => {
+        if (!accept.payTo) {
+          return acc;
         }
-      } else {
-        acc[accept.payTo] = [accept.resourceRel.origin];
-      }
-      return acc;
-    },
-    {} as Record<string, Array<ResourceOrigin>>
-  );
-};
-
-export const getAcceptsAddresses = async () => {
-  return await unstable_cache(
-    getAcceptsAddressesUncached,
-    ['accepts-addresses'],
-    {
-      revalidate: 300, // 5 minutes - this data doesn't change often
-      tags: ['accepts'],
-    }
-  )();
+        if (acc[accept.payTo]) {
+          const existingOrigin = acc[accept.payTo].find(
+            origin => origin.id === accept.resourceRel.origin.id
+          );
+          if (!existingOrigin) {
+            acc[accept.payTo].push(accept.resourceRel.origin);
+          }
+        } else {
+          acc[accept.payTo] = [accept.resourceRel.origin];
+        }
+        return acc;
+      },
+      {} as Record<string, Array<ResourceOrigin>>
+    );
 };

@@ -3,10 +3,12 @@ import z from 'zod';
 import {
   listTopSellers,
   listTopSellersInputSchema,
-} from '@/services/cdp/sql/sellers/list';
+} from '@/services/transfers/sellers/list';
 import { getAcceptsAddresses } from '@/services/db/resources/accepts';
-import type { FacilitatorAddress } from '@/lib/facilitators';
-import type { Address } from 'viem';
+
+import type { MixedAddress } from '@/types/address';
+import type { Chain } from '@/types/chain';
+import { mixedAddressSchema } from '@/lib/schemas';
 
 export const sellersRouter = createTRPCRouter({
   list: {
@@ -18,12 +20,14 @@ export const sellersRouter = createTRPCRouter({
     bazaar: infiniteQueryProcedure(z.bigint())
       .input(listTopSellersInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
-        const originsByAddress = await getAcceptsAddresses();
+        const originsByAddress = await getAcceptsAddresses(input.chain);
 
         const result = await listTopSellers(
           {
             ...input,
-            addresses: Object.keys(originsByAddress),
+            addresses: Object.keys(originsByAddress).map(addr =>
+              mixedAddressSchema.parse(addr)
+            ),
           },
           pagination
         );
@@ -34,12 +38,13 @@ export const sellersRouter = createTRPCRouter({
           {
             originId: string;
             origins: (typeof originsByAddress)[string];
-            recipients: Address[];
-            facilitators: FacilitatorAddress[];
+            recipients: MixedAddress[];
+            facilitators: MixedAddress[];
             tx_count: number;
             total_amount: number;
             latest_block_timestamp: Date;
             unique_buyers: number;
+            chains: Set<Chain>;
           }
         >();
 
@@ -67,16 +72,21 @@ export const sellersRouter = createTRPCRouter({
                 existing.facilitators.push(facilitator);
               }
             }
+            // Merge chains (deduplicated)
+            for (const chain of item.chains) {
+              existing.chains.add(chain);
+            }
           } else {
             originMap.set(originId, {
               originId,
               origins,
-              recipients: [item.recipient],
+              recipients: [item.recipient as MixedAddress],
               facilitators: [...item.facilitators],
               tx_count: item.tx_count,
               total_amount: item.total_amount,
               latest_block_timestamp: item.latest_block_timestamp,
               unique_buyers: item.unique_buyers,
+              chains: new Set(item.chains),
             });
           }
         }
@@ -90,6 +100,7 @@ export const sellersRouter = createTRPCRouter({
           total_amount: item.total_amount,
           latest_block_timestamp: item.latest_block_timestamp,
           unique_buyers: item.unique_buyers,
+          chains: Array.from(item.chains),
         }));
 
         return {

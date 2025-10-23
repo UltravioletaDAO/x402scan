@@ -5,6 +5,7 @@ import { getWalletForUserId as getWalletForUserIdDb } from '@/services/db/user/s
 import { encodeFunctionData, erc20Abi, parseUnits } from 'viem';
 import { ethereumAddressSchema } from '@/lib/schemas';
 import z from 'zod';
+import { Chain } from '@/types/chain';
 
 export const getWalletForUserId = async (userId: string) => {
   const dbWallet = await getWalletForUserIdDb(userId);
@@ -29,7 +30,8 @@ export const getUSDCBaseBalanceFromUserId = async (
 
   const usdcBalance = balances.balances.find(
     balance =>
-      balance.token.contractAddress.toLowerCase() === USDC_ADDRESS.toLowerCase()
+      balance.token.contractAddress.toLowerCase() ===
+      USDC_ADDRESS[Chain.BASE].toLowerCase()
   );
 
   if (!usdcBalance) {
@@ -85,7 +87,7 @@ export const sendServerWalletUSDC = async (
   return await wallet.wallet.sendTransaction({
     network: 'base',
     transaction: {
-      to: USDC_ADDRESS as `0x${string}`,
+      to: USDC_ADDRESS[Chain.BASE],
       value: 0n,
       data: encodeFunctionData({
         abi: erc20Abi,

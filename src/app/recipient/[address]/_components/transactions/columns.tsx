@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, DollarSign, Hash, User } from 'lucide-react';
+import { Calendar, DollarSign, Globe, Hash, Server, User } from 'lucide-react';
 import Link from 'next/link';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,6 +15,8 @@ import { formatTokenAmount } from '@/lib/token';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { TransfersSortingContext } from '@/app/_contexts/sorting/transfers/context';
+import { Chains } from '@/app/_components/chains';
+import { Facilitator } from '@/app/_components/facilitator';
 
 type ColumnType = RouterOutputs['public']['transfers']['list']['items'][number];
 
@@ -53,6 +55,54 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
+    accessorKey: 'block_timestamp',
+    header: () => (
+      <HeaderCell
+        Icon={Calendar}
+        label="Timestamp"
+        className="mx-auto"
+        sorting={{
+          sortContext: TransfersSortingContext,
+          sortKey: 'block_timestamp',
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center font-mono text-xs">
+        {formatCompactAgo(row.original.block_timestamp)}
+      </div>
+    ),
+    size: 150,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
+    accessorKey: 'chains',
+    header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
+    cell: ({ row }) => (
+      <Chains
+        chains={[row.original.chain]}
+        iconClassName="size-4"
+        className="mx-auto justify-center"
+      />
+    ),
+    size: 100,
+    loading: () => <Skeleton className="size-4 mx-auto" />,
+  },
+  {
+    accessorKey: 'facilitator',
+    header: () => (
+      <HeaderCell Icon={Server} label="Facilitator" className="mx-auto" />
+    ),
+    cell: ({ row }) => (
+      <Facilitator
+        address={row.original.transaction_from}
+        className="mx-auto justify-center"
+      />
+    ),
+    size: 150,
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
     accessorKey: 'transaction_hash',
     header: () => (
       <HeaderCell Icon={Hash} label="Transaction Hash" className="mx-auto" />
@@ -70,26 +120,5 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     size: 150,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
-  },
-  {
-    accessorKey: 'block_timestamp',
-    header: () => (
-      <HeaderCell
-        Icon={Calendar}
-        label="Timestamp"
-        className="ml-auto"
-        sorting={{
-          sortContext: TransfersSortingContext,
-          sortKey: 'block_timestamp',
-        }}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="text-right font-mono text-xs">
-        {formatCompactAgo(row.original.block_timestamp)}
-      </div>
-    ),
-    size: 150,
-    loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];

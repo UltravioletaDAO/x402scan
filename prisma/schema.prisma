@@ -109,6 +109,8 @@ enum AcceptsNetwork {
   iotex
   solana_devnet
   solana
+  polygon
+  optimism
 }
 
 model Accepts {
@@ -169,6 +171,7 @@ model ResourceInvocation {
   id                  String   @id @default(uuid())
   resourceId          String?
   statusCode          Int
+  duration            Int
   statusText          String
   method              String
   url                 String

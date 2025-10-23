@@ -19,7 +19,7 @@ export const ConnectWalletDialogContent = () => {
   );
 
   return (
-    <div className="flex flex-col gap-6 sm:max-w-sm p-6">
+    <div className="flex flex-col gap-6 max-w-full p-6">
       <DialogHeader className="items-center gap-2">
         <Logo className="size-16" />
         <div className="flex flex-col gap-2">

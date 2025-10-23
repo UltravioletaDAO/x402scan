@@ -41,7 +41,9 @@ export const StatsCards: React.FC<Props> = async ({ address }) => {
       notation: 'compact',
     }),
     formatTokenAmount(BigInt(overallStats.total_amount)),
-    formatCompactAgo(overallStats.latest_block_timestamp),
+    overallStats.latest_block_timestamp
+      ? formatCompactAgo(overallStats.latest_block_timestamp)
+      : 'N/A',
   ];
 
   return stats.map((stat, index) => (

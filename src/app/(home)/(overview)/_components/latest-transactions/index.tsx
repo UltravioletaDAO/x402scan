@@ -13,13 +13,19 @@ import { subMonths } from 'date-fns';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
+import type { Chain } from '@/types/chain';
 
-export const LatestTransactions = async () => {
+interface Props {
+  chain?: Chain;
+}
+
+export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
   const limit = 100;
 
   await api.public.transfers.list.prefetch({
+    chain,
     limit,
     sorting: defaultTransfersSorting,
     startDate,

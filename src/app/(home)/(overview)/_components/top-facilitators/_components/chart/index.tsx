@@ -1,34 +1,21 @@
-import { api } from '@/trpc/server';
-
 import {
   FacilitatorChartContent,
   LoadingFacilitatorChartContent,
 } from './chart';
 
-import type { Facilitator } from '@/lib/facilitators';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 
 interface Props {
-  facilitator: Facilitator;
+  chartData: ChartData<{
+    total_transactions: number;
+  }>[];
   total_transactions: number;
 }
 
-export const FacilitatorChart: React.FC<Props> = async ({
-  facilitator,
+export const FacilitatorChart: React.FC<Props> = ({
+  chartData,
   total_transactions,
 }) => {
-  const bucketedStats = await api.public.stats.bucketed({
-    numBuckets: 48,
-    facilitators: facilitator.addresses,
-  });
-
-  const chartData: ChartData<{
-    total_transactions: number;
-  }>[] = bucketedStats.map(stat => ({
-    timestamp: stat.bucket_start.toISOString(),
-    total_transactions: Number(stat.total_transactions),
-  }));
-
   return (
     <FacilitatorChartContent
       chartData={chartData}

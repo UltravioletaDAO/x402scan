@@ -8,11 +8,7 @@ import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
-import {
-  ethereumAddressSchema,
-  facilitatorAddressSchema,
-  sortingSchema,
-} from '@/lib/schemas';
+import { ethereumAddressSchema, sortingSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';

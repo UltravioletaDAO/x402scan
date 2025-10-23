@@ -18,7 +18,13 @@ import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
 
-export const OverallStats = async () => {
+import type { Chain } from '@/types/chain';
+
+interface Props {
+  chain?: Chain;
+}
+
+export const OverallStats = async ({ chain }: Props) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
@@ -26,15 +32,18 @@ export const OverallStats = async () => {
     api.public.stats.overall.prefetch({
       startDate,
       endDate,
+      chain,
     }),
     api.public.stats.overall.prefetch({
       startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
       endDate: startDate,
+      chain,
     }),
     api.public.stats.bucketed.prefetch({
       startDate,
       endDate,
       numBuckets: 32,
+      chain,
     }),
   ]);
 

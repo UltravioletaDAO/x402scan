@@ -48,18 +48,20 @@ export const enhancedAcceptsSchema = PaymentRequirementsSchema.extend({
   outputSchema: enhancedOutputSchema.optional(),
 });
 
+const namedNetwork = z3.enum([
+  'base-sepolia',
+  'avalanche-fuji',
+  'base',
+  'sei',
+  'sei-testnet',
+  'avalanche',
+  'iotex',
+  'solana-devnet',
+  'solana',
+]);
+
 const EnhancedNetworkSchema = z3.union([
-  z3.enum([
-    'base-sepolia',
-    'avalanche-fuji',
-    'base',
-    'sei',
-    'sei-testnet',
-    'avalanche',
-    'iotex',
-    'solana-devnet',
-    'solana',
-  ]),
+  namedNetwork,
   z3
     .string()
     .refine(
@@ -72,10 +74,11 @@ const EnhancedNetworkSchema = z3.union([
 
 type EnhancedNetworkSchema = z3.infer<typeof EnhancedNetworkSchema>;
 
-const EnhancedPaymentRequirementsSchema = PaymentRequirementsSchema.extend({
-  network: EnhancedNetworkSchema,
-  outputSchema: enhancedOutputSchema.optional(),
-});
+export const EnhancedPaymentRequirementsSchema =
+  PaymentRequirementsSchema.extend({
+    network: EnhancedNetworkSchema,
+    outputSchema: enhancedOutputSchema.optional(),
+  });
 
 type EnhancedPaymentRequirementsSchema = z3.infer<
   typeof EnhancedPaymentRequirementsSchema

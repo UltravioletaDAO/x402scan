@@ -23,7 +23,7 @@ const statsData: Stat[] = [
   { title: 'Sellers', Icon: Calendar },
 ];
 
-export const StatsCards: React.FC<Props> = async ({ stats }) => {
+export const StatsCards: React.FC<Props> = ({ stats }) => {
   const values = [
     stats.tx_count.toLocaleString(undefined, {
       minimumFractionDigits: 0,

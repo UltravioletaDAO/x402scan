@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, DollarSign, Hash, Server, User } from 'lucide-react';
+import { Calendar, DollarSign, Globe, Hash, Server, User } from 'lucide-react';
 
 import Link from 'next/link';
 
@@ -19,6 +19,7 @@ import { formatTokenAmount } from '@/lib/token';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { TransfersSortingContext } from '@/app/_contexts/sorting/transfers/context';
+import { Chains } from '@/app/_components/chains';
 
 type ColumnType = RouterOutputs['public']['transfers']['list']['items'][number];
 
@@ -112,6 +113,19 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     size: 150,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
+    accessorKey: 'chains',
+    header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
+    cell: ({ row }) => (
+      <Chains
+        chains={[row.original.chain]}
+        iconClassName="size-4"
+        className="mx-auto justify-center"
+      />
+    ),
+    size: 100,
+    loading: () => <Skeleton className="size-4 mx-auto" />,
   },
   {
     accessorKey: 'facilitator',

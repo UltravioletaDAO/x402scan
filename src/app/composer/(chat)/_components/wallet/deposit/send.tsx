@@ -20,6 +20,7 @@ import { USDC_ADDRESS } from '@/lib/utils';
 import type { Address } from 'viem';
 import { api } from '@/trpc/client';
 import { base } from 'viem/chains';
+import { Chain } from '@/types/chain';
 
 interface Props {
   address: Address;
@@ -46,7 +47,7 @@ export const Send: React.FC<Props> = ({ address, onSuccess }) => {
   const handleSubmit = () => {
     writeContract(
       {
-        address: USDC_ADDRESS,
+        address: USDC_ADDRESS[Chain.BASE],
         abi: erc20Abi,
         functionName: 'transfer',
         args: [address, parseUnits(amount.toString(), 6)],
