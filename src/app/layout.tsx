@@ -33,6 +33,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ChainSelector } from './_components/layout/navbar/chain-selector';
 
 import './globals.css';
+import { connection } from 'next/server';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -113,10 +114,11 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   breadcrumbs,
 }: LayoutProps<'/'>) {
+  await connection();
   return (
     <html lang="en" suppressHydrationWarning>
       <body
