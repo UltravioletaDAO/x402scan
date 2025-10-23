@@ -12,7 +12,7 @@ export default async function ResourcesPage({
   const { address } = await params;
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  const originsWithResources = await api.origins.list.withResources.byAddress({
+  await api.origins.list.withResources.prefetch({
     address,
     chain,
   });
@@ -24,10 +24,7 @@ export default async function ResourcesPage({
         description="Resources provided by this address grouped by server origin"
       />
       <Body className="gap-0">
-        <ResourcesByOrigin
-          originsWithResources={originsWithResources}
-          emptyText="No resources found for this address"
-        />
+        <ResourcesByOrigin emptyText="No resources found for this address" />
       </Body>
     </HydrateClient>
   );

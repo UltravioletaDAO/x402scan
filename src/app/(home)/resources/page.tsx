@@ -1,5 +1,5 @@
 import { Body, Heading } from '../../_components/layout/page-utils';
-import { api } from '@/trpc/server';
+import { api, HydrateClient } from '@/trpc/server';
 import { ResourcesByOrigin } from '@/app/_components/resources/by-origin';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
@@ -11,10 +11,10 @@ export default async function ResourcesPage({
 }: PageProps<'/resources'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  const resources = await api.origins.list.withResources.all({ chain });
+  await api.origins.list.withResources.prefetch({ chain });
 
   return (
-    <div>
+    <HydrateClient>
       <Heading
         title="All Resources"
         description="x402 resources registered on x402scan. Coinbase Bazaar resources are automatically registered."
@@ -28,11 +28,8 @@ export default async function ResourcesPage({
         }
       />
       <Body>
-        <ResourcesByOrigin
-          originsWithResources={resources}
-          emptyText="No resources found"
-        />
+        <ResourcesByOrigin emptyText="No resources found" />
       </Body>
-    </div>
+    </HydrateClient>
   );
 }

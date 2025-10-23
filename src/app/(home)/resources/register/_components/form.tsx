@@ -66,7 +66,7 @@ export const RegisterResourceForm = () => {
       void utils.origins.list.withResources.invalidate();
       for (const accept of data.accepts) {
         void utils.resources.getResourceByAddress.invalidate(accept.payTo);
-        void utils.origins.list.withResources.byAddress.invalidate({
+        void utils.origins.list.withResources.invalidate({
           address: accept.payTo,
           chain: getChain(accept.network),
         });

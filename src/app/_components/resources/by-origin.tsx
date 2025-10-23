@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 
 import { OriginCard } from '@/app/_components/resources/origin';
@@ -5,7 +7,7 @@ import { ResourceExecutor } from './executor';
 
 import { getBazaarMethod } from './executor/utils';
 
-import type { RouterOutputs } from '@/trpc/client';
+import { api } from '@/trpc/client';
 import {
   Empty,
   EmptyContent,
@@ -17,16 +19,27 @@ import {
 import { Plus, ServerOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { useChain } from '@/app/_contexts/chain/hook';
 
 interface Props {
-  originsWithResources: RouterOutputs['origins']['list']['withResources']['byAddress'];
   emptyText: string;
 }
 
-export const ResourcesByOrigin: React.FC<Props> = ({
-  originsWithResources,
-  emptyText,
-}) => {
+export const ResourcesByOrigin: React.FC<Props> = ({ emptyText }) => {
+  const { chain } = useChain();
+
+  const [originsWithResources] =
+    api.origins.list.withResources.useSuspenseQuery({ chain });
+
+  // Log all origins whose first resource has no accepts or empty accepts array
+  console.log(
+    originsWithResources.filter(origin =>
+      origin.resources.some(
+        resource => !resource.accepts || resource.accepts.length === 0
+      )
+    )
+  );
+
   if (originsWithResources.length === 0) {
     return (
       <Card>
