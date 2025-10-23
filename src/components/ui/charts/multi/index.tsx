@@ -6,7 +6,7 @@ import { BaseBarChart, LoadingBarChart } from '../chart/bar';
 import { BaseAreaChart, LoadingAreaChart } from '../chart/area';
 
 import type { ChartData, ChartProps } from '../chart/types';
-import type { BarChartProps } from '../chart/bar/types';
+import type { BarChartProps, StackOffset } from '../chart/bar/types';
 import type { AreaChartProps } from '../chart/area/types';
 
 import type { TabsTriggerProps } from './tabs';
@@ -18,7 +18,7 @@ interface TabProps<T extends Record<string, number>> {
         type: 'bar';
         bars: BarChartProps<T>['bars'];
         solid?: boolean;
-        stackOffset?: 'expand' | 'none' | 'wiggle' | 'silhouette';
+        stackOffset?: StackOffset;
       }
     | {
         type: 'area';

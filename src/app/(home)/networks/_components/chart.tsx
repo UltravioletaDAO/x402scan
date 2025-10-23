@@ -11,7 +11,6 @@ import { api } from '@/trpc/client';
 
 type NetworkKey = `${Chain}-${'transactions' | 'amount'}`;
 
-// Define colors for each network
 const NETWORK_COLORS: Record<Chain, string> = {
   [Chain.BASE]: 'hsl(221, 83%, 53%)',
   [Chain.SOLANA]: 'hsl(271, 100%, 71%)',
@@ -19,7 +18,6 @@ const NETWORK_COLORS: Record<Chain, string> = {
   [Chain.OPTIMISM]: 'hsl(0, 91%, 71%)',
 };
 
-// Get all networks as array
 const networks = Object.values(Chain).map(chain => ({
   chain,
   name: CHAIN_LABELS[chain],
