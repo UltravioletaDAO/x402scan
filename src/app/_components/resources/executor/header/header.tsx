@@ -2,11 +2,12 @@
 
 import { Method } from './method';
 import { FetchButton } from './fetch-button';
-import { Status } from './status';
 
 import type { Resources } from '@prisma/client';
 import type { Methods } from '@/types/x402';
 import type { ParsedX402Response } from '@/lib/x402/schema';
+import { Chains } from '@/app/_components/chains';
+import { Chain } from '@/types/chain';
 
 interface Props {
   resource: Resources;
@@ -23,9 +24,19 @@ export const Header: React.FC<Props> = ({ resource, method, response }) => {
           <span className="font-mono text-sm truncate">
             {resource.resource}
           </span>
-          <Status response={response} />
         </div>
-        <FetchButton />
+        <div className="flex items-center gap-2">
+          <Chains
+            chains={
+              (response.accepts
+                ?.map(accept => accept.network)
+                .filter(network =>
+                  Object.values(Chain).includes(network as Chain)
+                ) ?? []) as Chain[]
+            }
+          />
+          <FetchButton />
+        </div>
       </div>
     </>
   );
