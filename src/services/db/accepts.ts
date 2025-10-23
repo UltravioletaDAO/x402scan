@@ -1,4 +1,4 @@
-import type { ResourceOrigin } from '@prisma/client';
+import type { AcceptsNetwork, ResourceOrigin } from '@prisma/client';
 import { prisma } from './client';
 import { mixedAddressSchema } from '@/lib/schemas';
 import type { Chain } from '@/types/chain';
@@ -14,7 +14,7 @@ export const getAcceptsAddresses = async (chain?: Chain) => {
       },
     },
     where: {
-      network: chain,
+      network: chain as AcceptsNetwork,
     },
   });
 
