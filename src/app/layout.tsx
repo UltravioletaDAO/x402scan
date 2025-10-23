@@ -32,8 +32,9 @@ import type { Metadata, Viewport } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { ChainSelector } from './_components/layout/navbar/chain-selector';
 
+import { connection } from 'next/server';
+
 import './globals.css';
-import Footer from './_components/layout/footer';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -114,10 +115,11 @@ export const viewport: Viewport = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
   breadcrumbs,
 }: LayoutProps<'/'>) {
+  await connection();
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -178,7 +180,6 @@ export default function RootLayout({
                           <div className="bg-background flex-1 flex flex-col">
                             {children}
                           </div>
-                          <Footer />
                         </div>
                       </ThemeProvider>
                     </PostHogProvider>

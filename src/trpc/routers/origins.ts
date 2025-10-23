@@ -1,31 +1,26 @@
-import { mixedAddressSchema } from '@/lib/schemas';
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import {
-  listOriginsByAddress,
+  listOrigins,
+  listOriginsSchema,
   listOriginsWithResources,
-  listOriginsWithResourcesByAddress,
+  listOriginsWithResourcesSchema,
   searchOrigins,
   searchOriginsSchema,
 } from '@/services/db/origin';
 
 export const originsRouter = createTRPCRouter({
   list: {
-    byAddress: publicProcedure
-      .input(mixedAddressSchema)
+    origins: publicProcedure
+      .input(listOriginsSchema)
       .query(async ({ input }) => {
-        return await listOriginsByAddress(input);
+        return await listOrigins(input);
       }),
 
-    withResources: {
-      all: publicProcedure.query(async () => {
-        return await listOriginsWithResources();
+    withResources: publicProcedure
+      .input(listOriginsWithResourcesSchema)
+      .query(async ({ input }) => {
+        return await listOriginsWithResources(input);
       }),
-      byAddress: publicProcedure
-        .input(mixedAddressSchema)
-        .query(async ({ input }) => {
-          return await listOriginsWithResourcesByAddress(input);
-        }),
-    },
   },
   search: publicProcedure
     .input(searchOriginsSchema)

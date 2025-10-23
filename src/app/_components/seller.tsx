@@ -24,9 +24,14 @@ export const Seller: React.FC<Props> = ({
     data: origins,
     isLoading,
     error,
-  } = api.origins.list.byAddress.useQuery(address, {
-    enabled: !!address,
-  });
+  } = api.origins.list.origins.useQuery(
+    {
+      address,
+    },
+    {
+      enabled: !!address,
+    }
+  );
 
   if (error) {
     console.log(address);
