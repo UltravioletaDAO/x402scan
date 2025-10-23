@@ -36,18 +36,16 @@ export const ResourceExecutor: React.FC<Props> = ({
     >
       <Card className={cn(className, 'overflow-hidden')}>
         <AccordionTrigger asChild>
-          <CardHeader className="bg-muted w-full flex flex-row items-center justify-between space-y-0 p-0 hover:border-primary transition-colors">
+          <CardHeader className="bg-muted w-full flex flex-row items-center justify-between space-y-0 p-0 hover:border-primary transition-colors px-4 py-2 gap-4">
             <Header
               resource={resource}
               method={bazaarMethod}
               response={response}
             />
-            <div className="border-l border-border size-8 flex items-center justify-center">
-              <ChevronDownIcon className="size-4" />
-            </div>
+            <ChevronDownIcon className="size-4" />
           </CardHeader>
         </AccordionTrigger>
-        <AccordionContent>
+        <AccordionContent className="pb-0">
           <Form x402Response={response} />
         </AccordionContent>
       </Card>
