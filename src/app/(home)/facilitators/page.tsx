@@ -17,8 +17,13 @@ import {
 } from './_components/facilitators';
 import { FacilitatorsSortingProvider } from '@/app/_contexts/sorting/facilitators/provider';
 import { defaultFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/default';
+import { getChain } from '@/app/_lib/chain';
 
-export default async function FacilitatorsPage() {
+export default async function FacilitatorsPage({
+  searchParams,
+}: PageProps<'/facilitators'>) {
+  const { initialChain } = await searchParams;
+  const chain = getChain(initialChain);
   const endDate = new Date();
   const startDate = subDays(endDate, ActivityTimeframe.ThirtyDays);
 
@@ -27,14 +32,17 @@ export default async function FacilitatorsPage() {
       numBuckets: 48,
       startDate,
       endDate,
+      chain,
     }),
     api.stats.getOverallStatistics.prefetch({
       startDate,
       endDate,
+      chain,
     }),
     api.facilitators.list.prefetch({
       startDate,
       endDate,
+      chain,
     }),
   ]);
 

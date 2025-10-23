@@ -17,24 +17,24 @@ import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { firstTransfer } from '@/services/facilitator/constants';
 
 import { ActivityTimeframe } from '@/types/timeframes';
-import { DEFAULT_CHAIN } from '@/types/chain';
 import { ErrorBoundary } from 'react-error-boundary';
 
-export const TopServers = async () => {
+import type { Chain } from '@/types/chain';
+
+interface Props {
+  chain?: Chain;
+}
+
+export const TopServers = async ({ chain }: Props) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
   await Promise.all([
     api.sellers.list.bazaar.prefetch({
-      chain: DEFAULT_CHAIN,
+      chain,
       startDate,
       endDate,
       sorting: defaultSellersSorting,
-    }),
-    api.stats.bazaar.overallStatistics.prefetch({
-      chain: DEFAULT_CHAIN,
-      startDate,
-      endDate,
     }),
   ]);
 

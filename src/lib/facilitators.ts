@@ -1,6 +1,6 @@
 import { Chain } from '@/types/chain';
 
-import type { MixedAddress } from '@/types/address';
+import type { MixedAddress, SolanaAddress } from '@/types/address';
 import { mixedAddressSchema } from './schemas';
 
 export type Facilitator = {
@@ -41,6 +41,9 @@ const payAiFacilitator: Facilitator = {
   link: 'https://payai.network',
   addresses: {
     [Chain.BASE]: ['0xc6699d2aada6c36dfea5c248dd70f9cb0235cb63'],
+    [Chain.SOLANA]: [
+      '2wKupLR9q6wXYppw8Gr2NvWxKBUqm4PPJKkQfoxHDBg4' as SolanaAddress,
+    ],
   },
   color: 'var(--color-purple-600)',
 };
@@ -67,12 +70,26 @@ const thirdwebFacilitator: Facilitator = {
   color: 'var(--color-pink-600)',
 };
 
+const corbitsFacilitator: Facilitator = {
+  id: 'corbits',
+  name: 'Corbits' as const,
+  image: '/corbits.png',
+  link: 'https://corbits.dev',
+  addresses: {
+    [Chain.SOLANA]: [
+      'AepWpq3GQwL8CeKMtZyKtKPa7W91Coygh3ropAJapVdU' as SolanaAddress,
+    ],
+  },
+  color: 'var(--color-orange-600)',
+};
+
 export const facilitators: Facilitator[] = [
   coinbaseFacilitator,
   x402rsFacilitator,
   payAiFacilitator,
   aurraCloudFacilitator,
   thirdwebFacilitator,
+  corbitsFacilitator,
 ];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];

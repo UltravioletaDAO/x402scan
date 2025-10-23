@@ -50,11 +50,6 @@ const getOverallStatisticsUncached = async (
 
   const result = await queryRaw(sql, overallStatisticsResultSchema);
 
-  console.log({
-    input,
-    result,
-  });
-
   const {
     total_transactions = 0,
     total_amount = 0,

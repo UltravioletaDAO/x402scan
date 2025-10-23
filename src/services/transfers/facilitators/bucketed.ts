@@ -74,7 +74,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
       ) AS bucket_start
     ),
     facilitator_list AS (
-      SELECT unnest(${Prisma.join(chainFacilitators.map(f => f.name))}::text[]) AS facilitator_name
+      SELECT unnest(${chainFacilitators.map(f => f.name)}::text[]) AS facilitator_name
     ),
     all_combinations AS (
       SELECT ab.bucket_start, fl.facilitator_name
@@ -89,7 +89,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
         CASE ${Prisma.join(
           Object.entries(facilitatorMapping).map(
             ([addr, name]) =>
-              Prisma.sql`WHEN LOWER(t.transaction_from) = ${addr.toLowerCase()} THEN ${name}`
+              Prisma.sql`WHEN t.transaction_from = ${addr} THEN ${name}`
           ),
           ' '
         )}

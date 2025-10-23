@@ -3,12 +3,11 @@ import {
   facilitators,
   type Facilitator,
 } from '@/lib/facilitators';
-import { sortingSchema } from '../lib';
+import { baseQuerySchema, sortingSchema } from '../lib';
 import z from 'zod';
 import { mixedAddressSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { queryRaw } from '@/services/db/transfers-client';
-import { Chain, DEFAULT_CHAIN, SUPPORTED_CHAINS } from '@/types/chain';
 import { Prisma } from '@prisma/client';
 
 const listTopFacilitatorsSortIds = [
@@ -21,8 +20,7 @@ const listTopFacilitatorsSortIds = [
 
 export type FacilitatorsSortId = (typeof listTopFacilitatorsSortIds)[number];
 
-export const listTopFacilitatorsInputSchema = z.object({
-  chain: z.enum(SUPPORTED_CHAINS).default(DEFAULT_CHAIN),
+export const listTopFacilitatorsInputSchema = baseQuerySchema.extend({
   startDate: z.date().optional(),
   endDate: z.date().optional(),
   limit: z.number().default(100),
@@ -30,7 +28,6 @@ export const listTopFacilitatorsInputSchema = z.object({
     id: 'tx_count',
     desc: true,
   }),
-  tokens: z.array(mixedAddressSchema).optional(),
 });
 
 type FacilitatorItem = {
@@ -60,14 +57,6 @@ const listTopFacilitatorsUncached = async (
   const parsed = listTopFacilitatorsInputSchema.parse(input);
   const { startDate, endDate, limit, sorting, chain } = parsed;
 
-  const chainFacilitators = chain
-    ? facilitators.filter(f => f.addresses[chain] !== undefined)
-    : facilitators;
-
-  const facilitatorAddresses = chainFacilitators.flatMap(
-    f => f.addresses[chain]
-  );
-
   const sortColumnMap: Record<FacilitatorsSortId, string> = {
     tx_count: 'tx_count',
     total_amount: 'total_amount',
@@ -89,7 +78,6 @@ const listTopFacilitatorsUncached = async (
     FROM "TransferEvent" t
     WHERE 1=1
       ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-      ${facilitatorAddresses.length > 0 ? Prisma.sql`AND t.transaction_from = ANY(${facilitatorAddresses}::text[])` : Prisma.empty}
       ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
       ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
     GROUP BY t.transaction_from
@@ -100,28 +88,32 @@ const listTopFacilitatorsUncached = async (
   const rawResult = await queryRaw(sql, facilitatorResultSchema);
 
   // Map results to include facilitator objects
-  const results: FacilitatorItem[] = rawResult.map(row => {
-    const facilitator = chainFacilitators.find(f =>
-      f.addresses[chain]?.some(addr =>
-        chain === Chain.SOLANA
-          ? addr === row.transaction_from
-          : addr.toLowerCase() === row.transaction_from.toLowerCase()
-      )
-    );
+  const results = rawResult
+    .map(row => {
+      const facilitator = facilitators.find(f =>
+        Object.values(f.addresses)
+          .flat()
+          .some(addr => mixedAddressSchema.parse(addr) === row.transaction_from)
+      );
 
-    return {
-      facilitator_name: facilitator?.name ?? ('Unknown' as const),
-      facilitator: facilitator ?? facilitatorNameMap.get('Coinbase')!,
-      tx_count: row.tx_count,
-      total_amount:
-        typeof row.total_amount === 'number'
-          ? row.total_amount
-          : Number(row.total_amount),
-      latest_block_timestamp: row.latest_block_timestamp,
-      unique_buyers: row.unique_buyers,
-      unique_sellers: row.unique_sellers,
-    };
-  });
+      if (!facilitator) {
+        return null;
+      }
+
+      return {
+        facilitator_name: facilitator?.name ?? ('Unknown' as const),
+        facilitator: facilitator ?? facilitatorNameMap.get('Coinbase')!,
+        tx_count: row.tx_count,
+        total_amount:
+          typeof row.total_amount === 'number'
+            ? row.total_amount
+            : Number(row.total_amount),
+        latest_block_timestamp: row.latest_block_timestamp,
+        unique_buyers: row.unique_buyers,
+        unique_sellers: row.unique_sellers,
+      };
+    })
+    .filter(Boolean) as FacilitatorItem[];
 
   return results;
 };
