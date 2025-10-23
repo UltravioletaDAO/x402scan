@@ -1,7 +1,7 @@
 import { useIsInitialized } from '@coinbase/cdp-hooks';
 import { useWalletClient } from 'wagmi';
 import { Button } from '@/components/ui/button';
-import { Loader2, Play, Wallet } from 'lucide-react';
+import { Loader2, Play } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
 import { useResourceFetch } from '../contexts/fetch/hook';
 import { WalletDialog } from '@/app/_components/wallet/dialog';

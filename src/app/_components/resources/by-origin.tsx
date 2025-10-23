@@ -34,16 +34,18 @@ import { useState } from 'react';
 interface Props {
   emptyText: string;
   defaultOpenOrigins?: string[];
+  address?: string;
 }
 
 export const ResourcesByOrigin: React.FC<Props> = ({
   emptyText,
   defaultOpenOrigins = [],
+  address,
 }) => {
   const { chain } = useChain();
 
   const [originsWithResources] =
-    api.origins.list.withResources.useSuspenseQuery({ chain });
+    api.origins.list.withResources.useSuspenseQuery({ chain, address });
 
   const [openOrigins, setOpenOrigins] = useState<string[]>(defaultOpenOrigins);
 
