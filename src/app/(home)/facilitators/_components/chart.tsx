@@ -26,6 +26,7 @@ export const FacilitatorsChart = () => {
   const [overallData] = api.stats.getOverallStatistics.useSuspenseQuery({
     startDate,
     endDate,
+    chain,
   });
 
   const chartData: ChartData<Record<FacilitatorKey, number>>[] =

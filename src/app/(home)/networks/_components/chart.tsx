@@ -39,6 +39,7 @@ export const NetworksChart = () => {
   const [overallData] = api.stats.getOverallStatistics.useSuspenseQuery({
     startDate,
     endDate,
+    chain,
   });
 
   const chartData: ChartData<Record<NetworkKey, number>>[] =
