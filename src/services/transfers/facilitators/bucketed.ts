@@ -2,11 +2,11 @@ import z from 'zod';
 import { subMonths } from 'date-fns';
 import { Prisma } from '@prisma/client';
 
-import { baseQuerySchema, applyBaseQueryDefaults } from '../lib';
+import { baseQuerySchema } from '../lib';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { facilitators } from '@/lib/facilitators';
 import { queryRaw } from '@/services/db/transfers-client';
-import { normalizeAddresses } from '@/lib/utils';
+import { mixedAddressSchema } from '@/lib/schemas';
 
 export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
   startDate: z
@@ -36,16 +36,13 @@ const bucketedFacilitatorResultSchema = z.array(
 );
 
 const getBucketedFacilitatorsStatisticsUncached = async (
-  input: z.input<typeof bucketedStatisticsInputSchema>
+  input: z.infer<typeof bucketedStatisticsInputSchema>
 ) => {
-  const parseResult = bucketedStatisticsInputSchema.safeParse(input);
-  if (!parseResult.success) {
-    throw new Error('Invalid input: ' + parseResult.error.message);
-  }
-  const parsed = applyBaseQueryDefaults(parseResult.data);
-  const { startDate, endDate, numBuckets, tokens, chain } = parsed;
+  const { startDate, endDate, numBuckets, chain } = input;
 
-  const chainFacilitators = facilitators.filter(f => f.chain === chain);
+  const chainFacilitators = chain
+    ? facilitators.filter(f => f.addresses[chain] !== undefined)
+    : facilitators;
 
   const timeRangeMs = endDate.getTime() - startDate.getTime();
   const bucketSizeSeconds = Math.max(
@@ -53,21 +50,18 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     Math.floor(timeRangeMs / numBuckets / 1000)
   );
 
-  const normalizedTokens = normalizeAddresses(tokens, chain);
-  const normalizedFacilitatorAddresses = normalizeAddresses(
-    chainFacilitators.flatMap(f => f.addresses as string[]),
-    chain
-  );
-
   const facilitatorMapping = chainFacilitators.reduce(
     (acc, f) => {
-      f.addresses.forEach(addr => {
-        acc[addr.toLowerCase()] = f.name;
-      });
+      Object.values(f.addresses)
+        .flat()
+        .forEach(addr => {
+          acc[mixedAddressSchema.parse(addr)] = f.name;
+        });
       return acc;
     },
     {} as Record<string, string>
   );
+  const facilitatorAddresses = Object.keys(facilitatorMapping);
 
   const sql = Prisma.sql`
     WITH all_buckets AS (
@@ -80,7 +74,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
       ) AS bucket_start
     ),
     facilitator_list AS (
-      SELECT unnest(${Prisma.join(chainFacilitators.map(f => f.name))}::text[]) AS facilitator_name
+      SELECT unnest(${chainFacilitators.map(f => f.name)}::text[]) AS facilitator_name
     ),
     all_combinations AS (
       SELECT ab.bucket_start, fl.facilitator_name
@@ -95,7 +89,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
         CASE ${Prisma.join(
           Object.entries(facilitatorMapping).map(
             ([addr, name]) =>
-              Prisma.sql`WHEN LOWER(t.transaction_from) = ${addr.toLowerCase()} THEN ${name}`
+              Prisma.sql`WHEN t.transaction_from = ${addr} THEN ${name}`
           ),
           ' '
         )}
@@ -106,11 +100,11 @@ const getBucketedFacilitatorsStatisticsUncached = async (
         COUNT(DISTINCT t.sender)::int AS unique_buyers,
         COUNT(DISTINCT t.recipient)::int AS unique_sellers
       FROM "TransferEvent" t
-      WHERE t.chain = ${chain}
-        AND t.address = ANY(${normalizedTokens}::text[])
-        AND t.transaction_from = ANY(${normalizedFacilitatorAddresses}::text[])
-        AND t.block_timestamp >= ${startDate}
-        AND t.block_timestamp <= ${endDate}
+      WHERE 1=1
+        ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
+        ${facilitatorAddresses.length > 0 ? Prisma.sql`AND t.transaction_from = ANY(${facilitatorAddresses}::text[])` : Prisma.empty}
+        ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
+        ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
       GROUP BY bucket_start, facilitator_name
     ),
     combined_stats AS (

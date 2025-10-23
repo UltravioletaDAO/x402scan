@@ -61,16 +61,3 @@ export const USDC_ADDRESS: Record<Chain, string> = {
   [Chain.BASE]: '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
   [Chain.SOLANA]: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
 };
-
-export const normalizeAddress = (address: string, chain: Chain): string => {
-  return chain === Chain.SOLANA ? address : address.toLowerCase();
-};
-
-export const normalizeAddresses = (
-  addresses: string[],
-  chain: Chain
-): string[] => {
-  return chain === Chain.SOLANA
-    ? addresses
-    : addresses.map(a => a.toLowerCase());
-};

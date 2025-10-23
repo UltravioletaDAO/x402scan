@@ -2,15 +2,14 @@ import z from 'zod';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
-import { baseQuerySchema, sortingSchema, applyBaseQueryDefaults } from '../lib';
+import { baseQuerySchema, sortingSchema } from '../lib';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
 import { transfersPrisma } from '@/services/db/transfers-client';
-import { normalizeAddresses, normalizeAddress } from '@/lib/utils';
 import type { MixedAddress } from '@/types/address';
-import type { FacilitatorAddress } from '@/lib/facilitators';
+import type { Chain } from '@/types/chain';
 
 const listFacilitatorTransfersSortIds = ['block_timestamp', 'amount'] as const;
 
@@ -25,38 +24,23 @@ export const listFacilitatorTransfersInputSchema = baseQuerySchema.extend({
     id: 'block_timestamp',
     desc: true,
   }),
+  facilitators: z.array(mixedAddressSchema).optional(),
 });
 
 const listFacilitatorTransfersUncached = async (
-  input: z.input<typeof listFacilitatorTransfersInputSchema>
+  input: z.infer<typeof listFacilitatorTransfersInputSchema>
 ) => {
-  const parseResult = listFacilitatorTransfersInputSchema.safeParse(input);
-  if (!parseResult.success) {
-    console.error('invalid input', input);
-    throw new Error('Invalid input: ' + parseResult.error.message);
-  }
-  const parsed = applyBaseQueryDefaults(parseResult.data);
-  const {
-    recipient,
-    startDate,
-    endDate,
-    limit,
-    facilitators,
-    tokens,
-    sorting,
-    chain,
-  } = parsed;
+  const { recipient, startDate, endDate, limit, facilitators, sorting, chain } =
+    input;
 
   // Build the where clause for Prisma
   const where = {
     // Filter by chain
     chain: chain,
-    // Filter by token addresses
-    address: { in: normalizeAddresses(tokens, chain) },
     // Filter by facilitator addresses
-    transaction_from: { in: normalizeAddresses(facilitators, chain) },
+    ...(facilitators ? { transaction_from: { in: facilitators } } : {}),
     // Optional recipient filter
-    ...(recipient ? { recipient: normalizeAddress(recipient, chain) } : {}),
+    ...(recipient ? { recipient } : {}),
     // Date range filters
     ...(startDate && endDate
       ? { block_timestamp: { gte: startDate, lte: endDate } }
@@ -80,9 +64,10 @@ const listFacilitatorTransfersUncached = async (
     recipient: transfer.recipient as MixedAddress,
     amount: transfer.amount,
     token_address: transfer.address as MixedAddress,
-    transaction_from: transfer.transaction_from as FacilitatorAddress,
+    transaction_from: transfer.transaction_from as MixedAddress,
     transaction_hash: transfer.tx_hash,
     block_timestamp: transfer.block_timestamp,
+    chain: transfer.chain as Chain,
   }));
 
   return toPaginatedResponse({

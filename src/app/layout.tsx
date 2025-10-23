@@ -29,10 +29,10 @@ import { env } from '@/env';
 
 import type { Metadata, Viewport } from 'next';
 
-import './globals.css';
 import { SessionProvider } from 'next-auth/react';
-import { DEFAULT_CHAIN } from '@/types/chain';
 import { ChainSelector } from './_components/layout/navbar/chain-selector';
+
+import './globals.css';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -126,7 +126,7 @@ export default function RootLayout({
         <SpeedInsights />
         <Analytics />
         <SessionProvider>
-          <ChainProvider initialChain={DEFAULT_CHAIN}>
+          <ChainProvider>
             <TRPCReactProvider>
               <SearchProvider>
                 <CDPHooksProvider>

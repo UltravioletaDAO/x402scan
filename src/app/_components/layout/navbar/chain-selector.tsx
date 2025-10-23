@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useChain } from '../../../_contexts/chain/hook';
-import type { Chain } from '@/types/chain';
+import { Chain } from '@/types/chain';
 import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,39 +10,63 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Globe } from 'lucide-react';
+import { useState } from 'react';
 
 export const ChainSelector = () => {
   const { chain, setChain } = useChain();
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSelectChain = (chain: Chain | undefined) => {
+    setChain(chain);
+    setIsOpen(false);
+  };
+
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Image
-            src={CHAIN_ICONS[chain]}
-            alt={CHAIN_LABELS[chain]}
-            width={16}
-            height={16}
-            className="rounded-sm"
-          />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[140px] p-1">
-        {Object.entries(CHAIN_LABELS).map(([value, label]) => (
-          <Button
-            key={value}
-            variant="ghost"
-            className="w-full justify-start gap-2 h-8"
-            onClick={() => setChain(value as Chain)}
-          >
+        <Button variant="outline" size="navbar">
+          {chain ? (
             <Image
-              src={CHAIN_ICONS[value as Chain]}
-              alt={label}
+              src={CHAIN_ICONS[chain]}
+              alt={CHAIN_LABELS[chain]}
               width={16}
               height={16}
               className="rounded-sm"
             />
-            {label}
+          ) : (
+            <Globe className="size-4" />
+          )}
+          <span className="hidden md:block">
+            {chain ? CHAIN_LABELS[chain] : 'All Chains'}
+          </span>
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[140px] p-1">
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-2 h-8"
+          onClick={() => handleSelectChain(undefined)}
+        >
+          <Globe className="size-4" />
+          All
+        </Button>
+        {Object.values(Chain).map(value => (
+          <Button
+            key={value}
+            variant="ghost"
+            className="w-full justify-start gap-2 h-8"
+            onClick={() => handleSelectChain(value as Chain)}
+          >
+            <Image
+              src={CHAIN_ICONS[value]}
+              alt={CHAIN_LABELS[value]}
+              width={16}
+              height={16}
+              className="rounded-sm"
+            />
+            {CHAIN_LABELS[value]}
           </Button>
         ))}
       </PopoverContent>

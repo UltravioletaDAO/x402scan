@@ -6,6 +6,7 @@ import { Section } from '../utils';
 import { FacilitatorCard } from './_components/card';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import type { RouterOutputs } from '@/trpc/client';
+import { cn } from '@/lib/utils';
 
 export const TopFacilitatorsContent = () => {
   const { chain } = useChain();
@@ -26,10 +27,16 @@ export const TopFacilitatorsContent = () => {
       className="gap-4"
       href="/facilitators"
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        className={cn(
+          `grid grid-cols-1 gap-4`,
+          facilitatorsData.length < 2 ? 'md:grid-cols-1' : 'md:grid-cols-2',
+          facilitatorsData.length < 3 ? 'md:grid-cols-2' : 'md:grid-cols-3'
+        )}
+      >
         {facilitatorsData.map(stats => (
           <FacilitatorCardWithChart
-            key={stats.facilitator_name}
+            key={stats.facilitator.id}
             stats={stats}
             overallStats={overallStats}
           />
@@ -53,7 +60,9 @@ const FacilitatorCardWithChart: React.FC<FacilitatorCardWithChartProps> = ({
   const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery({
     chain,
     numBuckets: 48,
-    facilitators: stats.facilitator.addresses,
+    facilitators: chain
+      ? stats.facilitator.addresses[chain]
+      : Object.values(stats.facilitator.addresses).flat(),
   });
 
   const chartData: ChartData<{

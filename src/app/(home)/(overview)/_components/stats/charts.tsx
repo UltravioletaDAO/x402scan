@@ -31,6 +31,7 @@ export const OverallCharts = () => {
       startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
       endDate: startDate,
     });
+
   const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery({
     chain,
     numBuckets: 32,

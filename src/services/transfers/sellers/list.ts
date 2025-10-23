@@ -1,18 +1,16 @@
 import z from 'zod';
 import { Prisma } from '@prisma/client';
 
-import { mixedAddressSchema } from '@/lib/schemas';
+import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import { toPaginatedResponse } from '@/lib/pagination';
 
 import type { infiniteQuerySchema } from '@/lib/pagination';
-import { baseQuerySchema, sortingSchema, applyBaseQueryDefaults } from '../lib';
+import { baseQuerySchema, sortingSchema } from '../lib';
 import {
   createCachedPaginatedQuery,
   createStandardCacheKey,
 } from '@/lib/cache';
 import { queryRaw } from '@/services/db/transfers-client';
-import { normalizeAddresses } from '@/lib/utils';
-import type { FacilitatorAddress } from '@/lib/facilitators';
 
 const sellerSortIds = [
   'tx_count',
@@ -28,34 +26,15 @@ export const listTopSellersInputSchema = baseQuerySchema.extend({
   addresses: z.array(mixedAddressSchema).optional(),
   startDate: z.date().optional(),
   endDate: z.date().optional(),
+  facilitators: z.array(mixedAddressSchema).optional(),
 });
 
 const listTopSellersUncached = async (
-  input: z.input<typeof listTopSellersInputSchema>,
+  input: z.infer<typeof listTopSellersInputSchema>,
   pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
 ) => {
-  const parseResult = listTopSellersInputSchema.safeParse(input);
-  if (!parseResult.success) {
-    throw new Error('Invalid input: ' + parseResult.error.message);
-  }
-  const parsed = applyBaseQueryDefaults(parseResult.data);
-  const {
-    sorting,
-    addresses,
-    startDate,
-    endDate,
-    facilitators,
-    tokens,
-    chain,
-  } = parsed;
+  const { sorting, addresses, startDate, endDate, facilitators, chain } = input;
   const { limit } = pagination;
-
-  const normalizedTokens = normalizeAddresses(tokens, chain);
-  const normalizedFacilitators = normalizeAddresses(facilitators, chain);
-  const normalizedAddresses =
-    addresses && addresses.length > 0
-      ? normalizeAddresses(addresses, chain)
-      : null;
 
   const orderByMap: Record<SellerSortId, string> = {
     tx_count: 'tx_count',
@@ -73,12 +52,13 @@ const listTopSellersUncached = async (
       COUNT(*)::bigint as tx_count,
       SUM(amount)::bigint as total_amount,
       MAX(block_timestamp) as latest_block_timestamp,
-      COUNT(DISTINCT sender)::bigint as unique_buyers
+      COUNT(DISTINCT sender)::bigint as unique_buyers,
+      ARRAY_AGG(DISTINCT chain) as chains
     FROM "TransferEvent"
-    WHERE chain = ${chain}
-      AND address = ANY(${normalizedTokens})
-      AND transaction_from = ANY(${normalizedFacilitators})
-      ${normalizedAddresses ? Prisma.sql`AND recipient = ANY(${normalizedAddresses})` : Prisma.empty}
+    WHERE 1=1
+      ${chain ? Prisma.sql`AND chain = ${chain}` : Prisma.empty}
+      ${facilitators ? Prisma.sql`AND transaction_from = ANY(${facilitators})` : Prisma.empty}
+      ${addresses ? Prisma.sql`AND recipient = ANY(${addresses})` : Prisma.empty}
       ${startDate ? Prisma.sql`AND block_timestamp >= ${startDate}` : Prisma.empty}
       ${endDate ? Prisma.sql`AND block_timestamp <= ${endDate}` : Prisma.empty}
     GROUP BY recipient
@@ -91,13 +71,12 @@ const listTopSellersUncached = async (
     z.array(
       z.object({
         recipient: mixedAddressSchema,
-        facilitators: z
-          .array(mixedAddressSchema)
-          .transform(addresses => addresses as FacilitatorAddress[]),
+        facilitators: z.array(mixedAddressSchema),
         tx_count: z.bigint(),
         total_amount: z.bigint(),
         latest_block_timestamp: z.date(),
         unique_buyers: z.bigint(),
+        chains: z.array(chainSchema),
       })
     )
   );
@@ -121,7 +100,7 @@ const _listTopSellersCached = createCachedPaginatedQuery({
     input,
     pagination,
   }: {
-    input: z.input<typeof listTopSellersInputSchema>;
+    input: z.infer<typeof listTopSellersInputSchema>;
     pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>;
   }) => listTopSellersUncached(input, pagination),
   cacheKeyPrefix: 'sellers-list',
@@ -133,6 +112,6 @@ const _listTopSellersCached = createCachedPaginatedQuery({
 });
 
 export const listTopSellers = async (
-  input: z.input<typeof listTopSellersInputSchema>,
+  input: z.infer<typeof listTopSellersInputSchema>,
   pagination: z.infer<ReturnType<typeof infiniteQuerySchema<bigint>>>
 ) => _listTopSellersCached({ input, pagination });

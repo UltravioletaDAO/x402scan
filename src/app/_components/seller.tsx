@@ -40,7 +40,7 @@ export const Seller: React.FC<Props> = ({
     return (
       <Address
         address={address}
-        className={cn('text-xs md:text-sm font-medium', addressClassName)}
+        className={cn('text-xs font-medium', addressClassName)}
         disableCopy={disableCopy}
       />
     );

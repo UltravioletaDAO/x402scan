@@ -10,8 +10,10 @@ import { Logo } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
+import { getChain } from '@/app/_lib/chain';
 
-export default async function Home() {
+export default async function Home({ searchParams }: PageProps<'/'>) {
+  const chain = await searchParams.then(params => getChain(params.chain));
   return (
     <div>
       <HeadingContainer className="flex flex-col gap-4">
@@ -41,11 +43,11 @@ export default async function Home() {
         </div>
       </HeadingContainer>
       <Body>
-        <OverallStats />
-        <TopServers />
-        <TopFacilitators />
-        <LatestTransactions />
-        <AllSellers />
+        <OverallStats chain={chain} />
+        <TopServers chain={chain} />
+        <TopFacilitators chain={chain} />
+        <LatestTransactions chain={chain} />
+        <AllSellers chain={chain} />
       </Body>
     </div>
   );

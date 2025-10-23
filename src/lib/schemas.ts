@@ -2,6 +2,7 @@ import z from 'zod';
 
 import type { Address, Hash } from 'viem';
 import type { MixedAddress, SolanaAddress } from '@/types/address';
+import { Chain } from '@/types/chain';
 
 export const ethereumAddressSchema = z
   .string()
@@ -23,3 +24,6 @@ const solanaAddressSchema = z
 export const mixedAddressSchema = z
   .union([ethereumAddressSchema, solanaAddressSchema])
   .transform(address => address as MixedAddress);
+
+export const chainSchema = z.enum(Chain);
+export const optionalChainSchema = chainSchema.optional();

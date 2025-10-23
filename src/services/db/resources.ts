@@ -63,7 +63,6 @@ export const upsertResource = async (
 ) => {
   const parsedResourceInput = upsertResourceSchema.safeParse(resourceInput);
   if (!parsedResourceInput.success) {
-    console.log(resourceInput);
     return;
   }
   const baseResource = parsedResourceInput.data;

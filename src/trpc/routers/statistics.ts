@@ -1,18 +1,19 @@
 import {
   getOverallStatistics,
   overallStatisticsInputSchema,
-} from '@/services/cdp/sql/stats/overall';
+} from '@/services/transfers/stats/overall';
 import {
   getBucketedStatistics,
   bucketedStatisticsInputSchema,
-} from '@/services/cdp/sql/stats/bucketed';
+} from '@/services/transfers/stats/bucketed';
 import {
   getFirstTransferTimestampInputSchema,
   getFirstTransferTimestamp,
-} from '@/services/cdp/sql/stats/first-transfer';
+} from '@/services/transfers/stats/first-transfer';
 
 import { createTRPCRouter, publicProcedure } from '../trpc';
 import { getAcceptsAddresses } from '@/services/db/accepts';
+import { mixedAddressSchema } from '@/lib/schemas';
 
 export const statisticsRouter = createTRPCRouter({
   getOverallStatistics: publicProcedure
@@ -39,7 +40,9 @@ export const statisticsRouter = createTRPCRouter({
         const originsByAddress = await getAcceptsAddresses(input.chain);
         return await getOverallStatistics({
           ...input,
-          addresses: Object.keys(originsByAddress),
+          addresses: Object.keys(originsByAddress).map(addr =>
+            mixedAddressSchema.parse(addr)
+          ),
         });
       }),
     bucketedStatistics: publicProcedure
@@ -48,7 +51,9 @@ export const statisticsRouter = createTRPCRouter({
         const originsByAddress = await getAcceptsAddresses();
         return await getBucketedStatistics({
           ...input,
-          addresses: Object.keys(originsByAddress),
+          addresses: Object.keys(originsByAddress).map(addr =>
+            mixedAddressSchema.parse(addr)
+          ),
         });
       }),
   },
