@@ -10,16 +10,25 @@ interface Props {
   origin: ResourceOrigin & {
     ogImages: OgImage[];
   };
+  numResources: number;
+  onClick?: () => void;
 }
 
-export const OriginCard: React.FC<Props> = ({ origin }) => {
+export const OriginCard: React.FC<Props> = ({
+  origin,
+  numResources,
+  onClick,
+}) => {
   const hasMetadata =
     origin.title !== null ||
     origin.description !== null ||
     origin.ogImages.length > 0;
 
   return (
-    <Card className="overflow-hidden flex">
+    <Card
+      className="overflow-hidden flex w-full hover:border-primary transition-colors cursor-pointer"
+      onClick={onClick}
+    >
       <div className="flex-1">
         <CardHeader
           className={cn(
@@ -29,7 +38,10 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
         >
           <Favicon url={origin.favicon} className="size-6" />
           <CardTitle className="font-bold text-base md:text-lg">
-            {new URL(origin.origin).hostname}
+            {new URL(origin.origin).hostname}{' '}
+            <span className="text-muted-foreground text-xs md:text-sm ml-2">
+              {numResources} resource{numResources === 1 ? '' : 's'}
+            </span>
           </CardTitle>
         </CardHeader>
         {hasMetadata && (

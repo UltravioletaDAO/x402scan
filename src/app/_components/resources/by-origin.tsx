@@ -2,12 +2,15 @@
 
 import Link from 'next/link';
 
-import { OriginCard } from '@/app/_components/resources/origin';
+import { Plus, ServerOff } from 'lucide-react';
+
 import { ResourceExecutor } from './executor';
 
 import { getBazaarMethod } from './executor/utils';
 
 import { api } from '@/trpc/client';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
   Empty,
   EmptyContent,
@@ -16,29 +19,33 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import { Plus, ServerOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+
+import { OriginCard } from '@/app/_components/resources/origin';
+
 import { useChain } from '@/app/_contexts/chain/hook';
+import { useState } from 'react';
 
 interface Props {
   emptyText: string;
+  defaultOpenOrigins?: string[];
 }
 
-export const ResourcesByOrigin: React.FC<Props> = ({ emptyText }) => {
+export const ResourcesByOrigin: React.FC<Props> = ({
+  emptyText,
+  defaultOpenOrigins = [],
+}) => {
   const { chain } = useChain();
 
   const [originsWithResources] =
     api.origins.list.withResources.useSuspenseQuery({ chain });
 
-  // Log all origins whose first resource has no accepts or empty accepts array
-  console.log(
-    originsWithResources.filter(origin =>
-      origin.resources.some(
-        resource => !resource.accepts || resource.accepts.length === 0
-      )
-    )
-  );
+  const [openOrigins, setOpenOrigins] = useState<string[]>(defaultOpenOrigins);
 
   if (originsWithResources.length === 0) {
     return (
@@ -65,32 +72,44 @@ export const ResourcesByOrigin: React.FC<Props> = ({ emptyText }) => {
   }
 
   return (
-    <div>
+    <Accordion
+      type="multiple"
+      value={openOrigins}
+      onValueChange={setOpenOrigins}
+    >
       {originsWithResources.map((origin, index) => (
-        <div key={origin.id}>
-          <OriginCard origin={origin} />
+        <AccordionItem value={origin.id} key={origin.id} className="border-b-0">
+          <AccordionTrigger asChild>
+            <OriginCard
+              origin={origin}
+              numResources={origin.resources.length}
+            />
+          </AccordionTrigger>
+          <AccordionContent className="pb-0">
+            <div className="pl-4">
+              {origin.resources.map(resource => (
+                <div key={resource.id} className="pt-4 pl-4 border-l relative">
+                  <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-[1px] bg-border" />
+                  <ResourceExecutor
+                    resource={resource}
+                    bazaarMethod={getBazaarMethod(
+                      resource.accepts[0].outputSchema
+                    )}
+                    className="bg-transparent"
+                    response={resource.data}
+                  />
+                </div>
+              ))}
+            </div>
+          </AccordionContent>
           <div className="pl-4">
-            {origin.resources.map(resource => (
-              <div key={resource.id} className="pt-4 pl-4 border-l relative">
-                <div className="absolute left-0 top-[calc(2rem+10px)] w-4 h-[1px] bg-border" />
-                <ResourceExecutor
-                  resource={resource}
-                  bazaarMethod={getBazaarMethod(
-                    resource.accepts[0].outputSchema
-                  )}
-                  className="bg-transparent"
-                  response={resource.data}
-                />
-              </div>
-            ))}
-            {index < originsWithResources.length - 1 ? (
-              <div className="h-4 w-[1px] bg-border" />
-            ) : (
+            <div className="h-4 w-[1px] bg-border" />
+            {index === originsWithResources.length - 1 && (
               <div className="size-3 bg-border rounded-full -ml-[5px]" />
             )}
           </div>
-        </div>
+        </AccordionItem>
       ))}
-    </div>
+    </Accordion>
   );
 };
