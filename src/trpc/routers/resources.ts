@@ -27,6 +27,7 @@ import { Methods } from '@/types/x402';
 import type { AcceptsNetwork } from '@prisma/client';
 import { x402ResponseSchema } from 'x402/types';
 import { getFaviconUrl } from '@/lib/favicon';
+import type { ImageObject } from 'open-graph-scraper/types';
 
 export const resourcesRouter = createTRPCRouter({
   list: {
@@ -121,15 +122,13 @@ export const resourcesRouter = createTRPCRouter({
             ? getFaviconUrl(og.favicon, scrapedOrigin)
             : undefined,
           ogImages:
-            og?.ogImage?.map(
-              (image: { url: string; height: number; width: number }) => ({
-                url: image.url,
-                height: image.height,
-                width: image.width,
-                title: og.ogTitle,
-                description: og.ogDescription,
-              })
-            ) ?? [],
+            og?.ogImage?.map((image: ImageObject) => ({
+              url: image.url,
+              height: image.height,
+              width: image.width,
+              title: og.ogTitle,
+              description: og.ogDescription,
+            })) ?? [],
         });
 
         // upsert the resource
