@@ -12,6 +12,8 @@ import { ResourceFetchProvider } from './contexts/fetch/provider';
 import type { Methods } from '@/types/x402';
 import type { Resources } from '@prisma/client';
 import type { ParsedX402Response } from '@/lib/x402/schema';
+import { AccordionContent, AccordionTrigger } from '@/components/ui/accordion';
+import { ChevronDownIcon } from 'lucide-react';
 
 interface Props {
   resource: Resources;
@@ -33,14 +35,21 @@ export const ResourceExecutor: React.FC<Props> = ({
       resource={resource.resource}
     >
       <Card className={cn(className, 'overflow-hidden')}>
-        <CardHeader className="bg-muted px-4 py-2">
-          <Header
-            resource={resource}
-            method={bazaarMethod}
-            response={response}
-          />
-        </CardHeader>
-        <Form x402Response={response} />
+        <AccordionTrigger asChild>
+          <CardHeader className="bg-muted w-full flex flex-row items-center justify-between space-y-0 p-0 hover:border-primary transition-colors">
+            <Header
+              resource={resource}
+              method={bazaarMethod}
+              response={response}
+            />
+            <div className="border-l border-border size-8 flex items-center justify-center">
+              <ChevronDownIcon className="size-4" />
+            </div>
+          </CardHeader>
+        </AccordionTrigger>
+        <AccordionContent>
+          <Form x402Response={response} />
+        </AccordionContent>
       </Card>
     </ResourceFetchWrapper>
   );

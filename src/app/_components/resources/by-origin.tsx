@@ -87,19 +87,25 @@ export const ResourcesByOrigin: React.FC<Props> = ({
           </AccordionTrigger>
           <AccordionContent className="pb-0">
             <div className="pl-4">
-              {origin.resources.map(resource => (
-                <div key={resource.id} className="pt-4 pl-4 border-l relative">
-                  <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-[1px] bg-border" />
-                  <ResourceExecutor
-                    resource={resource}
-                    bazaarMethod={getBazaarMethod(
-                      resource.accepts[0].outputSchema
-                    )}
-                    className="bg-transparent"
-                    response={resource.data}
-                  />
-                </div>
-              ))}
+              <Accordion type="multiple" className="border-b-0">
+                {origin.resources.map(resource => (
+                  <AccordionItem
+                    value={resource.id}
+                    key={resource.id}
+                    className="border-b-0 pl-4 border-l pt-4 relative"
+                  >
+                    <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-[1px] bg-border" />
+                    <ResourceExecutor
+                      resource={resource}
+                      bazaarMethod={getBazaarMethod(
+                        resource.accepts[0].outputSchema
+                      )}
+                      className="bg-transparent"
+                      response={resource.data}
+                    />
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </div>
           </AccordionContent>
           <div className="pl-4">

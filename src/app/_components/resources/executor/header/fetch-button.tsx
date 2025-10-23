@@ -17,7 +17,14 @@ export const FetchButton = () => {
   if (!walletClient) {
     return (
       <WalletDialog>
-        <Button variant="ghost" size="sm" className="size-fit p-0 md:px-1">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="size-fit p-0 md:px-1"
+          onClick={e => {
+            e.stopPropagation();
+          }}
+        >
           <Wallet className="size-4" />
           Connect Wallet
         </Button>
