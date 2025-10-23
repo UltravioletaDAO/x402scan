@@ -5,7 +5,7 @@ import {
   AllSellers,
   LoadingAllSellers,
 } from './_components/sellers/all-sellers';
-import { LoadingOverallStats, OverallStats } from './_components/stats';
+import { OverallStats } from './_components/stats';
 import {
   LoadingTopServers,
   TopServers,
@@ -22,11 +22,9 @@ import Link from 'next/link';
 import { getChain } from '@/app/_lib/chain';
 import { Suspense } from 'react';
 import { LoadingTopFacilitators } from './_components/top-facilitators/loading';
-import { connection } from 'next/server';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
-  await connection();
   return (
     <div>
       <HeadingContainer className="flex flex-col gap-4">
@@ -56,9 +54,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
         </div>
       </HeadingContainer>
       <Body>
-        <Suspense fallback={<LoadingOverallStats />}>
-          <OverallStats chain={chain} />
-        </Suspense>
+        <OverallStats chain={chain} />
         <Suspense fallback={<LoadingTopServers />}>
           <TopServers chain={chain} />
         </Suspense>
