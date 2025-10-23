@@ -1,4 +1,4 @@
-import { Globe, Server } from 'lucide-react';
+import { Globe } from 'lucide-react';
 
 import {
   Tooltip,
