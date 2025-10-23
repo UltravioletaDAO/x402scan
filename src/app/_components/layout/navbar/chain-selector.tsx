@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useChain } from '../../../_contexts/chain/hook';
-import { Chain } from '@/types/chain';
+import { Chain, SUPPORTED_CHAINS } from '@/types/chain';
 import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 import { Button } from '@/components/ui/button';
 import {
@@ -57,7 +57,8 @@ export const ChainSelector = () => {
             key={value}
             variant="ghost"
             className="w-full justify-start gap-2 h-8"
-            onClick={() => handleSelectChain(value as Chain)}
+            onClick={() => handleSelectChain(value)}
+            disabled={!SUPPORTED_CHAINS.includes(value)}
           >
             <Image
               src={CHAIN_ICONS[value]}
