@@ -156,6 +156,9 @@ const listOriginsWithResourcesInternal = async (
           response: {
             isNot: null,
           },
+          accepts: {
+            some: {},
+          },
         },
       },
       ogImages: true,
