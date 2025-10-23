@@ -22,22 +22,12 @@ export const NetworksTable: React.FC = () => {
   });
 
   return (
-    <DataTable
-      columns={columns}
-      data={networks}
-      pageSize={networks.length}
-    />
+    <DataTable columns={columns} data={networks} pageSize={networks.length} />
   );
 };
 
 export const LoadingNetworksTable = () => {
   return (
-    <DataTable
-      columns={columns}
-      data={[]}
-      isLoading
-      loadingRowCount={4}
-    />
+    <DataTable columns={columns} data={[]} isLoading loadingRowCount={4} />
   );
 };
-

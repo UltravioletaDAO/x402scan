@@ -5,4 +5,3 @@ export const defaultNetworksSorting: SortType<NetworksSortId> = {
   id: 'tx_count',
   desc: true,
 };
-

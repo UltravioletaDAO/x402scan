@@ -8,7 +8,7 @@ export interface TooltipRowProps<
 > {
   key: K;
   label: string;
-  getValue: (data: T[K]) => string;
+  getValue: (data: T[K], allData?: T) => string;
   labelClassName?: string;
   valueClassName?: string;
   dotColor?: string;
@@ -29,6 +29,7 @@ export interface ChartProps<T extends Record<string, number>> {
     hide: boolean;
   }>;
   dataMax?: number | string;
+  stackOffset?: 'expand' | 'none' | 'wiggle' | 'silhouette';
 }
 
 export type Series<T extends Record<string, number>, S> = S & {

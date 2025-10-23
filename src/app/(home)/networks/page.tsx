@@ -2,19 +2,13 @@ import { Body, Heading } from '@/app/_components/layout/page-utils';
 import { Card } from '@/components/ui/card';
 import { api, HydrateClient } from '@/trpc/server';
 import { Suspense } from 'react';
-import {
-  NetworksChart,
-  LoadingNetworksChart,
-} from './_components/chart';
+import { NetworksChart, LoadingNetworksChart } from './_components/chart';
 import { subDays } from 'date-fns';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
-import {
-  NetworksTable,
-  LoadingNetworksTable,
-} from './_components/networks';
+import { NetworksTable, LoadingNetworksTable } from './_components/networks';
 import { NetworksSortingProvider } from '@/app/_contexts/sorting/networks/provider';
 import { defaultNetworksSorting } from '@/app/_contexts/sorting/networks/default';
 import { getChain } from '@/app/_lib/chain';
@@ -54,9 +48,7 @@ export default async function NetworksPage({
         initialEndDate={endDate}
         initialTimeframe={ActivityTimeframe.ThirtyDays}
       >
-        <NetworksSortingProvider
-          initialSorting={defaultNetworksSorting}
-        >
+        <NetworksSortingProvider initialSorting={defaultNetworksSorting}>
           <Heading
             title="Networks"
             description="Top networks processing x402 transactions"

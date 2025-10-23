@@ -8,4 +8,5 @@ export interface BarChartProps<T extends Record<string, number>>
   bars: Array<Bar<T>>;
   stacked?: boolean;
   solid?: boolean;
+  stackOffset?: 'expand' | 'none' | 'wiggle' | 'silhouette';
 }

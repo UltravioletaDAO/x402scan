@@ -11,4 +11,3 @@ export const useNetworksSorting = () => {
   }
   return context;
 };
-

@@ -178,4 +178,3 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 ml-auto" />,
   },
 ];
-
