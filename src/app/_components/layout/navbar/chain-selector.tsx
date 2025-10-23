@@ -18,7 +18,7 @@ export const ChainSelector = () => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="icon">
+        <Button variant="outline" size="navbar">
           {chain ? (
             <Image
               src={CHAIN_ICONS[chain]}
@@ -30,6 +30,9 @@ export const ChainSelector = () => {
           ) : (
             <Globe className="size-4" />
           )}
+          <span className="hidden md:block">
+            {chain ? CHAIN_LABELS[chain] : 'All Chains'}
+          </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[140px] p-1">

@@ -22,8 +22,8 @@ import { getChain } from '@/app/_lib/chain';
 export default async function FacilitatorsPage({
   searchParams,
 }: PageProps<'/facilitators'>) {
-  const { initialChain } = await searchParams;
-  const chain = getChain(initialChain);
+  const chain = await searchParams.then(params => getChain(params.chain));
+
   const endDate = new Date();
   const startDate = subDays(endDate, ActivityTimeframe.ThirtyDays);
 

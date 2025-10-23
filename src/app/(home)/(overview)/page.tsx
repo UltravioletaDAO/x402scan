@@ -13,8 +13,7 @@ import Link from 'next/link';
 import { getChain } from '@/app/_lib/chain';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
-  const { initialChain } = await searchParams;
-  const chain = getChain(initialChain);
+  const chain = await searchParams.then(params => getChain(params.chain));
   return (
     <div>
       <HeadingContainer className="flex flex-col gap-4">

@@ -25,16 +25,12 @@ export const OverallCharts = () => {
     endDate,
   });
 
-  console.log('overallStats', overallStats);
-
   const [previousOverallStats] =
     api.stats.getOverallStatistics.useSuspenseQuery({
       chain,
       startDate: subSeconds(startDate, differenceInSeconds(endDate, startDate)),
       endDate: startDate,
     });
-
-  console.log('previousOverallStats', previousOverallStats);
 
   const [bucketedStats] = api.stats.getBucketedStatistics.useSuspenseQuery({
     chain,

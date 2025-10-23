@@ -13,9 +13,22 @@ interface Props {
 
 export const ChainProvider: React.FC<Props> = ({ children }) => {
   const searchParams = useSearchParams();
-  const [chain, setChain] = useState<Chain | undefined>(
+  const [chain, setChainState] = useState<Chain | undefined>(
     getChain(searchParams.get('chain'))
   );
+
+  const setChain = (chain: Chain | undefined) => {
+    setChainState(chain);
+    if (chain) {
+      window.history.pushState(
+        null,
+        '',
+        `${window.location.pathname}?chain=${chain}`
+      );
+    } else {
+      window.history.pushState(null, '', window.location.pathname);
+    }
+  };
 
   return (
     <ChainContext.Provider value={{ chain, setChain }}>
