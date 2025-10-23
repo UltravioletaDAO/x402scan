@@ -4,9 +4,14 @@ import { ResourcesByOrigin } from '@/app/_components/resources/by-origin';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { getChain } from '@/app/_lib/chain';
 
-export default async function ResourcesPage() {
-  const resources = await api.origins.list.withResources.all();
+export default async function ResourcesPage({
+  searchParams,
+}: PageProps<'/resources'>) {
+  const chain = await searchParams.then(params => getChain(params.chain));
+
+  const resources = await api.origins.list.withResources.all({ chain });
 
   return (
     <div>
@@ -23,7 +28,10 @@ export default async function ResourcesPage() {
         }
       />
       <Body>
-        <ResourcesByOrigin originsWithResources={resources} />
+        <ResourcesByOrigin
+          originsWithResources={resources}
+          emptyText="No resources found"
+        />
       </Body>
     </div>
   );

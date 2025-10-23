@@ -1,17 +1,56 @@
+import Link from 'next/link';
+
 import { OriginCard } from '@/app/_components/resources/origin';
 import { ResourceExecutor } from './executor';
 
 import { getBazaarMethod } from './executor/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
+import { Plus, ServerOff } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 interface Props {
   originsWithResources: RouterOutputs['origins']['list']['withResources']['byAddress'];
+  emptyText: string;
 }
 
 export const ResourcesByOrigin: React.FC<Props> = ({
   originsWithResources,
+  emptyText,
 }) => {
+  if (originsWithResources.length === 0) {
+    return (
+      <Card>
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <ServerOff />
+            </EmptyMedia>
+            <EmptyTitle>No Resources</EmptyTitle>
+            <EmptyDescription>{emptyText}</EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Link href="/resources/register">
+              <Button variant="turbo">
+                <Plus className="size-4" />
+                Register Resource
+              </Button>
+            </Link>
+          </EmptyContent>
+        </Empty>
+      </Card>
+    );
+  }
+
   return (
     <div>
       {originsWithResources.map((origin, index) => (

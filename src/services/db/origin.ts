@@ -3,6 +3,8 @@ import { prisma } from './client';
 
 import { z } from 'zod';
 import { parseX402Response } from '@/lib/x402/schema';
+import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
+import type { Chain } from '@/types/chain';
 
 const ogImageSchema = z.object({
   url: z.url(),
@@ -74,7 +76,8 @@ export const upsertOrigin = async (
 };
 
 const listOriginsByAddressWhere = (
-  address: string
+  address: string,
+  chain?: Chain
 ): Prisma.ResourceOriginWhereInput => {
   return {
     resources: {
@@ -82,6 +85,7 @@ const listOriginsByAddressWhere = (
         accepts: {
           some: {
             payTo: address.toLowerCase(),
+            ...(chain ? { network: chain } : {}),
           },
         },
       },
@@ -95,16 +99,30 @@ export const listOriginsByAddress = async (address: string) => {
   });
 };
 
-export const listOriginsWithResources = async () => {
-  const origins = await listOriginsWithResourcesInternal({
-    resources: {
-      some: {
-        response: {
-          isNot: null,
+export const listOriginsWithResourcesSchema = z.object({
+  chain: optionalChainSchema,
+});
+
+export const listOriginsWithResources = async (
+  input: z.infer<typeof listOriginsWithResourcesSchema>
+) => {
+  const { chain } = input;
+  const origins = await listOriginsWithResourcesInternal(
+    {
+      resources: {
+        some: {
+          response: {
+            isNot: null,
+          },
+          accepts: {
+            some: {},
+            ...(chain ? { network: chain } : {}),
+          },
         },
       },
     },
-  });
+    chain
+  );
   return origins
     .map(origin => ({
       ...origin,
@@ -121,9 +139,19 @@ export const listOriginsWithResources = async () => {
     .filter(origin => origin.resources.length > 0);
 };
 
-export const listOriginsWithResourcesByAddress = async (address: string) => {
+export const listOriginsWithResourcesByAddressSchema = z.object({
+  address: mixedAddressSchema,
+  chain: optionalChainSchema,
+});
+
+export const listOriginsWithResourcesByAddress = async (
+  input: z.input<typeof listOriginsWithResourcesByAddressSchema>
+) => {
+  const { address, chain } =
+    listOriginsWithResourcesByAddressSchema.parse(input);
   const origins = await listOriginsWithResourcesInternal(
-    listOriginsByAddressWhere(address)
+    listOriginsByAddressWhere(address, chain),
+    chain
   );
   return origins
     .map(origin => ({
@@ -142,7 +170,8 @@ export const listOriginsWithResourcesByAddress = async (address: string) => {
 };
 
 const listOriginsWithResourcesInternal = async (
-  where?: Prisma.ResourceOriginWhereInput
+  where?: Prisma.ResourceOriginWhereInput,
+  chain?: Chain
 ) => {
   return await prisma.resourceOrigin.findMany({
     where,
@@ -158,6 +187,7 @@ const listOriginsWithResourcesInternal = async (
           },
           accepts: {
             some: {},
+            ...(chain ? { network: chain } : {}),
           },
         },
       },

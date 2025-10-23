@@ -38,6 +38,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { getChain } from '@/app/_lib/chain';
 
 export const RegisterResourceForm = () => {
   const [url, setUrl] = useState('');
@@ -65,9 +66,10 @@ export const RegisterResourceForm = () => {
       void utils.origins.list.withResources.invalidate();
       for (const accept of data.accepts) {
         void utils.resources.getResourceByAddress.invalidate(accept.payTo);
-        void utils.origins.list.withResources.byAddress.invalidate(
-          accept.payTo
-        );
+        void utils.origins.list.withResources.byAddress.invalidate({
+          address: accept.payTo,
+          chain: getChain(accept.network),
+        });
       }
       void utils.sellers.list.bazaar.invalidate();
       if (data.enhancedParseWarnings) {
