@@ -23,7 +23,7 @@ export const NetworksChart = () => {
       endDate,
       chain,
     });
-  const [overallData] = api.stats.getOverallStatistics.useSuspenseQuery({
+  const [overallData] = api.public.stats.overall.useSuspenseQuery({
     startDate,
     endDate,
     chain,

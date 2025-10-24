@@ -18,6 +18,7 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import {
   EnhancedPaymentRequirementsSchema,
   parseX402Response,
+  type EnhancedPaymentRequirements,
 } from '@/lib/x402/schema';
 import { formatTokenAmount } from '@/lib/token';
 import { getOriginFromUrl } from '@/lib/url';
@@ -132,19 +133,22 @@ export const resourcesRouter = createTRPCRouter({
         });
 
         // upsert the resource
+        const accepts = baseX402ParsedResponse.data.accepts ?? [];
         const resource = await upsertResource({
           resource: input.url.toString(),
           type: 'http',
           x402Version: baseX402ParsedResponse.data.x402Version,
           lastUpdated: new Date(),
-          accepts:
-            baseX402ParsedResponse.data.accepts?.map(accept => ({
-              ...accept,
-              network: accept.network.replace('-', '_') as AcceptsNetwork,
-              maxAmountRequired: accept.maxAmountRequired,
-              outputSchema: accept.outputSchema!,
-              extra: accept.extra,
-            })) ?? [],
+          accepts: accepts.map((accept: EnhancedPaymentRequirements) => ({
+            ...accept,
+            network: (accept.network as string).replace(
+              '-',
+              '_'
+            ) as AcceptsNetwork,
+            maxAmountRequired: accept.maxAmountRequired,
+            outputSchema: accept.outputSchema!,
+            extra: accept.extra,
+          })),
         });
 
         if (!resource) {

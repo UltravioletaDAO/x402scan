@@ -28,7 +28,7 @@ export default async function NetworksPage({
       endDate,
       chain,
     }),
-    api.stats.getOverallStatistics.prefetch({
+    api.public.stats.overall.prefetch({
       startDate,
       endDate,
       chain,

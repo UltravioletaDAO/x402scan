@@ -4,7 +4,7 @@ import { forbidden } from 'next/navigation';
 
 export default async function AdminLayout({ children }: LayoutProps<'/admin'>) {
   const session = await auth();
-  if (!session || session.user.role !== 'admin') {
+  if (session?.user.role !== 'admin') {
     return forbidden();
   }
 

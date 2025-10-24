@@ -246,7 +246,7 @@ export const RegisterResourceForm = () => {
                 </div>
               </CollapsibleContent>
             </Collapsible>
-            {data !== undefined && data.success === false && (
+            {data?.success === false && (
               <div>
                 <div className="flex flex-col gap-1 bg-red-600/10 rounded-md border-red-600/60 border">
                   <div
