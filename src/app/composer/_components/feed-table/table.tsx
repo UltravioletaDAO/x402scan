@@ -28,6 +28,7 @@ export const FeedTableContent = ({ limit = 10 }: Props) => {
       onPageChange={setPage}
       pageSize={limit}
       hasNextPage={feed.hasNextPage}
+      totalPages={feed.total_pages}
     />
   );
 };

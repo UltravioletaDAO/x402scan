@@ -35,7 +35,13 @@ export const listTopTools = async (
 ) => {
   const { sorting } = input;
   const [count, items] = await Promise.all([
-    prisma.toolCall.count(),
+    prisma.resources.count({
+      where: {
+        invocations: {
+          some: {},
+        },
+      },
+    }),
     queryRaw(
       Prisma.sql`
     WITH resource_stats AS (
