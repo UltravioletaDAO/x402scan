@@ -9,7 +9,7 @@ export interface TooltipRowProps<
 > {
   key: K;
   label: string;
-  getValue: (data: T[K], allData?: T) => string;
+  getValue: (data: T[K], allData: T) => string;
   labelClassName?: string;
   valueClassName?: string;
   dotColor?: string;

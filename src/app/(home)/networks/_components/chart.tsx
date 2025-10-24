@@ -45,9 +45,8 @@ export const NetworksChart = () => {
   const getValueHandler = (
     data: number,
     id: string,
-    allData?: Record<NetworkKey, number>
+    allData: Record<NetworkKey, number>
   ) => {
-    if (!allData) return '0.0%';
     const total = networks.reduce(
       (sum, network) =>
         sum + (allData[`${network.chain}-${id}` as NetworkKey] || 0),
@@ -67,7 +66,7 @@ export const NetworksChart = () => {
             amount: overallData.total_transactions.toLocaleString(),
             items: networks,
             getKey: n => n.chain,
-            getValue: (data: number, allData?: Record<NetworkKey, number>) =>
+            getValue: (data: number, allData: Record<NetworkKey, number>) =>
               getValueHandler(data, 'transactions', allData),
             stackOffset: 'expand',
           }),
@@ -76,7 +75,7 @@ export const NetworksChart = () => {
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
             items: networks,
             getKey: n => n.chain,
-            getValue: (data: number, allData?: Record<NetworkKey, number>) =>
+            getValue: (data: number, allData: Record<NetworkKey, number>) =>
               getValueHandler(data, 'amount', allData),
             stackOffset: 'expand',
           }),

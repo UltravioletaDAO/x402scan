@@ -33,7 +33,7 @@ type TabConfig<T extends Record<string, number>> = {
   tooltipRows: Array<{
     key: keyof T;
     label: string;
-    getValue: (data: number, allData?: T) => string;
+    getValue: (data: number, allData: T) => string;
     labelClassName?: string;
     valueClassName?: string;
     dotColor: string;
@@ -49,9 +49,8 @@ type CreateTabOptions<T extends Record<string, number>, TItem extends Item> = {
   label: string;
   amount: string;
   items: TItem[];
-  getKey?: (item: TItem) => string;
-  getValue: (data: number, allData?: T) => string;
-  solid?: boolean;
+  getKey: (item: TItem) => string;
+  getValue: (data: number, allData: T) => string;
   stackOffset?: 'expand' | 'none';
 };
 
@@ -59,7 +58,7 @@ export function createTab<T extends Record<string, number>, TItem extends Item>(
   options: CreateTabOptions<T, TItem>
 ): TabConfig<T> {
   const dataType = options.label.toLowerCase();
-  const getKey = options.getKey ?? ((item: TItem) => item.name);
+  const getKey = options.getKey;
 
   return {
     trigger: {
@@ -74,7 +73,7 @@ export function createTab<T extends Record<string, number>, TItem extends Item>(
         name: item.name,
         color: item.color,
       })),
-      solid: options.solid ?? true,
+      solid: true,
       stackOffset: options.stackOffset,
     },
     tooltipRows: options.items.map(item => ({

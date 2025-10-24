@@ -46,9 +46,8 @@ export const FacilitatorsChart = () => {
   const getValueHandler = (
     data: number,
     id: string,
-    allData?: Record<FacilitatorKey, number>
+    allData: Record<FacilitatorKey, number>
   ) => {
-    if (!allData) return '0.0%';
     const total = facilitators.reduce(
       (sum, facilitator) =>
         sum + (allData[`${facilitator.name}-${id}` as FacilitatorKey] || 0),
@@ -70,11 +69,9 @@ export const FacilitatorsChart = () => {
             label: 'Transactions',
             amount: overallData.total_transactions.toLocaleString(),
             items: facilitators,
-            getValue: (
-              data: number,
-              allData?: Record<FacilitatorKey, number>
-            ) => getValueHandler(data, 'transactions', allData),
-            stackOffset: 'expand',
+            getValue: (data: number, allData: Record<FacilitatorKey, number>) =>
+              getValueHandler(data, 'transactions', allData),
+            getKey: f => f.name,
           }),
           createTab<
             Record<FacilitatorKey, number>,
@@ -83,11 +80,9 @@ export const FacilitatorsChart = () => {
             label: 'Amount',
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
             items: facilitators,
-            getValue: (
-              data: number,
-              allData?: Record<FacilitatorKey, number>
-            ) => getValueHandler(data, 'amount', allData),
-            stackOffset: 'expand',
+            getValue: (data: number, allData: Record<FacilitatorKey, number>) =>
+              getValueHandler(data, 'amount', allData),
+            getKey: f => f.name,
           }),
         ]}
       />
