@@ -4,26 +4,13 @@ import { useChain } from '@/app/_contexts/chain/hook';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { LoadingMultiCharts, MultiCharts } from '@/components/ui/charts/multi';
-import { Chain, CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
+import type { Chain } from '@/types/chain';
 
 import { formatTokenAmount } from '@/lib/token';
+import { createTab, networks } from '@/lib/charts';
 import { api } from '@/trpc/client';
 
 type NetworkKey = `${Chain}-${'transactions' | 'amount'}`;
-
-const NETWORK_COLORS: Record<Chain, string> = {
-  [Chain.BASE]: 'hsl(221, 83%, 53%)',
-  [Chain.SOLANA]: 'hsl(271, 100%, 71%)',
-  [Chain.POLYGON]: 'hsl(272, 55%, 50%)',
-  [Chain.OPTIMISM]: 'hsl(0, 91%, 71%)',
-};
-
-const networks = Object.values(Chain).map(chain => ({
-  chain,
-  name: CHAIN_LABELS[chain],
-  icon: CHAIN_ICONS[chain],
-  color: NETWORK_COLORS[chain],
-}));
 
 export const NetworksChart = () => {
   const { chain } = useChain();
@@ -74,57 +61,24 @@ export const NetworksChart = () => {
     <MultiCharts
       chartData={chartData}
       tabs={[
-        {
-          trigger: {
-            label: 'Transactions',
-            value: 'transactions',
-            amount: overallData.total_transactions.toLocaleString(),
-          },
-          items: {
-            type: 'bar',
-            bars: networks.toReversed().map(n => ({
-              dataKey: `${n.chain}-transactions` as NetworkKey,
-              name: n.name,
-              color: n.color,
-            })),
-            solid: true,
-            stackOffset: 'expand',
-          },
-          tooltipRows: networks.map(n => ({
-            key: `${n.chain}-transactions` as NetworkKey,
-            label: n.name,
-            getValue: (data: number, allData?: Record<NetworkKey, number>) =>
-              getValueHandler(data, 'transactions', allData),
-            labelClassName: 'text-xs font-mono',
-            valueClassName: 'text-xs font-mono',
-            dotColor: n.color,
-          })),
-        },
-        {
-          trigger: {
-            label: 'Amount',
-            value: 'amount',
-            amount: formatTokenAmount(BigInt(overallData.total_amount)),
-          },
-          items: {
-            type: 'bar',
-            bars: networks.toReversed().map(n => ({
-              dataKey: `${n.chain}-amount` as NetworkKey,
-              name: n.name,
-              color: n.color,
-            })),
-            solid: true,
-          },
-          tooltipRows: networks.map(n => ({
-            key: `${n.chain}-amount` as NetworkKey,
-            label: n.name,
-            getValue: (data: number, allData?: Record<NetworkKey, number>) =>
-              getValueHandler(data, 'amount', allData),
-            labelClassName: 'text-xs font-mono',
-            valueClassName: 'text-xs font-mono',
-            dotColor: n.color,
-          })),
-        },
+        createTab<Record<NetworkKey, number>, typeof networks[number]>({
+          label: 'Transactions',
+          amount: overallData.total_transactions.toLocaleString(),
+          items: networks,
+          getKey: n => n.chain,
+          getValue: (data: number, allData?: Record<NetworkKey, number>) =>
+            getValueHandler(data, 'transactions', allData),
+          stackOffset: 'expand',
+        }),
+        createTab<Record<NetworkKey, number>, typeof networks[number]>({
+          label: 'Amount',
+          amount: formatTokenAmount(BigInt(overallData.total_amount)),
+          items: networks,
+          getKey: n => n.chain,
+          getValue: (data: number, allData?: Record<NetworkKey, number>) =>
+            getValueHandler(data, 'amount', allData),
+          stackOffset: 'expand',
+        }),
       ]}
     />
   );

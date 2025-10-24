@@ -8,6 +8,7 @@ import { facilitators } from '@/lib/facilitators';
 
 import type { FacilitatorName } from '@/lib/facilitators';
 import { formatTokenAmount } from '@/lib/token';
+import { createTab } from '@/lib/charts';
 import { api } from '@/trpc/client';
 
 type FacilitatorKey = `${FacilitatorName}-${'transactions' | 'amount'}`;
@@ -46,54 +47,18 @@ export const FacilitatorsChart = () => {
     <MultiCharts
       chartData={chartData}
       tabs={[
-        {
-          trigger: {
-            label: 'Transactions',
-            value: 'transactions',
-            amount: overallData.total_transactions.toLocaleString(),
-          },
-          items: {
-            type: 'bar',
-            bars: facilitators.toReversed().map(f => ({
-              dataKey: `${f.name}-transactions` as FacilitatorKey,
-              name: f.name,
-              color: f.color,
-            })),
-            solid: true,
-          },
-          tooltipRows: facilitators.map(f => ({
-            key: `${f.name}-transactions` as FacilitatorKey,
-            label: f.name,
-            getValue: (data: number) => data.toLocaleString(),
-            labelClassName: 'text-xs font-mono',
-            valueClassName: 'text-xs font-mono',
-            dotColor: f.color,
-          })),
-        },
-        {
-          trigger: {
-            label: 'Amount',
-            value: 'amount',
-            amount: formatTokenAmount(BigInt(overallData.total_amount)),
-          },
-          items: {
-            type: 'bar',
-            bars: facilitators.toReversed().map(f => ({
-              dataKey: `${f.name}-amount` as FacilitatorKey,
-              name: f.name,
-              color: f.color,
-            })),
-            solid: true,
-          },
-          tooltipRows: facilitators.map(f => ({
-            key: `${f.name}-amount` as FacilitatorKey,
-            label: f.name,
-            getValue: (data: number) => formatTokenAmount(BigInt(data)),
-            labelClassName: 'text-xs font-mono',
-            valueClassName: 'text-xs font-mono',
-            dotColor: f.color,
-          })),
-        },
+        createTab<Record<FacilitatorKey, number>, typeof facilitators[number]>({
+          label: 'Transactions',
+          amount: overallData.total_transactions.toLocaleString(),
+          items: facilitators,
+          getValue: (data: number) => data.toLocaleString(),
+        }),
+        createTab<Record<FacilitatorKey, number>, typeof facilitators[number]>({
+          label: 'Amount',
+          amount: formatTokenAmount(BigInt(overallData.total_amount)),
+          items: facilitators,
+          getValue: (data: number) => formatTokenAmount(BigInt(data)),
+        }),
       ]}
     />
   );
