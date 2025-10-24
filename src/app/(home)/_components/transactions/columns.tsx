@@ -21,7 +21,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { TransfersSortingContext } from '@/app/_contexts/sorting/transfers/context';
 import { Chains } from '@/app/_components/chains';
 
-type ColumnType = RouterOutputs['transfers']['list']['items'][number];
+type ColumnType = RouterOutputs['public']['transfers']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
@@ -78,12 +78,9 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     accessorKey: 'transaction_hash',
     header: () => <HeaderCell Icon={Hash} label="Hash" className="mx-auto" />,
     cell: ({ row }) => (
-      <Link
-        href={`/transaction/${row.original.transaction_hash}`}
-        prefetch={false}
-      >
+      <Link href={`/transaction/${row.original.tx_hash}`} prefetch={false}>
         <Address
-          address={row.original.transaction_hash}
+          address={row.original.tx_hash}
           className="text-xs block text-center"
           disableCopy
           hideTooltip
@@ -134,7 +131,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <Facilitator
-        address={row.original.transaction_from}
+        id={row.original.facilitator_id}
         className="mx-auto justify-center"
       />
     ),

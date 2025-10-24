@@ -17,13 +17,13 @@ export const FacilitatorsChart = () => {
   const { startDate, endDate } = useTimeRangeContext();
 
   const [bucketedFacilitatorData] =
-    api.facilitators.bucketedStatistics.useSuspenseQuery({
+    api.public.facilitators.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,
       startDate,
       endDate,
       chain,
     });
-  const [overallData] = api.stats.getOverallStatistics.useSuspenseQuery({
+  const [overallData] = api.public.stats.overall.useSuspenseQuery({
     startDate,
     endDate,
   });

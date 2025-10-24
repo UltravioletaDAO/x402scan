@@ -7,7 +7,7 @@ import {
 } from '@/app/(home)/_components/transactions';
 import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/default';
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
-import { Section } from '../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { subMonths } from 'date-fns';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
@@ -22,11 +22,14 @@ interface Props {
 export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
-  const limit = 100;
+  const pageSize = 10;
 
-  await api.transfers.list.prefetch({
+  await api.public.transfers.list.prefetch({
     chain,
-    limit,
+    pagination: {
+      page_size: pageSize,
+      page: 0,
+    },
     sorting: defaultTransfersSorting,
     startDate,
     endDate,
@@ -43,7 +46,7 @@ export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
         >
           <LatestTransactionsTableContainer>
             <Suspense fallback={<LoadingLatestTransactionsTable />}>
-              <LatestTransactionsTable limit={limit} />
+              <LatestTransactionsTable pageSize={pageSize} />
             </Suspense>
           </LatestTransactionsTableContainer>
         </TimeRangeProvider>

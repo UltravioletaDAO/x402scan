@@ -4,11 +4,6 @@ import Link from 'next/link';
 
 import { Plus, ServerOff } from 'lucide-react';
 
-import { ResourceExecutor } from './executor';
-
-import { getBazaarMethod } from './executor/utils';
-
-import { api } from '@/trpc/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import {
@@ -25,6 +20,12 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+
+import { ResourceExecutor } from './executor';
+
+import { getBazaarMethod } from './executor/utils';
+
+import { api } from '@/trpc/client';
 
 import {
   LoadingOriginCard,
@@ -48,7 +49,7 @@ export const ResourcesByOrigin: React.FC<Props> = ({
   const { chain } = useChain();
 
   const [originsWithResources] =
-    api.origins.list.withResources.useSuspenseQuery({ chain, address });
+    api.public.origins.list.withResources.useSuspenseQuery({ chain, address });
 
   const [openOrigins, setOpenOrigins] = useState<string[]>(defaultOpenOrigins);
 

@@ -35,7 +35,7 @@ const x402rsFacilitator: Facilitator = {
 };
 
 const payAiFacilitator: Facilitator = {
-  id: 'payai',
+  id: 'payAI',
   name: 'PayAI' as const,
   image: '/payai.png',
   link: 'https://payai.network',
@@ -103,12 +103,4 @@ export const facilitatorAddresses = facilitators.flatMap(f =>
   Object.values(f.addresses)
     .flat()
     .map(address => mixedAddressSchema.parse(address))
-);
-
-export const facilitatorAddressMap = new Map<MixedAddress, Facilitator>(
-  facilitators.flatMap(f =>
-    Object.values(f.addresses)
-      .flat()
-      .map(address => [address, f] as const)
-  )
 );

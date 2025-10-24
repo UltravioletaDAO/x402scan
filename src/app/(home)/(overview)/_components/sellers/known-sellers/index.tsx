@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 
 import { subMonths } from 'date-fns';
 
-import { Section } from '../../utils';
+import { Section } from '@/app/_components/layout/page-utils';
 
 import { KnownSellersTable, LoadingKnownSellersTable } from './table';
 
@@ -30,8 +30,11 @@ export const TopServers = async ({ chain }: Props) => {
   const startDate = subMonths(endDate, 1);
 
   await Promise.all([
-    api.sellers.list.bazaar.prefetch({
+    api.public.sellers.list.bazaar.prefetch({
       chain,
+      pagination: {
+        page_size: 100,
+      },
       startDate,
       endDate,
       sorting: defaultSellersSorting,
