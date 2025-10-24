@@ -12,11 +12,11 @@ import {
 } from '@/components/ui/command';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { ResourceItem } from './item';
-
 import { api } from '@/trpc/client';
 
 import type { SelectedResource } from '../../_types/chat-config';
+import { SelectedResourceItem } from './item/selected';
+import { UnselectedResourceItem } from './item/unselected';
 
 interface Props {
   selectedResourceIds: string[];
@@ -102,16 +102,13 @@ export const ResourceList: React.FC<Props> = ({
           tools.filter(tool => selectedResourceIds.includes(tool.id)).length >
             0 && (
             <CommandGroup className="p-0" heading="Selected">
-              {tools
-                ?.filter(tool => selectedResourceIds.includes(tool.id))
-                .map(tool => (
-                  <ResourceItem
-                    key={tool.id}
-                    resource={tool}
-                    isSelected={true}
-                    onSelectResource={onSelectResource}
-                  />
-                ))}
+              {selectedResourceIds.map(id => (
+                <SelectedResourceItem
+                  key={id}
+                  id={id}
+                  onSelectResource={onSelectResource}
+                />
+              ))}
             </CommandGroup>
           )}
         {tools && tools.length > 0 && (
@@ -120,10 +117,9 @@ export const ResourceList: React.FC<Props> = ({
               .filter(tool => !selectedResourceIds.includes(tool.id))
               .map(tool => {
                 return (
-                  <ResourceItem
+                  <UnselectedResourceItem
                     key={tool.id}
                     resource={tool}
-                    isSelected={selectedResourceIds.includes(tool.id)}
                     onSelectResource={onSelectResource}
                   />
                 );

@@ -8,7 +8,8 @@ import { cn } from '@/lib/utils';
 import { formatTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
-import type { SelectedResource } from '../../_types/chat-config';
+import type { SelectedResource } from '../../../_types/chat-config';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   isSelected: boolean;
@@ -16,7 +17,7 @@ interface Props {
   onSelectResource: (resource: SelectedResource) => void;
 }
 
-export const ResourceItem: React.FC<Props> = ({
+export const BaseResourceItem: React.FC<Props> = ({
   resource,
   isSelected,
   onSelectResource,
@@ -61,6 +62,30 @@ export const ResourceItem: React.FC<Props> = ({
       <p className="text-xs text-primary font-bold">
         {formatTokenAmount(BigInt(resource.maxAmountRequired))}
       </p>
+    </BaseCommandItem>
+  );
+};
+
+export const LoadingBaseResourceItem: React.FC = () => {
+  return (
+    <BaseCommandItem className="flex items-center justify-between gap-3 rounded-none px-3">
+      <div className="flex items-center gap-2 flex-1 overflow-hidden">
+        <div
+          className={cn('rounded-md overflow-hidden relative shrink-0 size-6')}
+        >
+          <Skeleton className="size-6" />
+        </div>
+
+        <div className="flex flex-1 flex-col items-start gap-0 overflow-hidden">
+          <Skeleton className="w-24 h-[14px] my-0.5" />
+          <Skeleton className="w-full h-[10px]" />
+        </div>
+      </div>
+      <div className="flex items-center gap-0.5 font-semibold">
+        <Activity className="size-3 text-muted-foreground" />
+        <Skeleton className="w-4 h-[12px]" />
+      </div>
+      <Skeleton className="w-8 h-[14px]" />
     </BaseCommandItem>
   );
 };
