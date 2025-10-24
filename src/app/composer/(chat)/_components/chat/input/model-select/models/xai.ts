@@ -2,54 +2,92 @@ import { LanguageModelCapability, type LanguageModel } from '../types';
 
 const xaiLanguageModelData: Omit<LanguageModel, 'provider'>[] = [
   {
-    name: 'Grok 4',
-    modelId: 'grok-4',
-    description: 'Latest generation Grok model with enhanced capabilities',
+    name: 'Grok 4 Fast',
+    modelId: 'grok-4-fast',
+    description:
+      "xAI's latest multimodal model with SOTA cost-efficiency and 2M context.",
     capabilities: [
       LanguageModelCapability.ToolCalling,
       LanguageModelCapability.Vision,
       LanguageModelCapability.Reasoning,
     ],
-    bestFor: ['General purpose', 'Real-time information', 'Analysis'],
+    bestFor: ['Throughput', 'Low-latency multimodal'],
+    contextLength: 2000000,
+    isNew: true,
+  },
+  {
+    name: 'Grok Code Fast 1',
+    modelId: 'grok-code-fast-1',
+    description:
+      'Speedy, economical reasoning model that excels at agentic coding.',
+    capabilities: [
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Reasoning,
+    ],
+    bestFor: ['Agentic coding', 'Developer workflows'],
     contextLength: 256000,
+    isNew: true,
+  },
+  {
+    name: 'Grok 4',
+    modelId: 'grok-4',
+    description:
+      'Latest reasoning model with 256k context; parallel tools and structured outputs.',
+    capabilities: [
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Vision,
+      LanguageModelCapability.Reasoning,
+    ],
+    bestFor: ['Reasoning', 'Tool use', 'Multimodal inputs'],
+    contextLength: 256000,
+  },
+  {
+    name: 'Grok 3 Mini',
+    modelId: 'grok-3-mini',
+    description:
+      'Lightweight model that thinks before responding; reasoning traces visible.',
+    capabilities: [
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Reasoning,
+    ],
+    bestFor: ['Logic tasks', 'Cost efficiency'],
+    contextLength: 131000,
   },
   {
     name: 'Grok 3',
     modelId: 'grok-3',
-    description: 'Previous generation Grok model with enhanced capabilities',
-    capabilities: [LanguageModelCapability.ToolCalling],
-    bestFor: ['General purpose', 'Real-time information', 'Analysis'],
-    contextLength: 128000,
-  },
-  {
-    name: 'Grok 3 Mini',
-    modelId: 'grok-3-mini-beta',
-    description: 'Compact version for efficient processing',
+    description:
+      'Flagship model for enterprise use cases like data extraction and coding.',
     capabilities: [
       LanguageModelCapability.ToolCalling,
       LanguageModelCapability.Reasoning,
     ],
-    bestFor: ['Cost-effective', 'Simple queries', 'Quick tasks'],
-    contextLength: 128000,
+    bestFor: ['Coding', 'Summarization', 'Structured tasks'],
+    contextLength: 131000,
   },
   {
-    name: 'Grok 2',
-    modelId: 'grok-2-1212',
-    description: 'Advanced conversational AI with real-time knowledge',
-    capabilities: [LanguageModelCapability.ToolCalling],
-    bestFor: ['Conversations', 'Real-time info', 'General purpose'],
-    contextLength: 128000,
-  },
-  {
-    name: 'Grok 2 Vision',
-    modelId: 'grok-2-vision-1212',
-    description: 'Grok 2 with image understanding capabilities',
+    name: 'Grok 3 Mini Beta',
+    modelId: 'grok-3-mini-beta',
+    description:
+      'Smaller thinking model; transparent traces; adjustable reasoning effort.',
     capabilities: [
-      LanguageModelCapability.Vision,
       LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Reasoning,
     ],
-    bestFor: ['Image analysis', 'Multimodal tasks', 'Visual content'],
-    contextLength: 128000,
+    bestFor: ['Math & quantitative tasks', 'Reasoning under budget'],
+    contextLength: 131000,
+  },
+  {
+    name: 'Grok 3 Beta',
+    modelId: 'grok-3-beta',
+    description:
+      'Flagship beta with strong performance on GPQA, LCB, and MMLU-Pro.',
+    capabilities: [
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Reasoning,
+    ],
+    bestFor: ['Enterprise tasks', 'Structured outputs'],
+    contextLength: 131000,
   },
 ];
 

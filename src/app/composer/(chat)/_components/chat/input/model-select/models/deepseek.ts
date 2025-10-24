@@ -2,12 +2,20 @@ import { type LanguageModel, LanguageModelCapability } from '../types';
 
 const deepseekModelData: Omit<LanguageModel, 'provider'>[] = [
   {
-    name: 'DeepSeek 3',
-    modelId: 'deepseek-chat-v3-0324',
+    name: 'DeepSeek-V3.2-Exp',
+    modelId: 'deepseek-v3.2-exp',
     description:
-      'DeepSeek 3 is the latest generation of DeepSeek models with enhanced capabilities',
-    capabilities: [LanguageModelCapability.ToolCalling],
-    bestFor: ['Advanced reasoning', 'Code generation', 'Creative writing'],
+      'Experimental LLM with DeepSeek Sparse Attention for efficient long-context reasoning, coding, and tool use; research-oriented, 131K context.',
+    capabilities: [
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Reasoning,
+    ],
+    bestFor: [
+      'Research tasks',
+      'Long-context reasoning',
+      'Coding',
+      'Agentic tool use',
+    ],
     contextLength: 131072,
   },
 ];
