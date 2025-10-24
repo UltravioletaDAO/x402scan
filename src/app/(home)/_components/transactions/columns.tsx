@@ -78,14 +78,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     accessorKey: 'transaction_hash',
     header: () => <HeaderCell Icon={Hash} label="Hash" className="mx-auto" />,
     cell: ({ row }) => (
-      <Link href={`/transaction/${row.original.tx_hash}`} prefetch={false}>
-        <Address
-          address={row.original.tx_hash}
-          className="text-xs block text-center"
-          disableCopy
-          hideTooltip
-        />
-      </Link>
+      <Address
+        address={row.original.tx_hash}
+        className="text-xs block text-center"
+        disableCopy
+        hideTooltip
+      />
     ),
     size: 150,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,

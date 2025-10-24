@@ -2,8 +2,6 @@
 
 import { Calendar, DollarSign, Hash, Server, User } from 'lucide-react';
 
-import Link from 'next/link';
-
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
@@ -51,14 +49,12 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     accessorKey: 'transaction_hash',
     header: () => <HeaderCell Icon={Hash} label="Hash" className="mx-auto" />,
     cell: ({ row }) => (
-      <Link href={`/transaction/${row.original.tx_hash}`} prefetch={false}>
-        <Address
-          address={row.original.tx_hash}
-          className="text-xs block text-center"
-          disableCopy
-          hideTooltip
-        />
-      </Link>
+      <Address
+        address={row.original.tx_hash}
+        className="text-xs block text-center"
+        disableCopy
+        hideTooltip
+      />
     ),
     size: 200,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
