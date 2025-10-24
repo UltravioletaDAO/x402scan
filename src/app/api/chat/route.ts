@@ -37,7 +37,11 @@ import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
 import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
 import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
-import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
+import {
+  agentSystemPrompt,
+  baseSystemPrompt,
+  freeTierSystemPrompt,
+} from './system-prompt';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -182,7 +186,7 @@ export async function POST(request: NextRequest) {
         isFreeTier,
       });
     }
-    return baseSystemPrompt;
+    return isFreeTier ? freeTierSystemPrompt : baseSystemPrompt;
   };
 
   const result = streamText({
