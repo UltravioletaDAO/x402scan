@@ -2,15 +2,6 @@ import { type LanguageModel, LanguageModelCapability } from '../types';
 
 const llamaModelData: Omit<LanguageModel, 'provider'>[] = [
   {
-    name: 'Llama 3.3 8B Instruct',
-    modelId: 'llama-3.3-8b-instruct',
-    description:
-      'Lightweight and ultra-fast variant of Llama 3.3 70B for quick responses.',
-    capabilities: [LanguageModelCapability.ToolCalling],
-    bestFor: ['Quick responses', 'Assistant tasks', 'Cost-sensitive apps'],
-    contextLength: 128000,
-  },
-  {
     name: 'Llama Guard 4 12B',
     modelId: 'llama-guard-4-12b',
     description:
@@ -24,7 +15,7 @@ const llamaModelData: Omit<LanguageModel, 'provider'>[] = [
   },
   {
     name: 'Llama 4 Maverick',
-    modelId: 'meta-llama/llama-4-maverick',
+    modelId: 'llama-4-maverick',
     description:
       'High-capacity multimodal MoE model optimized for vision-language tasks.',
     capabilities: [

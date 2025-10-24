@@ -2,34 +2,6 @@ import { LanguageModelCapability, type LanguageModel } from '../types';
 
 const openAiLanguageModelsData: Omit<LanguageModel, 'provider'>[] = [
   {
-    name: 'GPT-5 Image Mini',
-    modelId: 'gpt-5-image-mini',
-    description:
-      'Multimodal GPT-5 Mini + Image 1 Mini for efficient image generation and editing.',
-    capabilities: [
-      LanguageModelCapability.Vision,
-      LanguageModelCapability.ToolCalling,
-      LanguageModelCapability.Pdf,
-    ],
-    bestFor: ['Image generation', 'Editing', 'Multimodal chat'],
-    contextLength: 400000,
-    isNew: true,
-  },
-  {
-    name: 'GPT-5 Image',
-    modelId: 'gpt-5-image',
-    description:
-      'Most advanced language + image generation; improved reasoning and code quality.',
-    capabilities: [
-      LanguageModelCapability.Vision,
-      LanguageModelCapability.ToolCalling,
-      LanguageModelCapability.Pdf,
-    ],
-    bestFor: ['High-quality visual creation', 'Multimodal reasoning'],
-    contextLength: 400000,
-    isNew: true,
-  },
-  {
     name: 'o3 Deep Research',
     modelId: 'o3-deep-research',
     description:
@@ -86,18 +58,6 @@ const openAiLanguageModelsData: Omit<LanguageModel, 'provider'>[] = [
     bestFor: ['Coding agents', 'Refactoring', 'Code reviews'],
     contextLength: 400000,
     isNew: true,
-  },
-  {
-    name: 'GPT-4o Audio',
-    modelId: 'gpt-4o-audio-preview',
-    description: 'Adds support for audio inputs as prompts (no audio output).',
-    capabilities: [
-      LanguageModelCapability.ToolCalling,
-      LanguageModelCapability.Vision,
-      LanguageModelCapability.Pdf,
-    ],
-    bestFor: ['Audio prompts', 'Rich multimodal inputs'],
-    contextLength: 128000,
   },
   {
     name: 'GPT-5 Chat',

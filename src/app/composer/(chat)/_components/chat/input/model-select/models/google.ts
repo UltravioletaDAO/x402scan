@@ -2,20 +2,6 @@ import { LanguageModelCapability, type LanguageModel } from '../types';
 
 const googleModelData: Omit<LanguageModel, 'provider'>[] = [
   {
-    name: 'Gemini 2.5 Flash Image (Nano Banana)',
-    modelId: 'gemini-2.5-flash-image',
-    description:
-      'State-of-the-art image generation with contextual understanding and edits.',
-    capabilities: [
-      LanguageModelCapability.Vision,
-      LanguageModelCapability.Pdf,
-      LanguageModelCapability.ToolCalling,
-    ],
-    bestFor: ['Image generation', 'Image editing', 'Multimodal chat'],
-    contextLength: 33000,
-    isNew: true,
-  },
-  {
     name: 'Gemini 2.5 Flash Preview 09-2025',
     modelId: 'gemini-2.5-flash-preview-09-2025',
     description:
@@ -46,19 +32,6 @@ const googleModelData: Omit<LanguageModel, 'provider'>[] = [
     isNew: true,
   },
   {
-    name: 'Gemini 2.5 Flash Image Preview (Nano Banana)',
-    modelId: 'gemini-2.5-flash-image-preview',
-    description:
-      'Preview of image generation with contextual understanding and edits.',
-    capabilities: [
-      LanguageModelCapability.Vision,
-      LanguageModelCapability.ToolCalling,
-      LanguageModelCapability.Pdf,
-    ],
-    bestFor: ['Image generation', 'Edits', 'Visual chat'],
-    contextLength: 33000,
-  },
-  {
     name: 'Gemini 2.5 Flash Lite',
     modelId: 'gemini-2.5-flash-lite',
     description:
@@ -69,15 +42,6 @@ const googleModelData: Omit<LanguageModel, 'provider'>[] = [
     ],
     bestFor: ['Low-latency apps', 'Cost-efficient workloads'],
     contextLength: 1050000,
-  },
-  {
-    name: 'Gemma 3n 2B',
-    modelId: 'gemma-3n-2b',
-    description:
-      'Multimodal, instruction-tuned 2B effective parameter model for efficiency.',
-    capabilities: [LanguageModelCapability.ToolCalling],
-    bestFor: ['Lightweight tasks', 'Low-resource deployment'],
-    contextLength: 8000,
   },
   {
     name: 'Gemini 2.5 Flash Lite Preview 06-17',
