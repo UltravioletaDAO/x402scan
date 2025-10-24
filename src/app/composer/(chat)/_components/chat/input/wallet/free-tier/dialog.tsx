@@ -23,7 +23,7 @@ export const FreeTierDialog: React.FC<Props> = ({
     <Dialog>
       <DialogTrigger asChild>
         <WalletButton>
-          <span>Free Tier</span>
+          <span>Sponsored</span>
         </WalletButton>
       </DialogTrigger>
       <DialogContent className="p-0 overflow-hidden">

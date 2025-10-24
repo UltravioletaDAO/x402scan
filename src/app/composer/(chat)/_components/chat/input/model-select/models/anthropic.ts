@@ -3,6 +3,21 @@ import { LanguageModelCapability, type LanguageModel } from '../types';
 const anthropicModelData: Omit<LanguageModel, 'provider'>[] = [
   // Non-reasoning first
   {
+    name: 'Claude Sonnet 4.5',
+    modelId: 'claude-sonnet-4.5',
+    description:
+      'Most advanced Sonnet; optimized for agents and coding with sustained autonomous operation.',
+    capabilities: [
+      LanguageModelCapability.Vision,
+      LanguageModelCapability.Reasoning,
+      LanguageModelCapability.Pdf,
+      LanguageModelCapability.ToolCalling,
+    ],
+    bestFor: ['Agents', 'Coding workflows', 'Long-running tasks'],
+    contextLength: 1000000,
+    isNew: true,
+  },
+  {
     name: 'Claude 3.5 Haiku',
     modelId: 'claude-3.5-haiku',
     description:
@@ -29,21 +44,6 @@ const anthropicModelData: Omit<LanguageModel, 'provider'>[] = [
     ],
     bestFor: ['Real-time apps', 'High-volume workloads', 'Sub-agents & tools'],
     contextLength: 200000,
-    isNew: true,
-  },
-  {
-    name: 'Claude Sonnet 4.5',
-    modelId: 'claude-sonnet-4.5',
-    description:
-      'Most advanced Sonnet; optimized for agents and coding with sustained autonomous operation.',
-    capabilities: [
-      LanguageModelCapability.Vision,
-      LanguageModelCapability.Reasoning,
-      LanguageModelCapability.Pdf,
-      LanguageModelCapability.ToolCalling,
-    ],
-    bestFor: ['Agents', 'Coding workflows', 'Long-running tasks'],
-    contextLength: 1000000,
     isNew: true,
   },
   {
