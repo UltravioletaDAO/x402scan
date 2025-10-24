@@ -43,24 +43,55 @@ export const FacilitatorsChart = () => {
       ),
     }));
 
+  const getValueHandler = (
+    data: number,
+    id: string,
+    allData?: Record<FacilitatorKey, number>
+  ) => {
+    if (!allData) return '0.0%';
+    const total = facilitators.reduce(
+      (sum, facilitator) =>
+        sum + (allData[`${facilitator.name}-${id}` as FacilitatorKey] || 0),
+      0
+    );
+    const percentage = total > 0 ? (data / total) * 100 : 0;
+    return `${percentage.toFixed(1)}%`;
+  };
+
   return (
-    <MultiCharts
-      chartData={chartData}
-      tabs={[
-        createTab<Record<FacilitatorKey, number>, typeof facilitators[number]>({
-          label: 'Transactions',
-          amount: overallData.total_transactions.toLocaleString(),
-          items: facilitators,
-          getValue: (data: number) => data.toLocaleString(),
-        }),
-        createTab<Record<FacilitatorKey, number>, typeof facilitators[number]>({
-          label: 'Amount',
-          amount: formatTokenAmount(BigInt(overallData.total_amount)),
-          items: facilitators,
-          getValue: (data: number) => formatTokenAmount(BigInt(data)),
-        }),
-      ]}
-    />
+    <div className="flex flex-col gap-4">
+      <MultiCharts
+        chartData={chartData}
+        tabs={[
+          createTab<
+            Record<FacilitatorKey, number>,
+            (typeof facilitators)[number]
+          >({
+            label: 'Transactions',
+            amount: overallData.total_transactions.toLocaleString(),
+            items: facilitators,
+            getValue: (
+              data: number,
+              allData?: Record<FacilitatorKey, number>
+            ) => getValueHandler(data, 'transactions', allData),
+            stackOffset: 'expand',
+          }),
+          createTab<
+            Record<FacilitatorKey, number>,
+            (typeof facilitators)[number]
+          >({
+            label: 'Amount',
+            amount: formatTokenAmount(BigInt(overallData.total_amount)),
+            items: facilitators,
+            getValue: (
+              data: number,
+              allData?: Record<FacilitatorKey, number>
+            ) => getValueHandler(data, 'amount', allData),
+            stackOffset: 'expand',
+          }),
+        ]}
+      />
+    </div>
   );
 };
 

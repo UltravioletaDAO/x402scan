@@ -40,7 +40,6 @@ type TabConfig<T extends Record<string, number>> = {
   }>;
 };
 
-
 type Item = {
   name: string;
   color: string;

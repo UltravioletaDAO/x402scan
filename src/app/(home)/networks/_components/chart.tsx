@@ -58,29 +58,31 @@ export const NetworksChart = () => {
   };
 
   return (
-    <MultiCharts
-      chartData={chartData}
-      tabs={[
-        createTab<Record<NetworkKey, number>, typeof networks[number]>({
-          label: 'Transactions',
-          amount: overallData.total_transactions.toLocaleString(),
-          items: networks,
-          getKey: n => n.chain,
-          getValue: (data: number, allData?: Record<NetworkKey, number>) =>
-            getValueHandler(data, 'transactions', allData),
-          stackOffset: 'expand',
-        }),
-        createTab<Record<NetworkKey, number>, typeof networks[number]>({
-          label: 'Amount',
-          amount: formatTokenAmount(BigInt(overallData.total_amount)),
-          items: networks,
-          getKey: n => n.chain,
-          getValue: (data: number, allData?: Record<NetworkKey, number>) =>
-            getValueHandler(data, 'amount', allData),
-          stackOffset: 'expand',
-        }),
-      ]}
-    />
+    <div className="flex flex-col gap-4">
+      <MultiCharts
+        chartData={chartData}
+        tabs={[
+          createTab<Record<NetworkKey, number>, (typeof networks)[number]>({
+            label: 'Transactions',
+            amount: overallData.total_transactions.toLocaleString(),
+            items: networks,
+            getKey: n => n.chain,
+            getValue: (data: number, allData?: Record<NetworkKey, number>) =>
+              getValueHandler(data, 'transactions', allData),
+            stackOffset: 'expand',
+          }),
+          createTab<Record<NetworkKey, number>, (typeof networks)[number]>({
+            label: 'Amount',
+            amount: formatTokenAmount(BigInt(overallData.total_amount)),
+            items: networks,
+            getKey: n => n.chain,
+            getValue: (data: number, allData?: Record<NetworkKey, number>) =>
+              getValueHandler(data, 'amount', allData),
+            stackOffset: 'expand',
+          }),
+        ]}
+      />
+    </div>
   );
 };
 
