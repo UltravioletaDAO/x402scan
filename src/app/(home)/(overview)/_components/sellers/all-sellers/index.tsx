@@ -1,18 +1,24 @@
 import { Suspense } from 'react';
 
+import { subMonths } from 'date-fns';
+
 import { DataTable } from '@/components/ui/data-table';
+
+import { Section } from '@/app/_components/layout/page-utils';
+
+import { RangeSelector } from '@/app/_contexts/time-range/component';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 
 import { columns } from './columns';
 import { AllSellersTable } from './table';
 
-import { api, HydrateClient } from '@/trpc/server';
 import { SellersSortingProvider } from '../../../../../_contexts/sorting/sellers/provider';
 import { defaultSellersSorting } from '../../../../../_contexts/sorting/sellers/default';
-import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+
 import { firstTransfer } from '@/services/facilitator/constants';
-import { Section } from '../../utils';
-import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { subMonths } from 'date-fns';
+
+import { api, HydrateClient } from '@/trpc/server';
+
 import { ActivityTimeframe } from '@/types/timeframes';
 import { ErrorBoundary } from 'react-error-boundary';
 import type { Chain } from '@/types/chain';
@@ -27,10 +33,12 @@ export const AllSellers: React.FC<Props> = async ({ chain }) => {
 
   const limit = 100;
 
-  await api.sellers.list.all.prefetch({
+  await api.public.sellers.list.all.prefetch({
     chain,
     sorting: defaultSellersSorting,
-    limit,
+    pagination: {
+      page_size: limit,
+    },
     startDate,
     endDate,
   });

@@ -1,3 +1,4 @@
+import { env } from '@/env';
 import { Nav } from '../_components/layout/nav';
 
 export default function HomeLayout({
@@ -12,6 +13,21 @@ export default function HomeLayout({
           {
             label: 'Overview',
             href: '/',
+          },
+          ...(env.NEXT_PUBLIC_ENABLE_COMPOSER === 'true'
+            ? [
+                {
+                  label: 'Composer',
+                  href: '/composer' as const,
+                  subRoutes: ['/composer/chat', '/composer/agent'],
+                  isNew: true,
+                },
+              ]
+            : []),
+          {
+            label: 'Resources',
+            href: '/resources',
+            subRoutes: ['/resources/register'],
           },
           {
             label: 'Transactions',

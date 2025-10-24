@@ -9,6 +9,9 @@ import { resourcesRouter } from './resources';
 import { sellersRouter } from './sellers';
 import { statisticsRouter } from './statistics';
 import { transfersRouter } from './transfers';
+import { userRouter } from './user';
+import { publicRouter } from './public';
+import { adminRouter } from './admin';
 
 export const appRouter = createTRPCRouter({
   accepts: acceptsRouter,
@@ -20,6 +23,9 @@ export const appRouter = createTRPCRouter({
   facilitators: facilitatorsRouter,
   networks: networksRouter,
   onrampSessions: onrampSessionsRouter,
+  user: userRouter,
+  public: publicRouter,
+  admin: adminRouter,
 });
 
 export type AppRouter = typeof appRouter;
