@@ -1,5 +1,3 @@
-import type { JsonValue } from '@/components/ai-elements/json-viewer';
-import { JsonViewer } from '@/components/ai-elements/json-viewer';
 import {
   Collapsible,
   CollapsibleContent,
@@ -33,7 +31,7 @@ export const FirecrawlOutput: OutputComponent = ({ output, errorText }) => {
   const parseResult = firecrawlOutputSchema.safeParse(output);
 
   if (!parseResult.success) {
-    return <JsonViewer data={JSON.parse(output as string) as JsonValue} />;
+    return <p>Error parsing output</p>;
   }
 
   return (
