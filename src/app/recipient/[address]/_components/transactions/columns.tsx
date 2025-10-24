@@ -1,7 +1,6 @@
 'use client';
 
 import { Calendar, DollarSign, Globe, Hash, Server, User } from 'lucide-react';
-import Link from 'next/link';
 
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -108,12 +107,10 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Hash} label="Transaction Hash" className="mx-auto" />
     ),
     cell: ({ row }) => (
-      <Link href={`/transaction/${row.original.tx_hash}`} prefetch={false}>
-        <Address
-          address={row.original.tx_hash}
-          className="text-xs block text-center"
-        />
-      </Link>
+      <Address
+        address={row.original.tx_hash}
+        className="text-xs block text-center"
+      />
     ),
     size: 150,
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,

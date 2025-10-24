@@ -1,7 +1,7 @@
 import { Body } from '../../_components/layout/page-utils';
 
 import { HomeHeading } from './_components/heading';
-import { LoadingOverallStats, OverallStats } from './_components/stats';
+import { OverallStats } from './_components/stats';
 import {
   TopServers,
   LoadingTopServers,
@@ -28,9 +28,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
       <HomeHeading />
       <Body>
         {env.NEXT_PUBLIC_ENABLE_COMPOSER === 'true' && <ComposerCallout />}
-        <Suspense fallback={<LoadingOverallStats />}>
-          <OverallStats chain={chain} />
-        </Suspense>
+        <OverallStats chain={chain} />
         <Suspense fallback={<LoadingTopServers />}>
           <TopServers chain={chain} />
         </Suspense>
