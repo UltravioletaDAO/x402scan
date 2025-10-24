@@ -14,7 +14,7 @@ export const createChat = async (data: Prisma.ChatCreateInput) => {
 };
 
 export const getChat = async (id: string, userId?: string) => {
-  return await prisma.chat.findUnique({
+  return await prisma.chat.findFirst({
     where: { id, OR: [{ userId }, { visibility: 'public' }] },
     include: {
       messages: {
@@ -30,7 +30,7 @@ export const getChat = async (id: string, userId?: string) => {
 };
 
 export const getChatStreamId = async (id: string, userId?: string) => {
-  return await prisma.chat.findUnique({
+  return await prisma.chat.findFirst({
     where: { id, OR: [{ userId }, { visibility: 'public' }] },
     select: { activeStreamId: true },
   });

@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
       messages: {
         createMany: {
           data: messages.map(message => ({
-            role: lastMessage.role,
+            role: message.role,
             parts: JSON.stringify(message.parts),
             attachments: {},
           })),
