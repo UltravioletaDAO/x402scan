@@ -19,6 +19,7 @@ import { ComposerCallout } from './_components/composer-callout';
 import { getChain } from '@/app/_lib/chain';
 import { Suspense } from 'react';
 import { LoadingTopFacilitators } from './_components/top-facilitators/loading';
+import { env } from '@/env';
 
 export default async function Home({ searchParams }: PageProps<'/'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
@@ -26,7 +27,7 @@ export default async function Home({ searchParams }: PageProps<'/'>) {
     <div>
       <HomeHeading />
       <Body>
-        <ComposerCallout />
+        {env.NEXT_PUBLIC_ENABLE_COMPOSER === 'true' && <ComposerCallout />}
         <Suspense fallback={<LoadingOverallStats />}>
           <OverallStats chain={chain} />
         </Suspense>

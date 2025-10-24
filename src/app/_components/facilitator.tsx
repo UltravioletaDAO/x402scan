@@ -25,7 +25,6 @@ export const Facilitator: React.FC<Props> = ({ id, className }) => {
         height={16}
         className="rounded-md"
       />
-      <p className="text-[10px] md:text-xs font-semibold">{facilitator.name}</p>
     </div>
   );
 };
@@ -63,9 +62,6 @@ export const Facilitators: React.FC<FacilitatorsProps> = ({
           );
         })}
       </div>
-      <p className="text-[10px] md:text-xs font-semibold">
-        {ids.length} facilitators
-      </p>
     </div>
   );
 };
