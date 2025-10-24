@@ -15,6 +15,15 @@ const openAiLanguageModelsData: Omit<LanguageModel, 'provider'>[] = [
     contextLength: 128000,
   },
   {
+    name: 'GPT-5 Nano',
+    modelId: 'gpt-5-nano',
+    description:
+      'Smallest and fastest GPT-5 variant for ultra-low latency interactions.',
+    capabilities: [LanguageModelCapability.ToolCalling],
+    bestFor: ['Developer tools', 'Realtime UX'],
+    contextLength: 400000,
+  },
+  {
     name: 'GPT-5',
     modelId: 'gpt-5',
     description:
@@ -40,15 +49,6 @@ const openAiLanguageModelsData: Omit<LanguageModel, 'provider'>[] = [
       LanguageModelCapability.Vision,
     ],
     bestFor: ['Interactive apps', 'Cost efficiency'],
-    contextLength: 400000,
-  },
-  {
-    name: 'GPT-5 Nano',
-    modelId: 'gpt-5-nano',
-    description:
-      'Smallest and fastest GPT-5 variant for ultra-low latency interactions.',
-    capabilities: [LanguageModelCapability.ToolCalling],
-    bestFor: ['Developer tools', 'Realtime UX'],
     contextLength: 400000,
   },
   // Reasoning-focused and deep-research variants pushed to bottom
