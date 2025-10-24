@@ -2,49 +2,55 @@ import { type LanguageModel, LanguageModelCapability } from '../types';
 
 const llamaModelData: Omit<LanguageModel, 'provider'>[] = [
   {
-    name: 'Llama 4 Scout',
-    modelId: 'llama-4-scout',
+    name: 'Llama Guard 4 12B',
+    modelId: 'llama-guard-4-12b',
     description:
-      'Llama 4 Scout 17B is an instruction-tuned model designed for following complex instructions',
+      'Multimodal safety classification for inputs and responses; supports text and images.',
     capabilities: [
       LanguageModelCapability.ToolCalling,
       LanguageModelCapability.Vision,
     ],
-    bestFor: [
-      'Instruction following',
-      'Task automation',
-      'Research assistance',
-    ],
-    contextLength: 131072,
+    bestFor: ['Safety classification', 'Moderation', 'Policy enforcement'],
+    contextLength: 164000,
   },
-
   {
     name: 'Llama 4 Maverick',
-    modelId: 'meta-llama/llama-4-maverick',
+    modelId: 'llama-4-maverick',
     description:
-      'Llama 4 Maverick 17B is an experimental instruction-tuned model with enhanced capabilities',
-    capabilities: [LanguageModelCapability.ToolCalling],
-    bestFor: [
-      'Creative tasks',
-      'Experimental applications',
-      'Advanced reasoning',
+      'High-capacity multimodal MoE model optimized for vision-language tasks.',
+    capabilities: [
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Vision,
     ],
-    contextLength: 131072,
+    bestFor: ['Multimodal reasoning', 'Assistant behavior', 'High throughput'],
+    contextLength: 1050000,
   },
   {
-    name: 'Llama 3.3 70B',
+    name: 'Llama 4 Scout',
+    modelId: 'llama-4-scout',
+    description:
+      'Efficient MoE model for multilingual assistant interaction and visual reasoning.',
+    capabilities: [
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Vision,
+    ],
+    bestFor: ['Multimodal chat', 'Captioning', 'Image understanding'],
+    contextLength: 10000000,
+  },
+  {
+    name: 'Llama Guard 3 8B',
+    modelId: 'llama-guard-3-8b',
+    description:
+      'Safety classification model aligned to MLCommons hazards taxonomy.',
+    capabilities: [LanguageModelCapability.ToolCalling],
+    bestFor: ['Prompt moderation', 'Response moderation', 'Policy tagging'],
+    contextLength: 160000,
+  },
+  {
+    name: 'Llama 3.3 70B Instruct',
     modelId: 'llama-3.3-70b-instruct',
     description:
-      'Llama 3.3 70B is a versatile large language model optimized for various tasks',
-    capabilities: [LanguageModelCapability.ToolCalling],
-    bestFor: ['General purpose', 'Complex reasoning', 'Code generation'],
-    contextLength: 131072,
-  },
-  {
-    name: 'Llama 3.3 8B',
-    modelId: 'llama-3.3-8b-instruct',
-    description:
-      'Llama 3.3 70B is a versatile large language model optimized for various tasks',
+      'Multilingual, instruction-tuned model for high-quality dialogue use cases.',
     capabilities: [LanguageModelCapability.ToolCalling],
     bestFor: ['General purpose', 'Complex reasoning', 'Code generation'],
     contextLength: 131072,
