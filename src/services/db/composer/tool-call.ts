@@ -4,6 +4,8 @@ import { queryRaw } from '../query';
 
 import { Prisma } from '@prisma/client';
 import { sortingSchema } from '@/lib/schemas';
+import type { PaginatedQueryParams } from '@/lib/pagination';
+import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
 
 export const createToolCall = async (data: Prisma.ToolCallCreateInput) => {
   return await prisma.toolCall.create({
@@ -11,29 +13,31 @@ export const createToolCall = async (data: Prisma.ToolCallCreateInput) => {
   });
 };
 
-const toolSortIds = [
+const TOOL_SORT_IDS = [
   'toolCalls',
   'agentConfigurations',
   'uniqueUsers',
   'latestCallTime',
 ] as const;
 
-export type ToolSortId = (typeof toolSortIds)[number];
+export type ToolSortId = (typeof TOOL_SORT_IDS)[number];
 
 export const listTopToolsSchema = z.object({
-  limit: z.number().default(10),
-  sorting: sortingSchema(toolSortIds).default({
+  sorting: sortingSchema(TOOL_SORT_IDS).default({
     id: 'toolCalls',
     desc: true,
   }),
 });
 
 export const listTopTools = async (
-  input: z.infer<typeof listTopToolsSchema>
+  input: z.infer<typeof listTopToolsSchema>,
+  pagination: PaginatedQueryParams
 ) => {
-  const { sorting, limit } = input;
-  return await queryRaw(
-    Prisma.sql`
+  const { sorting } = input;
+  const [count, items] = await Promise.all([
+    prisma.toolCall.count(),
+    queryRaw(
+      Prisma.sql`
     WITH resource_stats AS (
       SELECT 
         r.id,
@@ -115,31 +119,38 @@ export const listTopTools = async (
               ? Prisma.sql`unique_users`
               : Prisma.sql`latest_call_time`
       } ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
-    LIMIT ${limit}
+    ${paginationClause(pagination)}
   `,
-    z.array(
-      z.object({
-        id: z.string(),
-        resource: z.string(),
-        tool_calls: z.bigint(),
-        agent_configurations: z.bigint(),
-        unique_users: z.bigint(),
-        latest_call_time: z.date().nullable(),
-        origin: z.object({
+      z.array(
+        z.object({
           id: z.string(),
-          origin: z.string(),
-          favicon: z.string().nullable(),
-        }),
-        accepts: z.array(
-          z.object({
+          resource: z.string(),
+          tool_calls: z.bigint(),
+          agent_configurations: z.bigint(),
+          unique_users: z.bigint(),
+          latest_call_time: z.date().nullable(),
+          origin: z.object({
             id: z.string(),
-            description: z.string(),
-            network: z.string(),
-            maxAmountRequired: z.number(),
-            payTo: z.string(),
-          })
-        ),
-      })
-    )
-  );
+            origin: z.string(),
+            favicon: z.string().nullable(),
+          }),
+          accepts: z.array(
+            z.object({
+              id: z.string(),
+              description: z.string(),
+              network: z.string(),
+              maxAmountRequired: z.number(),
+              payTo: z.string(),
+            })
+          ),
+        })
+      )
+    ),
+  ]);
+
+  return toPaginatedResponse({
+    items,
+    total_count: count,
+    ...pagination,
+  });
 };

@@ -4,6 +4,9 @@ import { queryRaw } from '../query';
 
 import { Prisma } from '@prisma/client';
 import { sortingSchema } from '@/lib/schemas';
+import type { PaginatedQueryParams } from '@/lib/pagination';
+import { paginationClause, toPaginatedResponse } from '@/lib/pagination';
+import { prisma } from '../client';
 
 const agentsSortingIds = [
   'message_count',
@@ -16,8 +19,6 @@ const agentsSortingIds = [
 export type AgentSortId = (typeof agentsSortingIds)[number];
 
 export const listTopAgentConfigurationsSchema = z.object({
-  limit: z.number().default(10),
-  offset: z.number().default(0),
   userId: z.string().optional(),
   sorting: sortingSchema(agentsSortingIds).default({
     id: 'message_count',
@@ -26,12 +27,19 @@ export const listTopAgentConfigurationsSchema = z.object({
 });
 
 export const listTopAgentConfigurations = async (
-  input: z.infer<typeof listTopAgentConfigurationsSchema>
+  input: z.infer<typeof listTopAgentConfigurationsSchema>,
+  pagination: PaginatedQueryParams
 ) => {
-  const { limit, offset, sorting, userId } = input;
+  const { sorting, userId } = input;
 
-  const agentConfigurations = await queryRaw(
-    Prisma.sql`
+  const [count, items] = await Promise.all([
+    prisma.agentConfiguration.count({
+      where: {
+        visibility: 'public',
+      },
+    }),
+    queryRaw(
+      Prisma.sql`
       SELECT 
         ac.id,
         ac.name,
@@ -92,31 +100,35 @@ export const listTopAgentConfigurations = async (
                   ? Prisma.sql`chat_count`
                   : Prisma.sql`createdAt`
         } ${sorting.desc ? Prisma.sql`DESC` : Prisma.sql`ASC`}
-      LIMIT ${limit}
-      OFFSET ${offset}
+      ${paginationClause(pagination)}
     `,
-    z.array(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-        description: z.string().nullable(),
-        image: z.string().nullable(),
-        systemPrompt: z.string(),
-        visibility: z.enum(['public', 'private']),
-        createdAt: z.date(),
-        user_count: z.bigint(),
-        chat_count: z.bigint(),
-        message_count: z.bigint(),
-        tool_call_count: z.bigint(),
-        resources: z.array(
-          z.object({
-            id: z.string(),
-            originFavicon: z.string().nullable(),
-          })
-        ),
-      })
-    )
-  );
+      z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          description: z.string().nullable(),
+          image: z.string().nullable(),
+          systemPrompt: z.string(),
+          visibility: z.enum(['public', 'private']),
+          createdAt: z.date(),
+          user_count: z.bigint(),
+          chat_count: z.bigint(),
+          message_count: z.bigint(),
+          tool_call_count: z.bigint(),
+          resources: z.array(
+            z.object({
+              id: z.string(),
+              originFavicon: z.string().nullable(),
+            })
+          ),
+        })
+      )
+    ),
+  ]);
 
-  return agentConfigurations;
+  return toPaginatedResponse({
+    items,
+    total_count: count,
+    ...pagination,
+  });
 };

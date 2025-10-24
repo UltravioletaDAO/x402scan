@@ -47,6 +47,7 @@ interface DataTableProps<TData, TValue, AppRoute extends string> {
   pageSize?: number;
   page?: number;
   onPageChange?: (page: number) => void;
+  totalPages?: number;
   hasNextPage?: boolean;
   enableRowSelection?: boolean;
   rowSelection?: RowSelectionState;
@@ -65,6 +66,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
   page,
   onPageChange,
   hasNextPage,
+  totalPages,
   enableRowSelection = false,
   rowSelection,
   onRowSelectionChange,
@@ -207,7 +209,7 @@ export function DataTable<TData, TValue, AppRoute extends string>({
         ) : (
           <p className="text-xs text-muted-foreground">
             {isServerSidePagination
-              ? `Page ${page + 1}`
+              ? `Page ${page + 1}${totalPages ? ` of ${totalPages.toLocaleString()}` : ''}`
               : `Page ${table.getState().pagination.pageIndex + 1} of ${table.getPageCount()}`}
           </p>
         )}

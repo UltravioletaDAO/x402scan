@@ -7,7 +7,10 @@ import { Suspense } from 'react';
 
 export const Tools = async () => {
   await api.public.tools.top.prefetch({
-    limit: 10,
+    pagination: {
+      page: 0,
+      page_size: 10,
+    },
     sorting: defaultToolsSorting,
   });
 

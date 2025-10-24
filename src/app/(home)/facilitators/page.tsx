@@ -18,6 +18,7 @@ import {
 import { FacilitatorsSortingProvider } from '@/app/_contexts/sorting/facilitators/provider';
 import { defaultFacilitatorsSorting } from '@/app/_contexts/sorting/facilitators/default';
 import { getChain } from '@/app/_lib/chain';
+import { facilitators } from '@/lib/facilitators';
 
 export default async function FacilitatorsPage({
   searchParams,
@@ -40,6 +41,9 @@ export default async function FacilitatorsPage({
       chain,
     }),
     api.public.facilitators.list.prefetch({
+      pagination: {
+        page_size: facilitators.length,
+      },
       startDate,
       endDate,
       chain,

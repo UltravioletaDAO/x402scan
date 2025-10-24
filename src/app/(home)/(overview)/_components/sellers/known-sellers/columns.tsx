@@ -171,7 +171,7 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     ),
     cell: ({ row }) => (
       <Facilitators
-        addresses={row.original.facilitators}
+        ids={row.original.facilitators}
         className="mx-auto justify-center"
       />
     ),

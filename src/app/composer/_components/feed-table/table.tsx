@@ -14,8 +14,10 @@ export const FeedTableContent = ({ limit = 10 }: Props) => {
   const [page, setPage] = useState(0);
 
   const [feed] = api.public.agents.activity.feed.useSuspenseQuery({
-    limit,
-    offset: page * limit,
+    pagination: {
+      page: page,
+      page_size: limit,
+    },
   });
 
   return (

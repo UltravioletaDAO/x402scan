@@ -22,7 +22,7 @@ import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
 
-type ColumnType = RouterOutputs['public']['tools']['top'][number];
+type ColumnType = RouterOutputs['public']['tools']['top']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {

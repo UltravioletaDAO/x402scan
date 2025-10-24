@@ -24,7 +24,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { Route } from 'next';
 
 interface Props<T extends string> {
-  agentConfiguration: RouterOutputs['public']['agents']['list'][number];
+  agentConfiguration: RouterOutputs['public']['agents']['list']['items'][number];
   href?: Route<T>;
 }
 

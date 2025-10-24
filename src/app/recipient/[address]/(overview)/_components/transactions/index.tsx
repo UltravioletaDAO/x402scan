@@ -22,13 +22,21 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
+  const pageSize = 10;
   const [firstTransfer] = await Promise.all([
     api.public.stats.firstTransferTimestamp({
-      addresses: [address],
+      recipients: {
+        include: [address],
+      },
     }),
     api.public.transfers.list.prefetch({
-      limit: 100,
-      recipient: address,
+      pagination: {
+        page_size: pageSize,
+        page: 0,
+      },
+      recipients: {
+        include: [address],
+      },
       startDate,
       endDate,
       sorting: defaultTransfersSorting,
@@ -46,11 +54,7 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
         <TransfersSortingProvider initialSorting={defaultTransfersSorting}>
           <LatestTransactionsTableContainer>
             <Suspense fallback={<LoadingLatestTransactionsTable />}>
-              <LatestTransactionsTable
-                address={address}
-                limit={100}
-                pageSize={10}
-              />
+              <LatestTransactionsTable address={address} pageSize={pageSize} />
             </Suspense>
           </LatestTransactionsTableContainer>
         </TransfersSortingProvider>

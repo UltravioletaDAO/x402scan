@@ -2,17 +2,21 @@ import {
   listTopFacilitators,
   listTopFacilitatorsInputSchema,
 } from '@/services/transfers/facilitators/list';
-import { createTRPCRouter, publicProcedure } from '../../trpc';
+import {
+  createTRPCRouter,
+  paginatedProcedure,
+  publicProcedure,
+} from '../../trpc';
 import {
   bucketedStatisticsInputSchema,
   getBucketedFacilitatorsStatistics,
 } from '@/services/transfers/facilitators/bucketed';
 
 export const facilitatorsRouter = createTRPCRouter({
-  list: publicProcedure
+  list: paginatedProcedure
     .input(listTopFacilitatorsInputSchema)
-    .query(async ({ input }) => {
-      return await listTopFacilitators(input);
+    .query(async ({ input, ctx: { pagination } }) => {
+      return await listTopFacilitators(input, pagination);
     }),
 
   bucketedStatistics: publicProcedure

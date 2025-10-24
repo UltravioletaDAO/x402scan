@@ -1,13 +1,13 @@
-import { createTRPCRouter, publicProcedure } from '../../trpc';
+import { createTRPCRouter, paginatedProcedure } from '../../trpc';
 import {
   listFacilitatorTransfersInputSchema,
   listFacilitatorTransfers,
 } from '@/services/transfers/transfers/list';
 
 export const transfersRouter = createTRPCRouter({
-  list: publicProcedure
+  list: paginatedProcedure
     .input(listFacilitatorTransfersInputSchema)
-    .query(async ({ input }) => {
-      return await listFacilitatorTransfers(input);
+    .query(async ({ input, ctx: { pagination } }) => {
+      return await listFacilitatorTransfers(input, pagination);
     }),
 });

@@ -20,15 +20,14 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu';
-import type { paginatedQuerySchema } from '@/lib/pagination';
-import type { z } from 'zod';
+import type { PaginatedQueryParams } from '@/lib/pagination';
 
 interface EditTagModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   resourceId: string;
   resourceName: string;
-  pagination: z.infer<ReturnType<typeof paginatedQuerySchema>>;
+  pagination: PaginatedQueryParams;
   selectedTagIds: string[];
   setSelectedTagIds: (tagIds: string[]) => void;
 }
@@ -61,18 +60,21 @@ export function EditTagModal({
   function invalidateResourcesList() {
     void utils.public.resources.list.paginated.invalidate({
       pagination,
-      where:
-        selectedTagIds.length > 0
-          ? {
-              tags: {
-                some: {
-                  tagId: {
-                    in: selectedTagIds,
+      ...(selectedTagIds.length > 0
+        ? {
+            AND: [
+              {
+                tags: {
+                  some: {
+                    tagId: {
+                      in: selectedTagIds,
+                    },
                   },
                 },
               },
-            }
-          : undefined,
+            ],
+          }
+        : {}),
     });
   }
 

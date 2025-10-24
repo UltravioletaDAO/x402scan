@@ -28,8 +28,8 @@ export const ResourceTable = () => {
 
   const { data, isLoading } = api.public.resources.list.paginated.useQuery({
     pagination: {
-      skip: page * PAGE_SIZE,
-      limit: PAGE_SIZE,
+      page: page,
+      page_size: PAGE_SIZE,
     },
     where:
       selectedTagIds.length > 0
@@ -97,8 +97,8 @@ export const ResourceTable = () => {
           resourceId={modalState.resource.id}
           resourceName={modalState.resource.resource}
           pagination={{
-            skip: page * PAGE_SIZE,
-            limit: PAGE_SIZE,
+            page: page,
+            page_size: PAGE_SIZE,
           }}
           selectedTagIds={selectedTagIds}
           setSelectedTagIds={setSelectedTagIds}

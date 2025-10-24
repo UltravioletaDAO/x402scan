@@ -19,7 +19,7 @@ import { useChain } from '@/app/_contexts/chain/hook';
 
 interface Props {
   facilitator: Facilitator;
-  stats: NonNullable<RouterOutputs['public']['facilitators']['list']>[number];
+  stats: RouterOutputs['public']['facilitators']['list']['items'][number];
   overallStats: NonNullable<RouterOutputs['public']['stats']['overall']>;
   chartData: ChartData<{
     total_transactions: number;

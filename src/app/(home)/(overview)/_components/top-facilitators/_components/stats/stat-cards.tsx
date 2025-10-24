@@ -8,7 +8,7 @@ import { formatTokenAmount } from '@/lib/token';
 import type { RouterOutputs } from '@/trpc/client';
 
 interface Props {
-  stats: NonNullable<RouterOutputs['public']['facilitators']['list']>[number];
+  stats: RouterOutputs['public']['facilitators']['list']['items'][number];
 }
 
 interface Stat {

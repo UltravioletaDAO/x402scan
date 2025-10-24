@@ -16,12 +16,15 @@ export const KnownSellersTable = () => {
 
   const [topSellers] = api.public.sellers.list.bazaar.useSuspenseQuery({
     chain,
+    pagination: {
+      page_size: 100,
+    },
     startDate,
     endDate,
     sorting,
   });
 
-  return <DataTable columns={columns} data={topSellers.items} />;
+  return <DataTable columns={columns} data={topSellers.items} pageSize={10} />;
 };
 
 export const LoadingKnownSellersTable = () => {

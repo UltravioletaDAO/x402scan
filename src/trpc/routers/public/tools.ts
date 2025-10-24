@@ -1,4 +1,8 @@
-import { createTRPCRouter, publicProcedure } from '../../trpc';
+import {
+  createTRPCRouter,
+  paginatedProcedure,
+  publicProcedure,
+} from '../../trpc';
 
 import { searchX402Tools } from '@/services/agent/search-tools';
 import {
@@ -14,7 +18,9 @@ export const publicToolsRouter = createTRPCRouter({
       return await searchX402Tools(input);
     }),
 
-  top: publicProcedure.input(listTopToolsSchema).query(async ({ input }) => {
-    return await listTopTools(input);
-  }),
+  top: paginatedProcedure
+    .input(listTopToolsSchema)
+    .query(async ({ input, ctx: { pagination } }) => {
+      return await listTopTools(input, pagination);
+    }),
 });

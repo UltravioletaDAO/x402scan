@@ -36,7 +36,9 @@ export const AllSellers: React.FC<Props> = async ({ chain }) => {
   await api.public.sellers.list.all.prefetch({
     chain,
     sorting: defaultSellersSorting,
-    limit,
+    pagination: {
+      page_size: limit,
+    },
     startDate,
     endDate,
   });

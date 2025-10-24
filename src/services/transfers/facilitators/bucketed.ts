@@ -1,39 +1,14 @@
 import z from 'zod';
-import { subMonths } from 'date-fns';
+
 import { Prisma } from '@prisma/client';
 
-import { baseQuerySchema } from '../lib';
+import { baseBucketedQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
 import { facilitators } from '@/lib/facilitators';
-import { queryRaw } from '@/services/db/transfers-client';
-import { mixedAddressSchema } from '@/lib/schemas';
+import { queryRaw } from '@/services/transfers/client';
+import { transfersWhereClause } from '../query-utils';
 
-export const bucketedStatisticsInputSchema = baseQuerySchema.extend({
-  startDate: z
-    .date()
-    .optional()
-    .default(() => subMonths(new Date(), 1)),
-  endDate: z
-    .date()
-    .optional()
-    .default(() => new Date()),
-  numBuckets: z.number().optional().default(48),
-});
-
-const bucketedFacilitatorResultSchema = z.array(
-  z.object({
-    bucket_start: z.date(),
-    facilitators: z.record(
-      z.string(),
-      z.object({
-        total_transactions: z.number(),
-        total_amount: z.number(),
-        unique_buyers: z.number(),
-        unique_sellers: z.number(),
-      })
-    ),
-  })
-);
+export const bucketedStatisticsInputSchema = baseBucketedQuerySchema;
 
 const getBucketedFacilitatorsStatisticsUncached = async (
   input: z.infer<typeof bucketedStatisticsInputSchema>
@@ -50,18 +25,7 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     Math.floor(timeRangeMs / numBuckets / 1000)
   );
 
-  const facilitatorMapping = chainFacilitators.reduce(
-    (acc, f) => {
-      Object.values(f.addresses)
-        .flat()
-        .forEach(addr => {
-          acc[mixedAddressSchema.parse(addr)] = f.name;
-        });
-      return acc;
-    },
-    {} as Record<string, string>
-  );
-  const facilitatorAddresses = Object.keys(facilitatorMapping);
+  const facilitatorIds = chainFacilitators.map(f => f.id);
 
   const sql = Prisma.sql`
     WITH all_buckets AS (
@@ -74,10 +38,10 @@ const getBucketedFacilitatorsStatisticsUncached = async (
       ) AS bucket_start
     ),
     facilitator_list AS (
-      SELECT unnest(${chainFacilitators.map(f => f.name)}::text[]) AS facilitator_name
+      SELECT unnest(${facilitatorIds}::text[]) AS facilitator_id
     ),
     all_combinations AS (
-      SELECT ab.bucket_start, fl.facilitator_name
+      SELECT ab.bucket_start, fl.facilitator_id
       FROM all_buckets ab
       CROSS JOIN facilitator_list fl
     ),
@@ -86,31 +50,19 @@ const getBucketedFacilitatorsStatisticsUncached = async (
         to_timestamp(
           floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
         ) AS bucket_start,
-        CASE ${Prisma.join(
-          Object.entries(facilitatorMapping).map(
-            ([addr, name]) =>
-              Prisma.sql`WHEN t.transaction_from = ${addr} THEN ${name}`
-          ),
-          ' '
-        )}
-          ELSE 'Unknown'
-        END AS facilitator_name,
+        t.facilitator_id,
         COUNT(*)::int AS total_transactions,
         SUM(t.amount)::float AS total_amount,
         COUNT(DISTINCT t.sender)::int AS unique_buyers,
         COUNT(DISTINCT t.recipient)::int AS unique_sellers
       FROM "TransferEvent" t
-      WHERE 1=1
-        ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-        ${facilitatorAddresses.length > 0 ? Prisma.sql`AND t.transaction_from = ANY(${facilitatorAddresses}::text[])` : Prisma.empty}
-        ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
-        ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
-      GROUP BY bucket_start, facilitator_name
+      ${transfersWhereClause(input)}
+      GROUP BY bucket_start, facilitator_id
     ),
     combined_stats AS (
       SELECT 
         ac.bucket_start,
-        ac.facilitator_name,
+        ac.facilitator_id,
         COALESCE(bs.total_transactions, 0)::int AS total_transactions,
         COALESCE(bs.total_amount, 0)::float AS total_amount,
         COALESCE(bs.unique_buyers, 0)::int AS unique_buyers,
@@ -118,12 +70,12 @@ const getBucketedFacilitatorsStatisticsUncached = async (
       FROM all_combinations ac
       LEFT JOIN bucket_stats bs 
         ON ac.bucket_start = bs.bucket_start 
-        AND ac.facilitator_name = bs.facilitator_name
+        AND ac.facilitator_id = bs.facilitator_id
     )
     SELECT 
       bucket_start,
       jsonb_object_agg(
-        facilitator_name,
+        facilitator_id,
         jsonb_build_object(
           'total_transactions', total_transactions,
           'total_amount', total_amount,
@@ -137,7 +89,23 @@ const getBucketedFacilitatorsStatisticsUncached = async (
     LIMIT ${numBuckets}
   `;
 
-  const rawResult = await queryRaw(sql, bucketedFacilitatorResultSchema);
+  const rawResult = await queryRaw(
+    sql,
+    z.array(
+      z.object({
+        bucket_start: z.date(),
+        facilitators: z.record(
+          z.string(),
+          z.object({
+            total_transactions: z.number(),
+            total_amount: z.number(),
+            unique_buyers: z.number(),
+            unique_sellers: z.number(),
+          })
+        ),
+      })
+    )
+  );
 
   return rawResult;
 };
@@ -147,6 +115,5 @@ export const getBucketedFacilitatorsStatistics = createCachedArrayQuery({
   cacheKeyPrefix: 'bucketed-facilitators-statistics',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['bucket_start'],
-
   tags: ['facilitators-statistics'],
 });

@@ -15,7 +15,10 @@ export const FacilitatorsTable: React.FC = () => {
   const { startDate, endDate } = useTimeRangeContext();
   const { chain } = useChain();
 
-  const [facilitators] = api.public.facilitators.list.useSuspenseQuery({
+  const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
+    pagination: {
+      page_size: facilitators.length,
+    },
     sorting,
     startDate,
     endDate,
@@ -25,7 +28,7 @@ export const FacilitatorsTable: React.FC = () => {
   return (
     <DataTable
       columns={columns}
-      data={facilitators}
+      data={facilitatorsData.items}
       pageSize={facilitators.length}
     />
   );
