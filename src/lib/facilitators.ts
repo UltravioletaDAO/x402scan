@@ -45,11 +45,21 @@ const aurraCloudFacilitator = {
   color: 'var(--color-yellow-600)',
 } satisfies Facilitator;
 
+const daydreamsFacilitator = {
+  id: 'daydreams',
+  name: 'Daydreams' as const,
+  image: '/router-logo-small.png',
+  link: 'https://facilitator.daydreams.systems',
+  addresses: ['0xb308ed39d67D0d4BAe5BC2FAEF60c66BBb6AE429'],
+  color: 'var(--color-yellow-600)',
+} satisfies Facilitator;
+
 export const facilitators = [
   coinbaseFacilitator,
   x402rsFacilitator,
   payAiFacilitator,
   aurraCloudFacilitator,
+  daydreamsFacilitator,
 ] satisfies Facilitator[];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];
