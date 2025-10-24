@@ -5,14 +5,16 @@ import { queryRaw } from '../query';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../client';
 
-export const getAgentConfigSystemPrompt = async (id: string) => {
+export const getAgentConfigurationDetails = async (id: string) => {
   const agentConfiguration = await prisma.agentConfiguration.findUnique({
     where: { id },
     select: {
+      name: true,
+      description: true,
       systemPrompt: true,
     },
   });
-  return agentConfiguration?.systemPrompt;
+  return agentConfiguration;
 };
 
 export const getAgentConfiguration = async (id: string, userId?: string) => {

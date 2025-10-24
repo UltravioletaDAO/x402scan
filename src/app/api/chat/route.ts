@@ -36,7 +36,8 @@ import { getFreeTierWallet } from '@/services/cdp/server-wallet/free-tier';
 
 import type { NextRequest } from 'next/server';
 import type { LanguageModel, UIMessage } from 'ai';
-import { getAgentConfigSystemPrompt } from '@/services/db/agent-config/get';
+import { getAgentConfigurationDetails } from '@/services/db/agent-config/get';
+import { agentSystemPrompt, baseSystemPrompt } from './system-prompt';
 
 const bodySchema = z.object({
   model: z.string(),
@@ -168,12 +169,25 @@ export async function POST(request: NextRequest) {
     maxAmount: isFreeTier ? freeTierConfig.maxAmount : undefined,
   });
 
+  const getSystemPrompt = async () => {
+    if (agentConfigurationId) {
+      const details = await getAgentConfigurationDetails(agentConfigurationId);
+      if (!details) {
+        return baseSystemPrompt;
+      }
+      return agentSystemPrompt({
+        agentName: details.name,
+        agentDescription: details.description ?? '',
+        systemPrompt: details.systemPrompt,
+      });
+    }
+    return baseSystemPrompt;
+  };
+
   const result = streamText({
     model: openai.chat(model),
     messages: convertToModelMessages(messages),
-    system: agentConfigurationId
-      ? await getAgentConfigSystemPrompt(agentConfigurationId)
-      : undefined,
+    system: await getSystemPrompt(),
     stopWhen: stepCountIs(50),
     tools,
     maxOutputTokens: 10000,

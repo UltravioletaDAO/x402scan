@@ -8,7 +8,16 @@ import { Button } from '@/components/ui/button';
 export const ComposerHomeHeading = () => {
   return (
     <Heading
-      title="Composer"
+      title={
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-2xl md:text-4xl font-bold">
+            Composer
+          </span>
+          <span className="text-xs font-mono p-1 bg-primary/10 rounded-md border-primary border text-primary font-bold">
+            BETA
+          </span>
+        </div>
+      }
       description="A playground for building agents that pay for inference and resources with x402"
       actions={
         <div className="flex items-center gap-2">
