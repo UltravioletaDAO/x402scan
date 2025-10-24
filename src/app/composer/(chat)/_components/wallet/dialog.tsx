@@ -1,4 +1,4 @@
-import { AlertCircle, ArrowDown, ArrowUp, Wallet } from 'lucide-react';
+import { AlertCircle, ArrowDown, ArrowUp, Key, Wallet } from 'lucide-react';
 
 import {
   Dialog,
@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import { OnrampSessionDialog } from './content/onramp-session-dialog';
 import { useSearchParams } from 'next/navigation';
 import { Acknowledgement } from './acknowledgement';
+import { WalletExport } from './content/export';
 
 interface Props {
   children: React.ReactNode;
@@ -86,7 +87,7 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
                   </DialogDescription>
                 </div>
               </div>
-              <TabsList className="w-full h-fit">
+              <TabsList className="w-full h-fit max-w-full overflow-x-auto no-scrollbar">
                 <div className="h-[34px] border-b w-4" />
                 <TabsTrigger
                   value="wallet"
@@ -108,6 +109,13 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
                   className="data-[state=active]:bg-background"
                 >
                   <ArrowUp className="size-4" /> Send
+                </TabsTrigger>
+                <TabsTrigger
+                  value="export"
+                  variant="github"
+                  className="data-[state=active]:bg-background"
+                >
+                  <Key className="size-4" /> Export
                 </TabsTrigger>
                 <div className="h-[34px] border-b flex-1" />
               </TabsList>
@@ -141,6 +149,12 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
               className="w-full overflow-hidden mt-0 px-4 pb-4"
             >
               <Send />
+            </TabsContent>
+            <TabsContent
+              value="export"
+              className="w-full overflow-hidden mt-0 px-4 pb-4"
+            >
+              <WalletExport />
             </TabsContent>
           </Tabs>
         </DialogContent>
