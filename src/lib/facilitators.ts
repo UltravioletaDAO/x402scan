@@ -89,7 +89,7 @@ const daydreamsFacilitator = {
   image: '/router-logo-small.png',
   link: 'https://facilitator.daydreams.systems',
   addresses: {
-    [Chain.BASE]: ['0xb308ed39d67D0d4BAe5BC2FAEF60c66BBb6AE429'],
+    [Chain.BASE]: ['0x279e08f711182c79Ba6d09669127a426228a4653'],
     [Chain.SOLANA]: [
       'DuQ4jFMmVABWGxabYHFkGzdyeJgS1hp4wrRuCtsJgT9a' as SolanaAddress,
     ],
