@@ -1,6 +1,21 @@
 import { LanguageModelCapability, type LanguageModel } from '../types';
 
 const anthropicModelData: Omit<LanguageModel, 'provider'>[] = [
+  // Non-reasoning first
+  {
+    name: 'Claude 3.5 Haiku',
+    modelId: 'claude-3.5-haiku',
+    description:
+      'Fast for interactive tasks; strong coding accuracy and tool use.',
+    capabilities: [
+      LanguageModelCapability.Vision,
+      LanguageModelCapability.Pdf,
+      LanguageModelCapability.ToolCalling,
+    ],
+    bestFor: ['Quick responses', 'Simple queries', 'Real-time chat'],
+    contextLength: 200000,
+  },
+  // Reasoning models after
   {
     name: 'Claude Haiku 4.5',
     modelId: 'claude-haiku-4.5',
@@ -86,19 +101,6 @@ const anthropicModelData: Omit<LanguageModel, 'provider'>[] = [
       LanguageModelCapability.ToolCalling,
     ],
     bestFor: ['Code review', 'Content creation', 'Problem solving'],
-    contextLength: 200000,
-  },
-  {
-    name: 'Claude 3.5 Haiku',
-    modelId: 'claude-3.5-haiku',
-    description:
-      'Fast for interactive tasks; strong coding accuracy and tool use.',
-    capabilities: [
-      LanguageModelCapability.Vision,
-      LanguageModelCapability.Pdf,
-      LanguageModelCapability.ToolCalling,
-    ],
-    bestFor: ['Quick responses', 'Simple queries', 'Real-time chat'],
     contextLength: 200000,
   },
   {
