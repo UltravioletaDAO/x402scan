@@ -179,6 +179,7 @@ export async function POST(request: NextRequest) {
         agentName: details.name,
         agentDescription: details.description ?? '',
         systemPrompt: details.systemPrompt,
+        isFreeTier,
       });
     }
     return baseSystemPrompt;
