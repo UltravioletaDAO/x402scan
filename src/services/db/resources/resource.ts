@@ -197,33 +197,42 @@ export const listResourcesWithPagination = async (
   where?: Prisma.ResourcesWhereInput
 ) => {
   const { page, page_size } = pagination;
-  const resources = await prisma.resources.findMany({
-    where,
-    include: {
-      accepts: true,
-      origin: true,
-      tags: {
-        include: {
-          tag: true,
+  const [count, resources] = await Promise.all([
+    prisma.resources.count({
+      where,
+    }),
+    prisma.resources.findMany({
+      where,
+      include: {
+        accepts: true,
+        origin: true,
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+        _count: {
+          select: {
+            tags: true,
+            invocations: true,
+          },
         },
       },
-      _count: {
-        select: {
-          tags: true,
-          invocations: true,
+      orderBy: {
+        invocations: {
+          _count: 'desc',
         },
       },
-    },
-    orderBy: {
-      invocations: {
-        _count: 'desc',
-      },
-    },
-    skip: page * page_size,
-    take: page_size + 1,
-  });
+      skip: page * page_size,
+      take: page_size + 1,
+    }),
+  ]);
 
-  return toPaginatedResponse({ items: resources, page_size: page_size });
+  return toPaginatedResponse({
+    items: resources,
+    total_count: count,
+    ...pagination,
+  });
 };
 
 export const getResourceByAddress = async (address: string) => {

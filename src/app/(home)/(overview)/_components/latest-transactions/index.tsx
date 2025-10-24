@@ -22,12 +22,13 @@ interface Props {
 export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
-  const limit = 100;
+  const pageSize = 10;
 
   await api.public.transfers.list.prefetch({
     chain,
     pagination: {
-      page_size: limit,
+      page_size: pageSize,
+      page: 0,
     },
     sorting: defaultTransfersSorting,
     startDate,
@@ -45,7 +46,7 @@ export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
         >
           <LatestTransactionsTableContainer>
             <Suspense fallback={<LoadingLatestTransactionsTable />}>
-              <LatestTransactionsTable limit={limit} />
+              <LatestTransactionsTable pageSize={pageSize} />
             </Suspense>
           </LatestTransactionsTableContainer>
         </TimeRangeProvider>

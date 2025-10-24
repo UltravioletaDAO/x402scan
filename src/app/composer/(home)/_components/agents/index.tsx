@@ -4,12 +4,15 @@ import { AgentCard, LoadingAgentCard } from '../lib/agent-card';
 
 export const Agents = async () => {
   const topAgents = await api.public.agents.list({
-    limit: 4,
+    pagination: {
+      page: 0,
+      page_size: 4,
+    },
   });
 
   return (
     <AgentsContainer>
-      {topAgents.map(agent => (
+      {topAgents.items.map(agent => (
         <AgentCard key={agent.id} agentConfiguration={agent} />
       ))}
     </AgentsContainer>

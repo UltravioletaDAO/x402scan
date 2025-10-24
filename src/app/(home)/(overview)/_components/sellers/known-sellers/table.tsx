@@ -24,7 +24,7 @@ export const KnownSellersTable = () => {
     sorting,
   });
 
-  return <DataTable columns={columns} data={topSellers.items} />;
+  return <DataTable columns={columns} data={topSellers.items} pageSize={10} />;
 };
 
 export const LoadingKnownSellersTable = () => {

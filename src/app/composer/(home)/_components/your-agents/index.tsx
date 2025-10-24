@@ -8,17 +8,20 @@ interface Props {
 
 export const YourAgents = async ({ userId }: Props) => {
   const yourAgents = await api.public.agents.list({
-    limit: 100,
+    pagination: {
+      page: 0,
+      page_size: 100,
+    },
     userId,
   });
 
-  if (yourAgents.length === 0) {
+  if (yourAgents.items.length === 0) {
     return null;
   }
 
   return (
     <AgentsContainer>
-      {yourAgents.map(agent => (
+      {yourAgents.items.map(agent => (
         <AgentCard
           key={agent.id}
           agentConfiguration={agent}

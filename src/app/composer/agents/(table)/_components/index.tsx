@@ -11,14 +11,17 @@ export const AgentsTable = () => {
   const { sorting } = useAgentsSorting();
 
   const [agents] = api.public.agents.list.useSuspenseQuery({
-    limit: 10,
+    pagination: {
+      page: 0,
+      page_size: 10,
+    },
     sorting,
   });
 
   return (
     <DataTable
       columns={columns}
-      data={agents}
+      data={agents.items}
       href={({ id }) => `/composer/agent/${id}`}
     />
   );

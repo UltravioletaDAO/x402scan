@@ -34,10 +34,10 @@ export const publicAgentConfigurationsRouter = createTRPCRouter({
     return await getAgentConfiguration(input, session?.user?.id);
   }),
 
-  list: publicProcedure
+  list: paginatedProcedure
     .input(listTopAgentConfigurationsSchema)
-    .query(async ({ input }) => {
-      return await listTopAgentConfigurations(input);
+    .query(async ({ input, ctx: { pagination } }) => {
+      return await listTopAgentConfigurations(input, pagination);
     }),
 
   activity: {

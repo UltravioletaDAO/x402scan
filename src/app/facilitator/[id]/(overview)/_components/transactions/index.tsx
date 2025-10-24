@@ -30,11 +30,11 @@ export const LatestTransactions: React.FC<Props> = async ({
 }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
-  const limit = 100;
+  const pageSize = 10;
 
   await api.public.transfers.list.prefetch({
     pagination: {
-      page_size: limit,
+      page_size: pageSize,
     },
     facilitatorIds: [facilitatorId],
     startDate,
@@ -55,8 +55,7 @@ export const LatestTransactions: React.FC<Props> = async ({
             <Suspense fallback={<LoadingLatestTransactionsTable />}>
               <LatestTransactionsTable
                 facilitatorId={facilitatorId}
-                limit={limit}
-                pageSize={10}
+                pageSize={pageSize}
               />
             </Suspense>
           </LatestTransactionsTableContainer>

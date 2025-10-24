@@ -2,8 +2,9 @@ import type z from 'zod';
 
 import { Prisma } from '@prisma/client';
 
+import type { Prisma as TransfersPrisma } from '.prisma/client-transfers';
+
 import type { baseQuerySchema } from './schemas';
-import type { paginatedQuerySchema } from '@/lib/pagination';
 
 export const transfersWhereClause = (
   input: z.infer<typeof baseQuerySchema>
@@ -14,7 +15,6 @@ export const transfersWhereClause = (
     ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
     ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
     ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
-    ${senders ? Prisma.sql`AND t.sender = ANY(${senders})` : Prisma.empty}
     ${
       recipients?.include !== undefined && recipients.include.length > 0
         ? Prisma.sql`AND t.recipient = ANY(${recipients.include})`
@@ -22,7 +22,7 @@ export const transfersWhereClause = (
     }
     ${
       recipients?.exclude !== undefined && recipients.exclude.length > 0
-        ? Prisma.sql`AND t.recipient NOT IN (${recipients.exclude})`
+        ? Prisma.sql`AND NOT (t.recipient = ANY(${recipients.exclude}))`
         : Prisma.empty
     }
     ${
@@ -32,17 +32,32 @@ export const transfersWhereClause = (
     }
     ${
       senders?.exclude !== undefined && senders.exclude.length > 0
-        ? Prisma.sql`AND t.sender NOT IN (${senders.exclude})`
+        ? Prisma.sql`AND NOT (t.sender = ANY(${senders.exclude}))`
         : Prisma.empty
     }
     ${facilitatorIds ? Prisma.sql`AND t.facilitator_id = ANY(${facilitatorIds})` : Prisma.empty}
 `;
 };
 
-export const paginationClause = (
-  pagination: z.infer<typeof paginatedQuerySchema>
-) => {
-  return Prisma.sql`
-    LIMIT ${pagination.page_size} 
-    OFFSET ${pagination.page * pagination.page_size}`;
+export const transfersWhereObject = (
+  input: z.infer<typeof baseQuerySchema>
+): TransfersPrisma.TransferEventWhereInput => {
+  const { chain, startDate, endDate, senders, recipients, facilitatorIds } =
+    input;
+  return {
+    chain,
+    block_timestamp: {
+      gte: startDate,
+      lte: endDate,
+    },
+    sender: {
+      in: senders?.include,
+      notIn: senders?.exclude,
+    },
+    recipient: {
+      in: recipients?.include,
+      notIn: recipients?.exclude,
+    },
+    facilitator_id: facilitatorIds ? { in: facilitatorIds } : undefined,
+  };
 };

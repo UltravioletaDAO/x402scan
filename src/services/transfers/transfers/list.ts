@@ -12,6 +12,7 @@ import {
 import { transfersPrisma } from '@/services/transfers/client';
 import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
+import { transfersWhereObject } from '../query-utils';
 
 const TRANSFERS_SORT_IDS = ['block_timestamp', 'amount'] as const;
 export type TransfersSortId = (typeof TRANSFERS_SORT_IDS)[number];
@@ -25,29 +26,23 @@ const listFacilitatorTransfersUncached = async (
   input: z.infer<typeof listFacilitatorTransfersInputSchema>,
   pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
-  const { recipients, startDate, endDate, facilitatorIds, sorting, chain } =
-    input;
+  const { sorting } = input;
   const { page_size: limit, page } = pagination;
 
-  // Fetch transfers from Neon database
-  const transfers = await transfersPrisma.transferEvent.findMany({
-    where: {
-      ...(chain ? { chain } : {}),
-      ...(facilitatorIds ? { facilitator_id: { in: facilitatorIds } } : {}),
-      ...(recipients?.include ? { recipient: { in: recipients.include } } : {}),
-      ...(recipients?.exclude
-        ? { recipient: { notIn: recipients.exclude } }
-        : {}),
-      ...(startDate || endDate
-        ? { block_timestamp: { gte: startDate, lte: endDate } }
-        : {}),
-    },
-    orderBy: {
-      [sorting.id]: sorting.desc ? 'desc' : 'asc',
-    },
-    take: limit + 1,
-    skip: page * limit,
-  });
+  const where = transfersWhereObject(input);
+  const [count, transfers] = await Promise.all([
+    transfersPrisma.transferEvent.count({
+      where,
+    }),
+    transfersPrisma.transferEvent.findMany({
+      where,
+      orderBy: {
+        [sorting.id]: sorting.desc ? 'desc' : 'asc',
+      },
+      take: limit + 1,
+      skip: page * limit,
+    }),
+  ]);
 
   // Map to expected output format
   const items = transfers.map(transfer => ({
@@ -61,7 +56,8 @@ const listFacilitatorTransfersUncached = async (
 
   return toPaginatedResponse({
     items,
-    page_size: pagination.page_size,
+    total_count: count,
+    ...pagination,
   });
 };
 

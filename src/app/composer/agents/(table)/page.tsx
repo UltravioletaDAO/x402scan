@@ -7,7 +7,10 @@ import { Suspense } from 'react';
 
 export default async function AgentsPage() {
   await api.public.agents.list.prefetch({
-    limit: 10,
+    pagination: {
+      page: 0,
+      page_size: 10,
+    },
     sorting: defaultAgentsSorting,
   });
 

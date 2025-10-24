@@ -8,21 +8,24 @@ import { columns } from './columns';
 import { useTransfersSorting } from '@/app/_contexts/sorting/transfers/hook';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import { useChain } from '@/app/_contexts/chain/hook';
+import { useState } from 'react';
 
 interface Props {
-  limit: number;
-  pageSize?: number;
+  pageSize: number;
 }
 
-export const Table: React.FC<Props> = ({ limit, pageSize }) => {
+export const Table: React.FC<Props> = ({ pageSize }) => {
   const { sorting } = useTransfersSorting();
   const { startDate, endDate } = useTimeRangeContext();
   const { chain } = useChain();
 
+  const [page, setPage] = useState(0);
+
   const [latestTransactions] = api.public.transfers.list.useSuspenseQuery({
     chain,
     pagination: {
-      page_size: limit,
+      page_size: pageSize,
+      page,
     },
     sorting,
     startDate,
@@ -34,6 +37,10 @@ export const Table: React.FC<Props> = ({ limit, pageSize }) => {
       columns={columns}
       data={latestTransactions.items}
       pageSize={pageSize}
+      page={page}
+      onPageChange={setPage}
+      hasNextPage={latestTransactions.hasNextPage}
+      totalPages={latestTransactions.total_pages}
     />
   );
 };

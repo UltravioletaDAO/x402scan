@@ -18,7 +18,7 @@ export default async function TransactionsPage({
 }: PageProps<'/transactions'>) {
   const chain = await searchParams.then(params => getChain(params.chain));
 
-  const limit = 150;
+  const pageSize = 15;
 
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
@@ -29,7 +29,8 @@ export default async function TransactionsPage({
     sorting: defaultTransfersSorting,
     chain,
     pagination: {
-      page_size: limit,
+      page_size: pageSize,
+      page: 0,
     },
   });
 
@@ -48,9 +49,11 @@ export default async function TransactionsPage({
           />
           <Body>
             <Suspense
-              fallback={<LoadingLatestTransactionsTable loadingRowCount={15} />}
+              fallback={
+                <LoadingLatestTransactionsTable loadingRowCount={pageSize} />
+              }
             >
-              <LatestTransactionsTable limit={limit} pageSize={15} />
+              <LatestTransactionsTable pageSize={pageSize} />
             </Suspense>
           </Body>
         </TimeRangeProvider>
