@@ -1,6 +1,6 @@
 'use client';
 
-import { Bot } from 'lucide-react';
+import { Bot, Plus, X } from 'lucide-react';
 
 import Image from 'next/image';
 
@@ -267,6 +267,68 @@ export const AgentForm: React.FC<Props> = ({
                 </FieldDescription>
               </Field>
             )}
+          />
+        </FieldGroup>
+      </FieldSet>
+      <FieldSet>
+        <FieldLegend>Starter Prompts</FieldLegend>
+        <FieldGroup className="w-full flex flex-col gap-2">
+          <Controller
+            control={form.control}
+            name="starterPrompts"
+            defaultValue={defaultValues?.starterPrompts ?? ['']}
+            render={({ field }) => {
+              console.log(field.value);
+              const prompts: string[] = field.value ?? [];
+              return (
+                <>
+                  {prompts.map((value, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <Input
+                        value={value}
+                        onChange={e => {
+                          const newPrompts = [...prompts];
+                          newPrompts[idx] = e.target.value;
+                          field.onChange(newPrompts);
+                        }}
+                        placeholder={`Starter prompt ${idx + 1}`}
+                        disabled={isSubmitting}
+                        className="flex-1"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          const newPrompts = prompts.filter(
+                            (_, i) => i !== idx
+                          );
+                          field.onChange(newPrompts);
+                        }}
+                        disabled={isSubmitting}
+                        title="Remove"
+                      >
+                        <X className="size-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => field.onChange([...prompts, ''])}
+                    disabled={isSubmitting || prompts.length >= 10}
+                    className="w-full"
+                  >
+                    <Plus className="size-4" />
+                    Add
+                  </Button>
+                  <FieldDescription>
+                    Add example messages to help users quickly get started with
+                    your agent.
+                  </FieldDescription>
+                </>
+              );
+            }}
           />
         </FieldGroup>
       </FieldSet>

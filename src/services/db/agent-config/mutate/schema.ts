@@ -8,4 +8,5 @@ export const agentConfigurationSchema = z.object({
   systemPrompt: z.string().default(''),
   visibility: z.enum(['public', 'private']).optional().default('private'),
   resourceIds: z.array(z.uuid()).min(1),
+  starterPrompts: z.array(z.string()).optional().default([]),
 });

@@ -49,6 +49,7 @@ export const EditAgentForm: React.FC<Props> = ({ agentConfiguration }) => {
         systemPrompt: agentConfiguration.systemPrompt,
         visibility: agentConfiguration.visibility,
         resourceIds: agentConfiguration.resources.map(resource => resource.id),
+        starterPrompts: agentConfiguration.starterPrompts,
       }}
     />
   );
