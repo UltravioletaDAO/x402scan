@@ -29,10 +29,19 @@ _GUIDELINES_FOR_TAG_ASSIGNMENT_:
 - The tags should be short and concise, one word only.
 - Your goal is to cluster resources into meaningful groups based on the tag they are assigned to.
 
-_VERY IMPORTANT_:
-- If and only if there is a clear category that the resource belongs to that is not already covered by an existing tag, you should create a new tag.
-- Resources will expose a list of "accept bodies". These are different ways the resource can be invoked.
+Tag Categories:
 
+- Search: Any tool which retrieves information.
+- AI: Any tool which offers an AI chat service or agent functionality.
+- Crypto: Any tool related to minting tokens or other crypto assets.
+- Trading: Any tool related to trading or swapping assets.
+- Utility: Any tool which performs a utility function, such as running code or performing a service.
+  Utility would include memory, cache store, fetching the weather, etc.
+- Random: Any tool which does something lighthearted or fun, such as a joke or a meme generator.
+
+_VERY IMPORTANT_:
+- Resources will expose a list of "accept bodies". These are different ways the resource can be invoked.
+- You must choose from an existing tag. Do not create new tags under any circumstances.
 
 - Most resources will expose a single "default" accept body, which is the main way to invoke the resource.
 - Each accept body will have a description of what it is, and what it does.
