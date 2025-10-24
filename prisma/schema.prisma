@@ -304,6 +304,7 @@ model AgentConfiguration {
   description  String?
   image        String?
   systemPrompt String
+  starterPrompts String[] @default([])
   visibility   Visibility @default(private)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt

@@ -28,6 +28,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import type { LanguageModel } from './input/model-select/types';
 import { languageModels } from './input/model-select/models';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { Suggestion, Suggestions } from '@/components/ai-elements/suggestion';
 
 interface Props {
   id: string;
@@ -184,7 +185,23 @@ export const ChatContent: React.FC<Props> = ({
       />
       {!isReadOnly && (
         <div className="pb-2 md:pb-4">
-          <div className="mx-auto max-w-4xl px-2">
+          <div className="mx-auto max-w-4xl px-2 flex flex-col gap-2">
+            {agentConfig?.starterPrompts !== undefined &&
+              agentConfig.starterPrompts.length > 0 &&
+              messages.length === 0 && (
+                <Suggestions>
+                  {agentConfig.starterPrompts.map(prompt => (
+                    <Suggestion
+                      key={prompt}
+                      suggestion={prompt}
+                      onClick={() => {
+                        setInput('');
+                        sendChatMessage(prompt);
+                      }}
+                    />
+                  ))}
+                </Suggestions>
+              )}
             <PromptInputSection
               input={input}
               setInput={setInput}
