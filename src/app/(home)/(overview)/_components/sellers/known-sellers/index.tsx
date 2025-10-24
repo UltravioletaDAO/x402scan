@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { subMonths } from 'date-fns';
+import { subDays } from 'date-fns';
 
 import { Section } from '@/app/_components/layout/page-utils';
 
@@ -27,7 +27,7 @@ interface Props {
 
 export const TopServers = async ({ chain }: Props) => {
   const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const startDate = subDays(endDate, 1);
 
   await Promise.all([
     api.public.sellers.list.bazaar.prefetch({
@@ -48,7 +48,7 @@ export const TopServers = async ({ chain }: Props) => {
           creationDate={firstTransfer}
           initialEndDate={endDate}
           initialStartDate={startDate}
-          initialTimeframe={ActivityTimeframe.ThirtyDays}
+          initialTimeframe={ActivityTimeframe.OneDay}
         >
           <TopServersContainer>
             <ErrorBoundary
