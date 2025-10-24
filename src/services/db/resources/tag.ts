@@ -17,6 +17,11 @@ export const listTags = async () => {
     orderBy: {
       name: 'asc',
     },
+    where: {
+      name: {
+        not: 'Crypto',
+      },
+    },
     include: {
       _count: {
         select: {
