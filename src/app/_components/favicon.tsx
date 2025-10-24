@@ -30,6 +30,7 @@ export const Favicon = ({
 
 interface FaviconsProps {
   favicons: (string | null)[];
+  numToShow?: number;
   orientation?: 'horizontal' | 'vertical';
   containerClassName?: string;
   iconContainerClassName?: string;
@@ -40,6 +41,7 @@ export const Favicons: React.FC<FaviconsProps> = ({
   orientation = 'horizontal',
   containerClassName,
   iconContainerClassName,
+  numToShow = 3,
 }) => {
   if (favicons.length === 0) return null;
 
@@ -54,7 +56,7 @@ export const Favicons: React.FC<FaviconsProps> = ({
         containerClassName
       )}
     >
-      {favicons.map((favicon, index) => {
+      {favicons.slice(0, numToShow).map((favicon, index) => {
         return (
           <div
             className={cn(
@@ -71,6 +73,21 @@ export const Favicons: React.FC<FaviconsProps> = ({
           </div>
         );
       })}
+      {numToShow && favicons.length > numToShow && (
+        <div
+          className={cn(
+            'border bg-card rounded-full overflow-hidden flex items-center justify-center text-[10px]',
+            iconContainerClassName,
+            {
+              '-mt-2': orientation === 'vertical',
+              '-ml-2': orientation === 'horizontal',
+            }
+          )}
+          key={`more`}
+        >
+          +{favicons.length - numToShow}
+        </div>
+      )}
     </div>
   );
 };
