@@ -1,3 +1,4 @@
+import { ChartData } from '@/components/ui/charts/chart/types';
 import { Chain, CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';
 
 const NETWORK_COLORS: Record<Chain, string> = {

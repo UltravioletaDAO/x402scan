@@ -69,8 +69,11 @@ export const FacilitatorsChart = () => {
             label: 'Transactions',
             amount: overallData.total_transactions.toLocaleString(),
             items: facilitators,
-            getValue: (data: number, allData: Record<FacilitatorKey, number>) =>
-              getValueHandler(data, 'transactions', allData),
+            getValue: (
+              data: number,
+              dataType: string,
+              allData: Record<FacilitatorKey, number>
+            ) => getValueHandler(data, dataType, allData),
             getKey: f => f.name,
           }),
           createTab<
@@ -80,8 +83,11 @@ export const FacilitatorsChart = () => {
             label: 'Amount',
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
             items: facilitators,
-            getValue: (data: number, allData: Record<FacilitatorKey, number>) =>
-              getValueHandler(data, 'amount', allData),
+            getValue: (
+              data: number,
+              dataType: string,
+              allData: Record<FacilitatorKey, number>
+            ) => getValueHandler(data, dataType, allData),
             getKey: f => f.name,
           }),
         ]}
