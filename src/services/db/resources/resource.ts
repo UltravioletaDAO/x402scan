@@ -242,12 +242,14 @@ export const searchResourcesSchema = z.object({
   search: z.string().optional(),
   limit: z.number().optional().default(10),
   tagIds: z.array(z.string()).optional(),
+  resourceIds: z.array(z.string()).optional(),
 });
 
 export const searchResources = async (
   input: z.input<typeof searchResourcesSchema>
 ) => {
-  const { search, limit, tagIds } = searchResourcesSchema.parse(input);
+  const { search, limit, tagIds, resourceIds } =
+    searchResourcesSchema.parse(input);
   return await prisma.resources.findMany({
     where: {
       ...(search
@@ -281,6 +283,7 @@ export const searchResources = async (
           }
         : undefined),
       ...(tagIds ? { tags: { some: { tagId: { in: tagIds } } } } : undefined),
+      ...(resourceIds ? { id: { in: resourceIds } } : undefined),
     },
     include: {
       origin: true,
