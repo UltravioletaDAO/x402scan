@@ -47,11 +47,11 @@ type Item = {
 
 type CreateTabOptions<T extends Record<string, number>, TItem extends Item> = {
   label: string;
+  stackOffset?: 'expand' | 'none';
   amount: string;
   items: TItem[];
   getKey: (item: TItem) => string;
-  getValue: (data: number, allData: T) => string;
-  stackOffset?: 'expand' | 'none';
+  getValue: (data: number, dataType: string, allData: T) => string;
 };
 
 export function createTab<T extends Record<string, number>, TItem extends Item>(
@@ -79,7 +79,8 @@ export function createTab<T extends Record<string, number>, TItem extends Item>(
     tooltipRows: options.items.map(item => ({
       key: `${getKey(item)}-${dataType}` as keyof T,
       label: item.name,
-      getValue: options.getValue,
+      getValue: (data: number, allData: T) =>
+        options.getValue(data, dataType, allData),
       labelClassName: 'text-xs font-mono',
       valueClassName: 'text-xs font-mono',
       dotColor: item.color,

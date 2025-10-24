@@ -63,21 +63,27 @@ export const NetworksChart = () => {
         tabs={[
           createTab<Record<NetworkKey, number>, (typeof networks)[number]>({
             label: 'Transactions',
+            stackOffset: 'expand',
             amount: overallData.total_transactions.toLocaleString(),
             items: networks,
             getKey: n => n.chain,
-            getValue: (data: number, allData: Record<NetworkKey, number>) =>
-              getValueHandler(data, 'transactions', allData),
-            stackOffset: 'expand',
+            getValue: (
+              data: number,
+              dataType: string,
+              allData: Record<NetworkKey, number>
+            ) => getValueHandler(data, dataType, allData),
           }),
           createTab<Record<NetworkKey, number>, (typeof networks)[number]>({
             label: 'Amount',
+            stackOffset: 'expand',
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
             items: networks,
             getKey: n => n.chain,
-            getValue: (data: number, allData: Record<NetworkKey, number>) =>
-              getValueHandler(data, 'amount', allData),
-            stackOffset: 'expand',
+            getValue: (
+              data: number,
+              dataType: string,
+              allData: Record<NetworkKey, number>
+            ) => getValueHandler(data, dataType, allData),
           }),
         ]}
       />
