@@ -30,6 +30,7 @@ model User {
   chats                   Chat[]
   agentConfigurations     AgentConfiguration[]
   agentConfigurationUsers AgentConfigurationUser[]
+  UserAcknowledgement     UserAcknowledgement?
 }
 
 model Account {
@@ -93,6 +94,7 @@ model Resources {
   tags                        ResourcesTags[]
   requestMetadata             ResourceRequestMetadata?
   toolCalls                   ToolCall[]
+  excluded                    ExcludedResource?
 }
 
 enum AcceptsScheme {
@@ -214,17 +216,17 @@ model OgImage {
 }
 
 model OnrampSession {
-  id            String        @id @default(uuid())
-  token         String        @unique
-  amount        Int
-  userId        String
-  date          DateTime      @default(now())
-  txHash        String?       @unique
-  failureReason String?
+  id             String        @id @default(uuid())
+  token          String        @unique
+  amount         Int
+  userId         String
+  date           DateTime      @default(now())
+  txHash         String?       @unique
+  failureReason  String?
   serverWalletId String?
-  status        SessionStatus @default(ONRAMP_TRANSACTION_STATUS_IN_PROGRESS)
+  status         SessionStatus @default(ONRAMP_TRANSACTION_STATUS_IN_PROGRESS)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   serverWallet ServerWallet? @relation(fields: [serverWalletId], references: [id], onDelete: Cascade)
 }
 
@@ -247,7 +249,7 @@ model ServerWallet {
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   onrampSessions OnrampSession[]
 }
 
@@ -257,19 +259,19 @@ enum Visibility {
 }
 
 model Chat {
-  id                   String     @id @default(uuid())
-  createdAt            DateTime   @default(now())
-  title                String
-  userId               String
-  visibility           Visibility @default(private)
-  lastContext          Json?
+  id                       String     @id @default(uuid())
+  createdAt                DateTime   @default(now())
+  title                    String
+  userId                   String
+  visibility               Visibility @default(private)
+  lastContext              Json?
   userAgentConfigurationId String?
-  activeStreamId         String?
+  activeStreamId           String?
 
-  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  messages           Message[]
+  user                   User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages               Message[]
   userAgentConfiguration AgentConfigurationUser? @relation(fields: [userAgentConfigurationId], references: [id], onDelete: Cascade)
-  toolCalls          ToolCall[]
+  toolCalls              ToolCall[]
 
   @@map("Chat")
 }
@@ -297,17 +299,17 @@ model ToolCall {
 }
 
 model AgentConfiguration {
-  id           String     @id @default(uuid())
-  ownerId      String
-  name         String
-  model        String?
-  description  String?
-  image        String?
-  systemPrompt String
-  starterPrompts String[] @default([])
-  visibility   Visibility @default(private)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id             String     @id @default(uuid())
+  ownerId        String
+  name           String
+  model          String?
+  description    String?
+  image          String?
+  systemPrompt   String
+  starterPrompts String[]   @default([])
+  visibility     Visibility @default(private)
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
 
   owner     User                         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   users     AgentConfigurationUser[]
@@ -336,7 +338,7 @@ model AgentConfigurationUser {
 
   user               User               @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   agentConfiguration AgentConfiguration @relation(fields: [agentConfigurationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  chats Chat[]
+  chats              Chat[]
 
   @@unique([userId, agentConfigurationId])
   @@map("AgentUser")
@@ -364,4 +366,23 @@ model ResourcesTags {
 
   @@unique([resourceId, tagId])
   @@map("ResourcesTags")
+}
+
+model ExcludedResource {
+  id         String @id @default(uuid())
+  resourceId String @unique
+
+  resource Resources @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@map("ExcludedResource")
+}
+
+model UserAcknowledgement {
+  id                     String   @id @default(uuid())
+  userId                 String   @unique
+  acknowledgedComposerAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("UserAcknowledgement")
 }

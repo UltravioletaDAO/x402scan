@@ -14,7 +14,7 @@ export default function LoadingOverview() {
     <div>
       <HomeHeading />
       <Body>
-        {env.NEXT_PUBLIC_ENABLE_COMPOSER && <ComposerCallout />}
+        {env.NEXT_PUBLIC_ENABLE_COMPOSER === 'true' && <ComposerCallout />}
         <LoadingOverallStats />
         <LoadingTopServers />
         <LoadingTopFacilitators />
