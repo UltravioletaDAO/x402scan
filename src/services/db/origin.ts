@@ -1,8 +1,9 @@
-import type { Prisma } from '@prisma/client';
 import { prisma } from './client';
 
 import { z } from 'zod';
 import { parseX402Response } from '@/lib/x402/schema';
+import { mixedAddressSchema, optionalChainSchema } from '@/lib/schemas';
+import type { Prisma } from '@prisma/client';
 
 const ogImageSchema = z.object({
   url: z.url(),
@@ -73,35 +74,78 @@ export const upsertOrigin = async (
   });
 };
 
-const listOriginsByAddressWhere = (
-  address: string
-): Prisma.ResourceOriginWhereInput => {
-  return {
-    resources: {
-      some: {
-        accepts: {
-          some: {
-            payTo: address.toLowerCase(),
+export const listOriginsSchema = z.object({
+  chain: optionalChainSchema,
+  address: mixedAddressSchema.optional(),
+});
+
+export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
+  const { chain, address } = input;
+  const origins = await prisma.resourceOrigin.findMany({
+    where: {
+      resources: {
+        some: {
+          accepts: {
+            some: {
+              ...(address ? { payTo: address } : {}),
+              ...(chain ? { network: chain } : {}),
+            },
           },
         },
       },
     },
-  };
-};
-
-export const listOriginsByAddress = async (address: string) => {
-  return await prisma.resourceOrigin.findMany({
-    where: listOriginsByAddressWhere(address),
   });
+  return origins;
 };
 
-export const listOriginsWithResources = async () => {
-  const origins = await listOriginsWithResourcesInternal({
-    resources: {
-      some: {
-        response: {
-          isNot: null,
+export const listOriginsWithResourcesSchema = z.object({
+  chain: optionalChainSchema,
+  address: mixedAddressSchema.optional(),
+});
+
+export const listOriginsWithResources = async (
+  input: z.infer<typeof listOriginsWithResourcesSchema>
+) => {
+  const { chain, address } = input;
+  const acceptsWhere: Prisma.AcceptsWhereInput = {
+    ...(address ? { payTo: address } : {}),
+    ...(chain ? { network: chain } : {}),
+  };
+  const origins = await prisma.resourceOrigin.findMany({
+    where: {
+      resources: {
+        some: {
+          response: {
+            isNot: null,
+          },
+          accepts: {
+            some: acceptsWhere,
+          },
         },
+      },
+    },
+    include: {
+      resources: {
+        where: {
+          response: {
+            isNot: null,
+          },
+          accepts: {
+            some: acceptsWhere,
+          },
+        },
+        include: {
+          accepts: {
+            where: acceptsWhere,
+          },
+          response: true,
+        },
+      },
+      ogImages: true,
+    },
+    orderBy: {
+      resources: {
+        _count: 'desc',
       },
     },
   });
@@ -119,53 +163,6 @@ export const listOriginsWithResources = async () => {
         .filter(response => response.success),
     }))
     .filter(origin => origin.resources.length > 0);
-};
-
-export const listOriginsWithResourcesByAddress = async (address: string) => {
-  const origins = await listOriginsWithResourcesInternal(
-    listOriginsByAddressWhere(address)
-  );
-  return origins
-    .map(origin => ({
-      ...origin,
-      resources: origin.resources
-        .map(resource => {
-          const response = parseX402Response(resource.response?.response);
-          return {
-            ...resource,
-            ...response,
-          };
-        })
-        .filter(response => response.success === true),
-    }))
-    .filter(origin => origin.resources.length > 0);
-};
-
-const listOriginsWithResourcesInternal = async (
-  where?: Prisma.ResourceOriginWhereInput
-) => {
-  return await prisma.resourceOrigin.findMany({
-    where,
-    include: {
-      resources: {
-        include: {
-          accepts: true,
-          response: true,
-        },
-        where: {
-          response: {
-            isNot: null,
-          },
-        },
-      },
-      ogImages: true,
-    },
-    orderBy: {
-      resources: {
-        _count: 'desc',
-      },
-    },
-  });
 };
 
 export const searchOriginsSchema = z.object({

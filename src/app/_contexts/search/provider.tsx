@@ -21,7 +21,7 @@ import { Resource } from '@/app/_components/resource';
 
 import { api } from '@/trpc/client';
 
-import { ethereumAddressSchema } from '@/lib/schemas';
+import { mixedAddressSchema } from '@/lib/schemas';
 
 import type { Route } from 'next';
 
@@ -75,6 +75,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
         open={isOpen}
         onOpenChange={setIsOpen}
         shouldFilter={false}
+        className="top-[20%] translate-y-0"
       >
         <CommandInput
           placeholder="Search for an address, origin, or resource..."
@@ -100,7 +101,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
               </>
             )}
           </CommandEmpty>
-          {ethereumAddressSchema.safeParse(search).success && (
+          {mixedAddressSchema.safeParse(search).success && (
             <>
               <CommandGroup heading="Server Addresses">
                 <CommandItem

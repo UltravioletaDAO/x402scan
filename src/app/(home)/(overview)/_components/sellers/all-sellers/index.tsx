@@ -14,14 +14,21 @@ import { Section } from '../../utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
 import { subMonths } from 'date-fns';
 import { ActivityTimeframe } from '@/types/timeframes';
+import { ErrorBoundary } from 'react-error-boundary';
+import type { Chain } from '@/types/chain';
 
-export const AllSellers = async () => {
+interface Props {
+  chain?: Chain;
+}
+
+export const AllSellers: React.FC<Props> = async ({ chain }) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
 
   const limit = 100;
 
   await api.sellers.list.all.prefetch({
+    chain,
     sorting: defaultSellersSorting,
     limit,
     startDate,
@@ -38,9 +45,13 @@ export const AllSellers = async () => {
       >
         <SellersSortingProvider initialSorting={defaultSellersSorting}>
           <AllSellersContainer>
-            <Suspense fallback={<LoadingAllSellersTable />}>
-              <AllSellersTable />
-            </Suspense>
+            <ErrorBoundary
+              fallback={<p>There was an error loading the all sellers data</p>}
+            >
+              <Suspense fallback={<LoadingAllSellersTable />}>
+                <AllSellersTable />
+              </Suspense>
+            </ErrorBoundary>
           </AllSellersContainer>
         </SellersSortingProvider>
       </TimeRangeProvider>

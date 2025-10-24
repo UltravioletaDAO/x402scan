@@ -5,6 +5,7 @@ import {
   ArrowLeftRight,
   Calendar,
   DollarSign,
+  Globe,
   Server,
   Users,
 } from 'lucide-react';
@@ -25,6 +26,7 @@ import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
 import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/context';
+import { Chains } from '@/app/_components/chains';
 
 type ColumnType = RouterOutputs['sellers']['list']['bazaar']['items'][number];
 
@@ -148,7 +150,19 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     size: 100, // Fixed width for timestamp
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
-
+  {
+    accessorKey: 'chains',
+    header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
+    cell: ({ row }) => (
+      <Chains
+        chains={row.original.chains}
+        iconClassName="size-4"
+        className="mx-auto justify-center"
+      />
+    ),
+    size: 100,
+    loading: () => <Skeleton className="size-4 mx-auto" />,
+  },
   {
     accessorKey: 'facilitators',
     header: () => (

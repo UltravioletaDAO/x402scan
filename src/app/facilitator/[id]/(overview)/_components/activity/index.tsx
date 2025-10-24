@@ -15,9 +15,11 @@ import { ActivityCharts, LoadingActivityCharts } from './charts';
 import { api, HydrateClient } from '@/trpc/server';
 
 import { ActivityTimeframe } from '@/types/timeframes';
+import type { Chain } from '@/types/chain';
 
 interface Props {
   addresses: string[];
+  chain?: Chain;
 }
 
 const ActivityContainer = ({

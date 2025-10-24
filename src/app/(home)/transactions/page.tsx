@@ -11,8 +11,13 @@ import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/prov
 import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { getChain } from '@/app/_lib/chain';
 
-export default async function TransactionsPage() {
+export default async function TransactionsPage({
+  searchParams,
+}: PageProps<'/transactions'>) {
+  const chain = await searchParams.then(params => getChain(params.chain));
+
   const limit = 150;
 
   const endDate = new Date();
@@ -23,6 +28,7 @@ export default async function TransactionsPage() {
     startDate,
     endDate,
     sorting: defaultTransfersSorting,
+    chain,
   });
 
   return (
