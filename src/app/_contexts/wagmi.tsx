@@ -2,6 +2,7 @@
 
 import {
   createConfig,
+  createStorage,
   http,
   injected,
   WagmiProvider as WagmiProviderBase,
@@ -33,6 +34,9 @@ const getClientConfig = () =>
       [base.id]: http(),
     },
     connectors: [injected(), cdpEmbeddedWalletConnector],
+    storage: createStorage({
+      storage: window.localStorage,
+    }),
   });
 
 export const WagmiProvider: React.FC<Props> = ({ children }) => {
