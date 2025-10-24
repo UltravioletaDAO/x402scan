@@ -115,23 +115,31 @@ export const createColumns = (
             handlers?.onTagsClick?.(row.original);
           }}
         >
-          {visibleTags.map(resourceTag => (
-            <span
-              key={resourceTag.id}
-              className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"
-              style={{
-                backgroundColor: `${resourceTag.tag.color}20`,
-                borderColor: resourceTag.tag.color,
-                color: resourceTag.tag.color,
-              }}
-            >
-              {resourceTag.tag.name}
+          {tags.length === 0 ? (
+            <span className="inline-flex items-center px-2 py-0.5 text-xs text-muted-foreground hover:text-foreground transition-colors">
+              Add tags...
             </span>
-          ))}
-          {hasMore && (
-            <span className="inline-flex items-center px-2 py-0.5 text-xs text-muted-foreground">
-              ...
-            </span>
+          ) : (
+            <>
+              {visibleTags.map(resourceTag => (
+                <span
+                  key={resourceTag.id}
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border"
+                  style={{
+                    backgroundColor: `${resourceTag.tag.color}20`,
+                    borderColor: resourceTag.tag.color,
+                    color: resourceTag.tag.color,
+                  }}
+                >
+                  {resourceTag.tag.name}
+                </span>
+              ))}
+              {hasMore && (
+                <span className="inline-flex items-center px-2 py-0.5 text-xs text-muted-foreground">
+                  ...
+                </span>
+              )}
+            </>
           )}
         </div>
       );
