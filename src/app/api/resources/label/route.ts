@@ -15,17 +15,17 @@ async function* iterateResourcesBatched(
   batchSize: number,
   where?: Prisma.ResourcesWhereInput
 ) {
-  let skip = 0;
+  let page = 0;
   let hasMore = true;
 
   while (hasMore) {
     const { items, hasNextPage } = await listResourcesWithPagination(
-      { limit: batchSize, skip },
+      { page, page_size: batchSize },
       where
     );
 
     console.info('Fetched batch', {
-      skip,
+      page,
       itemsCount: items.length,
       hasNextPage,
     });
@@ -37,7 +37,7 @@ async function* iterateResourcesBatched(
     yield items;
 
     hasMore = hasNextPage;
-    skip += batchSize;
+    page++;
   }
 }
 

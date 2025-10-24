@@ -8,8 +8,10 @@ interface Props {
 
 export const FeedTable = async ({ limit = 10 }: Props) => {
   await api.public.agents.activity.feed.prefetch({
-    limit,
-    offset: 0,
+    pagination: {
+      page_size: limit,
+      page: 0,
+    },
   });
 
   return (

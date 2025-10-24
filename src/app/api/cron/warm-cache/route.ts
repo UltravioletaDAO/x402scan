@@ -43,10 +43,17 @@ export async function GET(request: NextRequest) {
       }),
 
       // Top Facilitators - all time, no date filters
-      api.public.facilitators.list({}),
+      api.public.facilitators.list({
+        pagination: {
+          page_size: 3,
+        },
+      }),
 
       // Top Servers (Bazaar) - list
       api.public.sellers.list.bazaar({
+        pagination: {
+          page_size: 100,
+        },
         startDate,
         endDate,
         sorting: defaultSellersSorting,
@@ -60,7 +67,9 @@ export async function GET(request: NextRequest) {
 
       // Latest Transactions
       api.public.transfers.list({
-        limit,
+        pagination: {
+          page_size: limit,
+        },
         sorting: defaultTransfersSorting,
         startDate,
         endDate,
@@ -68,6 +77,9 @@ export async function GET(request: NextRequest) {
 
       // All Sellers
       api.public.sellers.list.all({
+        pagination: {
+          page_size: 100,
+        },
         startDate,
         endDate,
         sorting: defaultSellersSorting,

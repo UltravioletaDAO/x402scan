@@ -17,7 +17,9 @@ export const TopFacilitatorsContent = () => {
 
   const [facilitatorsData] = api.public.facilitators.list.useSuspenseQuery({
     chain,
-    limit: 3,
+    pagination: {
+      page_size: 3,
+    },
   });
 
   return (
@@ -30,11 +32,15 @@ export const TopFacilitatorsContent = () => {
       <div
         className={cn(
           `grid grid-cols-1 gap-4`,
-          facilitatorsData.length < 2 ? 'md:grid-cols-1' : 'md:grid-cols-2',
-          facilitatorsData.length < 3 ? 'md:grid-cols-2' : 'md:grid-cols-3'
+          facilitatorsData.items.length < 2
+            ? 'md:grid-cols-1'
+            : 'md:grid-cols-2',
+          facilitatorsData.items.length < 3
+            ? 'md:grid-cols-2'
+            : 'md:grid-cols-3'
         )}
       >
-        {facilitatorsData.map(stats => (
+        {facilitatorsData.items.map(stats => (
           <FacilitatorCardWithChart
             key={stats.facilitator_id}
             stats={stats}
@@ -47,7 +53,7 @@ export const TopFacilitatorsContent = () => {
 };
 
 interface FacilitatorCardWithChartProps {
-  stats: NonNullable<RouterOutputs['public']['facilitators']['list']>[number];
+  stats: RouterOutputs['public']['facilitators']['list']['items'][number];
   overallStats: NonNullable<RouterOutputs['public']['stats']['overall']>;
 }
 
@@ -60,9 +66,7 @@ const FacilitatorCardWithChart: React.FC<FacilitatorCardWithChartProps> = ({
   const [bucketedStats] = api.public.stats.bucketed.useSuspenseQuery({
     chain,
     numBuckets: 48,
-    facilitators: chain
-      ? stats.facilitator.addresses[chain]
-      : stats.facilitator_addresses,
+    facilitatorIds: [stats.facilitator_id],
   });
 
   const chartData: ChartData<{

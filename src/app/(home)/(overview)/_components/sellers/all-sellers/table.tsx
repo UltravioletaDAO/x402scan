@@ -17,7 +17,9 @@ export const AllSellersTable = () => {
   const [topSellers] = api.public.sellers.list.all.useSuspenseQuery({
     chain,
     sorting,
-    limit: 100,
+    pagination: {
+      page_size: 100,
+    },
     startDate,
     endDate,
   });

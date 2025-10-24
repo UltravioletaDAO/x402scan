@@ -1,6 +1,7 @@
 import z from 'zod';
 import { queryRaw } from '../query';
 import { Prisma } from '@prisma/client';
+import type { PaginatedQueryParams } from '@/lib/pagination';
 import { toPaginatedResponse } from '@/lib/pagination';
 
 const agentConfigurationSchema = z
@@ -40,14 +41,14 @@ const feedEventSchema = z.discriminatedUnion('type', [
 export const getAgentConfigFeedSchema = z.object({
   agentConfigurationId: z.string().optional(),
   userId: z.string().optional(),
-  limit: z.number().default(50),
-  offset: z.number().default(0),
 });
 
 export const getAgentConfigFeed = async (
-  input: z.infer<typeof getAgentConfigFeedSchema>
+  input: z.infer<typeof getAgentConfigFeedSchema>,
+  pagination: PaginatedQueryParams
 ) => {
-  const { agentConfigurationId, userId, limit, offset } = input;
+  const { agentConfigurationId, userId } = input;
+  const { page, page_size } = pagination;
 
   const items = await queryRaw(
     Prisma.sql`
@@ -106,14 +107,14 @@ export const getAgentConfigFeed = async (
     )
     SELECT * FROM combined_events
     ORDER BY "createdAt" DESC
-    LIMIT ${limit + 1}
-    OFFSET ${offset}
+    LIMIT ${page_size + 1}
+    OFFSET ${page * page_size}
     `,
     z.array(feedEventSchema)
   );
 
   return toPaginatedResponse({
     items,
-    limit,
+    page_size,
   });
 };

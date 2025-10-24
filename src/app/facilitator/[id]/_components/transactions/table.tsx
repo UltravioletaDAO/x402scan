@@ -9,13 +9,13 @@ import { useTransfersSorting } from '@/app/_contexts/sorting/transfers/hook';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
 interface Props {
-  addresses: string[];
+  facilitatorId: string;
   limit: number;
   pageSize?: number;
 }
 
 export const LatestTransactionsTable: React.FC<Props> = ({
-  addresses,
+  facilitatorId,
   limit,
   pageSize,
 }) => {
@@ -23,8 +23,10 @@ export const LatestTransactionsTable: React.FC<Props> = ({
   const { startDate, endDate } = useTimeRangeContext();
 
   const [latestTransactions] = api.public.transfers.list.useSuspenseQuery({
-    limit,
-    facilitators: addresses,
+    pagination: {
+      page_size: limit,
+    },
+    facilitatorIds: [facilitatorId],
     sorting,
     startDate,
     endDate,

@@ -24,11 +24,17 @@ export const LatestTransactions: React.FC<Props> = async ({ address }) => {
 
   const [firstTransfer] = await Promise.all([
     api.public.stats.firstTransferTimestamp({
-      addresses: [address],
+      recipients: {
+        include: [address],
+      },
     }),
     api.public.transfers.list.prefetch({
-      limit: 100,
-      recipient: address,
+      pagination: {
+        page_size: 100,
+      },
+      recipients: {
+        include: [address],
+      },
       startDate,
       endDate,
       sorting: defaultTransfersSorting,

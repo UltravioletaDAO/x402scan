@@ -1,29 +1,28 @@
-import { z } from 'zod';
-import type { PaginatedResponse } from '@/types/pagination';
-
-export const infiniteQuerySchema = <T>(cursorType: z.ZodType<T>) =>
-  z.object({
-    cursor: cursorType.optional(),
-    limit: z.number().optional().default(100),
-  });
-
-export const paginatedQuerySchema = () =>
-  z.object({
-    skip: z.number().optional().default(0),
-    limit: z.number().optional().default(100),
-  });
+import z from 'zod';
 
 interface ToPaginatedResponseParams<T> {
   items: T[];
-  limit: number;
+  page_size: number;
 }
+
+export const paginatedQuerySchema = z.object({
+  page: z.number().optional().default(0),
+  page_size: z.number().optional().default(100),
+});
+
+export type PaginatedQueryParams = z.infer<typeof paginatedQuerySchema>;
 
 export const toPaginatedResponse = <T>({
   items,
-  limit,
+  page_size,
 }: ToPaginatedResponseParams<T>): PaginatedResponse<T> => {
   return {
-    items: items.slice(0, limit),
-    hasNextPage: items.length > limit,
+    items: items.slice(0, page_size),
+    hasNextPage: items.length > page_size,
   };
+};
+
+export type PaginatedResponse<T> = {
+  items: T[];
+  hasNextPage: boolean;
 };

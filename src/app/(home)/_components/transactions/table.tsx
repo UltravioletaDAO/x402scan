@@ -21,7 +21,9 @@ export const Table: React.FC<Props> = ({ limit, pageSize }) => {
 
   const [latestTransactions] = api.public.transfers.list.useSuspenseQuery({
     chain,
-    limit,
+    pagination: {
+      page_size: limit,
+    },
     sorting,
     startDate,
     endDate,

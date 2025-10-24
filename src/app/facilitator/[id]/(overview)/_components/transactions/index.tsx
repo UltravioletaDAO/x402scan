@@ -22,17 +22,21 @@ import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
 
 interface Props {
-  addresses: string[];
+  facilitatorId: string;
 }
 
-export const LatestTransactions: React.FC<Props> = async ({ addresses }) => {
+export const LatestTransactions: React.FC<Props> = async ({
+  facilitatorId,
+}) => {
   const endDate = new Date();
   const startDate = subMonths(endDate, 1);
   const limit = 100;
 
   await api.public.transfers.list.prefetch({
-    limit,
-    facilitators: addresses,
+    pagination: {
+      page_size: limit,
+    },
+    facilitatorIds: [facilitatorId],
     startDate,
     endDate,
     sorting: defaultTransfersSorting,
@@ -50,7 +54,7 @@ export const LatestTransactions: React.FC<Props> = async ({ addresses }) => {
           <LatestTransactionsTableContainer>
             <Suspense fallback={<LoadingLatestTransactionsTable />}>
               <LatestTransactionsTable
-                addresses={addresses}
+                facilitatorId={facilitatorId}
                 limit={limit}
                 pageSize={10}
               />

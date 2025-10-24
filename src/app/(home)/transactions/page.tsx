@@ -24,11 +24,13 @@ export default async function TransactionsPage({
   const startDate = subMonths(endDate, 1);
 
   await api.public.transfers.list.prefetch({
-    limit,
     startDate,
     endDate,
     sorting: defaultTransfersSorting,
     chain,
+    pagination: {
+      page_size: limit,
+    },
   });
 
   return (

@@ -34,8 +34,10 @@ export default async function TransactionsPage({
   const startDate = subMonths(endDate, 1);
 
   await api.public.transfers.list.prefetch({
-    limit,
-    facilitators: Object.values(facilitator.addresses).flat(),
+    pagination: {
+      page_size: limit,
+    },
+    facilitatorIds: [id],
     startDate,
     endDate,
     sorting: defaultTransfersSorting,
@@ -59,7 +61,7 @@ export default async function TransactionsPage({
               fallback={<LoadingLatestTransactionsTable loadingRowCount={15} />}
             >
               <LatestTransactionsTable
-                addresses={Object.values(facilitator.addresses).flat()}
+                facilitatorId={id}
                 limit={limit}
                 pageSize={15}
               />

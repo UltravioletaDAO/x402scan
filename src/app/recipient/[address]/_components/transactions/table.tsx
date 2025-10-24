@@ -23,8 +23,12 @@ export const LatestTransactionsTable: React.FC<Props> = ({
   const { sorting } = useTransfersSorting();
 
   const [latestTransactions] = api.public.transfers.list.useSuspenseQuery({
-    limit,
-    recipient: address,
+    pagination: {
+      page_size: limit,
+    },
+    recipients: {
+      include: [address],
+    },
     sorting,
     startDate,
     endDate,

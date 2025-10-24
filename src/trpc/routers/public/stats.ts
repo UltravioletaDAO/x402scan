@@ -40,9 +40,11 @@ export const statsRouter = createTRPCRouter({
         const originsByAddress = await getAcceptsAddresses(input.chain);
         return await getOverallStatistics({
           ...input,
-          addresses: Object.keys(originsByAddress).map(addr =>
-            mixedAddressSchema.parse(addr)
-          ),
+          recipients: {
+            include: Object.keys(originsByAddress).map(addr =>
+              mixedAddressSchema.parse(addr)
+            ),
+          },
         });
       }),
     bucketed: publicProcedure
@@ -51,9 +53,11 @@ export const statsRouter = createTRPCRouter({
         const originsByAddress = await getAcceptsAddresses();
         return await getBucketedStatistics({
           ...input,
-          addresses: Object.keys(originsByAddress).map(addr =>
-            mixedAddressSchema.parse(addr)
-          ),
+          recipients: {
+            include: Object.keys(originsByAddress).map(addr =>
+              mixedAddressSchema.parse(addr)
+            ),
+          },
         });
       }),
   },

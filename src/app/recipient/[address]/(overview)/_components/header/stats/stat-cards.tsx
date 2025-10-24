@@ -26,7 +26,9 @@ const stats: Stat[] = [
 
 export const StatsCards: React.FC<Props> = async ({ address }) => {
   const overallStats = await api.public.stats.overall({
-    addresses: [address],
+    recipients: {
+      include: [address],
+    },
   });
 
   const values = [

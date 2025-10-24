@@ -9,7 +9,7 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import { SUPPORTED_CHAINS } from '@/types/chain';
 import { ChainIdToNetwork } from 'x402/types';
 
-import type { paginatedQuerySchema } from '@/lib/pagination';
+import type { PaginatedQueryParams } from '@/lib/pagination';
 import type { AcceptsNetwork, Prisma } from '@prisma/client';
 import type { EnhancedOutputSchema } from '@/lib/x402/schema';
 import type { Chain } from '@/types/chain';
@@ -193,10 +193,10 @@ export const listResources = async (where?: Prisma.ResourcesWhereInput) => {
 };
 
 export const listResourcesWithPagination = async (
-  pagination: z.infer<ReturnType<typeof paginatedQuerySchema>>,
+  pagination: PaginatedQueryParams,
   where?: Prisma.ResourcesWhereInput
 ) => {
-  const { skip, limit } = pagination;
+  const { page, page_size } = pagination;
   const resources = await prisma.resources.findMany({
     where,
     include: {
@@ -219,11 +219,11 @@ export const listResourcesWithPagination = async (
         _count: 'desc',
       },
     },
-    skip,
-    take: limit + 1,
+    skip: page * page_size,
+    take: page_size + 1,
   });
 
-  return toPaginatedResponse({ items: resources, limit });
+  return toPaginatedResponse({ items: resources, page_size: page_size });
 };
 
 export const getResourceByAddress = async (address: string) => {

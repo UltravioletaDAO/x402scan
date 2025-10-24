@@ -32,6 +32,9 @@ export const TopServers = async ({ chain }: Props) => {
   await Promise.all([
     api.public.sellers.list.bazaar.prefetch({
       chain,
+      pagination: {
+        page_size: 100,
+      },
       startDate,
       endDate,
       sorting: defaultSellersSorting,

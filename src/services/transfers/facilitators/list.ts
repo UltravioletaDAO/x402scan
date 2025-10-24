@@ -1,16 +1,24 @@
 import z from 'zod';
 
-import { baseQuerySchema, sortingSchema } from '../lib';
+import { baseListQuerySchema } from '../schemas';
 
-import { queryRaw } from '@/services/db/transfers-client';
+import { queryRaw } from '@/services/transfers/client';
 
 import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
-import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
+import {
+  createCachedPaginatedQuery,
+  createStandardCacheKey,
+} from '@/lib/cache';
 
 import { Prisma } from '@prisma/client';
 import { facilitatorIdMap } from '@/lib/facilitators';
+import { paginationClause, transfersWhereClause } from '../query-utils';
+import {
+  toPaginatedResponse,
+  type paginatedQuerySchema,
+} from '@/lib/pagination';
 
-const listTopFacilitatorsSortIds = [
+export const FACILITATORS_SORT_IDS = [
   'tx_count',
   'total_amount',
   'latest_block_timestamp',
@@ -18,23 +26,18 @@ const listTopFacilitatorsSortIds = [
   'unique_sellers',
 ] as const;
 
-export type FacilitatorsSortId = (typeof listTopFacilitatorsSortIds)[number];
+export type FacilitatorsSortId = (typeof FACILITATORS_SORT_IDS)[number];
 
-export const listTopFacilitatorsInputSchema = baseQuerySchema.extend({
-  startDate: z.date().optional(),
-  endDate: z.date().optional(),
-  limit: z.number().default(100),
-  sorting: sortingSchema(listTopFacilitatorsSortIds).default({
-    id: 'tx_count',
-    desc: true,
-  }),
+export const listTopFacilitatorsInputSchema = baseListQuerySchema({
+  sortIds: FACILITATORS_SORT_IDS,
+  defaultSortId: FACILITATORS_SORT_IDS[0],
 });
 
 const listTopFacilitatorsUncached = async (
-  input: z.input<typeof listTopFacilitatorsInputSchema>
+  input: z.infer<typeof listTopFacilitatorsInputSchema>,
+  pagination: z.infer<typeof paginatedQuerySchema>
 ) => {
-  const parsed = listTopFacilitatorsInputSchema.parse(input);
-  const { startDate, endDate, limit, sorting, chain } = parsed;
+  const { sorting } = input;
 
   const sortColumnMap: Record<FacilitatorsSortId, string> = {
     tx_count: 'tx_count',
@@ -43,7 +46,7 @@ const listTopFacilitatorsUncached = async (
     unique_buyers: 'unique_buyers',
     unique_sellers: 'unique_sellers',
   };
-  const sortColumn = sortColumnMap[sorting.id as FacilitatorsSortId];
+  const sortColumn = sortColumnMap[sorting.id];
   const sortDirection = Prisma.raw(sorting.desc ? 'DESC' : 'ASC');
 
   const sql = Prisma.sql`
@@ -57,13 +60,10 @@ const listTopFacilitatorsUncached = async (
       ARRAY_AGG(DISTINCT t.transaction_from) as facilitator_addresses,
       ARRAY_AGG(DISTINCT t.chain) as chains
     FROM "TransferEvent" t
-    WHERE 1=1
-      ${chain ? Prisma.sql`AND t.chain = ${chain}` : Prisma.empty}
-      ${startDate ? Prisma.sql`AND t.block_timestamp >= ${startDate}` : Prisma.empty}
-      ${endDate ? Prisma.sql`AND t.block_timestamp <= ${endDate}` : Prisma.empty}
+    ${transfersWhereClause(input)}
     GROUP BY t.facilitator_id
     ORDER BY ${Prisma.raw(sortColumn)} ${sortDirection}
-    LIMIT ${limit}
+    ${paginationClause(pagination)}
   `;
 
   const results = await queryRaw(
@@ -82,7 +82,7 @@ const listTopFacilitatorsUncached = async (
     )
   );
 
-  return results
+  const items = results
     .map(result => {
       const facilitator = facilitatorIdMap.get(result.facilitator_id);
       if (!facilitator) {
@@ -95,13 +95,17 @@ const listTopFacilitatorsUncached = async (
       };
     })
     .filter((result): result is NonNullable<typeof result> => result !== null);
+
+  return toPaginatedResponse({
+    items,
+    page_size: pagination.page_size,
+  });
 };
 
-export const listTopFacilitators = createCachedArrayQuery({
+export const listTopFacilitators = createCachedPaginatedQuery({
   queryFn: listTopFacilitatorsUncached,
   cacheKeyPrefix: 'facilitators-list',
   createCacheKey: input => createStandardCacheKey(input),
   dateFields: ['latest_block_timestamp'],
-
   tags: ['facilitators'],
 });

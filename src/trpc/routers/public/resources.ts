@@ -1,6 +1,10 @@
 import z from 'zod';
 
-import { createTRPCRouter, publicProcedure } from '../../trpc';
+import {
+  createTRPCRouter,
+  paginatedProcedure,
+  publicProcedure,
+} from '../../trpc';
 
 import {
   getResource,
@@ -18,7 +22,6 @@ import { mixedAddressSchema } from '@/lib/schemas';
 import { Methods } from '@/types/x402';
 
 import { registerResource } from '@/lib/resources';
-import { paginatedQuerySchema } from '@/lib/pagination';
 import { TRPCError } from '@trpc/server';
 import { listResourceTags, listTags } from '@/services/db/resources/tag';
 
@@ -39,15 +42,14 @@ export const resourcesRouter = createTRPCRouter({
     all: publicProcedure.query(async () => {
       return await listResources();
     }),
-    paginated: publicProcedure
+    paginated: paginatedProcedure
       .input(
         z.object({
-          pagination: paginatedQuerySchema(),
           where: z.custom<Prisma.ResourcesWhereInput>().optional(),
         })
       )
-      .query(async ({ input }) => {
-        return await listResourcesWithPagination(input.pagination, input.where);
+      .query(async ({ input, ctx: { pagination } }) => {
+        return await listResourcesWithPagination(pagination, input.where);
       }),
     byAddress: publicProcedure
       .input(mixedAddressSchema)

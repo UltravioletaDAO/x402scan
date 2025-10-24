@@ -26,7 +26,9 @@ export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
 
   await api.public.transfers.list.prefetch({
     chain,
-    limit,
+    pagination: {
+      page_size: limit,
+    },
     sorting: defaultTransfersSorting,
     startDate,
     endDate,

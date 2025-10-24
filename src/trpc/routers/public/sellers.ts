@@ -1,5 +1,4 @@
-import { createTRPCRouter, infiniteQueryProcedure } from '../../trpc';
-import z from 'zod';
+import { createTRPCRouter, paginatedProcedure } from '../../trpc';
 import {
   listTopSellers,
   listTopSellersInputSchema,
@@ -12,12 +11,12 @@ import { mixedAddressSchema } from '@/lib/schemas';
 
 export const sellersRouter = createTRPCRouter({
   list: {
-    all: infiniteQueryProcedure(z.bigint())
+    all: paginatedProcedure
       .input(listTopSellersInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
         return await listTopSellers(input, pagination);
       }),
-    bazaar: infiniteQueryProcedure(z.bigint())
+    bazaar: paginatedProcedure
       .input(listTopSellersInputSchema)
       .query(async ({ input, ctx: { pagination } }) => {
         const originsByAddress = await getAcceptsAddresses(input.chain);
@@ -25,9 +24,11 @@ export const sellersRouter = createTRPCRouter({
         const result = await listTopSellers(
           {
             ...input,
-            addresses: Object.keys(originsByAddress).map(addr =>
-              mixedAddressSchema.parse(addr)
-            ),
+            recipients: {
+              include: Object.keys(originsByAddress).map(addr =>
+                mixedAddressSchema.parse(addr)
+              ),
+            },
           },
           pagination
         );
@@ -39,7 +40,7 @@ export const sellersRouter = createTRPCRouter({
             originId: string;
             origins: (typeof originsByAddress)[string];
             recipients: MixedAddress[];
-            facilitators: MixedAddress[];
+            facilitators: string[];
             tx_count: number;
             total_amount: number;
             latest_block_timestamp: Date;
@@ -67,7 +68,7 @@ export const sellersRouter = createTRPCRouter({
               existing.latest_block_timestamp = item.latest_block_timestamp;
             }
             // Merge facilitators (deduplicated)
-            for (const facilitator of item.facilitators) {
+            for (const facilitator of item.facilitator_ids) {
               if (!existing.facilitators.includes(facilitator)) {
                 existing.facilitators.push(facilitator);
               }
@@ -81,7 +82,7 @@ export const sellersRouter = createTRPCRouter({
               originId,
               origins,
               recipients: [item.recipient as MixedAddress],
-              facilitators: [...item.facilitators],
+              facilitators: [...item.facilitator_ids],
               tx_count: item.tx_count,
               total_amount: item.total_amount,
               latest_block_timestamp: item.latest_block_timestamp,

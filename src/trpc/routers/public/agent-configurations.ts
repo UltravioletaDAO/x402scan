@@ -1,6 +1,10 @@
 import { z } from 'zod';
 
-import { createTRPCRouter, publicProcedure } from '@/trpc/trpc';
+import {
+  createTRPCRouter,
+  paginatedProcedure,
+  publicProcedure,
+} from '@/trpc/trpc';
 
 import { getAgentConfiguration } from '@/services/db/agent-config/get';
 import {
@@ -54,10 +58,10 @@ export const publicAgentConfigurationsRouter = createTRPCRouter({
       .query(async ({ input }) => {
         return await getOverallBucketedActivity(input);
       }),
-    feed: publicProcedure
+    feed: paginatedProcedure
       .input(getAgentConfigFeedSchema)
-      .query(async ({ input }) => {
-        return await getAgentConfigFeed(input);
+      .query(async ({ input, ctx: { pagination } }) => {
+        return await getAgentConfigFeed(input, pagination);
       }),
   },
 });
