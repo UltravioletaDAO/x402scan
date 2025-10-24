@@ -17,8 +17,8 @@ export const ToolsTable = () => {
 
   const [topTools] = api.public.tools.top.useSuspenseQuery({
     pagination: {
-      page: 0,
-      page_size: 10,
+      page: page,
+      page_size: pageSize,
     },
     sorting,
   });
@@ -28,9 +28,10 @@ export const ToolsTable = () => {
       columns={columns}
       data={topTools.items}
       pageSize={pageSize}
-      hasNextPage={topTools.hasNextPage}
       page={page}
       onPageChange={setPage}
+      totalPages={topTools.total_pages}
+      hasNextPage={topTools.hasNextPage}
     />
   );
 };
