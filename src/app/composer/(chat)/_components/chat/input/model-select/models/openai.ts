@@ -2,6 +2,57 @@ import { LanguageModelCapability, type LanguageModel } from '../types';
 
 const openAiLanguageModelsData: Omit<LanguageModel, 'provider'>[] = [
   {
+    name: 'GPT-5 Chat',
+    modelId: 'gpt-5-chat',
+    description:
+      'Advanced, natural, multimodal, and context-aware conversations for enterprise.',
+    capabilities: [
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Vision,
+      LanguageModelCapability.Pdf,
+    ],
+    bestFor: ['Enterprise chat', 'Context-aware assistants'],
+    contextLength: 128000,
+  },
+  {
+    name: 'GPT-5 Nano',
+    modelId: 'gpt-5-nano',
+    description:
+      'Smallest and fastest GPT-5 variant for ultra-low latency interactions.',
+    capabilities: [LanguageModelCapability.ToolCalling],
+    bestFor: ['Developer tools', 'Realtime UX'],
+    contextLength: 400000,
+  },
+  {
+    name: 'GPT-5',
+    modelId: 'gpt-5',
+    description:
+      'Advanced model optimized for step-by-step reasoning and instruction following.',
+    capabilities: [
+      LanguageModelCapability.Reasoning,
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Pdf,
+      LanguageModelCapability.Vision,
+    ],
+    bestFor: ['Complex reasoning', 'High fidelity outputs'],
+    contextLength: 400000,
+  },
+  {
+    name: 'GPT-5 Mini',
+    modelId: 'gpt-5-mini',
+    description:
+      'Compact GPT-5 for lower-latency reasoning with strong instruction following.',
+    capabilities: [
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Reasoning,
+      LanguageModelCapability.Pdf,
+      LanguageModelCapability.Vision,
+    ],
+    bestFor: ['Interactive apps', 'Cost efficiency'],
+    contextLength: 400000,
+  },
+  // Reasoning-focused and deep-research variants pushed to bottom
+  {
     name: 'o3 Deep Research',
     modelId: 'o3-deep-research',
     description:
@@ -58,56 +109,6 @@ const openAiLanguageModelsData: Omit<LanguageModel, 'provider'>[] = [
     bestFor: ['Coding agents', 'Refactoring', 'Code reviews'],
     contextLength: 400000,
     isNew: true,
-  },
-  {
-    name: 'GPT-5 Chat',
-    modelId: 'gpt-5-chat',
-    description:
-      'Advanced, natural, multimodal, and context-aware conversations for enterprise.',
-    capabilities: [
-      LanguageModelCapability.ToolCalling,
-      LanguageModelCapability.Vision,
-      LanguageModelCapability.Pdf,
-    ],
-    bestFor: ['Enterprise chat', 'Context-aware assistants'],
-    contextLength: 128000,
-  },
-  {
-    name: 'GPT-5',
-    modelId: 'gpt-5',
-    description:
-      'Advanced model optimized for step-by-step reasoning and instruction following.',
-    capabilities: [
-      LanguageModelCapability.Reasoning,
-      LanguageModelCapability.ToolCalling,
-      LanguageModelCapability.Pdf,
-      LanguageModelCapability.Vision,
-    ],
-    bestFor: ['Complex reasoning', 'High fidelity outputs'],
-    contextLength: 400000,
-  },
-  {
-    name: 'GPT-5 Mini',
-    modelId: 'gpt-5-mini',
-    description:
-      'Compact GPT-5 for lower-latency reasoning with strong instruction following.',
-    capabilities: [
-      LanguageModelCapability.ToolCalling,
-      LanguageModelCapability.Reasoning,
-      LanguageModelCapability.Pdf,
-      LanguageModelCapability.Vision,
-    ],
-    bestFor: ['Interactive apps', 'Cost efficiency'],
-    contextLength: 400000,
-  },
-  {
-    name: 'GPT-5 Nano',
-    modelId: 'gpt-5-nano',
-    description:
-      'Smallest and fastest GPT-5 variant for ultra-low latency interactions.',
-    capabilities: [LanguageModelCapability.ToolCalling],
-    bestFor: ['Developer tools', 'Realtime UX'],
-    contextLength: 400000,
   },
   {
     name: 'O3',
