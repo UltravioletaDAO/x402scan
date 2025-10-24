@@ -1,6 +1,17 @@
+import { env } from '@/env';
 import { Nav } from '../_components/layout/nav';
+import { auth } from '@/auth';
+import { notFound } from 'next/navigation';
 
-export default function ComposerLayout({ children }: LayoutProps<'/composer'>) {
+export default async function ComposerLayout({
+  children,
+}: LayoutProps<'/composer'>) {
+  const isEnabled =
+    env.NEXT_PUBLIC_ENABLE_COMPOSER === 'true' ||
+    (await auth())?.user.role === 'admin';
+  if (!isEnabled) {
+    return notFound();
+  }
   return (
     <div className="flex flex-col flex-1">
       <Nav

@@ -7,13 +7,14 @@ import { LoadingLatestTransactions } from './_components/latest-transactions';
 import { LoadingTopFacilitators } from './_components/top-facilitators/loading';
 import { LoadingOverallStats } from './_components/stats';
 import { LoadingAllSellers } from './_components/sellers/all-sellers';
+import { env } from '@/env';
 
 export default function LoadingOverview() {
   return (
     <div>
       <HomeHeading />
       <Body>
-        <ComposerCallout />
+        {env.NEXT_PUBLIC_ENABLE_COMPOSER && <ComposerCallout />}
         <LoadingOverallStats />
         <LoadingTopServers />
         <LoadingTopFacilitators />

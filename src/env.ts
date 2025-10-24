@@ -39,6 +39,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CDP_APP_ID: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().optional(),
     NEXT_PUBLIC_POSTHOG_HOST: z.string().optional(),
+    NEXT_PUBLIC_ENABLE_COMPOSER: z.string().optional().default('false'),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL:
@@ -53,6 +54,7 @@ export const env = createEnv({
     NEXT_PUBLIC_CDP_APP_ID: process.env.NEXT_PUBLIC_CDP_APP_ID,
     NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
     NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+    NEXT_PUBLIC_ENABLE_COMPOSER: process.env.NEXT_PUBLIC_ENABLE_COMPOSER,
   },
   emptyStringAsUndefined: true,
 });
