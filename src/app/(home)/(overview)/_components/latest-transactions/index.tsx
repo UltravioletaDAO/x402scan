@@ -9,7 +9,7 @@ import { defaultTransfersSorting } from '@/app/_contexts/sorting/transfers/defau
 import { TransfersSortingProvider } from '@/app/_contexts/sorting/transfers/provider';
 import { Section } from '@/app/_components/layout/page-utils';
 import { RangeSelector } from '@/app/_contexts/time-range/component';
-import { subMonths } from 'date-fns';
+import { subDays } from 'date-fns';
 import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
 import { firstTransfer } from '@/services/facilitator/constants';
 import { ActivityTimeframe } from '@/types/timeframes';
@@ -21,7 +21,7 @@ interface Props {
 
 export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
   const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const startDate = subDays(endDate, 1);
   const pageSize = 10;
 
   await api.public.transfers.list.prefetch({
@@ -42,7 +42,7 @@ export const LatestTransactions: React.FC<Props> = async ({ chain }) => {
           initialEndDate={endDate}
           initialStartDate={startDate}
           creationDate={firstTransfer}
-          initialTimeframe={ActivityTimeframe.ThirtyDays}
+          initialTimeframe={ActivityTimeframe.OneDay}
         >
           <LatestTransactionsTableContainer>
             <Suspense fallback={<LoadingLatestTransactionsTable />}>

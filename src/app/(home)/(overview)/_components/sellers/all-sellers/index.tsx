@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { subMonths } from 'date-fns';
+import { subDays } from 'date-fns';
 
 import { DataTable } from '@/components/ui/data-table';
 
@@ -29,7 +29,7 @@ interface Props {
 
 export const AllSellers: React.FC<Props> = async ({ chain }) => {
   const endDate = new Date();
-  const startDate = subMonths(endDate, 1);
+  const startDate = subDays(endDate, 1);
 
   const limit = 100;
 
@@ -38,6 +38,7 @@ export const AllSellers: React.FC<Props> = async ({ chain }) => {
     sorting: defaultSellersSorting,
     pagination: {
       page_size: limit,
+      page: 0,
     },
     startDate,
     endDate,
@@ -49,7 +50,7 @@ export const AllSellers: React.FC<Props> = async ({ chain }) => {
         creationDate={firstTransfer}
         initialEndDate={endDate}
         initialStartDate={startDate}
-        initialTimeframe={ActivityTimeframe.ThirtyDays}
+        initialTimeframe={ActivityTimeframe.OneDay}
       >
         <SellersSortingProvider initialSorting={defaultSellersSorting}>
           <AllSellersContainer>
