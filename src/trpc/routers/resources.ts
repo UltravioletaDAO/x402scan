@@ -10,9 +10,9 @@ import {
   searchResources,
   searchResourcesSchema,
   upsertResource,
-} from '@/services/db/resources';
-import { upsertOrigin } from '@/services/db/origin';
-import { upsertResourceResponse } from '@/services/db/resource-responses';
+} from '@/services/db/resources/resource';
+import { upsertOrigin } from '@/services/db/resources/origin';
+import { upsertResourceResponse } from '@/services/db/resources/response';
 
 import { mixedAddressSchema } from '@/lib/schemas';
 import {

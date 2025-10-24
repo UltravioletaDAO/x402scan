@@ -1,8 +1,8 @@
-import { baseQuerySchema, sortingSchema } from '../lib';
+import { baseQuerySchema } from '../schemas';
 import z from 'zod';
-import { chainSchema } from '@/lib/schemas';
+import { chainSchema, sortingSchema } from '@/lib/schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/db/transfers-client';
+import { queryRaw } from '@/services/transfers/client';
 import { Prisma } from '@prisma/client';
 import type { Chain } from '@/types/chain';
 import { CHAIN_LABELS, CHAIN_ICONS } from '@/types/chain';

@@ -2,9 +2,9 @@ import z from 'zod';
 import { subMonths } from 'date-fns';
 import { Prisma } from '@prisma/client';
 
-import { baseQuerySchema } from '../lib';
+import { baseQuerySchema } from '../schemas';
 import { createCachedArrayQuery, createStandardCacheKey } from '@/lib/cache';
-import { queryRaw } from '@/services/db/transfers-client';
+import { queryRaw } from '@/services/transfers/client';
 import { Chain } from '@/types/chain';
 
 export const bucketedNetworksStatisticsInputSchema = baseQuerySchema.extend({
