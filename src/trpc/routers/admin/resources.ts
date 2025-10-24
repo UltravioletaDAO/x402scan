@@ -22,6 +22,14 @@ import {
   deleteResourceRequestMetadata,
   searchResourcesForMetadata,
 } from '@/services/db/resources/request-metadata';
+import {
+  createExcludedResource,
+  createExcludedResourceSchema,
+  getAllExcludedResources,
+  deleteExcludedResource,
+  deleteExcludedResourceByResourceId,
+  searchResourcesForExcludes,
+} from '@/services/db/resources/excludes';
 
 export const adminResourcesRouter = createTRPCRouter({
   tags: {
@@ -90,6 +98,35 @@ export const adminResourcesRouter = createTRPCRouter({
       .input(z.object({ id: z.uuid() }))
       .mutation(async ({ input }) => {
         return await deleteResourceRequestMetadata(input.id);
+      }),
+  },
+  excludes: {
+    list: adminProcedure.query(async () => {
+      return await getAllExcludedResources();
+    }),
+
+    searchResources: adminProcedure
+      .input(z.object({ search: z.string().optional() }))
+      .query(async ({ input }) => {
+        return await searchResourcesForExcludes(input.search);
+      }),
+
+    create: adminProcedure
+      .input(createExcludedResourceSchema)
+      .mutation(async ({ input }) => {
+        return await createExcludedResource(input);
+      }),
+
+    delete: adminProcedure
+      .input(z.object({ id: z.uuid() }))
+      .mutation(async ({ input }) => {
+        return await deleteExcludedResource(input.id);
+      }),
+
+    deleteByResourceId: adminProcedure
+      .input(z.object({ resourceId: z.uuid() }))
+      .mutation(async ({ input }) => {
+        return await deleteExcludedResourceByResourceId(input.resourceId);
       }),
   },
 });

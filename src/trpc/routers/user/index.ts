@@ -1,5 +1,6 @@
 import { createTRPCRouter } from '../../trpc';
 
+import { userAcknowledgementsRouter } from './acknowledgements';
 import { userAgentConfigurationsRouter } from './agent-configurations';
 import { userChatsRouter } from './chats';
 import { userFreeTierRouter } from './free-tier';
@@ -9,6 +10,7 @@ import { userToolsRouter } from './tools';
 import { uploadRouter } from './upload';
 
 export const userRouter = createTRPCRouter({
+  acknowledgements: userAcknowledgementsRouter,
   agentConfigurations: userAgentConfigurationsRouter,
   chats: userChatsRouter,
   onrampSessions: onrampSessionsRouter,
