@@ -22,7 +22,10 @@ export const ServerWalletButton = () => {
       enabled: !!session,
     });
 
-  if (isLoadingAddress) {
+  const { isLoading: isLoadingHasUserAcknowledgedComposer } =
+    api.user.acknowledgements.hasAcknowledged.useQuery();
+
+  if (isLoadingAddress || isLoadingHasUserAcknowledgedComposer) {
     return <LoadingWalletButton />;
   }
 

@@ -11,16 +11,17 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Logo } from '@/components/logo';
 
-import { WalletDisplay } from './display';
-import { Send } from './send';
-import { Deposit } from './deposit';
+import { WalletDisplay } from './content/display';
+import { Send } from './content/send';
+import { Deposit } from './content/deposit';
 
 import { api } from '@/trpc/client';
 
 import type { Address } from 'viem';
 import { useEffect, useState } from 'react';
-import { OnrampSessionDialog } from './onramp-session-dialog';
+import { OnrampSessionDialog } from './content/onramp-session-dialog';
 import { useSearchParams } from 'next/navigation';
+import { Acknowledgement } from './acknowledgement';
 
 interface Props {
   children: React.ReactNode;
@@ -31,6 +32,10 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
   const searchParams = useSearchParams();
   const { data: usdcBalance } =
     api.user.serverWallet.usdcBaseBalance.useQuery();
+  const {
+    data: hasUserAcknowledgedComposer,
+    isLoading: isLoadingHasUserAcknowledgedComposer,
+  } = api.user.acknowledgements.hasAcknowledged.useQuery();
 
   const [isOpen, setIsOpen] = useState(false);
   const [tab, setTab] = useState<'wallet' | 'deposit' | 'send'>('wallet');
@@ -38,17 +43,26 @@ export const WalletDialog: React.FC<Props> = ({ children, address }) => {
   const isOutOfFunds = usdcBalance !== undefined && usdcBalance <= 0.01;
 
   useEffect(() => {
-    if (isOutOfFunds && !searchParams.get('server_wallet_onramp_token')) {
-      setTab('deposit');
+    const showDeposit =
+      isOutOfFunds && !searchParams.get('server_wallet_onramp_token');
+    if (showDeposit && hasUserAcknowledgedComposer) {
       setIsOpen(true);
+      setTab('deposit');
     }
-  }, [searchParams, isOutOfFunds]);
+  }, [searchParams, isOutOfFunds, hasUserAcknowledgedComposer]);
+
+  if (isLoadingHasUserAcknowledgedComposer) {
+    return children;
+  }
 
   return (
     <>
+      <Acknowledgement />
       <OnrampSessionDialog />
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogTrigger asChild disabled={!hasUserAcknowledgedComposer}>
+          {children}
+        </DialogTrigger>
         <DialogContent
           className="p-0 overflow-hidden sm:max-w-md"
           showCloseButton={false}

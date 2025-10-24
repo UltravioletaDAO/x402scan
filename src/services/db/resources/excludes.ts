@@ -21,19 +21,6 @@ export const createExcludedResource = async (
   });
 };
 
-export const getExcludedResource = async (resourceId: string) => {
-  return await prisma.excludedResource.findUnique({
-    where: { resourceId },
-    include: {
-      resource: {
-        include: {
-          origin: true,
-        },
-      },
-    },
-  });
-};
-
 export const getAllExcludedResources = async () => {
   return await prisma.excludedResource.findMany({
     include: {
