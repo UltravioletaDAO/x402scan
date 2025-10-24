@@ -1,6 +1,7 @@
 import { LanguageModelCapability, type LanguageModel } from '../types';
 
 const xaiLanguageModelData: Omit<LanguageModel, 'provider'>[] = [
+  // Non-reasoning or general-purpose first (least reasoning emphasis)
   {
     name: 'Grok 4 Fast',
     modelId: 'grok-4-fast',
@@ -15,6 +16,7 @@ const xaiLanguageModelData: Omit<LanguageModel, 'provider'>[] = [
     contextLength: 2000000,
     isNew: true,
   },
+  // Reasoning-focused variants to bottom
   {
     name: 'Grok Code Fast 1',
     modelId: 'grok-code-fast-1',

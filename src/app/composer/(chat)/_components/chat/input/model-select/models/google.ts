@@ -1,6 +1,22 @@
 import { LanguageModelCapability, type LanguageModel } from '../types';
 
 const googleModelData: Omit<LanguageModel, 'provider'>[] = [
+  // Non-reasoning or general-purpose first
+  {
+    name: 'Gemini 2.5 Flash',
+    modelId: 'gemini-2.5-flash',
+    description:
+      'Workhorse model for advanced tasks including coding and scientific analysis.',
+    capabilities: [
+      LanguageModelCapability.Vision,
+      LanguageModelCapability.Pdf,
+      LanguageModelCapability.ToolCalling,
+      LanguageModelCapability.Reasoning,
+    ],
+    bestFor: ['Coding', 'Scientific analysis', 'General tasks'],
+    contextLength: 1050000,
+  },
+  // Reasoning-focused variants to bottom
   {
     name: 'Gemini 2.5 Flash Preview 09-2025',
     modelId: 'gemini-2.5-flash-preview-09-2025',
@@ -55,20 +71,6 @@ const googleModelData: Omit<LanguageModel, 'provider'>[] = [
       LanguageModelCapability.Pdf,
     ],
     bestFor: ['Throughput', 'Quick tasks', 'Cost efficiency'],
-    contextLength: 1050000,
-  },
-  {
-    name: 'Gemini 2.5 Flash',
-    modelId: 'gemini-2.5-flash',
-    description:
-      'Workhorse model for advanced reasoning, coding, math, and scientific tasks.',
-    capabilities: [
-      LanguageModelCapability.Vision,
-      LanguageModelCapability.Reasoning,
-      LanguageModelCapability.Pdf,
-      LanguageModelCapability.ToolCalling,
-    ],
-    bestFor: ['Advanced reasoning', 'Coding', 'Scientific analysis'],
     contextLength: 1050000,
   },
   {
