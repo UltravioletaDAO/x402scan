@@ -25,13 +25,8 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 
-import {
-  capabilityColors,
-  capabilityIcons,
-  capabilityLabels,
-  modelProviderNames,
-} from './utils';
-import { LanguageModelCapability } from './types';
+import { capabilityColors, capabilityIcons, modelProviderNames } from './utils';
+import type { LanguageModelCapability } from './types';
 
 import { useModelSelect } from './use-model-select';
 
@@ -58,9 +53,7 @@ const ModelSelectContent: React.FC<{
 }> = ({
   searchQuery,
   setSearchQuery,
-  selectedCapabilities,
   selectedProviders,
-  toggleCapability,
   toggleProvider,
   handleModelSelect,
   availableProviders,
@@ -109,7 +102,7 @@ const ModelSelectContent: React.FC<{
         ))}
       </div>
     </div>
-    <div>
+    {/* <div>
       <div className="text-muted-foreground mb-1.5 px-2 text-xs font-medium">
         Capabilities
       </div>
@@ -135,7 +128,7 @@ const ModelSelectContent: React.FC<{
           return content;
         })}
       </div>
-    </div>
+    </div> */}
     <CommandList
       className={cn('w-full max-w-full overflow-x-hidden overflow-y-auto p-0')}
       style={{

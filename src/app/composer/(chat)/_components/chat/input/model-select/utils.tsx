@@ -14,13 +14,6 @@ export const capabilityIcons: Record<
   [LanguageModelCapability.ToolCalling]: Wrench,
 };
 
-export const capabilityLabels: Record<LanguageModelCapability, string> = {
-  [LanguageModelCapability.Vision]: 'Vision',
-  [LanguageModelCapability.Reasoning]: 'Reasoning',
-  [LanguageModelCapability.Pdf]: 'PDF',
-  [LanguageModelCapability.ToolCalling]: 'Tool Calling',
-};
-
 export const capabilityColors: Record<LanguageModelCapability, string> = {
   [LanguageModelCapability.Vision]: 'bg-green-100 text-green-800',
   [LanguageModelCapability.Reasoning]: 'bg-orange-100 text-orange-800',

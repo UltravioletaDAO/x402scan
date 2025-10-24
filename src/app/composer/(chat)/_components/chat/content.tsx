@@ -185,11 +185,11 @@ export const ChatContent: React.FC<Props> = ({
       />
       {!isReadOnly && (
         <div className="pb-2 md:pb-4">
-          <div className="mx-auto max-w-4xl px-2 flex flex-col gap-2">
+          <div className="mx-auto max-w-4xl px-2 flex flex-col">
             {agentConfig?.starterPrompts !== undefined &&
               agentConfig.starterPrompts.length > 0 &&
               messages.length === 0 && (
-                <Suggestions>
+                <Suggestions className="px-2 pb-2">
                   {agentConfig.starterPrompts.map(prompt => (
                     <Suggestion
                       key={prompt}

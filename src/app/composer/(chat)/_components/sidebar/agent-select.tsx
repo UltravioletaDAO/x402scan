@@ -167,7 +167,7 @@ const AgentSelectButton = React.forwardRef<
                       alt="Agent"
                       width={16}
                       height={16}
-                      className="size-4 flex-shrink-0"
+                      className="size-4 flex-shrink-0 rounded-md"
                     />
                   )}
                   loadingComponent={
