@@ -2,18 +2,6 @@ import { type LanguageModel, LanguageModelCapability } from '../types';
 
 const llamaModelData: Omit<LanguageModel, 'provider'>[] = [
   {
-    name: 'Llama Guard 4 12B',
-    modelId: 'llama-guard-4-12b',
-    description:
-      'Multimodal safety classification for inputs and responses; supports text and images.',
-    capabilities: [
-      LanguageModelCapability.ToolCalling,
-      LanguageModelCapability.Vision,
-    ],
-    bestFor: ['Safety classification', 'Moderation', 'Policy enforcement'],
-    contextLength: 164000,
-  },
-  {
     name: 'Llama 4 Maverick',
     modelId: 'llama-4-maverick',
     description:
