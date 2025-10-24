@@ -18,7 +18,7 @@ import {
   type paginatedQuerySchema,
 } from '@/lib/pagination';
 
-export const FACILITATORS_SORT_IDS = [
+const FACILITATORS_SORT_IDS = [
   'tx_count',
   'total_amount',
   'latest_block_timestamp',

@@ -104,11 +104,3 @@ export const facilitatorAddresses = facilitators.flatMap(f =>
     .flat()
     .map(address => mixedAddressSchema.parse(address))
 );
-
-export const facilitatorAddressMap = new Map<MixedAddress, Facilitator>(
-  facilitators.flatMap(f =>
-    Object.values(f.addresses)
-      .flat()
-      .map(address => [address, f] as const)
-  )
-);

@@ -14,7 +14,7 @@ import { paginationClause, transfersWhereClause } from '../query-utils';
 
 import type { paginatedQuerySchema } from '@/lib/pagination';
 
-export const SELLERS_SORT_IDS = [
+const SELLERS_SORT_IDS = [
   'tx_count',
   'total_amount',
   'latest_block_timestamp',

@@ -13,7 +13,7 @@ import { transfersPrisma } from '@/services/transfers/client';
 import type { MixedAddress } from '@/types/address';
 import type { Chain } from '@/types/chain';
 
-export const TRANSFERS_SORT_IDS = ['block_timestamp', 'amount'] as const;
+const TRANSFERS_SORT_IDS = ['block_timestamp', 'amount'] as const;
 export type TransfersSortId = (typeof TRANSFERS_SORT_IDS)[number];
 
 export const listFacilitatorTransfersInputSchema = baseListQuerySchema({
