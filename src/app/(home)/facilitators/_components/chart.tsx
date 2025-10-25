@@ -6,12 +6,11 @@ import type { ChartData } from '@/components/ui/charts/chart/types';
 import { LoadingMultiCharts, MultiCharts } from '@/components/ui/charts/multi';
 import { facilitators } from '@/lib/facilitators';
 
-import type { FacilitatorName } from '@/lib/facilitators';
 import { formatTokenAmount } from '@/lib/token';
 import { createTab } from '@/lib/charts';
 import { api } from '@/trpc/client';
 
-type FacilitatorKey = `${FacilitatorName}-${'transactions' | 'amount'}`;
+type FacilitatorKey = `${string}-${'transactions' | 'amount'}`;
 
 export const FacilitatorsChart = () => {
   const { chain } = useChain();
@@ -50,7 +49,7 @@ export const FacilitatorsChart = () => {
   ) => {
     const total = facilitators.reduce(
       (sum, facilitator) =>
-        sum + (allData[`${facilitator.name}-${id}` as FacilitatorKey] || 0),
+        sum + (allData[`${facilitator.id}-${id}` as FacilitatorKey] || 0),
       0
     );
     const percentage = total > 0 ? (data / total) * 100 : 0;
@@ -74,7 +73,7 @@ export const FacilitatorsChart = () => {
               dataType: string,
               allData: Record<FacilitatorKey, number>
             ) => getValueHandler(data, dataType, allData),
-            getKey: f => f.name,
+            getKey: f => f.id,
           }),
           createTab<
             Record<FacilitatorKey, number>,
@@ -88,7 +87,7 @@ export const FacilitatorsChart = () => {
               dataType: string,
               allData: Record<FacilitatorKey, number>
             ) => getValueHandler(data, dataType, allData),
-            getKey: f => f.name,
+            getKey: f => f.id,
           }),
         ]}
       />
