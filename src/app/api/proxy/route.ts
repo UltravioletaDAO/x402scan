@@ -128,29 +128,29 @@ async function proxy(request: NextRequest) {
               }
             : {}),
         };
-        try {
-          await createResourceInvocation({
-            ...data,
-            resource: {
-              connect: {
-                resource: cleanedTargetUrl,
-              },
-            },
-          });
-        } catch (error) {
-          // if the error is because the resource doesn't exist, try without the resource connection
-          if (
-            error instanceof Prisma.PrismaClientKnownRequestError &&
-            error.code === 'P2003'
-          ) {
-            console.error('Resource not found, skipping resource invocation');
-            await createResourceInvocation({
-              ...data,
-            });
-          } else {
-            console.error('Error creating resource invocation', error);
-          }
-        }
+        // try {
+        //   await createResourceInvocation({
+        //     ...data,
+        //     resource: {
+        //       connect: {
+        //         resource: cleanedTargetUrl,
+        //       },
+        //     },
+        //   });
+        // } catch (error) {
+        //   // if the error is because the resource doesn't exist, try without the resource connection
+        //   if (
+        //     error instanceof Prisma.PrismaClientKnownRequestError &&
+        //     error.code === 'P2003'
+        //   ) {
+        //     console.error('Resource not found, skipping resource invocation');
+        //     await createResourceInvocation({
+        //       ...data,
+        //     });
+        //   } else {
+        //     console.error('Error creating resource invocation', error);
+        //   }
+        // }
       }
     });
 
