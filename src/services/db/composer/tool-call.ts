@@ -37,7 +37,7 @@ export const listTopTools = async (
   const [count, items] = await Promise.all([
     prisma.resources.count({
       where: {
-        invocations: {
+        toolCalls: {
           some: {},
         },
       },
