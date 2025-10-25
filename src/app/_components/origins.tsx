@@ -26,9 +26,6 @@ export const Origins: React.FC<Props> = ({
   addresses,
   disableCopy,
 }) => {
-  const resolveOriginLabel = (origin: ResourceOrigin) =>
-    origin.title ?? new URL(origin.origin).hostname;
-
   if (!origins || origins.length === 0) {
     if (addresses.length === 0) {
       return null;
@@ -41,7 +38,6 @@ export const Origins: React.FC<Props> = ({
 
   if (origins.length === 1) {
     const origin = origins[0];
-    const originLabel = resolveOriginLabel(origin);
     return (
       <OriginsContainer
         Icon={({ className }) => (
@@ -60,14 +56,6 @@ export const Origins: React.FC<Props> = ({
       />
     );
   }
-
-  const primaryOrigin = origins[0];
-  const primaryLabel = resolveOriginLabel(primaryOrigin);
-  const additionalCount = origins.length - 1;
-  const displayLabel =
-    additionalCount > 0
-      ? `${primaryLabel} (+${additionalCount})`
-      : primaryLabel;
 
   return (
     <OriginsContainer
