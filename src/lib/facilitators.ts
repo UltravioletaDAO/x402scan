@@ -108,7 +108,6 @@ export const facilitators: Facilitator[] = [
 ];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];
-export type FacilitatorName = (typeof facilitators)[number]['name'];
 
 export const facilitatorIdMap = new Map<FacilitatorId, Facilitator>(
   facilitators.map(f => [f.id, f])

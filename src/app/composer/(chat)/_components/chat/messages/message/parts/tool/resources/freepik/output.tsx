@@ -54,7 +54,7 @@ const FreepikImageDisplay: React.FC<{ task_id: string }> = ({ task_id }) => {
   );
 
   useEffect(() => {
-    if (task && task.data.status === 'COMPLETED') {
+    if (task?.data.status === 'COMPLETED') {
       setIsTaskFetched(true);
     }
   }, [task, task_id]);

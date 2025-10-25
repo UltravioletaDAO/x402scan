@@ -38,6 +38,15 @@ export default function HomeLayout({
             href: '/facilitators',
           },
           {
+            label: 'Networks',
+            href: '/networks',
+          },
+          {
+            label: 'Resources',
+            href: '/resources',
+            subRoutes: ['/resources/register'],
+          },
+          {
             label: 'Ecosystem',
             href: '/ecosystem',
           },

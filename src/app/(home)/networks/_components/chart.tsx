@@ -4,20 +4,20 @@ import { useChain } from '@/app/_contexts/chain/hook';
 import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { LoadingMultiCharts, MultiCharts } from '@/components/ui/charts/multi';
-import { facilitators } from '@/lib/facilitators';
+import type { Chain } from '@/types/chain';
 
 import { formatTokenAmount } from '@/lib/token';
-import { createTab } from '@/lib/charts';
+import { createTab, networks } from '@/lib/charts';
 import { api } from '@/trpc/client';
 
-type FacilitatorKey = `${string}-${'transactions' | 'amount'}`;
+type NetworkKey = `${Chain}-${'transactions' | 'amount'}`;
 
-export const FacilitatorsChart = () => {
+export const NetworksChart = () => {
   const { chain } = useChain();
   const { startDate, endDate } = useTimeRangeContext();
 
-  const [bucketedFacilitatorData] =
-    api.public.facilitators.bucketedStatistics.useSuspenseQuery({
+  const [bucketedNetworkData] =
+    api.networks.bucketedStatistics.useSuspenseQuery({
       numBuckets: 48,
       startDate,
       endDate,
@@ -29,27 +29,27 @@ export const FacilitatorsChart = () => {
     chain,
   });
 
-  const chartData: ChartData<Record<FacilitatorKey, number>>[] =
-    bucketedFacilitatorData.map(item => ({
+  const chartData: ChartData<Record<NetworkKey, number>>[] =
+    bucketedNetworkData.map(item => ({
       timestamp: item.bucket_start.toISOString(),
-      ...Object.entries(item.facilitators).reduce(
-        (acc, [facilitator_name, facilitator]) => ({
+      ...Object.entries(item.networks).reduce(
+        (acc, [network_name, network]) => ({
           ...acc,
-          [`${facilitator_name}-transactions`]: facilitator.total_transactions,
-          [`${facilitator_name}-amount`]: facilitator.total_amount,
+          [`${network_name}-transactions`]: network.total_transactions,
+          [`${network_name}-amount`]: network.total_amount,
         }),
-        {} as Record<FacilitatorKey, number>
+        {} as Record<NetworkKey, number>
       ),
     }));
 
   const getValueHandler = (
     data: number,
     id: string,
-    allData: Record<FacilitatorKey, number>
+    allData: Record<NetworkKey, number>
   ) => {
-    const total = facilitators.reduce(
-      (sum, facilitator) =>
-        sum + (allData[`${facilitator.id}-${id}` as FacilitatorKey] || 0),
+    const total = networks.reduce(
+      (sum, network) =>
+        sum + (allData[`${network.chain}-${id}` as NetworkKey] || 0),
       0
     );
     const percentage = total > 0 ? (data / total) * 100 : 0;
@@ -61,33 +61,29 @@ export const FacilitatorsChart = () => {
       <MultiCharts
         chartData={chartData}
         tabs={[
-          createTab<
-            Record<FacilitatorKey, number>,
-            (typeof facilitators)[number]
-          >({
+          createTab<Record<NetworkKey, number>, (typeof networks)[number]>({
             label: 'Transactions',
+            stackOffset: 'expand',
             amount: overallData.total_transactions.toLocaleString(),
-            items: facilitators,
+            items: networks,
+            getKey: n => n.chain,
             getValue: (
               data: number,
               dataType: string,
-              allData: Record<FacilitatorKey, number>
+              allData: Record<NetworkKey, number>
             ) => getValueHandler(data, dataType, allData),
-            getKey: f => f.id,
           }),
-          createTab<
-            Record<FacilitatorKey, number>,
-            (typeof facilitators)[number]
-          >({
+          createTab<Record<NetworkKey, number>, (typeof networks)[number]>({
             label: 'Amount',
+            stackOffset: 'expand',
             amount: formatTokenAmount(BigInt(overallData.total_amount)),
-            items: facilitators,
+            items: networks,
+            getKey: n => n.chain,
             getValue: (
               data: number,
               dataType: string,
-              allData: Record<FacilitatorKey, number>
+              allData: Record<NetworkKey, number>
             ) => getValueHandler(data, dataType, allData),
-            getKey: f => f.id,
           }),
         ]}
       />
@@ -95,7 +91,7 @@ export const FacilitatorsChart = () => {
   );
 };
 
-export const LoadingFacilitatorsChart = () => {
+export const LoadingNetworksChart = () => {
   return (
     <LoadingMultiCharts
       tabs={[
