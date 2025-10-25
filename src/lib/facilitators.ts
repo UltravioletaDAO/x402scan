@@ -83,6 +83,20 @@ const corbitsFacilitator: Facilitator = {
   color: 'var(--color-orange-600)',
 };
 
+const daydreamsFacilitator = {
+  id: 'daydreams',
+  name: 'Daydreams' as const,
+  image: '/router-logo-small.png',
+  link: 'https://facilitator.daydreams.systems',
+  addresses: {
+    [Chain.BASE]: ['0x279e08f711182c79Ba6d09669127a426228a4653'],
+    [Chain.SOLANA]: [
+      'DuQ4jFMmVABWGxabYHFkGzdyeJgS1hp4wrRuCtsJgT9a' as SolanaAddress,
+    ],
+  },
+  color: 'var(--color-yellow-600)',
+} satisfies Facilitator;
+
 export const facilitators: Facilitator[] = [
   coinbaseFacilitator,
   x402rsFacilitator,
@@ -90,6 +104,7 @@ export const facilitators: Facilitator[] = [
   aurraCloudFacilitator,
   thirdwebFacilitator,
   corbitsFacilitator,
+  daydreamsFacilitator,
 ];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];
