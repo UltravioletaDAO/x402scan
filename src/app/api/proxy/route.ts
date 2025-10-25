@@ -1,5 +1,4 @@
 import { registerResource } from '@/lib/resources';
-import { createResourceInvocation } from '@/services/db/resources/invocation';
 import { after, NextResponse, type NextRequest } from 'next/server';
 
 import { Prisma } from '@prisma/client';
@@ -128,29 +127,8 @@ async function proxy(request: NextRequest) {
               }
             : {}),
         };
-        try {
-          await createResourceInvocation({
-            ...data,
-            resource: {
-              connect: {
-                resource: cleanedTargetUrl,
-              },
-            },
-          });
-        } catch (error) {
-          // if the error is because the resource doesn't exist, try without the resource connection
-          if (
-            error instanceof Prisma.PrismaClientKnownRequestError &&
-            error.code === 'P2003'
-          ) {
-            console.error('Resource not found, skipping resource invocation');
-            await createResourceInvocation({
-              ...data,
-            });
-          } else {
-            console.error('Error creating resource invocation', error);
-          }
-        }
+        // TODO(alvaro): should figure out a way to keep track of response but not in db
+        console.log({ cleanedTargetUrl, data });
       }
     });
 
