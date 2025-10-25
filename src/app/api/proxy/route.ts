@@ -128,6 +128,7 @@ async function proxy(request: NextRequest) {
             : {}),
         };
         // TODO(alvaro): should figure out a way to keep track of response but not in db
+        console.log({ cleanedTargetUrl, data });
       }
     });
 
