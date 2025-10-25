@@ -6,7 +6,7 @@
     "postinstall": "prisma generate && prisma generate --schema=./prisma-transfers/schema.prisma",
     "dev": "pnpm next:dev",
     "next:dev": "next dev --turbopack",
-    "build": "prisma migrate deploy && next build --turbopack",
+    "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
     "format": "prettier --write .",
