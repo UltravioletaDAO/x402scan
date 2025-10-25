@@ -1,5 +1,5 @@
 import type { AxisDomain } from 'recharts/types/util/types';
-import type { BarChartProps } from './bar/types';
+import type { BarChartProps, StackOffset } from './bar/types';
 import type { AreaChartProps } from './area/types';
 
 export interface TooltipRowProps<
@@ -29,7 +29,7 @@ export interface ChartProps<T extends Record<string, number>> {
     hide: boolean;
   }>;
   dataMax?: number | string;
-  stackOffset?: 'expand' | 'none';
+  stackOffset?: StackOffset;
 }
 
 export type Series<T extends Record<string, number>, S> = S & {
