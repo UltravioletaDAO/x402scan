@@ -50,10 +50,6 @@ export const Origins: React.FC<Props> = ({
         title={
           <span className="truncate">{new URL(origin.origin).hostname}</span>
         }
-<<<<<<< HEAD
-        title={originLabel}
-=======
->>>>>>> 3d4962be4067b5291800c4e351ae3b893d693afb
         address={
           addresses.length === 0 ? null : addresses.length === 1 ? (
             <Address address={addresses[0]} disableCopy={disableCopy} />
@@ -69,7 +65,9 @@ export const Origins: React.FC<Props> = ({
   const primaryLabel = resolveOriginLabel(primaryOrigin);
   const additionalCount = origins.length - 1;
   const displayLabel =
-    additionalCount > 0 ? `${primaryLabel} (+${additionalCount})` : primaryLabel;
+    additionalCount > 0
+      ? `${primaryLabel} (+${additionalCount})`
+      : primaryLabel;
 
   return (
     <OriginsContainer
@@ -81,25 +79,6 @@ export const Origins: React.FC<Props> = ({
         />
       )}
       title={
-<<<<<<< HEAD
-        <Tooltip>
-          <TooltipTrigger className="cursor-pointer hover:bg-muted hover:text-muted-foreground rounded-md transition-colors">
-            {displayLabel}
-          </TooltipTrigger>
-          <TooltipContent className="max-w-sm flex flex-col gap-1">
-            <p>
-              Addresses can be associated with multiple servers.
-              <br />
-              This address is associated with the following servers:
-            </p>
-            <ul className="list-disc list-inside">
-              {origins.map(origin => (
-                <li key={origin.id}>{resolveOriginLabel(origin)}</li>
-              ))}
-            </ul>
-          </TooltipContent>
-        </Tooltip>
-=======
         <div className="flex items-center gap-2 overflow-hidden flex-1 w-0">
           <span className="truncate">
             {new URL(origins[0].origin).hostname}
@@ -124,7 +103,6 @@ export const Origins: React.FC<Props> = ({
             </TooltipContent>
           </Tooltip>
         </div>
->>>>>>> 3d4962be4067b5291800c4e351ae3b893d693afb
       }
       address={
         addresses.length === 0 ? null : addresses.length === 1 ? (
