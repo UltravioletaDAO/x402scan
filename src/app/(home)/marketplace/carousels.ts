@@ -17,7 +17,7 @@ type MarketplaceCarousel = {
     description?: string;
     Icon: LucideIcon;
   };
-  input: RouterInputs['public']['sellers']['list']['bazaar'];
+  input: RouterInputs['public']['sellers']['bazaar']['list'];
   hideCount?: boolean;
 };
 

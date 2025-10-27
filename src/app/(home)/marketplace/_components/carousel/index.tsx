@@ -11,7 +11,7 @@ interface Props<T extends string> {
   sectionProps: Omit<SectionProps<T>, 'children' | 'actions'> & {
     Icon: LucideIcon;
   };
-  input: RouterInputs['public']['sellers']['list']['bazaar'];
+  input: RouterInputs['public']['sellers']['bazaar']['list'];
   startDate: Date;
   endDate: Date;
   hideCount?: boolean;
@@ -24,7 +24,7 @@ export const OriginsCarousel = async <T extends string>({
   endDate,
   hideCount,
 }: Props<T>) => {
-  void api.public.sellers.list.bazaar.prefetch({
+  void api.public.sellers.bazaar.list.prefetch({
     ...input,
     startDate,
     endDate,

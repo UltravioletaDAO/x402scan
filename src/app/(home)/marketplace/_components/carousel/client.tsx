@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 
 import { Section } from '@/app/_components/layout/page-utils';
 
-import { LoadingOriginCard, OriginCard } from '../origin-card';
+import { LoadingOriginCard, OriginCard } from './origin-card';
 
 import { api } from '@/trpc/client';
 
@@ -25,7 +25,7 @@ import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 interface Props<T extends string> {
   title: React.ReactNode;
   sectionProps: Omit<SectionProps<T>, 'children' | 'actions' | 'title'>;
-  input: RouterInputs['public']['sellers']['list']['bazaar'];
+  input: RouterInputs['public']['sellers']['bazaar']['list'];
   hideCount?: boolean;
 }
 
@@ -38,7 +38,7 @@ export const OriginsCarouselClient = <T extends string>({
   const { startDate, endDate } = useTimeRangeContext();
 
   const [{ items, total_count }] =
-    api.public.sellers.list.bazaar.useSuspenseQuery({
+    api.public.sellers.bazaar.list.useSuspenseQuery({
       ...input,
       startDate,
       endDate,

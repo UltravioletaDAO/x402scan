@@ -1,6 +1,6 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 
-import { LoadingOriginsCarousel } from './_components/carousels/lib/carousel';
+import { LoadingOriginsCarousel } from './_components/carousel';
 import { MARKETPLACE_CAROUSELS } from './carousels';
 import { Separator } from '@/components/ui/separator';
 import { Fragment } from 'react';

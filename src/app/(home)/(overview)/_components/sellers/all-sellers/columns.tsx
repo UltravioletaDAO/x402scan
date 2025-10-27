@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { Chains } from '@/app/_components/chains';
 
 type ColumnType =
-  RouterOutputs['public']['sellers']['list']['all']['items'][number];
+  RouterOutputs['public']['sellers']['all']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {

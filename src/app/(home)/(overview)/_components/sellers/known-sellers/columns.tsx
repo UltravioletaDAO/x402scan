@@ -29,7 +29,7 @@ import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/
 import { Chains } from '@/app/_components/chains';
 
 type ColumnType =
-  RouterOutputs['public']['sellers']['list']['bazaar']['items'][number];
+  RouterOutputs['public']['sellers']['bazaar']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {

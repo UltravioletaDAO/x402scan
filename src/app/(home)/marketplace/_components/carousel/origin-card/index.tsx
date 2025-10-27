@@ -21,7 +21,7 @@ import type { RouterOutputs } from '@/trpc/client';
 import { formatCompactAgo } from '@/lib/utils';
 
 interface Props {
-  origin: RouterOutputs['public']['sellers']['list']['bazaar']['items'][number];
+  origin: RouterOutputs['public']['sellers']['bazaar']['list']['items'][number];
 }
 
 export const OriginCard: React.FC<Props> = ({ origin }) => {
