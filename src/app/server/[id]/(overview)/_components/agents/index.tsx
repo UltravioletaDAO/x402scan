@@ -47,11 +47,6 @@ export const OriginAgents: React.FC<Props> = async ({ originId }) => {
           </EmptyHeader>
         </Empty>
       )}
-      <div className="flex flex-col gap-4">
-        {agents.items.map(agent => (
-          <AgentCard key={agent.id} agentConfiguration={agent} />
-        ))}
-      </div>
     </OriginOverviewSection>
   );
 };
