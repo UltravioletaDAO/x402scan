@@ -11,10 +11,6 @@ import {
 import { listBazaarOrigins } from '@/services/db/bazaar/origins';
 import { listBazaarOriginsInputSchema } from '@/services/db/bazaar/schema';
 import {
-  getOverallStatistics,
-  overallStatisticsInputSchema,
-} from '@/services/transfers/stats/overall';
-import {
   getOverallSellerStatistics,
   sellerStatisticsInputSchema,
 } from '@/services/transfers/sellers/stats/overall';

@@ -18,7 +18,6 @@ import { FooterStat, LoadingFooterStat } from './stat';
 import { convertTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
-import { formatCompactAgo } from '@/lib/utils';
 
 interface Props {
   origin: RouterOutputs['public']['sellers']['bazaar']['list']['items'][number];
@@ -65,14 +64,6 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
           <FooterStat
             Icon={DollarSign}
             value={convertTokenAmount(BigInt(origin.total_amount))}
-            className="justify-center"
-          />
-          <FooterStat
-            Icon={Calendar}
-            value={formatCompactAgo(origin.first_block_timestamp, {
-              addSuffix: false,
-              suffix: 'old',
-            })}
             className="justify-center"
           />
           <FooterStat

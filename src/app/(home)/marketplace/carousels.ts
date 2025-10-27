@@ -1,7 +1,5 @@
 import {
   TrendingUp,
-  Calendar,
-  Clock,
   Search,
   Coins,
   Brain,
@@ -33,23 +31,6 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
         page_size: 20,
       },
     },
-  },
-  {
-    sectionProps: {
-      title: 'Newest',
-      description: 'Servers that most recently received their first request',
-      Icon: Clock,
-    },
-    input: {
-      sorting: {
-        id: 'first_block_timestamp',
-        desc: true,
-      },
-      pagination: {
-        page_size: 20,
-      },
-    },
-    hideCount: true,
   },
   {
     sectionProps: {
@@ -102,22 +83,5 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
         page_size: 20,
       },
     },
-  },
-  {
-    sectionProps: {
-      title: 'Oldest',
-      description: 'Servers that have been around the longest',
-      Icon: Calendar,
-    },
-    input: {
-      sorting: {
-        id: 'first_block_timestamp',
-        desc: false,
-      },
-      pagination: {
-        page_size: 20,
-      },
-    },
-    hideCount: true,
   },
 ];

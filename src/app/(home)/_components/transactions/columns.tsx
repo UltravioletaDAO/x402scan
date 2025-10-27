@@ -2,8 +2,6 @@
 
 import { Calendar, DollarSign, Globe, Hash, Server, User } from 'lucide-react';
 
-import Link from 'next/link';
-
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { HeaderCell } from '@/components/ui/data-table/header-cell';

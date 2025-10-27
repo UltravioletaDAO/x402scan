@@ -10,8 +10,6 @@ import {
   Users,
 } from 'lucide-react';
 
-import Link from 'next/link';
-
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
@@ -144,27 +142,6 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     cell: ({ row }) => (
       <div className="text-center font-mono text-xs">
         {formatCompactAgo(row.original.latest_block_timestamp)}
-      </div>
-    ),
-    size: 100, // Fixed width for timestamp
-    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
-  },
-  {
-    accessorKey: 'first_block_timestamp',
-    header: () => (
-      <HeaderCell
-        Icon={Calendar}
-        label="First"
-        className="mx-auto"
-        sorting={{
-          sortContext: SellersSortingContext,
-          sortKey: 'first_block_timestamp',
-        }}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="text-center font-mono text-xs">
-        {formatCompactAgo(new Date(row.original.first_block_timestamp))}
       </div>
     ),
     size: 100, // Fixed width for timestamp
