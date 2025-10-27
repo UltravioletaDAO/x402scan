@@ -21,10 +21,6 @@ export default function HomeLayout({
           },
           {
             label: 'Marketplace',
-            href: '/marketplace',
-          },
-          {
-            label: 'Resources',
             href: '/resources',
             subRoutes: ['/resources/register'],
           },

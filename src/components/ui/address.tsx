@@ -12,6 +12,7 @@ interface Props {
   hideTooltip?: boolean;
   side?: 'top' | 'bottom' | 'left' | 'right';
   disableCopy?: boolean;
+  showLink?: boolean;
 }
 
 export const Address: React.FC<Props> = ({
@@ -89,7 +90,7 @@ export const Addresses = ({
           <br />
           This origin is associated with the following addresses:
         </p>
-        <ul className="list-disc list-inside">
+        <ul className="list-disc list-inside max-h-40 overflow-y-auto">
           {addresses.map(address => (
             <li key={address}>
               <Address

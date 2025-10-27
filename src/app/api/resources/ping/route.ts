@@ -34,7 +34,7 @@ export const GET = async (request: NextRequest) => {
       );
     }
 
-    const pingResults: Array<
+    type PingResult =
       | {
           status: 'fulfilled';
           value: {
@@ -47,10 +47,12 @@ export const GET = async (request: NextRequest) => {
       | {
           status: 'rejected';
           reason: unknown;
-        }
-    > = [];
+        };
 
-    for (const resource of resources) {
+    // Helper function to process a single resource
+    const processResource = async (
+      resource: (typeof resources)[0]
+    ): Promise<PingResult> => {
       let handled = false;
       for (const method of ['GET', 'POST']) {
         try {
@@ -68,7 +70,8 @@ export const GET = async (request: NextRequest) => {
               const parsedResponse = parseX402Response(await response.json());
               if (parsedResponse.success) {
                 await upsertResourceResponse(resource.id, parsedResponse.data);
-                pingResults.push({
+                handled = true;
+                return {
                   status: 'fulfilled',
                   value: {
                     resource: resource.resource,
@@ -76,9 +79,7 @@ export const GET = async (request: NextRequest) => {
                     isValid402: true,
                     success: true,
                   },
-                });
-                handled = true;
-                break;
+                };
               } else {
                 console.info('resource responded with invalid x402 response', {
                   resource: resource.resource,
@@ -97,12 +98,10 @@ export const GET = async (request: NextRequest) => {
           }
         } catch (err) {
           // Fetch failed - capture as a rejection and stop further attempts for this resource
-          pingResults.push({
+          return {
             status: 'rejected',
             reason: err,
-          });
-          handled = true;
-          break;
+          };
         }
       }
 
@@ -115,16 +114,38 @@ export const GET = async (request: NextRequest) => {
             error: err,
           });
         }
-        pingResults.push({
-          status: 'fulfilled',
-          value: {
-            resource: resource.resource,
-            resourceId: resource.id,
-            isValid402: false,
-            success: false,
-          },
-        });
       }
+
+      return {
+        status: 'fulfilled',
+        value: {
+          resource: resource.resource,
+          resourceId: resource.id,
+          isValid402: false,
+          success: false,
+        },
+      };
+    };
+
+    // Process resources in batches of 50
+    const BATCH_SIZE = 50;
+    const pingResults: PingResult[] = [];
+
+    for (let i = 0; i < resources.length; i += BATCH_SIZE) {
+      const batch = resources.slice(i, i + BATCH_SIZE);
+      console.info(
+        `Processing batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(resources.length / BATCH_SIZE)}`,
+        {
+          batchSize: batch.length,
+          totalProcessed: i,
+          totalResources: resources.length,
+        }
+      );
+
+      const batchResults = await Promise.all(
+        batch.map(resource => processResource(resource))
+      );
+      pingResults.push(...batchResults);
     }
 
     return NextResponse.json({
