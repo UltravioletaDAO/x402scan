@@ -2,7 +2,11 @@
 
 import { ChevronDownIcon } from 'lucide-react';
 
-import { AccordionContent, AccordionTrigger } from '@/components/ui/accordion';
+import {
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { Card, CardHeader } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -25,6 +29,7 @@ interface Props {
   className?: string;
   hideOrigin?: boolean;
   defaultOpen?: boolean;
+  isFlat?: boolean;
 }
 
 export const ResourceExecutor: React.FC<Props> = ({
@@ -34,6 +39,7 @@ export const ResourceExecutor: React.FC<Props> = ({
   bazaarMethod,
   className,
   hideOrigin = false,
+  isFlat = false,
 }) => {
   return (
     <ResourceFetchWrapper
@@ -41,23 +47,32 @@ export const ResourceExecutor: React.FC<Props> = ({
       bazaarMethod={bazaarMethod}
       resource={resource.resource}
     >
-      <Card className={cn(className, 'overflow-hidden')}>
-        <AccordionTrigger asChild>
-          <CardHeader className="bg-muted w-full flex flex-row items-center justify-between space-y-0 p-0 hover:border-primary transition-colors px-4 py-2 gap-4">
-            <Header
-              resource={resource}
-              tags={tags}
-              method={bazaarMethod}
-              response={response}
-              hideOrigin={hideOrigin}
-            />
-            <ChevronDownIcon className="size-4" />
-          </CardHeader>
-        </AccordionTrigger>
-        <AccordionContent className="pb-0">
-          <Form x402Response={response} />
-        </AccordionContent>
-      </Card>
+      <AccordionItem
+        value={resource.id}
+        key={resource.id}
+        className={cn('border-b-0 pt-4 relative', !isFlat && 'pl-4 border-l')}
+      >
+        {!isFlat && (
+          <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-[1px] bg-border" />
+        )}
+        <Card className={cn(className, 'overflow-hidden')}>
+          <AccordionTrigger asChild>
+            <CardHeader className="bg-muted w-full flex flex-row items-center justify-between space-y-0 p-0 hover:border-primary transition-colors px-4 py-2 gap-4">
+              <Header
+                resource={resource}
+                tags={tags}
+                method={bazaarMethod}
+                response={response}
+                hideOrigin={hideOrigin}
+              />
+              <ChevronDownIcon className="size-4" />
+            </CardHeader>
+          </AccordionTrigger>
+          <AccordionContent className="pb-0">
+            <Form x402Response={response} />
+          </AccordionContent>
+        </Card>
+      </AccordionItem>
     </ResourceFetchWrapper>
   );
 };

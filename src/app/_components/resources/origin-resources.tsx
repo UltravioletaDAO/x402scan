@@ -1,11 +1,10 @@
-import { Accordion, AccordionItem } from '@/components/ui/accordion';
+import { Accordion } from '@/components/ui/accordion';
 
 import { LoadingResourceExecutor, ResourceExecutor } from './executor';
 
 import { getBazaarMethod } from './executor/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
-import { cn } from '@/lib/utils';
 
 interface Props {
   resources: RouterOutputs['public']['origins']['list']['withResources'][number]['resources'];
@@ -29,22 +28,17 @@ export const OriginResources: React.FC<Props> = ({
       }
     >
       {resources.map(resource => (
-        <AccordionItem
-          value={resource.id}
+        <ResourceExecutor
           key={resource.id}
-          className={cn('border-b-0 pt-4 relative', !isFlat && 'pl-4 border-l')}
-        >
-          <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-[1px] bg-border" />
-          <ResourceExecutor
-            resource={resource}
-            tags={resource.tags.map(tag => tag.tag)}
-            bazaarMethod={getBazaarMethod(resource.accepts[0].outputSchema)}
-            className="bg-transparent"
-            response={resource.data}
-            hideOrigin={hideOrigin}
-            defaultOpen={defaultOpen}
-          />
-        </AccordionItem>
+          resource={resource}
+          tags={resource.tags.map(tag => tag.tag)}
+          bazaarMethod={getBazaarMethod(resource.accepts[0].outputSchema)}
+          className="bg-transparent"
+          response={resource.data}
+          hideOrigin={hideOrigin}
+          defaultOpen={defaultOpen}
+          isFlat={isFlat}
+        />
       ))}
     </Accordion>
   );
@@ -52,7 +46,7 @@ export const OriginResources: React.FC<Props> = ({
 
 export const LoadingOriginResources = () => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-4">
       {Array.from({ length: 10 }).map((_, index) => (
         <LoadingResourceExecutor key={index} />
       ))}
