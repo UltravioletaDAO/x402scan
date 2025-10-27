@@ -38,13 +38,11 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
     cell: ({ row }) => (
-      <Link href={`/recipient/${row.original.recipients[0]}`} prefetch={false}>
-        <Origins
-          origins={row.original.origins}
-          addresses={row.original.recipients}
-          disableCopy
-        />
-      </Link>
+      <Origins
+        origins={row.original.origins}
+        addresses={row.original.recipients}
+        disableCopy
+      />
     ),
     size: 225,
     loading: () => <OriginsSkeleton />,

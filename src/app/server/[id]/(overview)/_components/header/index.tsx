@@ -24,7 +24,7 @@ export const HeaderCard: React.FC<Props> = async ({ origin }) => {
       <Card className="absolute top-0 left-4 -translate-y-1/2 size-12 md:size-16 flex items-center justify-center border rounded-md overflow-hidden">
         <Avatar
           src={origin.favicon}
-          className="size-8 border-none rounded-none"
+          className="size-full border-none rounded-none"
           fallback={<Server className="size-8" />}
         />
       </Card>

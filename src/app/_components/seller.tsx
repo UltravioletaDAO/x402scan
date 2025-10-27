@@ -8,6 +8,7 @@ import { Origins } from '@/app/_components/origins';
 import { api } from '@/trpc/client';
 import { cn } from '@/lib/utils';
 import type { MixedAddress } from '@/types/address';
+import Link from 'next/link';
 
 interface Props {
   address: MixedAddress;
@@ -43,11 +44,13 @@ export const Seller: React.FC<Props> = ({
 
   if (!origins || origins.length === 0) {
     return (
-      <Address
-        address={address}
-        className={cn('text-xs font-medium', addressClassName)}
-        disableCopy={disableCopy}
-      />
+      <Link href={`/recipient/${address}`} prefetch={false}>
+        <Address
+          address={address}
+          className={cn('text-xs font-medium', addressClassName)}
+          disableCopy={disableCopy}
+        />
+      </Link>
     );
   }
 

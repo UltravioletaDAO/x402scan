@@ -191,10 +191,10 @@ export const ServersCharts = () => {
 export const LoadingServersCharts = () => {
   return (
     <OriginActivityContainer>
-      <LoadingOverallStatsCard type="bar" title="Transactions" />
-      <LoadingOverallStatsCard type="bar" title="All New Sellers" />
-      <LoadingOverallStatsCard type="bar" title="Bazaar Sellers" />
-      <LoadingOverallStatsCard type="bar" title="Bazaar New Sellers" />
+      <LoadingOverallStatsCard type="bar" title="Active Merchants" />
+      <LoadingOverallStatsCard type="bar" title="New Merchants" />
+      <LoadingOverallStatsCard type="bar" title="Active Registered Merchants" />
+      <LoadingOverallStatsCard type="bar" title="New Registered Merchants" />
     </OriginActivityContainer>
   );
 };

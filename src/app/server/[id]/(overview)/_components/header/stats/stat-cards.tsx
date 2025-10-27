@@ -68,7 +68,7 @@ export const StatsCards: React.FC<Props> = ({ originId }) => {
           )
         )
       )}
-      className="text-lg"
+      className="text-base md:text-lg"
     />,
   ];
 
@@ -88,7 +88,7 @@ interface StatsCardProps extends Stat {
 const StatCard = ({ value, ...stat }: StatsCardProps) => {
   return (
     <BaseStatCard {...stat}>
-      <div className="text-lg font-bold font-mono">{value}</div>
+      <div className="text-base md:text-lg font-bold font-mono">{value}</div>
     </BaseStatCard>
   );
 };
@@ -109,7 +109,7 @@ const BaseStatCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex justify-between flex-1 px-4 gap-2 py-1 h-full">
+    <div className="flex flex-col md:flex-row justify-between flex-1 px-4 gap-1 md:gap-2 py-2 md:py-1 h-full">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Icon className="size-4 shrink-0" />
         <span className="text-xs font-medium tracking-wider">{title}</span>

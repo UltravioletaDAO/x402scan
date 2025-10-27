@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 
 import type { ResourceOrigin } from '@prisma/client';
 import type { MixedAddress } from '@/types/address';
+import Link from 'next/link';
 
 interface Props {
   addresses: MixedAddress[];
@@ -39,21 +40,23 @@ export const Origins: React.FC<Props> = ({
   if (origins.length === 1) {
     const origin = origins[0];
     return (
-      <OriginsContainer
-        Icon={({ className }) => (
-          <Favicon url={origin.favicon} className={className} />
-        )}
-        title={
-          <span className="truncate">{new URL(origin.origin).hostname}</span>
-        }
-        address={
-          addresses.length === 0 ? null : addresses.length === 1 ? (
-            <Address address={addresses[0]} disableCopy={disableCopy} />
-          ) : (
-            <Addresses addresses={addresses} />
-          )
-        }
-      />
+      <Link href={`/server/${origin.id}`} prefetch={false}>
+        <OriginsContainer
+          Icon={({ className }) => (
+            <Favicon url={origin.favicon} className={className} />
+          )}
+          title={
+            <span className="truncate">{new URL(origin.origin).hostname}</span>
+          }
+          address={
+            addresses.length === 0 ? null : addresses.length === 1 ? (
+              <Address address={addresses[0]} disableCopy={disableCopy} />
+            ) : (
+              <Addresses addresses={addresses} />
+            )
+          }
+        />
+      </Link>
     );
   }
 
@@ -68,9 +71,11 @@ export const Origins: React.FC<Props> = ({
       )}
       title={
         <div className="flex items-center gap-2 overflow-hidden flex-1 w-0">
-          <span className="truncate">
-            {new URL(origins[0].origin).hostname}
-          </span>
+          <Link href={`/server/${origins[0].id}`} prefetch={false}>
+            <span className="truncate">
+              {new URL(origins[0].origin).hostname}
+            </span>
+          </Link>
           <Tooltip>
             <TooltipTrigger className="cursor-pointer hover:bg-muted text-muted-foreground hover:text-foreground rounded-md transition-colors text-xs font-mono shrink-0">
               +{origins.length - 1} more
