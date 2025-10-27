@@ -39,7 +39,7 @@ We're actively seeking contributors to help build x402scan. We believe an ecosys
 
 ### Add Resources
 
-If you know if a resource that is not yet listed, you can add it by visiting https://www.x402scan.com/add_resources=true and submitting the URL. If the URL returns a valid x402 schema, it be added to the resources list automatically.
+If you know if a resource that is not yet listed, you can add it by visiting [https://www.x402scan.com/resources/register](https://www.x402scan.com/resources/register) and submitting the URL. If the URL returns a valid x402 schema, it be added to the resources list automatically.
 
 ### Add Facilitators
 
