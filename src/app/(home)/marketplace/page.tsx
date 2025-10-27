@@ -2,6 +2,7 @@ import { Body, Heading } from '@/app/_components/layout/page-utils';
 
 import { api, HydrateClient } from '@/trpc/server';
 import { OriginsCarousel } from './_components/carousels/lib/carousel/client';
+import { Separator } from '@/components/ui/separator';
 
 export default async function MarketplacePage() {
   await api.public.sellers.list.bazaar.prefetch({
@@ -14,14 +15,13 @@ export default async function MarketplacePage() {
     <HydrateClient>
       <Heading
         title="Marketplace"
-        description="Buy and sell resources on the x402 marketplace"
+        description="Explore the most popular x402 servers"
         className="md:max-w-[95%]"
       />
       <Body className="max-w-[95%]">
         <OriginsCarousel
           sectionProps={{
-            title: 'Top Servers',
-            description: 'The most popular origins on the marketplace',
+            title: 'Most Used',
           }}
           input={{
             pagination: {
@@ -31,8 +31,39 @@ export default async function MarketplacePage() {
         />
         <OriginsCarousel
           sectionProps={{
-            title: 'Search Tools',
-            description: 'Servers that provide search services',
+            title: 'Oldest',
+          }}
+          input={{
+            sorting: {
+              id: 'first_block_timestamp',
+              desc: false,
+            },
+            pagination: {
+              page_size: 20,
+            },
+          }}
+          hideCount
+        />
+        <Separator />
+        <OriginsCarousel
+          sectionProps={{
+            title: 'Newest',
+          }}
+          input={{
+            sorting: {
+              id: 'first_block_timestamp',
+              desc: true,
+            },
+            pagination: {
+              page_size: 20,
+            },
+          }}
+          hideCount
+        />
+        <Separator />
+        <OriginsCarousel
+          sectionProps={{
+            title: 'Search Servers',
           }}
           input={{
             tags: ['Search'],
@@ -41,10 +72,10 @@ export default async function MarketplacePage() {
             },
           }}
         />
+        <Separator />
         <OriginsCarousel
           sectionProps={{
-            title: 'Crypto Tools',
-            description: 'Servers that provide crypto services',
+            title: 'Crypto Servers',
           }}
           input={{
             tags: ['Crypto'],
@@ -53,10 +84,10 @@ export default async function MarketplacePage() {
             },
           }}
         />
+        <Separator />
         <OriginsCarousel
           sectionProps={{
-            title: 'AI Tools',
-            description: 'Servers that provide AI services',
+            title: 'AI Servers',
           }}
           input={{
             tags: ['Utility'],
@@ -65,10 +96,10 @@ export default async function MarketplacePage() {
             },
           }}
         />
+        <Separator />
         <OriginsCarousel
           sectionProps={{
-            title: 'Trading Tools',
-            description: 'Servers that provide trading services',
+            title: 'Trading Servers',
           }}
           input={{
             tags: ['Trading'],

@@ -152,6 +152,27 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
     loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
   },
   {
+    accessorKey: 'first_block_timestamp',
+    header: () => (
+      <HeaderCell
+        Icon={Calendar}
+        label="First"
+        className="mx-auto"
+        sorting={{
+          sortContext: SellersSortingContext,
+          sortKey: 'first_block_timestamp',
+        }}
+      />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center font-mono text-xs">
+        {formatCompactAgo(new Date(row.original.first_block_timestamp))}
+      </div>
+    ),
+    size: 100, // Fixed width for timestamp
+    loading: () => <Skeleton className="h-4 w-16 mx-auto" />,
+  },
+  {
     accessorKey: 'chains',
     header: () => <HeaderCell Icon={Globe} label="Chain" className="mx-auto" />,
     cell: ({ row }) => (

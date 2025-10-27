@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { DollarSign, Activity, Users } from 'lucide-react';
+import { DollarSign, Activity, Users, Calendar } from 'lucide-react';
 
 import {
   Card,
@@ -18,6 +18,7 @@ import { FooterStat, LoadingFooterStat } from './stat';
 import { convertTokenAmount } from '@/lib/token';
 
 import type { RouterOutputs } from '@/trpc/client';
+import { formatCompactAgo } from '@/lib/utils';
 
 interface Props {
   origin: RouterOutputs['public']['sellers']['list']['bazaar']['items'][number];
@@ -55,7 +56,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
             </CardDescription>
           </CardHeader>
         </div>
-        <CardFooter className="grid grid-cols-3 gap-2">
+        <CardFooter className="flex flex-row gap-3">
           <FooterStat
             Icon={Activity}
             value={Number(origin.tx_count)}
@@ -64,6 +65,14 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
           <FooterStat
             Icon={DollarSign}
             value={convertTokenAmount(BigInt(origin.total_amount))}
+            className="justify-center"
+          />
+          <FooterStat
+            Icon={Calendar}
+            value={formatCompactAgo(origin.first_block_timestamp, {
+              addSuffix: false,
+              suffix: 'old',
+            })}
             className="justify-center"
           />
           <FooterStat

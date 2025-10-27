@@ -12,6 +12,7 @@ import { OriginStats, LoadingOriginStats } from './stats';
 import { cn } from '@/lib/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
+import { HeaderButtons } from './buttons';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
@@ -30,12 +31,12 @@ export const HeaderCard: React.FC<Props> = async ({ origin }) => {
       <div className="grid grid-cols-1 md:grid-cols-7">
         <div className="flex flex-col gap-4 p-4 pt-8 md:pt-10 col-span-5">
           <div className="">
-            <h1 className="text-3xl font-bold break-words line-clamp-2">
+            <h1 className="text-xl md:text-3xl font-bold break-words line-clamp-2">
               {origin.title ?? new URL(origin.origin).hostname}
             </h1>
             <p
               className={cn(
-                'break-words line-clamp-2',
+                'break-words line-clamp-2 text-sm md:text-base',
                 !origin.description
                   ? 'text-muted-foreground/60'
                   : 'text-muted-foreground'
@@ -44,6 +45,7 @@ export const HeaderCard: React.FC<Props> = async ({ origin }) => {
               {origin.description ?? 'No Description'}
             </p>
           </div>
+          <HeaderButtons />
         </div>
         <div className="col-span-2">
           <Suspense fallback={<LoadingOriginStats />}>

@@ -24,11 +24,13 @@ import { Badge } from '@/components/ui/badge';
 interface Props<T extends string> {
   sectionProps: Omit<SectionProps<T>, 'children' | 'actions'>;
   input: RouterInputs['public']['sellers']['list']['bazaar'];
+  hideCount?: boolean;
 }
 
 export const OriginsCarousel = <T extends string>({
   sectionProps,
   input,
+  hideCount,
 }: Props<T>) => {
   const [{ items, total_count }] =
     api.public.sellers.list.bazaar.useSuspenseQuery(input);
@@ -61,7 +63,7 @@ export const OriginsCarousel = <T extends string>({
           <h1 className="font-bold text-xl md:text-2xl">
             {sectionProps.title}
           </h1>
-          <Badge variant="secondary">{total_count}</Badge>
+          {!hideCount && <Badge variant="secondary">{total_count}</Badge>}
         </div>
       }
       actions={
@@ -85,8 +87,8 @@ export const OriginsCarousel = <T extends string>({
         </div>
       }
     >
-      <div className="overflow-hidden touch-pan-x" ref={emblaRef}>
-        <div className="flex gap-4 touch-pan-x">
+      <div className="overflow-hidden" ref={emblaRef}>
+        <div className="flex gap-2 md:gap-4">
           {items.map(origin => (
             <div
               key={`${origin.origins.map(o => o.origin).join(',')}`}

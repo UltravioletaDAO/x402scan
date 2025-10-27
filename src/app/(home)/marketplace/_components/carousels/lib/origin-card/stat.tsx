@@ -7,19 +7,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 interface Props {
   Icon: LucideIcon;
-  value: number;
+  value: number | string;
   className?: string;
 }
 
 export const FooterStat: React.FC<Props> = ({ Icon, value, className }) => {
   return (
     <FooterStatContainer Icon={Icon} className={className}>
-      <p className="text-xs font-mono">
-        {value.toLocaleString(undefined, {
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 2,
-          notation: 'compact',
-        })}
+      <p className="text-[10px] font-mono">
+        {typeof value === 'number'
+          ? value.toLocaleString(undefined, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
+              notation: 'compact',
+            })
+          : value}
       </p>
     </FooterStatContainer>
   );
@@ -46,7 +48,7 @@ export const LoadingFooterStat: React.FC<
   Omit<FooterStatContainerProps, 'children'>
 > = ({ Icon, className }) => {
   return (
-    <div className={cn('flex items-center gap-1', className)}>
+    <div className={cn('flex items-center gap-0.5', className)}>
       <Icon className="size-3 shrink-0" />
       <Skeleton className="w-8 h-[12px] md:h-[14px]" />
     </div>

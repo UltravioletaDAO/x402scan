@@ -1,12 +1,16 @@
-import { HardDrive, Tag, Wallet } from 'lucide-react';
+'use client';
 
-import { api } from '@/trpc/server';
+import { Bot, HardDrive, Tag, Wallet } from 'lucide-react';
+
+import { api } from '@/trpc/client';
 
 import { Addresses } from '@/components/ui/address';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
+import { Tags } from '@/app/_components/tags';
+
 import type { LucideIcon } from 'lucide-react';
+import type { Tag as TagType } from '@prisma/client';
 
 interface Props {
   originId: string;
@@ -19,29 +23,42 @@ interface Stat {
 
 const stats: Stat[] = [
   { title: 'Resources', Icon: HardDrive },
+  { title: 'Agents', Icon: Bot },
   { title: 'Tags', Icon: Tag },
   { title: 'Addresses', Icon: Wallet },
 ];
 
-export const StatsCards: React.FC<Props> = async ({ originId }) => {
-  const metadata = await api.public.origins.getMetadata(originId);
+export const StatsCards: React.FC<Props> = ({ originId }) => {
+  const [metadata] = api.public.origins.getMetadata.useSuspenseQuery(originId);
   if (!metadata) {
     return null;
   }
 
   const values = [
     metadata.resources.length,
-    <div key="tags" className="flex flex-wrap gap-1">
-      {Array.from(
-        new Set(
-          metadata.resources.flatMap(resource =>
-            resource.tags.map(tag => tag.tag)
+    metadata.resources.reduce(
+      (acc, resource) => acc + resource._count.agentConfigurationResources,
+      0
+    ),
+    <Tags
+      key="tags"
+      tags={
+        Array.from(
+          new Set(
+            metadata.resources.flatMap(resource =>
+              resource.tags.map(tag => tag.tag.id)
+            )
           )
         )
-      ).map(tag => (
-        <Badge key={tag.id}>{tag.name}</Badge>
-      ))}
-    </div>,
+          .map(tagId =>
+            metadata.resources
+              .flatMap(resource => resource.tags.map(tag => tag.tag))
+              .find(tag => tag.id === tagId)
+          )
+          .filter(Boolean) as TagType[]
+      }
+      className="min-h-[28px] items-center"
+    />,
     <Addresses
       key="addresses"
       addresses={Array.from(
@@ -51,6 +68,7 @@ export const StatsCards: React.FC<Props> = async ({ originId }) => {
           )
         )
       )}
+      className="text-lg"
     />,
   ];
 
@@ -91,7 +109,7 @@ const BaseStatCard = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className="flex justify-between flex-1 px-4 gap-2 py-1">
+    <div className="flex justify-between flex-1 px-4 gap-2 py-1 h-full">
       <div className="flex items-center gap-2 text-muted-foreground">
         <Icon className="size-4 shrink-0" />
         <span className="text-xs font-medium tracking-wider">{title}</span>

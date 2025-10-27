@@ -19,7 +19,7 @@ export default async function OriginLayout({
     <>
       <Separator />
       <Breadcrumb
-        href={`/origin/${id}`}
+        href={`/marketplace`}
         image={null}
         name="Server"
         Fallback={Server}

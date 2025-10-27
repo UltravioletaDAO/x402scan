@@ -1,5 +1,5 @@
 import { useIsInitialized } from '@coinbase/cdp-hooks';
-import { useClient, useSwitchChain, useWalletClient } from 'wagmi';
+import { useWalletClient } from 'wagmi';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { formatTokenAmount } from '@/lib/token';
@@ -13,23 +13,14 @@ interface Props {
 }
 
 export const FetchButton: React.FC<Props> = ({ chains }) => {
-  const {
-    data: walletClient,
-    isLoading: isLoadingWalletClient,
-    ...rest
-  } = useClient();
+  const { data: walletClient, isLoading: isLoadingWalletClient } =
+    useWalletClient();
   const { isInitialized } = useIsInitialized();
 
   const { execute, isPending, allRequiredFieldsFilled, maxAmountRequired } =
     useResourceFetch();
 
   const includesBase = chains.includes(Chain.BASE);
-
-  console.log({
-    walletClient,
-    isLoadingWalletClient,
-    ...rest,
-  });
 
   if (!walletClient) {
     return (

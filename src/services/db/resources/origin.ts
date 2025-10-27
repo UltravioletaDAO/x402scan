@@ -143,6 +143,11 @@ export const listOriginsWithResources = async (
             where: acceptsWhere,
           },
           response: true,
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
         },
       },
       ogImages: true,
@@ -219,6 +224,11 @@ export const getOriginMetadata = async (id: string) => {
           accepts: {
             select: {
               payTo: true,
+            },
+          },
+          _count: {
+            select: {
+              agentConfigurationResources: true,
             },
           },
         },
