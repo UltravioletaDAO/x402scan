@@ -20,6 +20,7 @@ export const env = createEnv({
     FREEPIK_API_KEY: z.string().optional(),
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
     FREE_TIER_WALLET_NAME: z.string().optional(),
+    REDIS_URL: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
