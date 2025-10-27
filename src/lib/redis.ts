@@ -15,7 +15,7 @@ export function getRedisClient(): Redis | null {
     try {
       redis = new Redis(env.REDIS_URL, {
         maxRetriesPerRequest: 3,
-        retryStrategy: (times) => {
+        retryStrategy: times => {
           if (times > 3) {
             console.error('[Redis] Max retries reached, giving up');
             return null;
@@ -23,7 +23,7 @@ export function getRedisClient(): Redis | null {
           const delay = Math.min(times * 100, 2000);
           return delay;
         },
-        reconnectOnError: (err) => {
+        reconnectOnError: err => {
           const targetError = 'READONLY';
           if (err.message.includes(targetError)) {
             return true;
@@ -32,7 +32,7 @@ export function getRedisClient(): Redis | null {
         },
       });
 
-      redis.on('error', (err) => {
+      redis.on('error', err => {
         console.error('[Redis] Connection error:', err.message);
       });
 

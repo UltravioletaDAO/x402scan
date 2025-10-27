@@ -121,7 +121,9 @@ async function withRedisCache<T>(
       await sleep(POLL_INTERVAL_MS);
       const cached = await redis.get(fullCacheKey);
       if (cached) {
-        console.log(`[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`);
+        console.log(
+          `[Cache] WAIT SUCCESS: Got result after ${(i + 1) * POLL_INTERVAL_MS}ms`
+        );
         return JSON.parse(cached) as T;
       }
     }
@@ -160,7 +162,10 @@ const createCachedQueryBase = <TInput extends unknown[], TOutput>(config: {
           ttl
         ).then(result => config.deserialize(result));
       } catch (err) {
-        console.error('[Cache] Redis error, falling back to unstable_cache:', err);
+        console.error(
+          '[Cache] Redis error, falling back to unstable_cache:',
+          err
+        );
         // Fall through to unstable_cache
       }
     }
