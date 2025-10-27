@@ -2,8 +2,15 @@ import { Body, Heading } from '@/app/_components/layout/page-utils';
 
 import { CreateAgentForm } from '../../_components/new-agent/form';
 import { auth } from '@/auth';
+import z from 'zod';
 
-export default async function NewAgentPage() {
+export default async function NewAgentPage({
+  searchParams,
+}: PageProps<'/composer/agents/new'>) {
+  const { resources } = await searchParams;
+
+  const initialResourceIds = z.array(z.uuid()).default([]).safeParse(resources);
+
   const session = await auth();
 
   return (
@@ -14,7 +21,12 @@ export default async function NewAgentPage() {
         className="md:max-w-2xl"
       />
       <Body className="max-w-2xl">
-        <CreateAgentForm initialStep={session ? 1 : 0} />
+        <CreateAgentForm
+          initialStep={session ? 1 : 0}
+          initialResourceIds={
+            initialResourceIds.success ? initialResourceIds.data : undefined
+          }
+        />
       </Body>
     </div>
   );

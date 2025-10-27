@@ -97,8 +97,8 @@ export const Body: React.FC<BodyProps> = ({ children, className }) => {
   );
 };
 
-interface SectionProps<T extends string> {
-  title: string;
+export interface SectionProps<T extends string> {
+  title: string | ReactNode;
   description?: string;
   children: React.ReactNode;
   actions?: React.ReactNode;
@@ -122,7 +122,11 @@ export const Section = <T extends string>({
           href && 'group cursor-pointer'
         )}
       >
-        <h1 className="font-bold text-xl md:text-2xl">{title}</h1>
+        {typeof title === 'string' ? (
+          <h1 className="font-bold text-xl md:text-2xl">{title}</h1>
+        ) : (
+          title
+        )}
         {href && (
           <div className="flex items-center gap-2 bg-muted/0 hover:bg-muted rounded-md p-0.5 transition-all hover:scale-105 group-hover:translate-x-1">
             <ChevronRight className="size-4 text-foreground/60 group-hover:text-muted-foreground" />

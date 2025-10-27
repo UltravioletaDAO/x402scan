@@ -70,6 +70,11 @@ export const resourcesRouter = createTRPCRouter({
         accepts: true,
         origin: true,
         response: true,
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
       },
     });
   }),

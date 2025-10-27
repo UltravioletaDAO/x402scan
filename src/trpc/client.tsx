@@ -10,7 +10,7 @@ import {
   splitLink,
 } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
-import type { inferRouterOutputs } from '@trpc/server';
+import type { inferRouterInputs, inferRouterOutputs } from '@trpc/server';
 
 import SuperJSON from 'superjson';
 
@@ -84,4 +84,5 @@ function getBaseUrl() {
   return env.NEXT_PUBLIC_APP_URL;
 }
 
+export type RouterInputs = inferRouterInputs<AppRouter>;
 export type RouterOutputs = inferRouterOutputs<AppRouter>;

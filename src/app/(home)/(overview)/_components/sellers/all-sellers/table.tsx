@@ -17,7 +17,7 @@ export const AllSellersTable = () => {
 
   const [page, setPage] = useState(0);
   const pageSize = 10;
-  const [topSellers] = api.public.sellers.list.all.useSuspenseQuery({
+  const [topSellers] = api.public.sellers.all.list.useSuspenseQuery({
     chain,
     sorting,
     pagination: {
@@ -32,7 +32,6 @@ export const AllSellersTable = () => {
     <DataTable
       columns={columns}
       data={topSellers.items}
-      href={data => `/recipient/${data.recipient}`}
       page={page}
       onPageChange={setPage}
       pageSize={pageSize}

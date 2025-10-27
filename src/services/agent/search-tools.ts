@@ -39,7 +39,7 @@ export async function searchX402Tools(
           resource: resource.resource,
           description: description,
           favicon: resource.origin.favicon,
-          invocations: resource._count.invocations,
+          invocations: resource._count.toolCalls,
           maxAmountRequired: accept.maxAmountRequired.toString(),
         });
       }

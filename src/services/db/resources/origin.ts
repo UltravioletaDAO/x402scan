@@ -103,18 +103,20 @@ export const listOrigins = async (input: z.infer<typeof listOriginsSchema>) => {
 export const listOriginsWithResourcesSchema = z.object({
   chain: optionalChainSchema,
   address: mixedAddressSchema.optional(),
+  originIds: z.array(z.uuid()).optional(),
 });
 
 export const listOriginsWithResources = async (
   input: z.infer<typeof listOriginsWithResourcesSchema>
 ) => {
-  const { chain, address } = input;
+  const { chain, address, originIds } = input;
   const acceptsWhere: Prisma.AcceptsWhereInput = {
     ...(address ? { payTo: address } : {}),
     ...(chain ? { network: chain } : {}),
   };
   const origins = await prisma.resourceOrigin.findMany({
     where: {
+      ...(originIds ? { id: { in: originIds } } : {}),
       resources: {
         some: {
           response: {
@@ -141,6 +143,11 @@ export const listOriginsWithResources = async (
             where: acceptsWhere,
           },
           response: true,
+          tags: {
+            include: {
+              tag: true,
+            },
+          },
         },
       },
       ogImages: true,
@@ -181,6 +188,13 @@ export const searchOrigins = async (
       origin: {
         contains: search,
       },
+      resources: {
+        some: {
+          accepts: {
+            some: {},
+          },
+        },
+      },
     },
     include: {
       resources: {
@@ -194,5 +208,43 @@ export const searchOrigins = async (
       },
     },
     take: limit,
+  });
+};
+
+export const getOrigin = async (id: string) => {
+  return await prisma.resourceOrigin.findUnique({
+    where: { id },
+  });
+};
+
+export const getOriginMetadata = async (id: string) => {
+  return await prisma.resourceOrigin.findUnique({
+    where: { id },
+    select: {
+      resources: {
+        select: {
+          tags: {
+            select: {
+              tag: true,
+            },
+          },
+          accepts: {
+            select: {
+              payTo: true,
+            },
+          },
+          _count: {
+            select: {
+              agentConfigurationResources: true,
+            },
+          },
+        },
+      },
+      _count: {
+        select: {
+          resources: true,
+        },
+      },
+    },
   });
 };

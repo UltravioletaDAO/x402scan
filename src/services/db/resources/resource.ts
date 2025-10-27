@@ -261,6 +261,13 @@ export const searchResources = async (
   const { search, limit, tagIds, resourceIds, showExcluded } = input;
   return await prisma.resources.findMany({
     where: {
+      accepts: {
+        some: {
+          network: {
+            equals: 'base',
+          },
+        },
+      },
       ...(search
         ? {
             OR: [
@@ -297,18 +304,21 @@ export const searchResources = async (
     },
     include: {
       origin: true,
-      accepts: true,
+      accepts: {
+        where: {
+          network: {
+            equals: 'base',
+          },
+        },
+      },
       _count: {
         select: {
-          invocations: true,
+          toolCalls: true,
         },
       },
     },
     take: limit,
-    orderBy: [
-      { invocations: { _count: 'desc' } },
-      { tags: { _count: 'desc' } },
-    ],
+    orderBy: [{ toolCalls: { _count: 'desc' } }, { tags: { _count: 'desc' } }],
   });
 };
 

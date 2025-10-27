@@ -20,3 +20,11 @@ export const upsertResourceResponse = async (
     },
   });
 };
+
+export const deleteResourceResponse = async (resourceId: string) => {
+  return await prisma.resourceResponse.deleteMany({
+    where: {
+      resourceId,
+    },
+  });
+};

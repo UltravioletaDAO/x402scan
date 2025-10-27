@@ -1,5 +1,5 @@
 import { Body, Heading } from '@/app/_components/layout/page-utils';
-import { LoadingAgentsTable } from './_components';
+import { LoadingAgentsTable } from '@/app/_components/agents/table/table';
 
 export default function LoadingAgents() {
   return (

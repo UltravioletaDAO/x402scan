@@ -30,11 +30,19 @@ export const formatCurrency = (
   });
 };
 
-export const formatCompactAgo = (date: Date) => {
+interface FormatCompactAgoOptions {
+  addSuffix?: boolean;
+  suffix?: string;
+}
+
+export const formatCompactAgo = (
+  date: Date,
+  options?: FormatCompactAgoOptions
+) => {
   const str = formatDistanceToNow(date, {
-    addSuffix: true,
+    addSuffix: options?.addSuffix ?? true,
   });
-  return str
+  const formatted = str
     .replace('less than ', '< ')
     .replace('a ', '1 ')
     .replace('about ', '~')
@@ -52,6 +60,12 @@ export const formatCompactAgo = (date: Date) => {
     .replace(' month', 'M')
     .replace(' years', 'y')
     .replace(' year', 'y');
+
+  if (options?.suffix) {
+    return `${formatted} ${options.suffix}`;
+  }
+
+  return formatted;
 };
 
 export const formatAddress = (address: string) => {

@@ -14,7 +14,7 @@ export const KnownSellersTable = () => {
   const { startDate, endDate } = useTimeRangeContext();
   const { chain } = useChain();
 
-  const [topSellers] = api.public.sellers.list.bazaar.useSuspenseQuery({
+  const [topSellers] = api.public.sellers.bazaar.list.useSuspenseQuery({
     chain,
     pagination: {
       page_size: 100,
