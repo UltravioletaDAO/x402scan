@@ -3,12 +3,12 @@ import type {
   DynamicImportLanguageRegistration,
   DynamicImportThemeRegistration,
   HighlighterGeneric,
-} from '@shikijs/types';
+} from 'shiki';
 import {
   createSingletonShorthands,
   createdBundledHighlighter,
-} from '@shikijs/core';
-import { createJavaScriptRegexEngine } from '@shikijs/engine-javascript';
+  createJavaScriptRegexEngine,
+} from 'shiki';
 
 type BundledLanguage =
   | 'typescript'
@@ -23,19 +23,19 @@ type BundledTheme = 'github-light' | 'github-dark';
 type Highlighter = HighlighterGeneric<BundledLanguage, BundledTheme>;
 
 const bundledLanguages = {
-  typescript: () => import('@shikijs/langs/typescript'),
-  ts: () => import('@shikijs/langs/typescript'),
-  javascript: () => import('@shikijs/langs/javascript'),
-  js: () => import('@shikijs/langs/javascript'),
-  jsx: () => import('@shikijs/langs/jsx'),
-  tsx: () => import('@shikijs/langs/tsx'),
-  shell: () => import('@shikijs/langs/shell'),
-  json: () => import('@shikijs/langs/json'),
+  typescript: () => import('shiki/langs/typescript.mjs'),
+  ts: () => import('shiki/langs/typescript.mjs'),
+  javascript: () => import('shiki/langs/javascript.mjs'),
+  js: () => import('shiki/langs/javascript.mjs'),
+  jsx: () => import('shiki/langs/jsx.mjs'),
+  tsx: () => import('shiki/langs/tsx.mjs'),
+  shell: () => import('shiki/langs/shell.mjs'),
+  json: () => import('shiki/langs/json.mjs'),
 } as Record<BundledLanguage, DynamicImportLanguageRegistration>;
 
 const bundledThemes = {
-  'github-light': () => import('@shikijs/themes/github-light'),
-  'github-dark': () => import('@shikijs/themes/github-dark'),
+  'github-light': () => import('shiki/themes/github-light.mjs'),
+  'github-dark': () => import('shiki/themes/github-dark.mjs'),
 } as Record<BundledTheme, DynamicImportThemeRegistration>;
 
 const createHighlighter = createdBundledHighlighter<
