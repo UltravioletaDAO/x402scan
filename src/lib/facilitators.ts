@@ -97,6 +97,17 @@ const daydreamsFacilitator = {
   color: 'var(--color-yellow-600)',
 } satisfies Facilitator;
 
+const openX402Facilitator: Facilitator = {
+  id: 'openx402',
+  name: 'Open X402' as const,
+  image: '/openx402.png',
+  link: 'https://open.x402.host',
+  addresses: {
+    [Chain.BASE]: ['0x97316fa4730bc7d3b295234f8e4d04a0a4c093e8'],
+  },
+  color: 'var(--color-blue-600)',
+};
+
 export const facilitators: Facilitator[] = [
   coinbaseFacilitator,
   x402rsFacilitator,
@@ -105,6 +116,7 @@ export const facilitators: Facilitator[] = [
   thirdwebFacilitator,
   corbitsFacilitator,
   daydreamsFacilitator,
+  openX402Facilitator,
 ];
 
 type FacilitatorId = (typeof facilitators)[number]['id'];
