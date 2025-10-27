@@ -11,8 +11,6 @@
     "tailwindcss",
     "postcss",
     "@trigger.dev/sdk",
-    "shiki",
-    "@shikijs/*",
     "redis"
   ],
   "ignore": [
