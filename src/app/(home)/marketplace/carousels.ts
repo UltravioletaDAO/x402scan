@@ -14,6 +14,7 @@ import type { LucideIcon } from 'lucide-react';
 type MarketplaceCarousel = {
   sectionProps: {
     title: string;
+    description?: string;
     Icon: LucideIcon;
   };
   input: RouterInputs['public']['sellers']['list']['bazaar'];
@@ -24,6 +25,7 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
   {
     sectionProps: {
       title: 'Most Used',
+      description: 'Ranked by number of successful requests',
       Icon: TrendingUp,
     },
     input: {
@@ -34,23 +36,8 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
   },
   {
     sectionProps: {
-      title: 'Oldest',
-      Icon: Calendar,
-    },
-    input: {
-      sorting: {
-        id: 'first_block_timestamp',
-        desc: false,
-      },
-      pagination: {
-        page_size: 20,
-      },
-    },
-    hideCount: true,
-  },
-  {
-    sectionProps: {
       title: 'Newest',
+      description: 'Servers that most recently received their first request',
       Icon: Clock,
     },
     input: {
@@ -67,6 +54,7 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
   {
     sectionProps: {
       title: 'Search Servers',
+      description: 'Servers that provide resources for searching the web',
       Icon: Search,
     },
     input: {
@@ -79,6 +67,7 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
   {
     sectionProps: {
       title: 'Crypto Servers',
+      description: 'Servers that provide resources for crypto operations',
       Icon: Coins,
     },
     input: {
@@ -91,6 +80,7 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
   {
     sectionProps: {
       title: 'AI Servers',
+      description: 'Servers that provide AI resources',
       Icon: Brain,
     },
     input: {
@@ -103,6 +93,7 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
   {
     sectionProps: {
       title: 'Trading Servers',
+      description: 'Servers that provide resources for trading information',
       Icon: ChartCandlestick,
     },
     input: {
@@ -111,5 +102,22 @@ export const MARKETPLACE_CAROUSELS: MarketplaceCarousel[] = [
         page_size: 20,
       },
     },
+  },
+  {
+    sectionProps: {
+      title: 'Oldest',
+      description: 'Servers that have been around the longest',
+      Icon: Calendar,
+    },
+    input: {
+      sorting: {
+        id: 'first_block_timestamp',
+        desc: false,
+      },
+      pagination: {
+        page_size: 20,
+      },
+    },
+    hideCount: true,
   },
 ];

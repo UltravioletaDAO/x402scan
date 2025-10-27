@@ -12,15 +12,23 @@ interface Props<T extends string> {
     Icon: LucideIcon;
   };
   input: RouterInputs['public']['sellers']['list']['bazaar'];
+  startDate: Date;
+  endDate: Date;
   hideCount?: boolean;
 }
 
 export const OriginsCarousel = async <T extends string>({
   sectionProps,
   input,
+  startDate,
+  endDate,
   hideCount,
 }: Props<T>) => {
-  await api.public.sellers.list.bazaar.prefetch(input);
+  void api.public.sellers.list.bazaar.prefetch({
+    ...input,
+    startDate,
+    endDate,
+  });
 
   const { title, Icon, ...rest } = sectionProps;
 
@@ -54,7 +62,7 @@ export const OriginsCarousel = async <T extends string>({
 
 export const LoadingOriginsCarousel = async <T extends string>({
   sectionProps,
-}: Omit<Props<T>, 'input' | 'hideCount'>) => {
+}: Omit<Props<T>, 'input' | 'hideCount' | 'startDate' | 'endDate'>) => {
   const { title, Icon, ...rest } = sectionProps;
 
   return (

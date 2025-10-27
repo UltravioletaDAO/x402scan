@@ -7,13 +7,27 @@ import { Separator } from '@/components/ui/separator';
 import { OriginsCarousel } from './_components/carousels/lib/carousel';
 
 import { MARKETPLACE_CAROUSELS } from './carousels';
+import { TimeRangeProvider } from '@/app/_contexts/time-range/provider';
+import { subDays } from 'date-fns';
+import { ActivityTimeframe } from '@/types/timeframes';
+import { firstTransfer } from '@/services/facilitator/constants';
+import { RangeSelector } from '@/app/_contexts/time-range/component';
 
 export default async function MarketplacePage() {
+  const endDate = new Date();
+  const startDate = subDays(endDate, ActivityTimeframe.SevenDays);
+
   return (
-    <div>
+    <TimeRangeProvider
+      creationDate={firstTransfer}
+      initialStartDate={startDate}
+      initialEndDate={endDate}
+      initialTimeframe={ActivityTimeframe.SevenDays}
+    >
       <Heading
         title="Marketplace"
         description="Explore the most popular x402 servers"
+        actions={<RangeSelector />}
       />
       <Body>
         {MARKETPLACE_CAROUSELS.map((carousel, index) => (
@@ -23,10 +37,12 @@ export default async function MarketplacePage() {
               sectionProps={carousel.sectionProps}
               input={carousel.input}
               hideCount={carousel.hideCount}
+              startDate={startDate}
+              endDate={endDate}
             />
           </Fragment>
         ))}
       </Body>
-    </div>
+    </TimeRangeProvider>
   );
 }

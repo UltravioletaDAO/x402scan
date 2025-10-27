@@ -36,7 +36,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
     >
       <Card className="h-full flex flex-col hover:border-primary transition-colors cursor-pointer group">
         <div className="flex flex-row items-start gap-2 flex-1">
-          <CardHeader className="w-full overflow-hidden">
+          <CardHeader className="w-full overflow-hidden p-3">
             <div className="flex gap-2 items-center">
               <Favicon
                 url={originWithMetadata.favicon}
@@ -51,12 +51,12 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
                 </p>
               </div>
             </div>
-            <CardDescription className="text-muted-foreground text-xs md:text-sm line-clamp-2">
+            <CardDescription className="text-muted-foreground text-[10px] md:text-xs line-clamp-2">
               {originWithMetadata?.description ?? 'No description'}
             </CardDescription>
           </CardHeader>
         </div>
-        <CardFooter className="flex flex-row gap-2">
+        <CardFooter className="flex flex-row gap-2 p-3 pt-0">
           <FooterStat
             Icon={Activity}
             value={Number(origin.tx_count)}
@@ -71,6 +71,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
             Icon={Calendar}
             value={formatCompactAgo(origin.first_block_timestamp, {
               addSuffix: false,
+              suffix: 'old',
             })}
             className="justify-center"
           />
@@ -89,7 +90,7 @@ export const LoadingOriginCard = () => {
   return (
     <Card className="h-full flex flex-col hover:border-primary transition-colors cursor-pointer group">
       <div className="flex flex-row items-start gap-2 flex-1">
-        <CardHeader className="w-full overflow-hidden">
+        <CardHeader className="w-full overflow-hidden p-3">
           <div className="flex gap-2 items-center">
             <Skeleton className="size-6 shrink-0" />
             <div className="flex-1 overflow-hidden">
@@ -103,10 +104,11 @@ export const LoadingOriginCard = () => {
           </div>
         </CardHeader>
       </div>
-      <CardFooter className="grid grid-cols-3 gap-2">
+      <CardFooter className="flex flex-row gap-2 p-3 pt-0">
         <LoadingFooterStat Icon={Activity} className="text-primary font-bold" />
-        <LoadingFooterStat Icon={DollarSign} className="justify-center" />
-        <LoadingFooterStat Icon={Users} className="justify-end" />
+        <LoadingFooterStat Icon={DollarSign} />
+        <LoadingFooterStat Icon={Calendar} />
+        <LoadingFooterStat Icon={Users} />
       </CardFooter>
     </Card>
   );

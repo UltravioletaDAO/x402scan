@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 
 import type { RouterInputs } from '@/trpc/client';
 import type { SectionProps } from '@/app/_components/layout/page-utils';
+import { useTimeRangeContext } from '@/app/_contexts/time-range/hook';
 
 interface Props<T extends string> {
   title: React.ReactNode;
@@ -34,8 +35,14 @@ export const OriginsCarouselClient = <T extends string>({
   input,
   hideCount,
 }: Props<T>) => {
+  const { startDate, endDate } = useTimeRangeContext();
+
   const [{ items, total_count }] =
-    api.public.sellers.list.bazaar.useSuspenseQuery(input);
+    api.public.sellers.list.bazaar.useSuspenseQuery({
+      ...input,
+      startDate,
+      endDate,
+    });
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
@@ -72,23 +79,23 @@ export const OriginsCarouselClient = <T extends string>({
             variant="ghost"
             size="icon"
             onClick={scrollPrev}
-            className="size-8 md:size-8 rounded-none"
+            className="size-6 md:size-7 rounded-none"
           >
-            <ChevronLeft className="size-4" />
+            <ChevronLeft className="size-3 md:size-4" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
             onClick={scrollNext}
-            className="size-8 md:size-8 rounded-none"
+            className="size-6 md:size-7 rounded-none"
           >
-            <ChevronRight className="size-4" />
+            <ChevronRight className="size-3 md:size-4" />
           </Button>
         </div>
       }
     >
       <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex gap-2 md:gap-4">
+        <div className="flex gap-2">
           {items.map(origin => (
             <div
               key={`${origin.origins.map(o => o.origin).join(',')}`}

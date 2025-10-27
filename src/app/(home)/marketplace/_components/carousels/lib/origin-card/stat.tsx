@@ -18,7 +18,7 @@ export const FooterStat: React.FC<Props> = ({ Icon, value, className }) => {
         {typeof value === 'number'
           ? value.toLocaleString(undefined, {
               minimumFractionDigits: 0,
-              maximumFractionDigits: 2,
+              maximumFractionDigits: 1,
               notation: 'compact',
             })
           : value}
@@ -38,7 +38,7 @@ const FooterStatContainer: React.FC<FooterStatContainerProps> = ({
 }) => {
   return (
     <div className={cn('flex items-center gap-1', className)}>
-      <Icon className="size-3 shrink-0" />
+      <Icon className="size-2.5 shrink-0" />
       {children}
     </div>
   );
@@ -50,7 +50,7 @@ export const LoadingFooterStat: React.FC<
   return (
     <div className={cn('flex items-center gap-0.5', className)}>
       <Icon className="size-3 shrink-0" />
-      <Skeleton className="w-8 h-[12px] md:h-[14px]" />
+      <Skeleton className="w-6 h-[12px] md:h-[14px]" />
     </div>
   );
 };

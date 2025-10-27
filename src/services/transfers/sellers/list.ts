@@ -57,7 +57,12 @@ const listTopSellersUncached = async (
         COUNT(*)::integer as tx_count,
         SUM(t.amount)::float as total_amount,
         MAX(t.block_timestamp) as latest_block_timestamp,
-        MIN(t.block_timestamp) as first_block_timestamp,
+        -- first_block_timestamp should be earliest ever for this recipient, not just in this window
+        (
+          SELECT MIN(t_global.block_timestamp)
+          FROM "TransferEvent" t_global
+          WHERE t_global.recipient = t.recipient
+        ) as first_block_timestamp,
         COUNT(DISTINCT t.sender)::integer as unique_buyers,
         ARRAY_AGG(DISTINCT t.chain) as chains
       FROM "TransferEvent" t
