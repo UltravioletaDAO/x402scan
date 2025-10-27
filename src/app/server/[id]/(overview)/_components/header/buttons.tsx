@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 interface Props {
-  address: string;
+  originId: string;
 }
 
 export const HeaderButtons: React.FC<Props> = ({}) => {

@@ -81,14 +81,14 @@ export const OverallStatsCard = <T extends Record<string, number>>({
         <BaseBarChart
           data={data}
           bars={items.bars}
-          height={100}
+          height={75}
           tooltipRows={tooltipRows}
         />
       ) : (
         <BaseAreaChart
           data={data}
           areas={items.areas}
-          height={100}
+          height={75}
           tooltipRows={tooltipRows}
         />
       )}
@@ -109,9 +109,9 @@ export const LoadingOverallStatsCard = ({
       value={<Skeleton className="h-6 my-1 w-20" />}
     >
       {type === 'bar' ? (
-        <LoadingBarChart height={100} />
+        <LoadingBarChart height={75} />
       ) : (
-        <LoadingAreaChart height={100} />
+        <LoadingAreaChart height={75} />
       )}
     </OverallStatsCardContainer>
   );

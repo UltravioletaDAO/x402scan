@@ -5,17 +5,20 @@ import { LoadingResourceExecutor, ResourceExecutor } from './executor';
 import { getBazaarMethod } from './executor/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
+import { cn } from '@/lib/utils';
 
 interface Props {
   resources: RouterOutputs['public']['origins']['list']['withResources'][number]['resources'];
   defaultOpen?: boolean;
   hideOrigin?: boolean;
+  isFlat?: boolean;
 }
 
 export const OriginResources: React.FC<Props> = ({
   resources,
   defaultOpen = false,
   hideOrigin = false,
+  isFlat = false,
 }) => {
   return (
     <Accordion
@@ -29,7 +32,7 @@ export const OriginResources: React.FC<Props> = ({
         <AccordionItem
           value={resource.id}
           key={resource.id}
-          className="border-b-0 pl-4 border-l pt-4 relative"
+          className={cn('border-b-0 pt-4 relative', !isFlat && 'pl-4 border-l')}
         >
           <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-[1px] bg-border" />
           <ResourceExecutor

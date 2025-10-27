@@ -3,15 +3,18 @@ import { defaultAgentsSorting } from '@/app/_contexts/sorting/agents/default';
 import { AgentsSortingProvider } from '@/app/_contexts/sorting/agents/provider';
 import { AgentsTable } from '@/app/_components/agents/table';
 
-export default async function AgentsPage() {
+export default async function OriginAgentsPage({
+  params,
+}: PageProps<'/server/[id]/agents'>) {
+  const { id } = await params;
   return (
     <AgentsSortingProvider initialSorting={defaultAgentsSorting}>
       <Heading
         title="Agents"
-        description="Discover the most popular agents on x402scan"
+        description="Agents using resources from this origin"
       />
       <Body>
-        <AgentsTable input={{}} limit={10} />
+        <AgentsTable input={{ originId: id }} limit={10} />
       </Body>
     </AgentsSortingProvider>
   );

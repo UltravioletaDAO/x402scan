@@ -4,6 +4,7 @@ import {
 } from '@/app/_components/resources/origin-resources';
 
 import { api } from '@/trpc/server';
+import { OriginOverviewSection } from './section';
 
 interface Props {
   originId: string;
@@ -15,24 +16,21 @@ export const OriginResources: React.FC<Props> = async ({ originId }) => {
   });
 
   return (
-    <div>
+    <OriginOverviewSection title="Resources" className="gap-0">
       <OriginResourcesComponent
         resources={resources}
-        defaultOpen={true}
-        hideOrigin={true}
+        defaultOpen
+        hideOrigin
+        isFlat
       />
-      <div className="h-4 w-[1px] bg-border" />
-      <div className="size-3 bg-border rounded-full -ml-[5px]" />
-    </div>
+    </OriginOverviewSection>
   );
 };
 
 export const LoadingOriginResources = () => {
   return (
-    <div>
+    <OriginOverviewSection title="Resources">
       <LoadingOriginResourcesComponent />
-      <div className="h-4 w-[1px] bg-border" />
-      <div className="size-3 bg-border rounded-full -ml-[5px]" />
-    </div>
+    </OriginOverviewSection>
   );
 };

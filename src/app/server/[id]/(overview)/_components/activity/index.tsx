@@ -8,6 +8,7 @@ import { convertTokenAmount, formatTokenAmount } from '@/lib/token';
 
 import type { ChartData } from '@/components/ui/charts/chart/types';
 import { useState } from 'react';
+import { OriginOverviewSection } from '../section';
 
 interface Props {
   originId: string;
@@ -179,5 +180,9 @@ const OriginActivityContainer = ({
 }: {
   children: React.ReactNode;
 }) => {
-  return <div className="flex flex-col gap-4">{children}</div>;
+  return (
+    <OriginOverviewSection title="Activity">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">{children}</div>
+    </OriginOverviewSection>
+  );
 };

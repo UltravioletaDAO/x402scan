@@ -12,7 +12,7 @@ import { OriginStats, LoadingOriginStats } from './stats';
 import { cn } from '@/lib/utils';
 
 import type { RouterOutputs } from '@/trpc/client';
-import { HeaderButtons } from './buttons';
+import { HeaderButtons, LoadingHeaderButtons } from './buttons';
 
 interface Props {
   origin: NonNullable<RouterOutputs['public']['origins']['get']>;
@@ -45,7 +45,7 @@ export const HeaderCard: React.FC<Props> = async ({ origin }) => {
               {origin.description ?? 'No Description'}
             </p>
           </div>
-          <HeaderButtons />
+          <HeaderButtons originId={origin.id} />
         </div>
         <div className="col-span-2">
           <Suspense fallback={<LoadingOriginStats />}>
@@ -74,6 +74,7 @@ export const LoadingHeaderCard = () => {
             <Skeleton className="w-36 h-[30px] my-[3px]" />
             <Skeleton className="w-64 h-[16px] my-[4px]" />
           </div>
+          <LoadingHeaderButtons />
         </div>
         <div className="col-span-2 overflow-hidden">
           <LoadingOriginStats />

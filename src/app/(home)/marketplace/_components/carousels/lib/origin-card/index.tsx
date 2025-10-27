@@ -30,7 +30,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
 
   return (
     <Link
-      href={`/origin/${originWithMetadata.id}`}
+      href={`/server/${originWithMetadata.id}`}
       prefetch={false}
       className="h-full"
     >
@@ -56,7 +56,7 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
             </CardDescription>
           </CardHeader>
         </div>
-        <CardFooter className="flex flex-row gap-3">
+        <CardFooter className="flex flex-row gap-2">
           <FooterStat
             Icon={Activity}
             value={Number(origin.tx_count)}
@@ -71,7 +71,6 @@ export const OriginCard: React.FC<Props> = ({ origin }) => {
             Icon={Calendar}
             value={formatCompactAgo(origin.first_block_timestamp, {
               addSuffix: false,
-              suffix: 'old',
             })}
             className="justify-center"
           />
@@ -94,11 +93,14 @@ export const LoadingOriginCard = () => {
           <div className="flex gap-2 items-center">
             <Skeleton className="size-6 shrink-0" />
             <div className="flex-1 overflow-hidden">
-              <Skeleton className="w-24 h-[16px] md:h-[18px]" />
-              <Skeleton className="w-full h-[12px] md:h-[14px]" />
+              <Skeleton className="w-24 h-[16px] md:h-[18px] my-[3px]" />
+              <Skeleton className="w-full h-[10px] md:h-[12px] md:my-[2px]" />
             </div>
           </div>
-          <Skeleton className="w-full h-[12px] md:h-[14px]" />
+          <div>
+            <Skeleton className="w-full h-[12px] md:h-[14px] md:my-[3px]" />
+            <Skeleton className="w-full h-[12px] md:h-[14px] md:my-[3px]" />
+          </div>
         </CardHeader>
       </div>
       <CardFooter className="grid grid-cols-3 gap-2">

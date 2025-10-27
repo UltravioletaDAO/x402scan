@@ -3,7 +3,10 @@ import { listResources } from '@/services/db/resources/resource';
 import { parseX402Response } from '@/lib/x402/schema';
 import { checkCronSecret } from '@/lib/cron';
 import { NextResponse, type NextRequest } from 'next/server';
-import { upsertResourceResponse } from '@/services/db/resources/response';
+import {
+  deleteResourceResponse,
+  upsertResourceResponse,
+} from '@/services/db/resources/response';
 
 export const GET = async (request: NextRequest) => {
   const cronCheck = checkCronSecret(request);
@@ -31,9 +34,26 @@ export const GET = async (request: NextRequest) => {
       );
     }
 
-    const pingResults = await Promise.allSettled(
-      resources.map(async resource => {
-        for (const method of ['GET', 'POST']) {
+    const pingResults: Array<
+      | {
+          status: 'fulfilled';
+          value: {
+            resource: string;
+            resourceId: string;
+            isValid402: boolean;
+            success: boolean;
+          };
+        }
+      | {
+          status: 'rejected';
+          reason: unknown;
+        }
+    > = [];
+
+    for (const resource of resources) {
+      let handled = false;
+      for (const method of ['GET', 'POST']) {
+        try {
           const response = await fetch(resource.resource, {
             method,
             headers: {
@@ -48,12 +68,17 @@ export const GET = async (request: NextRequest) => {
               const parsedResponse = parseX402Response(await response.json());
               if (parsedResponse.success) {
                 await upsertResourceResponse(resource.id, parsedResponse.data);
-                return {
-                  resource: resource.resource,
-                  resourceId: resource.id,
-                  isValid402: true,
-                  success: true,
-                };
+                pingResults.push({
+                  status: 'fulfilled',
+                  value: {
+                    resource: resource.resource,
+                    resourceId: resource.id,
+                    isValid402: true,
+                    success: true,
+                  },
+                });
+                handled = true;
+                break;
               } else {
                 console.info('resource responded with invalid x402 response', {
                   resource: resource.resource,
@@ -61,20 +86,46 @@ export const GET = async (request: NextRequest) => {
                   errors: parsedResponse.errors,
                 });
               }
-            } catch {
+            } catch (err) {
+              console.error('Failed to upsert resource response', {
+                resourceId: resource.id,
+                error: err,
+              });
+              // Parsing or upserting failed, try next method
               continue;
             }
           }
+        } catch (err) {
+          // Fetch failed - capture as a rejection and stop further attempts for this resource
+          pingResults.push({
+            status: 'rejected',
+            reason: err,
+          });
+          handled = true;
+          break;
         }
+      }
 
-        return {
-          resource: resource.resource,
-          resourceId: resource.id,
-          isValid402: false,
-          success: false,
-        };
-      })
-    );
+      if (!handled) {
+        try {
+          await deleteResourceResponse(resource.id);
+        } catch (err) {
+          console.error('Failed to delete resource response', {
+            resourceId: resource.id,
+            error: err,
+          });
+        }
+        pingResults.push({
+          status: 'fulfilled',
+          value: {
+            resource: resource.resource,
+            resourceId: resource.id,
+            isValid402: false,
+            success: false,
+          },
+        });
+      }
+    }
 
     return NextResponse.json({
       success: true as const,

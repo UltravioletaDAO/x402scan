@@ -1,14 +1,11 @@
-import { Fragment } from 'react';
-
 import { Body, Heading } from '@/app/_components/layout/page-utils';
 
-import { Separator } from '@/components/ui/separator';
-
-import { OriginsCarousel } from './_components/carousels/lib/carousel';
-
+import { LoadingOriginsCarousel } from './_components/carousels/lib/carousel';
 import { MARKETPLACE_CAROUSELS } from './carousels';
+import { Separator } from '@/components/ui/separator';
+import { Fragment } from 'react';
 
-export default async function MarketplacePage() {
+export default function MarketplaceLoading() {
   return (
     <div>
       <Heading
@@ -19,11 +16,7 @@ export default async function MarketplacePage() {
         {MARKETPLACE_CAROUSELS.map((carousel, index) => (
           <Fragment key={carousel.sectionProps.title}>
             {index !== 0 && <Separator />}
-            <OriginsCarousel
-              sectionProps={carousel.sectionProps}
-              input={carousel.input}
-              hideCount={carousel.hideCount}
-            />
+            <LoadingOriginsCarousel sectionProps={carousel.sectionProps} />
           </Fragment>
         ))}
       </Body>

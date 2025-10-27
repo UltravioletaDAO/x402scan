@@ -188,6 +188,13 @@ export const searchOrigins = async (
       origin: {
         contains: search,
       },
+      resources: {
+        some: {
+          accepts: {
+            some: {},
+          },
+        },
+      },
     },
     include: {
       resources: {

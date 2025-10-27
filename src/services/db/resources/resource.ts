@@ -261,6 +261,9 @@ export const searchResources = async (
   const { search, limit, tagIds, resourceIds, showExcluded } = input;
   return await prisma.resources.findMany({
     where: {
+      accepts: {
+        some: {},
+      },
       ...(search
         ? {
             OR: [

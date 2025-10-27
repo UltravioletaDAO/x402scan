@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation';
 export default async function OriginLayout({
   params,
   children,
-}: LayoutProps<'/origin/[id]'>) {
+}: LayoutProps<'/server/[id]'>) {
   const { id } = await params;
   const origin = await api.public.origins.get(id);
   if (!origin) {
@@ -26,7 +26,7 @@ export default async function OriginLayout({
       />
       <Separator className="hidden md:block" />
       <Breadcrumb
-        href={`/origin/${id}`}
+        href={`/server/${id}`}
         image={origin.favicon}
         name={origin.title ?? new URL(origin.origin).hostname}
         Fallback={Wallet}

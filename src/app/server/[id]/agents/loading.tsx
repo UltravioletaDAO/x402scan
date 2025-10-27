@@ -6,7 +6,7 @@ export default function LoadingAgents() {
     <div>
       <Heading
         title="Agents"
-        description="Discover the most popular agents on x402scan"
+        description="Agents using resources from this origin"
       />
       <Body>
         <LoadingAgentsTable />
