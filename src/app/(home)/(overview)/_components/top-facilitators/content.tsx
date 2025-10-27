@@ -22,6 +22,8 @@ export const TopFacilitatorsContent = () => {
     },
   });
 
+  console.log(facilitatorsData.items);
+
   return (
     <Section
       title="Top Facilitators"

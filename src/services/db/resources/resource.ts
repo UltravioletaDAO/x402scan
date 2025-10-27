@@ -300,15 +300,12 @@ export const searchResources = async (
       accepts: true,
       _count: {
         select: {
-          invocations: true,
+          toolCalls: true,
         },
       },
     },
     take: limit,
-    orderBy: [
-      { invocations: { _count: 'desc' } },
-      { tags: { _count: 'desc' } },
-    ],
+    orderBy: [{ toolCalls: { _count: 'desc' } }, { tags: { _count: 'desc' } }],
   });
 };
 

@@ -1,5 +1,8 @@
+import z from 'zod';
 import { createTRPCRouter, publicProcedure } from '../../trpc';
 import {
+  getOrigin,
+  getOriginMetadata,
   listOrigins,
   listOriginsSchema,
   listOriginsWithResources,
@@ -9,6 +12,12 @@ import {
 } from '@/services/db/resources/origin';
 
 export const originsRouter = createTRPCRouter({
+  get: publicProcedure.input(z.uuid()).query(async ({ input }) => {
+    return await getOrigin(input);
+  }),
+  getMetadata: publicProcedure.input(z.uuid()).query(async ({ input }) => {
+    return await getOriginMetadata(input);
+  }),
   list: {
     origins: publicProcedure
       .input(listOriginsSchema)
