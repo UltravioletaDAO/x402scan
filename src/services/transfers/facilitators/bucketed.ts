@@ -37,16 +37,8 @@ const getBucketedFacilitatorsStatisticsUncached = async (
         (${bucketSizeSeconds} || ' seconds')::interval
       ) AS bucket_start
     ),
-    facilitator_list AS (
-      SELECT unnest(${facilitatorIds}::text[]) AS facilitator_id
-    ),
-    all_combinations AS (
-      SELECT ab.bucket_start, fl.facilitator_id
-      FROM all_buckets ab
-      CROSS JOIN facilitator_list fl
-    ),
     bucket_stats AS (
-      SELECT 
+      SELECT
         to_timestamp(
           floor(extract(epoch from t.block_timestamp) / ${bucketSizeSeconds}) * ${bucketSizeSeconds}
         ) AS bucket_start,
@@ -56,11 +48,19 @@ const getBucketedFacilitatorsStatisticsUncached = async (
         COUNT(DISTINCT t.sender)::int AS unique_buyers,
         COUNT(DISTINCT t.recipient)::int AS unique_sellers
       FROM "TransferEvent" t
-      ${transfersWhereClause(input)}
+      ${transfersWhereClause({ ...input, facilitatorIds })}
       GROUP BY bucket_start, facilitator_id
     ),
+    active_facilitators AS (
+      SELECT DISTINCT facilitator_id FROM bucket_stats
+    ),
+    all_combinations AS (
+      SELECT ab.bucket_start, af.facilitator_id
+      FROM all_buckets ab
+      CROSS JOIN active_facilitators af
+    ),
     combined_stats AS (
-      SELECT 
+      SELECT
         ac.bucket_start,
         ac.facilitator_id,
         COALESCE(bs.total_transactions, 0)::int AS total_transactions,
@@ -68,11 +68,11 @@ const getBucketedFacilitatorsStatisticsUncached = async (
         COALESCE(bs.unique_buyers, 0)::int AS unique_buyers,
         COALESCE(bs.unique_sellers, 0)::int AS unique_sellers
       FROM all_combinations ac
-      LEFT JOIN bucket_stats bs 
-        ON ac.bucket_start = bs.bucket_start 
+      LEFT JOIN bucket_stats bs
+        ON ac.bucket_start = bs.bucket_start
         AND ac.facilitator_id = bs.facilitator_id
     )
-    SELECT 
+    SELECT
       bucket_start,
       jsonb_object_agg(
         facilitator_id,

@@ -5,7 +5,6 @@ export const env = createEnv({
   server: {
     POSTGRES_PRISMA_URL: z.url(),
     POSTGRES_URL_NON_POOLING: z.url(),
-    TRANSFERS_DB_URL: z.url(),
     CDP_API_KEY_NAME: z.string(),
     CDP_API_KEY_ID: z.string(),
     CDP_API_KEY_SECRET: z.string(),
@@ -20,6 +19,13 @@ export const env = createEnv({
     FREEPIK_API_KEY: z.string().optional(),
     BLOB_READ_WRITE_TOKEN: z.string().optional(),
     FREE_TIER_WALLET_NAME: z.string().optional(),
+    TRANSFERS_DB_URL: z.url(),
+    TRANSFERS_DB_URL_REPLICA_1: z.url().optional(),
+    TRANSFERS_DB_URL_REPLICA_2: z.url().optional(),
+    TRANSFERS_DB_URL_REPLICA_3: z.url().optional(),
+    TRANSFERS_DB_URL_REPLICA_4: z.url().optional(),
+    TRANSFERS_DB_URL_REPLICA_5: z.url().optional(),
+    REDIS_URL: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z
