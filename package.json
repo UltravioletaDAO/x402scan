@@ -35,5 +35,10 @@
   "devDependencies": {
     "prettier": "^3.6.2",
     "typescript": "^5"
+  },
+  "pnpm": {
+    "overrides": {
+      "@auth/core": "0.40.0"
+    }
   }
 }

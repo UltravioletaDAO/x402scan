@@ -15,14 +15,14 @@ export interface TransferEventData {
 }
 
 export enum PaginationStrategy {
-  TIME_WINDOW = 'time-window',
-  OFFSET = 'offset',
+  TIME_WINDOW = "time-window",
+  OFFSET = "offset",
 }
 
 export enum QueryProvider {
-  BITQUERY = 'bitquery',
-  BIGQUERY = 'bigquery',
-  CDP = 'cdp',
+  BITQUERY = "bitquery",
+  BIGQUERY = "bigquery",
+  CDP = "cdp",
 }
 
 interface BaseQueryConfig {
@@ -34,13 +34,13 @@ interface BaseQueryConfig {
     facilitatorConfig: FacilitatorConfig,
     since: Date,
     now: Date,
-    offset?: number
+    offset?: number,
   ) => string;
   transformResponse: (
     data: unknown,
     config: SyncConfig,
     facilitator: Facilitator,
-    facilitatorConfig: FacilitatorConfig
+    facilitatorConfig: FacilitatorConfig,
   ) => TransferEventData[] | Promise<TransferEventData[]>;
 }
 
@@ -72,9 +72,9 @@ export interface EvmChainConfig {
 }
 
 export enum Chain {
-  BASE = 'base',
-  POLYGON = 'polygon',
-  SOLANA = 'solana',
+  BASE = "base",
+  POLYGON = "polygon",
+  SOLANA = "solana",
 }
 
 export interface FacilitatorConfig {

@@ -1,4 +1,4 @@
 packages:
-  - 'scan'
-  - 'sync'
-  - 'packages/*'
+  - "scan"
+  - "sync"
+  - "packages/*"

@@ -1,4 +1,7 @@
-import { DEFAULT_CONTRACT_ADDRESS, USDC_MULTIPLIER } from '@facilitators/constants';
+import {
+  DEFAULT_CONTRACT_ADDRESS,
+  USDC_MULTIPLIER,
+} from '@facilitators/constants';
 import {
   SyncConfig,
   EvmChainConfig,
