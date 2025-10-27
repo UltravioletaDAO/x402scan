@@ -45,7 +45,9 @@ export const HeaderCard: React.FC<Props> = async ({ origin }) => {
               {origin.description ?? 'No Description'}
             </p>
           </div>
-          <HeaderButtons originId={origin.id} />
+          <Suspense fallback={<LoadingHeaderButtons />}>
+            <HeaderButtons origin={origin} />
+          </Suspense>
         </div>
         <div className="col-span-2">
           <Suspense fallback={<LoadingOriginStats />}>

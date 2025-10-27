@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 import { api } from '@/trpc/client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { steps } from './steps';
 import { Stepper } from '@/components/ui/stepper';
 import {
@@ -22,9 +22,13 @@ import type z from 'zod';
 
 interface Props {
   initialStep?: number;
+  initialResourceIds?: string[];
 }
 
-export const CreateAgentForm: React.FC<Props> = ({ initialStep = 0 }) => {
+export const CreateAgentForm: React.FC<Props> = ({
+  initialStep = 0,
+  initialResourceIds = [],
+}) => {
   const router = useRouter();
 
   const [step, setStep] = useState(initialStep);
@@ -39,6 +43,14 @@ export const CreateAgentForm: React.FC<Props> = ({ initialStep = 0 }) => {
     },
     mode: 'onChange',
   });
+
+  useEffect(() => {
+    form.setValue('resourceIds', initialResourceIds, {
+      shouldValidate: true,
+      shouldDirty: true,
+      shouldTouch: true,
+    });
+  }, [initialResourceIds, form]);
 
   const { mutate: createAgent, isPending: isSubmitting } =
     api.user.agentConfigurations.create.useMutation({

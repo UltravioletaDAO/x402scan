@@ -98,19 +98,17 @@ export const ResourceList: React.FC<Props> = ({
           )}
           <h2>{isLoading ? 'Loading...' : 'No tools match your search'}</h2>
         </CommandEmpty>
-        {tools &&
-          tools.filter(tool => selectedResourceIds.includes(tool.id)).length >
-            0 && (
-            <CommandGroup className="p-0" heading="Selected">
-              {selectedResourceIds.map(id => (
-                <SelectedResourceItem
-                  key={id}
-                  id={id}
-                  onSelectResource={onSelectResource}
-                />
-              ))}
-            </CommandGroup>
-          )}
+        {selectedResourceIds.length > 0 && (
+          <CommandGroup className="p-0" heading="Selected">
+            {selectedResourceIds.map(id => (
+              <SelectedResourceItem
+                key={id}
+                id={id}
+                onSelectResource={onSelectResource}
+              />
+            ))}
+          </CommandGroup>
+        )}
         {tools && tools.length > 0 && (
           <CommandGroup className="p-0" heading="Tools">
             {tools

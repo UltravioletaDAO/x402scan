@@ -32,7 +32,6 @@ export const AllSellersTable = () => {
     <DataTable
       columns={columns}
       data={topSellers.items}
-      href={data => `/recipient/${data.recipient}`}
       page={page}
       onPageChange={setPage}
       pageSize={pageSize}

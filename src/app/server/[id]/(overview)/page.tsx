@@ -3,7 +3,10 @@ import { HeaderCard, LoadingHeaderCard } from './_components/header';
 import { api, HydrateClient } from '@/trpc/server';
 import { notFound } from 'next/navigation';
 import { Body } from '@/app/_components/layout/page-utils';
-import { OriginResources } from './_components/resources';
+import {
+  LoadingOriginResources,
+  OriginResources,
+} from './_components/resources';
 import { OriginActivity } from './_components/activity';
 import { OriginAgents } from './_components/agents';
 
@@ -16,7 +19,10 @@ export default async function OriginPage({
     return notFound();
   }
 
-  await api.public.origins.getMetadata.prefetch(id);
+  await Promise.all([
+    api.public.origins.getMetadata.prefetch(id),
+    api.public.origins.list.withResources.prefetch({ originIds: [id] }),
+  ]);
 
   return (
     <HydrateClient>
@@ -27,7 +33,9 @@ export default async function OriginPage({
         <OriginActivity originId={id} />
         <div className="md:grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="col-span-1 md:col-span-2 flex flex-col gap-8">
-            <OriginResources originId={id} />
+            <Suspense fallback={<LoadingOriginResources />}>
+              <OriginResources originId={id} />
+            </Suspense>
           </div>
           <div className="col-span-1">
             <OriginAgents originId={id} />

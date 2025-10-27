@@ -108,7 +108,6 @@ function ResourceFetchWrapper({
   bazaarMethod: Methods;
   resource: string;
 }) {
-  console.log(response);
   if (!response) return children;
 
   const accept = response?.accepts?.[0];
