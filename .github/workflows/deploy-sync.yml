@@ -1,13 +1,18 @@
-name: Deploy to Trigger.dev (prod)
+name: Deploy Sync to Trigger.dev (prod)
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'sync/**'
+      - 'facilitators/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/deploy-sync.yml'
 
 jobs:
   deploy:
-    name: Deploy to Trigger.dev
+    name: Deploy Sync to Trigger.dev
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -22,6 +27,8 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -29,9 +36,5 @@ jobs:
       - name: Deploy to Trigger.dev
         env:
           TRIGGER_ACCESS_TOKEN: ${{ secrets.TRIGGER_ACCESS_TOKEN }}
-          VERCEL_ACCESS_TOKEN: ${{ secrets.VERCEL_ACCESS_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VERCEL_TEAM_ID: ${{ secrets.VERCEL_TEAM_ID }}
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
-          pnpm trigger:deploy
+          pnpm --filter sync trigger:deploy

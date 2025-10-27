@@ -5,8 +5,8 @@ on:
     branches: [main]
 
 jobs:
-  checks:
-    name: Run Checks
+  check-scan:
+    name: Check Scan Workspace
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -28,16 +28,53 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma client
-        run: pnpm db:generate
+        run: pnpm --filter scan db:generate
 
       - name: Check Formatting
-        run: pnpm check:format
+        run: pnpm --filter scan check:format
 
       - name: Check Knip
-        run: pnpm knip
+        run: pnpm --filter scan check:knip
 
       - name: Check Types
-        run: pnpm check:types
+        run: pnpm --filter scan check:types
 
       - name: Check Lint
-        run: pnpm lint
+        run: pnpm --filter scan lint
+
+  check-sync:
+    name: Check Sync Workspace
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter sync db:generate
+
+      - name: Check Formatting
+        run: pnpm --filter sync check:format
+
+      - name: Check Knip
+        run: pnpm --filter sync knip
+
+      - name: Check Types
+        run: pnpm --filter sync check:types
+
+      - name: Check Lint
+        run: pnpm --filter sync lint
