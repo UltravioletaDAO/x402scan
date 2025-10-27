@@ -120,11 +120,7 @@ export const SearchProvider = ({ children }: { children: React.ReactNode }) => {
                 <CommandItem
                   key={origin.id}
                   value={origin.origin}
-                  onSelect={() =>
-                    handleSelect(
-                      `/recipient/${origin.resources[0].accepts[0].payTo}/resources`
-                    )
-                  }
+                  onSelect={() => handleSelect(`/server/${origin.id}`)}
                 >
                   <Origin
                     origin={origin}
