@@ -41,10 +41,10 @@ Then install and run:
 # Install dependencies
 pnpm install
 
-# Run the scan app
+# Run the frontend
 pnpm dev
 
-# Or run the sync service
+# Run the sync service
 pnpm dev:sync
 ```
 
