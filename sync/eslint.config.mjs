@@ -1,10 +1,8 @@
-import typescriptEslint from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
+import { baseConfig } from '../eslint.config.base.mjs';
 
 export default [
-  {
-    ignores: ['node_modules/**', 'generated/**', 'dist/**', 'build/**'],
-  },
+  ...baseConfig,
   {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
@@ -14,13 +12,6 @@ export default [
         sourceType: 'module',
         project: './tsconfig.json',
       },
-    },
-    plugins: {
-      '@typescript-eslint': typescriptEslint,
-    },
-    rules: {
-      ...typescriptEslint.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
 ];
