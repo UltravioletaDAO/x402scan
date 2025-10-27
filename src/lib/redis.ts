@@ -47,13 +47,3 @@ export function getRedisClient(): Redis | null {
 
   return redis;
 }
-
-/**
- * Graceful shutdown
- */
-export async function disconnectRedis(): Promise<void> {
-  if (redis) {
-    await redis.quit();
-    redis = null;
-  }
-}
