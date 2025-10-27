@@ -50,7 +50,6 @@ const getBucketedStatisticsUncached = async (
         COUNT(DISTINCT t.recipient)::int AS unique_sellers
       FROM "TransferEvent" t
       ${transfersWhereClause(input)}
-        AND t.amount < 1000000000
       GROUP BY bucket_start
     )
     SELECT 

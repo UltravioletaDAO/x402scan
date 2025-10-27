@@ -73,7 +73,7 @@ export const RegisterResourceForm = () => {
           chain: getChain(accept.network),
         });
       }
-      void utils.public.sellers.list.bazaar.invalidate();
+      void utils.public.sellers.bazaar.list.invalidate();
       if (data.enhancedParseWarnings) {
         toast.warning(
           'Resource added successfully, but is not available for use'

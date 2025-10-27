@@ -10,8 +10,6 @@ import {
   Users,
 } from 'lucide-react';
 
-import Link from 'next/link';
-
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { KnownSellerChart, LoadingKnownSellerChart } from './chart';
@@ -29,7 +27,7 @@ import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/
 import { Chains } from '@/app/_components/chains';
 
 type ColumnType =
-  RouterOutputs['public']['sellers']['list']['bazaar']['items'][number];
+  RouterOutputs['public']['sellers']['bazaar']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
@@ -38,13 +36,11 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Server} label="Server" className="mr-auto" />
     ),
     cell: ({ row }) => (
-      <Link href={`/recipient/${row.original.recipients[0]}`} prefetch={false}>
-        <Origins
-          origins={row.original.origins}
-          addresses={row.original.recipients}
-          disableCopy
-        />
-      </Link>
+      <Origins
+        origins={row.original.origins}
+        addresses={row.original.recipients}
+        disableCopy
+      />
     ),
     size: 225,
     loading: () => <OriginsSkeleton />,

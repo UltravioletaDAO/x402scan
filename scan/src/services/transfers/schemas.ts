@@ -2,9 +2,13 @@ import { chainSchema, mixedAddressSchema } from '@/lib/schemas';
 import { subMonths } from 'date-fns';
 import z from 'zod';
 
+const addressArray = z
+  .array(mixedAddressSchema)
+  .transform(addresses => addresses.toSorted((a, b) => a.localeCompare(b)));
+
 const addressesSchema = z.object({
-  include: z.array(mixedAddressSchema).optional(),
-  exclude: z.array(mixedAddressSchema).optional(),
+  include: addressArray.optional(),
+  exclude: addressArray.optional(),
 });
 
 export const baseQuerySchema = z.object({

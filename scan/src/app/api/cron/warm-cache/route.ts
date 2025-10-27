@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       }),
 
       // Top Servers (Bazaar) - list
-      api.public.sellers.list.bazaar({
+      api.public.sellers.bazaar.list({
         pagination: {
           page_size: 100,
         },
@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
       }),
 
       // All Sellers
-      api.public.sellers.list.all({
+      api.public.sellers.all.list({
         pagination: {
           page_size: 100,
         },

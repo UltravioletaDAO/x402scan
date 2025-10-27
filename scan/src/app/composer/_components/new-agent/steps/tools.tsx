@@ -20,20 +20,22 @@ export const ToolsStep: React.FC<Props> = ({ form, onNext }) => {
         <Controller
           control={form.control}
           name="resourceIds"
-          render={({ field }) => (
-            <Field>
-              <ResourceList
-                selectedResourceIds={field.value}
-                onSelectResource={resource => {
-                  field.onChange(
-                    field.value.includes(resource.id)
-                      ? field.value.filter(id => id !== resource.id)
-                      : [...field.value, resource.id]
-                  );
-                }}
-              />
-            </Field>
-          )}
+          render={({ field }) => {
+            return (
+              <Field>
+                <ResourceList
+                  selectedResourceIds={field.value}
+                  onSelectResource={resource => {
+                    field.onChange(
+                      field.value.includes(resource.id)
+                        ? field.value.filter(id => id !== resource.id)
+                        : [...field.value, resource.id]
+                    );
+                  }}
+                />
+              </Field>
+            );
+          }}
         />
       </FieldGroup>
       <div className="flex justify-end p-4 border-t bg-muted">

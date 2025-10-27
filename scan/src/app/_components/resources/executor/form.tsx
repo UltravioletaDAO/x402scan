@@ -38,13 +38,7 @@ export function Form({ x402Response }: Props) {
 
   return (
     <CardContent className="flex flex-col gap-4 p-4 border-t">
-      {!hasQueryFields && !hasBodyFields ? (
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            No input parameters required.
-          </p>
-        </div>
-      ) : (
+      {!hasQueryFields && !hasBodyFields ? null : (
         <div className="space-y-4">
           {hasQueryFields && (
             <div className="space-y-3">

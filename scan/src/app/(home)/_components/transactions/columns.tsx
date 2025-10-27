@@ -2,8 +2,6 @@
 
 import { Calendar, DollarSign, Globe, Hash, Server, User } from 'lucide-react';
 
-import Link from 'next/link';
-
 import { Skeleton } from '@/components/ui/skeleton';
 
 import { HeaderCell } from '@/components/ui/data-table/header-cell';
@@ -30,13 +28,11 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Server} label="Server" className="justify-start" />
     ),
     cell: ({ row }) => (
-      <Link href={`/recipient/${row.original.recipient}`} prefetch={false}>
-        <Seller
-          address={row.original.recipient}
-          addressClassName="text-xs font-normal"
-          disableCopy
-        />
-      </Link>
+      <Seller
+        address={row.original.recipient}
+        addressClassName="text-xs font-normal"
+        disableCopy
+      />
     ),
     size: 200,
     loading: () => <SellerSkeleton />,

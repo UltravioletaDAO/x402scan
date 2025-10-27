@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import Link from 'next/link';
 
 import { Plus, ServerOff } from 'lucide-react';
@@ -21,9 +23,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-import { ResourceExecutor } from './executor';
-
-import { getBazaarMethod } from './executor/utils';
+import { OriginResources } from './origin-resources';
 
 import { api } from '@/trpc/client';
 
@@ -33,7 +33,6 @@ import {
 } from '@/app/_components/resources/origin';
 
 import { useChain } from '@/app/_contexts/chain/hook';
-import { useState } from 'react';
 
 interface Props {
   emptyText: string;
@@ -93,25 +92,7 @@ export const ResourcesByOrigin: React.FC<Props> = ({
           </AccordionTrigger>
           <AccordionContent className="pb-0">
             <div className="pl-4">
-              <Accordion type="multiple" className="border-b-0">
-                {origin.resources.map(resource => (
-                  <AccordionItem
-                    value={resource.id}
-                    key={resource.id}
-                    className="border-b-0 pl-4 border-l pt-4 relative"
-                  >
-                    <div className="absolute left-0 top-[calc(2rem+5px)] w-4 h-[1px] bg-border" />
-                    <ResourceExecutor
-                      resource={resource}
-                      bazaarMethod={getBazaarMethod(
-                        resource.accepts[0].outputSchema
-                      )}
-                      className="bg-transparent"
-                      response={resource.data}
-                    />
-                  </AccordionItem>
-                ))}
-              </Accordion>
+              <OriginResources resources={origin.resources} />
             </div>
           </AccordionContent>
           <div className="pl-4">

@@ -20,6 +20,7 @@ export type AgentSortId = (typeof agentsSortingIds)[number];
 
 export const listTopAgentConfigurationsSchema = z.object({
   userId: z.string().optional(),
+  originId: z.string().optional(),
   sorting: sortingSchema(agentsSortingIds).default({
     id: 'message_count',
     desc: true,
@@ -30,12 +31,15 @@ export const listTopAgentConfigurations = async (
   input: z.infer<typeof listTopAgentConfigurationsSchema>,
   pagination: PaginatedQueryParams
 ) => {
-  const { sorting, userId } = input;
+  const { sorting, userId, originId } = input;
 
   const [count, items] = await Promise.all([
     prisma.agentConfiguration.count({
       where: {
         visibility: 'public',
+        ...(originId
+          ? { resources: { some: { resource: { originId } } } }
+          : {}),
       },
     }),
     queryRaw(
@@ -85,7 +89,21 @@ export const listTopAgentConfigurations = async (
       LEFT JOIN "AgentConfigurationResource" acr ON acr."agentConfigurationId" = ac.id
       LEFT JOIN "Resources" r ON acr."resourceId" = r.id
       LEFT JOIN "ResourceOrigin" o ON r."originId" = o.id
-      WHERE ${userId ? Prisma.sql`au."userId" = ${userId}` : Prisma.sql`ac.visibility = 'public'`}
+      WHERE 1=1
+        ${userId ? Prisma.sql`AND au."userId" = ${userId}` : Prisma.sql`AND ac.visibility = 'public'`}
+        ${
+          originId
+            ? Prisma.sql`
+              AND EXISTS (
+                SELECT 1
+                FROM "AgentConfigurationResource" acr2
+                JOIN "Resources" r2 ON acr2."resourceId" = r2.id
+                WHERE acr2."agentConfigurationId" = ac.id
+                  AND r2."originId" = ${originId}
+              )
+            `
+            : Prisma.sql``
+        }
       GROUP BY 
         ac.id, ac.name, ac.description, ac.image, ac."systemPrompt", ac.visibility, ac."createdAt", m.message_count, tc.tool_call_count
       ORDER BY 

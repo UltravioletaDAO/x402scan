@@ -30,7 +30,7 @@ export const TopServers = async ({ chain }: Props) => {
   const startDate = subDays(endDate, 1);
 
   await Promise.all([
-    api.public.sellers.list.bazaar.prefetch({
+    api.public.sellers.bazaar.list.prefetch({
       chain,
       pagination: {
         page_size: 100,

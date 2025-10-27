@@ -37,7 +37,9 @@ export const statsRouter = createTRPCRouter({
     overall: publicProcedure
       .input(overallStatisticsInputSchema)
       .query(async ({ input }) => {
-        const originsByAddress = await getAcceptsAddresses(input.chain);
+        const originsByAddress = await getAcceptsAddresses({
+          chain: input.chain,
+        });
         return await getOverallStatistics({
           ...input,
           recipients: {
@@ -50,7 +52,9 @@ export const statsRouter = createTRPCRouter({
     bucketed: publicProcedure
       .input(bucketedStatisticsInputSchema)
       .query(async ({ input }) => {
-        const originsByAddress = await getAcceptsAddresses();
+        const originsByAddress = await getAcceptsAddresses({
+          chain: input.chain,
+        });
         return await getBucketedStatistics({
           ...input,
           recipients: {

@@ -28,6 +28,7 @@ const cdpEmbeddedWalletConnector = createCDPEmbeddedWalletConnector({
 const getClientConfig = () =>
   createConfig({
     ...baseWagmiConfig,
+    chains: baseWagmiConfig.chains,
     connectors: [...baseWagmiConfig.connectors, cdpEmbeddedWalletConnector],
   });
 

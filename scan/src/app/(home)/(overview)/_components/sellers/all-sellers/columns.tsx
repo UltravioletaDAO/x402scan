@@ -15,11 +15,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { ExtendedColumnDef } from '@/components/ui/data-table';
 import type { RouterOutputs } from '@/trpc/client';
 import { SellersSortingContext } from '../../../../../_contexts/sorting/sellers/context';
-import Link from 'next/link';
 import { Chains } from '@/app/_components/chains';
 
 type ColumnType =
-  RouterOutputs['public']['sellers']['list']['all']['items'][number];
+  RouterOutputs['public']['sellers']['all']['list']['items'][number];
 
 export const columns: ExtendedColumnDef<ColumnType>[] = [
   {
@@ -28,13 +27,11 @@ export const columns: ExtendedColumnDef<ColumnType>[] = [
       <HeaderCell Icon={Server} label="Server" className="justify-start" />
     ),
     cell: ({ row }) => (
-      <Link href={`/recipient/${row.original.recipient}`} prefetch={false}>
-        <Seller
-          address={row.original.recipient}
-          disableCopy
-          addressClassName="font-normal"
-        />
-      </Link>
+      <Seller
+        address={row.original.recipient}
+        disableCopy
+        addressClassName="font-normal"
+      />
     ),
     size: 225, // Fixed width for seller column (widest for address display)
     loading: () => <SellerSkeleton />,
