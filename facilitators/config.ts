@@ -37,7 +37,7 @@ const _FACILITATORS = validateUniqueFacilitators([
     name: 'AurraCloud',
     image: '/aurracloud.png',
     link: 'https://x402-facilitator.aurracloud.com',
-    color: 'var(--color-yellow-600)',
+    color: 'var(--color-gray-600)',
     addresses: {
       [Chain.BASE]: [
         {
@@ -71,7 +71,7 @@ const _FACILITATORS = validateUniqueFacilitators([
     name: 'X402rs',
     image: '/x402rs.png',
     link: 'https://x402.rs',
-    color: 'var(--color-orange-600)',
+    color: 'var(--color-blue-400)',
     addresses: {
       [Chain.POLYGON]: [
         {
@@ -169,7 +169,7 @@ const _FACILITATORS = validateUniqueFacilitators([
     name: 'Mogami',
     image: '/mogami.png',
     link: 'https://mogami.tech/',
-    color: 'var(--color-blue-600)',
+    color: 'var(--color-green-600)',
     addresses: {
       [Chain.BASE]: [
         {

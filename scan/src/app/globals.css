@@ -110,6 +110,17 @@
   --spacing: 0.25rem;
   /* Fumadocs-specific secondary color override for light mode */
   --color-fd-secondary: oklch(0.98 0 0);
+
+  /* Facilitator colors */
+  --color-pink-600: oklch(0.61 0.24 354.69);
+  --color-blue-100: oklch(0.94 0.04 243.29);
+  --color-blue-400: oklch(0.73 0.13 243.29);
+  --color-yellow-600: oklch(0.69 0.15 86.58);
+  --color-orange-600: oklch(0.68 0.17 51.72);
+  --color-purple-600: oklch(0.56 0.23 295.87);
+  --color-blue-600: oklch(0.53 0.20 254.60);
+  --color-green-600: oklch(0.59 0.15 154.55);
+  --color-gray-600: oklch(0.53 0 0);
 }
 
 .dark {
@@ -161,6 +172,17 @@
   --shadow-2xl: 0px 1px 2px 0px hsl(0 0% 0% / 0.45);
   /* Fumadocs-specific secondary color override for dark mode */
   --color-fd-secondary: oklch(0.25 0 0);
+
+  /* Facilitator colors - same for dark mode */
+  --color-pink-600: oklch(0.61 0.24 354.69);
+  --color-blue-100: oklch(0.94 0.04 243.29);
+  --color-blue-400: oklch(0.73 0.13 243.29);
+  --color-yellow-600: oklch(0.69 0.15 86.58);
+  --color-orange-600: oklch(0.68 0.17 51.72);
+  --color-purple-600: oklch(0.56 0.23 295.87);
+  --color-blue-600: oklch(0.53 0.20 254.60);
+  --color-green-600: oklch(0.59 0.15 154.55);
+  --color-gray-600: oklch(0.53 0 0);
 }
 
 @theme inline {
