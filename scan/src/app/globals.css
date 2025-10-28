@@ -173,7 +173,7 @@
   /* Fumadocs-specific secondary color override for dark mode */
   --color-fd-secondary: oklch(0.25 0 0);
 
-  /* Facilitator colors - same for dark mode */
+  /* TODO(shafu): We need a dynamic way to set these colors */
   --color-pink-600: oklch(0.61 0.24 354.69);
   --color-blue-100: oklch(0.94 0.04 243.29);
   --color-blue-400: oklch(0.73 0.13 243.29);
