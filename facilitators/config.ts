@@ -186,7 +186,7 @@ const _FACILITATORS = validateUniqueFacilitators([
     name: 'Open X402',
     image: '/openx402.png',
     link: 'https://open.x402.host',
-    color: 'var(--color-blue-600)',
+    color: 'var(--color-blue-100)',
     addresses: {
       [Chain.BASE]: [
         {
