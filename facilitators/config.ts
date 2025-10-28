@@ -2,6 +2,7 @@ import {
   USDC_BASE_TOKEN,
   USDC_POLYGON_TOKEN,
   USDC_SOLANA_TOKEN,
+  USDC_AVALANCHE_TOKEN,
 } from './constants';
 import { Chain, Facilitator } from './types';
 import { validateUniqueFacilitators } from './validate';
@@ -193,6 +194,31 @@ const _FACILITATORS = validateUniqueFacilitators([
           address: '0x97316fa4730bc7d3b295234f8e4d04a0a4c093e8',
           token: USDC_BASE_TOKEN,
           syncStartDate: new Date('2025-10-25'),
+          enabled: true,
+        },
+      ],
+    },
+  },
+  {
+    id: 'ultravioletadao',
+    name: 'Ultravioleta DAO',
+    image: '/ultravioletadao.png',
+    link: 'https://facilitator.ultravioletadao.xyz',
+    color: 'var(--color-purple-600)',
+    addresses: {
+      [Chain.BASE]: [
+        {
+          address: '0x103040545AC5031A11E8C03dd11324C7333a13C7',
+          token: USDC_BASE_TOKEN,
+          syncStartDate: new Date('2025-10-27'),
+          enabled: true,
+        },
+      ],
+      [Chain.AVALANCHE]: [
+        {
+          address: '0x103040545AC5031A11E8C03dd11324C7333a13C7',
+          token: USDC_AVALANCHE_TOKEN,
+          syncStartDate: new Date('2025-10-27'),
           enabled: true,
         },
       ],
