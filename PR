@@ -1,0 +1,46 @@
+## Add Ultravioleta DAO Facilitator
+
+  ### Summary
+  Adds Ultravioleta DAO as a new X402 facilitator supporting Avalanche and Base networks. First and only x402 facilitator supporting Avalanche - fast, free, and community operated.
+
+  ### Changes
+  - Added `ultravioletadao` facilitator configuration in `facilitators/config.ts`
+  - Added Avalanche mainnet chain support to facilitators package
+  - Added USDC token constants for Avalanche in `facilitators/constants.ts`
+  - Updated chain type definitions in `facilitators/types.ts` and `scan/src/types/chain.ts`
+  - Added facilitator branding assets (`scan/public/ultravioletadao.png`, `scan/public/avalanche.png`)
+  - Updated chain mappings in `scan/src/lib/facilitators.ts` and network colors in `scan/src/lib/charts.ts`
+
+  ---
+
+  ### Facilitator Details
+
+  **Name:** Ultravioleta DAO
+  **Website:** https://facilitator.ultravioletadao.xyz
+  **Color Theme:** Purple (`var(--color-purple-600)`)
+
+  **Endpoints:**
+  - Live: https://facilitator.ultravioletadao.xyz
+  - Health: https://facilitator.ultravioletadao.xyz/health
+  - Supported Methods: https://facilitator.ultravioletadao.xyz/supported
+  - Verify Payments: https://facilitator.ultravioletadao.xyz/verify
+
+  **Technical Specifications:**
+  - X402 Version: 1
+  - Payment Scheme: `exact`
+  - Integration Tests: ✅ All passed (6/6)
+    - Health Check
+    - Supported Networks
+    - Wallet Balances
+    - Payment Verification
+    - X402 Client Integration
+    - Multi-Network Support
+  - Tested for IaC idempotency
+
+  ---
+
+  ### Network Coverage
+
+  **Mainnet**
+  - 🔺 Avalanche — `0x103040545AC5031A11E8C03dd11324C7333a13C7` ([Explorer](https://snowtrace.io/address/0x103040545AC5031A11E8C03dd11324C7333a13C7))
+  - 🔵 Base — `0x103040545AC5031A11E8C03dd11324C7333a13C7` ([Explorer](https://basescan.org/address/0x103040545AC5031A11E8C03dd11324C7333a13C7))
